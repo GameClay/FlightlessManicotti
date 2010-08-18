@@ -1,2 +1,3 @@
-# SCons files
+# SCons build files
 .sconsign.dblite
+.build/*
