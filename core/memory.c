@@ -1,13 +1,16 @@
 #include "core/memory.h"
+#include "core/memcpy.h"
 #include <stdlib.h>
 
 void* default_malloc(size_t size, size_t alignment);
 void default_free(void* pointer);
 
-// Assign default allocators
+// Assign default memory operatons
 _gcaligned_malloc_fn_ptr gcheap_alloc = &default_malloc;
 _gcaligned_free_fn_ptr gcheap_free = &default_free;
+_gcmicrorcpy_fn_ptr gcmicrorcpy = &dvmemcpy;
 
+// Default malloc/free
 void* default_malloc(size_t size, size_t align_size)
 {
    char *ptr, *ptr2, *aligned_ptr;
