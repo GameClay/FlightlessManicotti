@@ -33,9 +33,10 @@ int gcenqueue(gcqueue* queue, void* item)
 
 int gcdequeue(gcqueue* queue, void* item)
 {
-   if((queue->end + 1) % queue->size != queue->start) 
+   if(queue->start % queue->size != queue->end) 
    {
       gcmicrorcpy(item, gcpeek_queue(queue), queue->element_size);
+      queue->start = (queue->start + 1) % queue->size;
       return 1;
    }
    return 0;

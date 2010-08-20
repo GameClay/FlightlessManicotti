@@ -27,6 +27,7 @@ inline void* gcpeek_queue(const gcqueue* queue)
 }
 
 int gcenqueue(gcqueue* queue, void* item);
+int gcdequeue(gcqueue* queue, void* item);
 
 #ifdef __cplusplus
 }
