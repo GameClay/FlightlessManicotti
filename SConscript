@@ -2,6 +2,7 @@ from SCons.Util import flatten
 import os
 
 Import('env')
+coreEnv = env.Clone()
 
 excluded_files = []
 
@@ -10,22 +11,27 @@ executable_files = ['main.cpp']
 executable_files = [f for f in executable_files if f not in excluded_files]
 
 # Files used for shared library which binary requires
-lib_files = Glob('*.cpp', strings=True)
+core_files = Glob('core/*.c', strings=True)
+
+lib_files = core_files
+
 lib_files = [f for f in lib_files if f not in excluded_files]     # Omit excluded files
 lib_files = [f for f in lib_files if f not in executable_files]   # Omit executable source files
 
-shared_lib = env.SharedLibrary('FlightlessManicotti', 
+core_lib = coreEnv.StaticLibrary('FlightlessManicotti', 
 	lib_files,
 	CPPPATH = ['.'],
+	CFLAGS = [],
 	LIBS=[], 
-	LIBPATH=[]
+	LIBPATH=['.']
 )
 
-executable = env.Program('FlightlessManicotti',
+executable = coreEnv.Program('FlightlessManicotti',
    executable_files,
    CPPPATH = ['.'],
-	LIBS=[], 
-	LIBPATH=[]
+	LIBS=['FlightlessManicotti'], 
+	LIBPATH=['.']
 )
+coreEnv.Requires(executable, core_lib)
 
-Return(['shared_lib', 'executable'])
+Return(['core_lib', 'executable'])

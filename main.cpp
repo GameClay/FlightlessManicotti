@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "core/memory.h"
 
 int main(int argc, const char* argv[])
 {
@@ -8,6 +9,10 @@ int main(int argc, const char* argv[])
    {
       printf("\targ %d: %s\n", i, argv[i]);
    }
+   
+   int* test = (int*)gcheap_alloc(sizeof(int) * 5, 16);
+   
+   gcheap_free(test);
    
    return 0;
 }
