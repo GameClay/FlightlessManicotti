@@ -33,8 +33,9 @@ typedef struct
    size_t element_size;
 } gcqueue;
 
-void gcinit_queue(gcqueue* queue, size_t element_size, size_t num_elements, _gcaligned_malloc_fn_ptr _allocator);
-void gcdestroy_queue(gcqueue* queue, _gcaligned_free_fn_ptr _freeer);
+void gcinit_queue(gcqueue* queue, size_t element_size, size_t num_elements, void* buffer);
+void gcalloc_queue(gcqueue* queue, size_t element_size, size_t num_elements);
+void gcfree_queue(gcqueue* queue);
 
 inline void* gcpeek_queue(const gcqueue* queue)
 {

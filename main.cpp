@@ -30,7 +30,7 @@ int main(int argc, const char* argv[])
    }
    
    gcqueue test_queue;
-   gcinit_queue(&test_queue, sizeof(int), NUM_TEST + 1, gcheap_alloc);
+   gcalloc_queue(&test_queue, sizeof(int), NUM_TEST + 1);
    
    // Build test set
    int test_set[NUM_TEST];
@@ -55,7 +55,7 @@ int main(int argc, const char* argv[])
       assert(test_set[i] == test_i);
    }
    
-   gcdestroy_queue(&test_queue, gcheap_free);
+   gcfree_queue(&test_queue);
    
    return 0;
 }
