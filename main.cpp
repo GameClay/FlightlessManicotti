@@ -27,14 +27,16 @@ int main(int argc, const char* argv[])
    // Enqueue
    for(int i = 0; i < NUM_TEST; i++)
    {
-      gcenqueue(&test_queue, &test_set[i]);
+      while(gcenqueue(&test_queue, &test_set[i]) < 0)
+         ;
    }
    
    // Dequeue and verify
    int test_i;
    for(int i = 0; i < NUM_TEST; i++)
    {
-      gcdequeue(&test_queue, &test_i);
+      while(gcdequeue(&test_queue, &test_i) < 0)
+         ;
       assert(test_set[i] == test_i);
    }
    

@@ -1,5 +1,6 @@
 #include "core/queue.h"
 #include "core/memory.h"
+#include "core/atomic.h"
 
 void gcinit_queue(gcqueue* queue, size_t element_size, size_t num_elements, _gcaligned_malloc_fn_ptr _allocator)
 {
@@ -22,22 +23,33 @@ void gcdestroy_queue(gcqueue* queue, _gcaligned_free_fn_ptr _freeer)
 
 int gcenqueue(gcqueue* queue, void* item)
 {
-   if((queue->end + 1) % queue->size != queue->start) 
+   size_t qend = queue->end;
+   size_t end = (qend + 1) % queue->size;
+   if((qend+ 1) % queue->size != queue->start) 
    {
-      gcmicrorcpy(((char*)queue->buffer) + queue->end * queue->element_size, item, queue->element_size);
-      queue->end = (queue->end + 1) % queue->size;
-      return 1;
+      if(atomic_compare_exchange_weak(&queue->end, &qend, end))
+      {
+         gcmicrorcpy(((char*)queue->buffer) + qend * queue->element_size, item, queue->element_size);
+         return 1;
+      }
+      return -1;
    }
    return 0;
 }
 
 int gcdequeue(gcqueue* queue, void* item)
 {
-   if(queue->start % queue->size != queue->end) 
+   size_t qstart = queue->start;
+   size_t start = (qstart + 1) % queue->size;
+   void* peekaddr = gcpeek_queue(queue);
+   if(qstart % queue->size != queue->end) 
    {
-      gcmicrorcpy(item, gcpeek_queue(queue), queue->element_size);
-      queue->start = (queue->start + 1) % queue->size;
-      return 1;
+      if(atomic_compare_exchange_weak(&queue->start, &qstart, start))
+      {
+         gcmicrorcpy(item, peekaddr, queue->element_size);
+         return 1;
+      }
+      return -1;
    }
    return 0;
 }
