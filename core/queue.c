@@ -41,12 +41,12 @@ int gcdequeue(gcqueue* queue, void* item)
 {
    size_t qstart = queue->start;
    size_t start = (qstart + 1) % queue->size;
-   void* peekaddr = gcpeek_queue(queue);
+   void* entry = ((char*)queue->buffer) + start * queue->element_size;
    if(qstart % queue->size != queue->end) 
    {
       if(atomic_compare_exchange_weak(&queue->start, &qstart, start))
       {
-         gcmicrorcpy(item, peekaddr, queue->element_size);
+         gcmicrorcpy(item, entry, queue->element_size);
          return 1;
       }
       return -1;
