@@ -31,6 +31,15 @@ extern _gcaligned_malloc_fn_ptr gcheap_alloc;
 extern _gcaligned_free_fn_ptr gcheap_free;
 extern _gcmemrcpy_fn_ptr gcmicrorcpy;
 
+// Alignment pre/post-fix for VC/GCC
+#if 0 // Visual Studio
+#  define GCALIGNPRE(x) __declspec(align(x))
+#  define GCALIGNPOST(x) 
+#else
+#  define GCALIGNPRE(x) 
+#  define GCALIGNPOST(x) __attribute__ ((aligned (x)))
+#endif
+
 #ifdef __cplusplus
 }
 #endif

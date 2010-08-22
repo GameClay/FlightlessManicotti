@@ -24,14 +24,15 @@ extern "C" {
 #include "core/memory.h"
 #include "inline.h"
 
-typedef struct
+typedef GCALIGNPRE(16) struct
 {
    void* buffer;
    size_t start;
    size_t end;
    size_t size;
    size_t element_size;
-} gcqueue;
+   // pad?
+} gcqueue GCALIGNPOST(16);
 
 void gcinit_queue(gcqueue* queue, size_t element_size, size_t num_elements, void* buffer);
 void gcalloc_queue(gcqueue* queue, size_t element_size, size_t num_elements);
