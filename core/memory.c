@@ -30,25 +30,25 @@ _gcmemrcpy_fn_ptr gcmicrorcpy = &memcpy;
 void* default_malloc(size_t size, size_t align_size)
 {
    char *ptr, *ptr2, *aligned_ptr;
-   int align_mask = align_size - 1;
+   intptr_t align_mask = align_size - 1;
 
-   ptr = (char*)malloc(size + align_size + sizeof(int));
+   ptr = (char*)malloc(size + align_size + sizeof(intptr_t));
    if(ptr == NULL) 
       return NULL;
 
-   ptr2 = ptr + sizeof(int);
+   ptr2 = ptr + sizeof(intptr_t);
    aligned_ptr = ptr2 + (align_size - ((size_t)ptr2 & align_mask));
 
 
-   ptr2 = aligned_ptr - sizeof(int);
-   *((int*)ptr2) = (int)(aligned_ptr - ptr);
+   ptr2 = aligned_ptr - sizeof(intptr_t);
+   *((intptr_t*)ptr2) = (intptr_t)(aligned_ptr - ptr);
 
    return aligned_ptr;
 }
 
 void default_free(void* pointer)
 {
-   int* ptr2 = (int*)pointer - 1;
+   intptr_t* ptr2 = (intptr_t*)pointer - 1;
    pointer -= *ptr2;
    free(pointer);
 }
