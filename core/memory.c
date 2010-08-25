@@ -16,6 +16,7 @@
 #include "core/memory.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 void* default_malloc(size_t size, size_t alignment);
 void default_free(void* pointer);
