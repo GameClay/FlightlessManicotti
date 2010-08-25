@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include "core/queue.h"
 #include <assert.h>
+#include <threads.h>
 
 #define NUM_TEST 1000000
 
