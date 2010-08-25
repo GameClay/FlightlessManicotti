@@ -22,9 +22,17 @@ extern "C" {
 
 #include "ccompat.h"
 
+// thrd_* constants
 #define thrd_success 0
 #define thrd_nomem 1
 #define thrd_error 2
+#define thrd_busy 3
+
+// mtx_* constants
+#define mtx_recursive 1
+#define mtx_plain 2
+#define mtx_timed 4
+#define mtx_try 8
 
 typedef int (*thrd_start_t)(void* arg);
 
@@ -34,6 +42,7 @@ typedef int (*thrd_start_t)(void* arg);
 #include <sched.h>
 
 typedef pthread_t thrd_t;
+typedef pthread_mutex_t mtx_t;
 
 typedef void* (*_gcstart_routine_compat)(void*);
 
@@ -43,7 +52,51 @@ typedef struct
    long nsec;
 } xtime;
 
-inline int thrd_create(thrd_t* thr, thrd_start_t func, void* arg)
+// mtx_* functions
+inline void mtx_destroy(mtx_t* mtx)
+{
+   pthread_mutex_destroy(mtx);
+}
+
+int mtx_init(mtx_t* mtx, int type); 
+
+inline int mtx_lock(mtx_t* mtx)
+{
+   switch(pthread_mutex_lock(mtx))
+   {
+      case 0:       return thrd_success;
+      //case EDEADLK: return thrd_busy;
+      default:      return thrd_error;
+   }
+}
+
+int mtx_timedlock(mtx_t* restrict mtx, const xtime* restrict xt)
+{
+   // Not implemented yet
+   return thrd_error;
+}
+
+inline int mtx_trylock(mtx_t* mtx)
+{
+   switch(pthread_mutex_trylock(mtx))
+   {
+      case 0:     return thrd_success;
+      case EBUSY: return thrd_busy;
+      default:    return thrd_error;
+   }
+}
+
+inline int mtx_unlock(mtx_t* mtx)
+{
+   switch(pthread_mutex_unlock(mtx))
+   {
+      case 0:  return thrd_success;
+      default: return thrd_error;
+   }
+}
+
+// thrd_* functions
+inline int thrd_create(thrd_t* restrict thr, thrd_start_t func, void* restrict arg)
 {
    switch(pthread_create(thr, NULL, (_gcstart_routine_compat)func, arg))
    {
@@ -93,6 +146,7 @@ inline void thrd_yield(void)
 
 void thrd_sleep(const xtime* xt);
 
+// xtime
 #define TIME_UTC 1
 int xtime_get(xtime* xt, int base);
 
