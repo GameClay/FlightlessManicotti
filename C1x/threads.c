@@ -22,6 +22,12 @@
 #include <semaphore.h>
 #include <stdlib.h>
 
+#if defined(__linux)
+#	include <fcntl.h>
+#	define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
+#	define PTHREAD_MUTEX_NORMAL PTHREAD_MUTEX_TIMED_NP
+#endif
+
 // mtx_* functions
 int mtx_init(mtx_t* mtx, int type)
 {

@@ -23,7 +23,7 @@ core_lib = coreEnv.StaticLibrary('FlightlessManicotti',
 	lib_files,
 	CPPPATH = ['.','C1x'],
 	CCFLAGS = ['-g'],
-	LIBS=[], 
+	LIBS=['rt'], 
 	LIBPATH=['.']
 )
 

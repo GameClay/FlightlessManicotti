@@ -40,9 +40,9 @@ extern "C" {
 typedef int (*thrd_start_t)(void* arg);
 
 #if defined(__linux) || defined(__APPLE__)
-#include <pthread.h>
 #include <errno.h>
 #include <sched.h>
+#include <pthread.h>
 
 typedef pthread_t thrd_t;
 typedef pthread_mutex_t mtx_t;
