@@ -19,7 +19,10 @@
 #if defined(__linux) || defined(__APPLE__)
 #include <unistd.h>
 #include <sys/time.h>
+#include <semaphore.h>
+#include <stdlib.h>
 
+// mtx_* functions
 int mtx_init(mtx_t* mtx, int type)
 {
    pthread_mutexattr_t attr;
@@ -55,6 +58,60 @@ mtx_init_return:
    return ret_val;
 }
 
+// cnd_* functions
+void cnd_destroy(cnd_t* cond)
+{
+   sem_destroy((sem_t*)*cond);
+}
+
+int cnd_init(cnd_t* cond)
+{
+   sem_t* st = sem_open("", O_CREAT);
+
+   if(st != SEM_FAILED)
+   {
+      cond = (cnd_t*)&st;
+      return thrd_success;
+   }
+   
+   return thrd_error;
+}
+
+int cnd_signal(cnd_t* cond)
+{
+   switch(sem_post((sem_t*)*cond))
+   {
+      case 0:  return thrd_success;
+      default: return thrd_error;
+   }
+}
+
+int cnd_wait(cnd_t* cond, mtx_t* mtx)
+{
+   switch(pthread_mutex_unlock(mtx))
+   {
+      case 0:     break;
+      case EPERM: abort();
+      default:    return thrd_error;
+   }
+   
+   switch(sem_wait((sem_t*)*cond))
+   {
+      case 0:
+      {
+         if(mtx_lock(mtx))
+         {
+            sem_post((sem_t*)*cond);
+            return thrd_error;
+         }
+         return thrd_success;
+      }
+      
+      default: return thrd_error;
+   }
+}
+
+// thrd_* functions
 void thrd_sleep(const xtime* xt)
 {
    usleep(xt->nsec);

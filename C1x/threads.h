@@ -46,6 +46,7 @@ typedef int (*thrd_start_t)(void* arg);
 
 typedef pthread_t thrd_t;
 typedef pthread_mutex_t mtx_t;
+typedef struct sem_t* cnd_t;
 
 typedef void* (*_gcstart_routine_compat)(void*);
 
@@ -97,6 +98,12 @@ inline int mtx_unlock(mtx_t* mtx)
       default: return thrd_error;
    }
 }
+
+// cnd_* functions
+void cnd_destroy(cnd_t* cond);
+int cnd_init(cnd_t* cond);
+int cnd_signal(cnd_t* cond);
+int cnd_wait(cnd_t* cond, mtx_t* mtx);
 
 // thrd_* functions
 inline int thrd_create(thrd_t* restrict thr, thrd_start_t func, void* restrict arg)
