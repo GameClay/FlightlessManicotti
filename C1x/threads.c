@@ -14,3 +14,31 @@
  */
 
 #include "C1x/threads.h"
+
+#if defined(__linux) || defined(__APPLE__)
+#include <unistd.h>
+#include <sys/time.h>
+
+void thrd_sleep(const xtime* xt)
+{
+   usleep(xt->nsec);
+}
+
+int xtime_get(xtime* xt, int base)
+{
+   struct timezone tzp = {0, 0};
+   struct timeval tp = {0, 0};
+   
+   switch(gettimeofday(&tp, &tzp))
+   {
+      case 0:
+      {
+         xt->sec = tp.tv_sec;
+         xt->nsec = tp.tv_usec;
+         return base;
+      }
+      default: return 0;
+   }
+}
+
+#endif // defined(__linux) || defined(__APPLE__)

@@ -28,9 +28,10 @@ extern "C" {
 
 typedef int (*thrd_start_t)(void* arg);
 
-//If OSX or Linux
+#if defined(__linux) || defined(__APPLE__)
 #include <pthread.h>
 #include <errno.h>
+#include <sched.h>
 
 typedef pthread_t thrd_t;
 
@@ -38,10 +39,11 @@ typedef void* (*_gcstart_routine_compat)(void*);
 
 typedef struct
 {
-   
+   time_t sec; 
+   long nsec;
 } xtime;
 
-inline int thrd_create(thrd_t *thr, thrd_start_t func, void *arg)
+inline int thrd_create(thrd_t* thr, thrd_start_t func, void* arg)
 {
    switch(pthread_create(thr, NULL, (_gcstart_routine_compat)func, arg))
    {
@@ -70,11 +72,31 @@ inline int thrd_equal(thrd_t thr0, thrd_t thr1)
    return pthread_equal(thr0, thr1);
 }
 
-void thrd_exit(int res); 
-int thrd_join(thrd_t thr, int *res); 
-void thrd_sleep(const xtime *xt); 
-void thrd_yield(void);
-//Endif OSX or Linux
+inline void thrd_exit(int res)
+{
+   pthread_exit((void*)res);
+}
+
+inline int thrd_join(thrd_t thr, int* res)
+{
+   switch(pthread_join(thr, (void**)&res))
+   {
+      case 0:  return thrd_success;
+      default: return thrd_error;
+   }
+}
+
+inline void thrd_yield(void)
+{
+   sched_yield();
+}
+
+void thrd_sleep(const xtime* xt);
+
+#define TIME_UTC 1
+int xtime_get(xtime* xt, int base);
+
+#endif // defined(__linux) || defined(__APPLE__)
 
 #ifdef __cplusplus
 }
