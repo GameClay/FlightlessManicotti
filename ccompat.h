@@ -13,15 +13,20 @@
  * limitations under the License.
  */
  
-#ifndef GC_INLINE_H
-#define GC_INLINE_H
+#ifndef GC_CCOMPAT_H
+#define GC_CCOMPAT_H
 
 // http://en.wikipedia.org/wiki/C99
 #if __STDC_VERSION__ >= 199901L
    // "inline" is a keyword
+   // "restrict" is a keyword
 #else
 #  ifndef inline
 #     define inline static
+#  endif
+
+#  ifndef restrict
+#     define restrict __restrict
 #  endif
 #endif
 

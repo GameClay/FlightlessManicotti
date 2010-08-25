@@ -23,7 +23,6 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 #include "core/memory.h"
-#include "inline.h"
 
 // If GCC
 inline bool atomic_compare_exchange_weak(volatile size_t* object, size_t* expected, size_t desired)

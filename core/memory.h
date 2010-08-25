@@ -21,11 +21,12 @@ extern "C" {
 #endif
 
 #include <stddef.h>
+#include "ccompat.h"
 
 // Function pointer types
 typedef void* (*_gcaligned_malloc_fn_ptr)(size_t size, size_t align_size);
 typedef void (*_gcaligned_free_fn_ptr)(void* pointer);
-typedef void* (*_gcmemrcpy_fn_ptr)(void* __restrict dest, const void* __restrict src, size_t size);
+typedef void* (*_gcmemrcpy_fn_ptr)(void* restrict dest, const void* restrict src, size_t size);
 
 extern _gcaligned_malloc_fn_ptr gcheap_alloc;
 extern _gcaligned_free_fn_ptr gcheap_free;

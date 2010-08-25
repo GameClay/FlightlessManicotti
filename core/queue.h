@@ -23,7 +23,6 @@ extern "C" {
 #include <stddef.h>
 #include <stdatomic.h>
 #include "core/memory.h"
-#include "inline.h"
 
 GCALIGNED_STRUCT_PRE(16)
 {
