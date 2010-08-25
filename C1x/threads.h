@@ -20,30 +20,61 @@
 extern "C" {
 #endif
 
-#define thrd_success int(0)
-#define thrd_nomem int(1)
-#define thrd_error int(2)
+#include "ccompat.h"
 
-typedef void* (*thrd_start_t)(void* arg);
+#define thrd_success 0
+#define thrd_nomem 1
+#define thrd_error 2
 
-typedef struct
-{
-   
-} thrd_t;
+typedef int (*thrd_start_t)(void* arg);
+
+//If OSX or Linux
+#include <pthread.h>
+#include <errno.h>
+
+typedef pthread_t thrd_t;
+
+typedef void* (*_gcstart_routine_compat)(void*);
 
 typedef struct
 {
    
 } xtime;
 
-int thrd_create(thrd_t *thr, thrd_start_t func, void *arg); 
-thrd_t thrd_current(void); 
-int thrd_detach(thrd_t thr); 
-int thrd_equal(thrd_t thr0, thrd_t thr1); 
+inline int thrd_create(thrd_t *thr, thrd_start_t func, void *arg)
+{
+   switch(pthread_create(thr, NULL, (_gcstart_routine_compat)func, arg))
+   {
+      case 0:      return thrd_success;
+      case EAGAIN: return thrd_nomem;
+      default:     return thrd_error;
+   }
+}
+
+inline thrd_t thrd_current(void)
+{
+   return pthread_self();
+}
+
+inline int thrd_detach(thrd_t thr)
+{
+   switch(pthread_detach(thr))
+   {
+      case 0:  return thrd_success;
+      default: return thrd_error;
+   }
+}
+
+inline int thrd_equal(thrd_t thr0, thrd_t thr1)
+{
+   return pthread_equal(thr0, thr1);
+}
+
 void thrd_exit(int res); 
 int thrd_join(thrd_t thr, int *res); 
 void thrd_sleep(const xtime *xt); 
 void thrd_yield(void);
+//Endif OSX or Linux
 
 #ifdef __cplusplus
 }
