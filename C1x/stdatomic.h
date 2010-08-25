@@ -13,31 +13,31 @@
  * limitations under the License.
  */
  
-#ifndef GC_ATOMIC_H_
-#define GC_ATOMIC_H_
+#ifndef GC_STDATOMIC_H_
+#define GC_STDATOMIC_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-//If C1x
-//include <stdatomic.h>
-//Else
 #include <stdint.h>
+#include <stdbool.h>
+#include "core/memory.h"
 #include "inline.h"
 
 // If GCC
-#  ifndef _Bool
-#     define _Bool int
-#  endif
-
-inline _Bool atomic_compare_exchange_weak(volatile size_t* object, size_t* expected, size_t desired)
+inline bool atomic_compare_exchange_weak(volatile size_t* object, size_t* expected, size_t desired)
 {
    return __sync_bool_compare_and_swap(object, *expected, desired);
 }
 // Endif
 
-//Endif
+// Atomic types:
+// NOTE: these are only aligned versions of their normal types with these typedefs
+// they do *not* have all of the 
+typedef GCALIGNPRE(16) size_t GCALIGNPOST(16) atomic_size_t;
+
+typedef GCALIGNPRE(16) void* GCALIGNPOST(16) atomic_address;
 
 #ifdef __cplusplus
 }

@@ -21,18 +21,19 @@ extern "C" {
 #endif
 
 #include <stddef.h>
+#include <stdatomic.h>
 #include "core/memory.h"
 #include "inline.h"
 
-typedef GCALIGNPRE(16) struct
+GCALIGNED_STRUCT_PRE(16)
 {
-   void* buffer;
-   size_t start;
-   size_t end;
-   size_t size;
-   size_t element_size;
+   atomic_size_t start;
+   atomic_size_t end;
+   atomic_size_t size;
+   atomic_size_t element_size;
+   atomic_address buffer;
    // pad?
-} gcqueue GCALIGNPOST(16);
+} GCALIGNED_STRUCT_POST(gcqueue, 16);
 
 void gcinit_queue(gcqueue* queue, size_t element_size, size_t num_elements, void* buffer);
 void gcalloc_queue(gcqueue* queue, size_t element_size, size_t num_elements);

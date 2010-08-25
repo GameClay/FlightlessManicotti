@@ -40,6 +40,10 @@ extern _gcmemrcpy_fn_ptr gcmicrorcpy;
 #  define GCALIGNPOST(x) __attribute__ ((aligned (x)))
 #endif
 
+// Struct helpers
+#define GCALIGNED_STRUCT_PRE(alignment) typedef GCALIGNPRE(alignment) struct
+#define GCALIGNED_STRUCT_POST(structname, alignment) structname GCALIGNPOST(alignment)
+
 #ifdef __cplusplus
 }
 #endif

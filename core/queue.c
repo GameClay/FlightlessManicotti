@@ -15,7 +15,6 @@
  
 #include "core/queue.h"
 #include "core/memory.h"
-#include "core/atomic.h"
 
 void gcinit_queue(gcqueue* queue, size_t element_size, size_t num_elements, void* buffer)
 {

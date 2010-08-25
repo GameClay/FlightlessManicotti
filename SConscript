@@ -20,17 +20,18 @@ lib_files = [f for f in lib_files if f not in executable_files]   # Omit executa
 
 core_lib = coreEnv.StaticLibrary('FlightlessManicotti', 
 	lib_files,
-	CPPPATH = ['.'],
-	CFLAGS = [],
+	CPPPATH = ['.','C1x'],
+	CCFLAGS = ['-g'],
 	LIBS=[], 
 	LIBPATH=['.']
 )
 
 executable = coreEnv.Program('FlightlessManicotti',
    executable_files,
-   CPPPATH = ['.'],
-	LIBS=['FlightlessManicotti'], 
-	LIBPATH=['.']
+   CPPPATH = ['.','C1x'],
+   CXXFLAGS = ['-g'],
+   LIBS=['FlightlessManicotti'], 
+   LIBPATH=['.']
 )
 coreEnv.Requires(executable, core_lib)
 
