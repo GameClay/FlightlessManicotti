@@ -23,7 +23,7 @@ core_lib = coreEnv.StaticLibrary('FlightlessManicotti',
 	lib_files,
 	CPPPATH = ['.','C1x'],
 	CCFLAGS = ['-g'],
-	LIBS=['rt'], 
+	LIBS=[], 
 	LIBPATH=['.']
 )
 
@@ -31,7 +31,7 @@ executable = coreEnv.Program('FlightlessManicotti',
    executable_files,
    CPPPATH = ['.','C1x'],
    CXXFLAGS = ['-g'],
-   LIBS=['FlightlessManicotti'], 
+   LIBS=['FlightlessManicotti', 'pthread'], 
    LIBPATH=['.']
 )
 coreEnv.Requires(executable, core_lib)
