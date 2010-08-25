@@ -14,7 +14,6 @@
  */
  
 #include "core/memory.h"
-#include "core/memcpy.h"
 #include <stdlib.h>
 #include <string.h>
 
