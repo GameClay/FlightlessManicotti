@@ -16,6 +16,8 @@
 #ifndef GC_THREADS_H_
 #define GC_THREADS_H_
 
+#ifndef __STDC_NO_THREADS__
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -27,6 +29,7 @@ extern "C" {
 #define thrd_nomem 1
 #define thrd_error 2
 #define thrd_busy 3
+#define thrd_timeout 4
 
 // mtx_* constants
 #define mtx_recursive 1
@@ -155,5 +158,7 @@ int xtime_get(xtime* xt, int base);
 #ifdef __cplusplus
 }
 #endif
+
+#endif //__STDC_NO_THREADS__
 
 #endif

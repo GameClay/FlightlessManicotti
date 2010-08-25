@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#ifndef __STDC_NO_THREADS__
 #include "threads.h"
 
 #if defined(__linux) || defined(__APPLE__)
@@ -77,3 +78,5 @@ int xtime_get(xtime* xt, int base)
 }
 
 #endif // defined(__linux) || defined(__APPLE__)
+
+#endif //__STDC_NO_THREADS__
