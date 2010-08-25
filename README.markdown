@@ -33,6 +33,7 @@ Code submitted to this repository should adhere to this code convention.
 ### Memory usage 
 * You will align your memory.
 * You will use restrict.
+* [You will use const](http://gamesfromwithin.com/the-const-nazi).
 
 ### Naming
 * Prefix all exposed symbol names with 'gc', with no space between 'gc' and the symbol name.
