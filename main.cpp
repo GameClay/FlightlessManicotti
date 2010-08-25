@@ -17,8 +17,15 @@
 #include <stdlib.h>
 #include "core/queue.h"
 #include <assert.h>
+#include <threads.h>
 
 #define NUM_TEST 1000000
+
+int thread_proc(void* arg)
+{
+   printf("Face!\n");
+   return 0;
+}
 
 int main(int argc, const char* argv[])
 {
@@ -46,6 +53,10 @@ int main(int argc, const char* argv[])
          ;
    }
    
+   thrd_t test_thread;
+   
+   int create_res = thrd_create(&test_thread, thread_proc, NULL);
+   
    // Dequeue and verify
    int test_i;
    for(int i = 0; i < NUM_TEST; i++)
@@ -53,6 +64,11 @@ int main(int argc, const char* argv[])
       while(gcdequeue(&test_queue, &test_i) < 0)
          ;
       assert(test_set[i] == test_i);
+   }
+   
+   if(create_res == 0)
+   {
+      thrd_detach(test_thread);
    }
    
    gcfree_queue(&test_queue);
