@@ -17,14 +17,13 @@
 #include <stdlib.h>
 #include "core/queue.h"
 #include <assert.h>
-#include <threads.h>
+#include "amp/amp.h"
 
 #define NUM_TEST 1000000
 
-int thread_proc(void* arg)
+void thread_proc(void* arg)
 {
    printf("Face!\n");
-   return 0;
 }
 
 int main(int argc, const char* argv[])
@@ -53,9 +52,9 @@ int main(int argc, const char* argv[])
          ;
    }
    
-   thrd_t test_thread;
+   amp_thread_t test_thread;
    
-   int create_res = thrd_create(&test_thread, thread_proc, NULL);
+   int create_res = amp_thread_create_and_launch(&test_thread, AMP_DEFAULT_ALLOCATOR, NULL, thread_proc);
    
    // Dequeue and verify
    int test_i;
@@ -68,7 +67,7 @@ int main(int argc, const char* argv[])
    
    if(create_res == 0)
    {
-      thrd_detach(test_thread);
+      amp_thread_join_and_destroy(&test_thread, AMP_DEFAULT_ALLOCATOR);
    }
    
    gcfree_queue(&test_queue);
