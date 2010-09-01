@@ -21,8 +21,8 @@ extern "C" {
 #endif
 
 #define GC_SUCCESS         0
-#define GC_RETRY           1
-#define GC_ERROR           2
+#define GC_ERROR           1
+#define GC_RETRY           2
 
 #ifdef __cplusplus
 }
