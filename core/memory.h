@@ -23,13 +23,39 @@ extern "C" {
 #include <stddef.h>
 #include "ccompat.h"
 
-// Function pointer types
 typedef void* (*gc_aligned_malloc_fn_ptr)(size_t size, size_t align_size);
 typedef void (*gc_aligned_free_fn_ptr)(void* pointer);
 typedef void* (*gc_memrcpy_fn_ptr)(void* restrict dest, const void* restrict src, size_t size);
 
+/// Aligned malloc function.
+///
+/// @see gc_aligned_malloc_fn_ptr
+///
+/// @note The amount of allocated memory may exceed the size specified.
+///
+/// @param size The size of the allocation.
+/// @param align_size The boundary on which the allocated memory should be aligned.
+/// @return Pointer the block of allocated memory, aligned on the specified boundary.
 extern gc_aligned_malloc_fn_ptr gc_heap_alloc;
+
+/// Aligned free function.
+///
+/// @see gc_aligned_free_fn_ptr
+///
+/// @param pointer Pointer to the block of memory to free.
 extern gc_aligned_free_fn_ptr gc_heap_free;
+
+/// Small-block memory copy. 
+///
+/// This is a memcpy function which is intended for use in small size copies. 
+/// The implementation behind this function should cause minimal cache pollution
+/// and not do any kind of large-batch optimization. 
+///
+/// @see gc_memrcpy_fn_ptr
+///
+/// @param dest Destination address.
+/// @param src Source address.
+/// @param size The size of memory to be copied.
 extern gc_memrcpy_fn_ptr gc_microrcpy;
 
 // Alignment pre/post-fix for VC/GCC
