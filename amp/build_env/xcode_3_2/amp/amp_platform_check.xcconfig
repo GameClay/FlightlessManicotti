@@ -1,0 +1,20 @@
+//
+//  amp_platform_check.xcconfig
+//  amp
+//
+//  Created by Björn Knafla on 24.02.10.
+//  Copyright 2010 Bjoern Knafla Parallelization + AI + Gamedev Consulting. All rights reserved.
+//
+
+#include "amp"
+#include "amp_preprocessor_settings_primary"
+
+GCC_PREPROCESSOR_DEFINITIONS = $(AMP_PREPROCESSOR_DEFINITIONS)
+
+GCC_VERSION = com.apple.compilers.llvm.clang.1_0
+
+HEADER_SEARCH_PATHS = $(AMP_HEADER_PATHS)
+LIBRARY_SEARCH_PATHS = $(inherited)
+
+GCC_INLINES_ARE_PRIVATE_EXTERN = NO
+GCC_SYMBOLS_PRIVATE_EXTERN = NO
