@@ -24,26 +24,26 @@ extern "C" {
 #include "ccompat.h"
 
 // Function pointer types
-typedef void* (*_gcaligned_malloc_fn_ptr)(size_t size, size_t align_size);
-typedef void (*_gcaligned_free_fn_ptr)(void* pointer);
-typedef void* (*_gcmemrcpy_fn_ptr)(void* restrict dest, const void* restrict src, size_t size);
+typedef void* (*gc_aligned_malloc_fn_ptr)(size_t size, size_t align_size);
+typedef void (*gc_aligned_free_fn_ptr)(void* pointer);
+typedef void* (*gc_memrcpy_fn_ptr)(void* restrict dest, const void* restrict src, size_t size);
 
-extern _gcaligned_malloc_fn_ptr gcheap_alloc;
-extern _gcaligned_free_fn_ptr gcheap_free;
-extern _gcmemrcpy_fn_ptr gcmicrorcpy;
+extern gc_aligned_malloc_fn_ptr gc_heap_alloc;
+extern gc_aligned_free_fn_ptr gc_heap_free;
+extern gc_memrcpy_fn_ptr gc_microrcpy;
 
 // Alignment pre/post-fix for VC/GCC
 #if 0 // Visual Studio
-#  define GCALIGNPRE(x) __declspec(align(x))
-#  define GCALIGNPOST(x) 
+#  define GC_ALIGNPRE(x) __declspec(align(x))
+#  define GC_ALIGNPOST(x) 
 #else
-#  define GCALIGNPRE(x) 
-#  define GCALIGNPOST(x) __attribute__ ((aligned (x)))
+#  define GC_ALIGNPRE(x) 
+#  define GC_ALIGNPOST(x) __attribute__ ((aligned (x)))
 #endif
 
 // Struct helpers
-#define GCALIGNED_STRUCT_PRE(alignment) typedef GCALIGNPRE(alignment) struct
-#define GCALIGNED_STRUCT_POST(structname, alignment) structname GCALIGNPOST(alignment)
+#define GC_ALIGNED_STRUCT_PRE(alignment) typedef GC_ALIGNPRE(alignment) struct
+#define GC_ALIGNED_STRUCT_POST(structname, alignment) structname GC_ALIGNPOST(alignment)
 
 #ifdef __cplusplus
 }

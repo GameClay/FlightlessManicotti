@@ -24,7 +24,7 @@ extern "C" {
 #include <stdatomic.h>
 #include "core/memory.h"
 
-GCALIGNED_STRUCT_PRE(16)
+GC_ALIGNED_STRUCT_PRE(16)
 {
    atomic_size_t start;
    atomic_size_t end;
@@ -32,19 +32,19 @@ GCALIGNED_STRUCT_PRE(16)
    atomic_size_t element_size;
    atomic_address buffer;
    // pad?
-} GCALIGNED_STRUCT_POST(gcqueue, 16);
+} GC_ALIGNED_STRUCT_POST(gc_queue, 16);
 
-void gcinit_queue(gcqueue* queue, size_t element_size, size_t num_elements, void* buffer);
-void gcalloc_queue(gcqueue* queue, size_t element_size, size_t num_elements);
-void gcfree_queue(gcqueue* queue);
+void gc_init_queue(gc_queue* queue, size_t element_size, size_t num_elements, void* buffer);
+void gc_alloc_queue(gc_queue* queue, size_t element_size, size_t num_elements);
+void gc_free_queue(gc_queue* queue);
 
-inline void* gcpeek_queue(const gcqueue* queue)
+inline void* gc_peek_queue(const gc_queue* queue)
 {
    return ((char*)queue->buffer) + queue->start * queue->element_size;
 }
 
-int gcenqueue(gcqueue* queue, void* item);
-int gcdequeue(gcqueue* queue, void* item);
+int gc_enqueue(gc_queue* queue, void* item);
+int gc_dequeue(gc_queue* queue, void* item);
 
 #ifdef __cplusplus
 }

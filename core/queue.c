@@ -16,7 +16,7 @@
 #include "core/queue.h"
 #include "core/memory.h"
 
-void gcinit_queue(gcqueue* queue, size_t element_size, size_t num_elements, void* buffer)
+void gc_init_queue(gc_queue* queue, size_t element_size, size_t num_elements, void* buffer)
 {
    queue->buffer = buffer;
    queue->start = 0;
@@ -25,18 +25,18 @@ void gcinit_queue(gcqueue* queue, size_t element_size, size_t num_elements, void
    queue->size = num_elements;
 }
 
-void gcalloc_queue(gcqueue* queue, size_t element_size, size_t num_elements)
+void gc_alloc_queue(gc_queue* queue, size_t element_size, size_t num_elements)
 {
-   queue->buffer = gcheap_alloc(element_size * num_elements, 16);
+   queue->buffer = gc_heap_alloc(element_size * num_elements, 16);
    queue->start = 0;
    queue->end = 0;
    queue->element_size = element_size;
    queue->size = num_elements;
 }
 
-void gcfree_queue(gcqueue* queue)
+void gc_free_queue(gc_queue* queue)
 {
-   gcheap_free(queue->buffer);
+   gc_heap_free(queue->buffer);
    queue->buffer = NULL;
    queue->start = 0;
    queue->end = 0;
@@ -44,7 +44,7 @@ void gcfree_queue(gcqueue* queue)
    queue->element_size = 0;
 }
 
-int gcenqueue(gcqueue* queue, void* item)
+int gc_enqueue(gc_queue* queue, void* item)
 {
    size_t qend = queue->end;
    size_t end = (qend + 1) % queue->size;
@@ -53,7 +53,7 @@ int gcenqueue(gcqueue* queue, void* item)
    {
       if(atomic_compare_exchange_weak(&queue->end, &qend, end))
       {
-         gcmicrorcpy(dest, item, queue->element_size);
+         gc_microrcpy(dest, item, queue->element_size);
          return 1;
       }
       return -1;
@@ -61,7 +61,7 @@ int gcenqueue(gcqueue* queue, void* item)
    return 0;
 }
 
-int gcdequeue(gcqueue* queue, void* item)
+int gc_dequeue(gc_queue* queue, void* item)
 {
    size_t qstart = queue->start;
    size_t start = (qstart + 1) % queue->size;
@@ -70,7 +70,7 @@ int gcdequeue(gcqueue* queue, void* item)
    {
       if(atomic_compare_exchange_weak(&queue->start, &qstart, start))
       {
-         gcmicrorcpy(item, entry, queue->element_size);
+         gc_microrcpy(item, entry, queue->element_size);
          return 1;
       }
       return -1;

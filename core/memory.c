@@ -22,9 +22,9 @@ void* default_malloc(size_t size, size_t alignment);
 void default_free(void* pointer);
 
 // Assign default memory operatons
-_gcaligned_malloc_fn_ptr gcheap_alloc = &default_malloc;
-_gcaligned_free_fn_ptr gcheap_free = &default_free;
-_gcmemrcpy_fn_ptr gcmicrorcpy = &memcpy;
+gc_aligned_malloc_fn_ptr gc_heap_alloc = &default_malloc;
+gc_aligned_free_fn_ptr gc_heap_free = &default_free;
+gc_memrcpy_fn_ptr gc_microrcpy = &memcpy;
 
 // Default malloc/free
 void* default_malloc(size_t size, size_t align_size)

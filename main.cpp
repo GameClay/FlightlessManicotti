@@ -35,8 +35,8 @@ int main(int argc, const char* argv[])
       printf("\targ %d: %s\n", i, argv[i]);
    }
    
-   gcqueue test_queue;
-   gcalloc_queue(&test_queue, sizeof(int), NUM_TEST + 1);
+   gc_queue test_queue;
+   gc_alloc_queue(&test_queue, sizeof(int), NUM_TEST + 1);
    
    // Build test set
    int test_set[NUM_TEST];
@@ -48,7 +48,7 @@ int main(int argc, const char* argv[])
    // Enqueue
    for(int i = 0; i < NUM_TEST; i++)
    {
-      while(gcenqueue(&test_queue, &test_set[i]) < 0)
+      while(gc_enqueue(&test_queue, &test_set[i]) < 0)
          ;
    }
    
@@ -60,7 +60,7 @@ int main(int argc, const char* argv[])
    int test_i;
    for(int i = 0; i < NUM_TEST; i++)
    {
-      while(gcdequeue(&test_queue, &test_i) < 0)
+      while(gc_dequeue(&test_queue, &test_i) < 0)
          ;
       assert(test_set[i] == test_i);
    }
@@ -70,7 +70,7 @@ int main(int argc, const char* argv[])
       amp_thread_join_and_destroy(&test_thread, AMP_DEFAULT_ALLOCATOR);
    }
    
-   gcfree_queue(&test_queue);
+   gc_free_queue(&test_queue);
    
    return 0;
 }

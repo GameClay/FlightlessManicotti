@@ -36,4 +36,4 @@ Code submitted to this repository should adhere to this code convention.
 * [You will use const](http://gamesfromwithin.com/the-const-nazi).
 
 ### Naming
-* Prefix all exposed symbol names with 'gc', with no space between 'gc' and the symbol name.
+* Prefix all exposed symbol names with 'gc', and an underscore between 'gc' and the symbol name. `gc_foo()`

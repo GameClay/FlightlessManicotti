@@ -34,9 +34,9 @@ inline bool atomic_compare_exchange_weak(volatile size_t* restrict object, size_
 // Atomic types:
 // NOTE: these are only aligned versions of their normal types with these typedefs
 // they do *not* have all of the 
-typedef GCALIGNPRE(16) size_t GCALIGNPOST(16) atomic_size_t;
+typedef GC_ALIGNPRE(16) size_t GC_ALIGNPOST(16) atomic_size_t;
 
-typedef GCALIGNPRE(16) void* GCALIGNPOST(16) atomic_address;
+typedef GC_ALIGNPRE(16) void* GC_ALIGNPOST(16) atomic_address;
 
 #ifdef __cplusplus
 }
