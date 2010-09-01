@@ -15,6 +15,7 @@
  
 #include "core/queue.h"
 #include "core/memory.h"
+#include "core/error.h"
 
 void gc_init_queue(gc_queue* queue, size_t element_size, size_t num_elements, void* buffer)
 {
@@ -25,13 +26,18 @@ void gc_init_queue(gc_queue* queue, size_t element_size, size_t num_elements, vo
    queue->size = num_elements;
 }
 
-void gc_alloc_queue(gc_queue* queue, size_t element_size, size_t num_elements)
+int gc_alloc_queue(gc_queue* queue, size_t element_size, size_t num_elements)
 {
    queue->buffer = gc_heap_alloc(element_size * num_elements, 16);
+   
+   if(queue->buffer == NULL)
+      return GC_ERROR;
+   
    queue->start = 0;
    queue->end = 0;
    queue->element_size = element_size;
    queue->size = num_elements;
+   return GC_SUCCESS;
 }
 
 void gc_free_queue(gc_queue* queue)
@@ -44,7 +50,7 @@ void gc_free_queue(gc_queue* queue)
    queue->element_size = 0;
 }
 
-int gc_enqueue(gc_queue* queue, void* item)
+int gc_enqueue(gc_queue* queue, const void* item)
 {
    size_t qend = queue->end;
    size_t end = (qend + 1) % queue->size;
@@ -54,11 +60,11 @@ int gc_enqueue(gc_queue* queue, void* item)
       if(atomic_compare_exchange_weak(&queue->end, &qend, end))
       {
          gc_microrcpy(dest, item, queue->element_size);
-         return 1;
+         return GC_SUCCESS;
       }
-      return -1;
+      return GC_RETRY;
    }
-   return 0;
+   return GC_ERROR;
 }
 
 int gc_dequeue(gc_queue* queue, void* item)
@@ -71,9 +77,9 @@ int gc_dequeue(gc_queue* queue, void* item)
       if(atomic_compare_exchange_weak(&queue->start, &qstart, start))
       {
          gc_microrcpy(item, entry, queue->element_size);
-         return 1;
+         return GC_SUCCESS;
       }
-      return -1;
+      return GC_RETRY;
    }
-   return 0;
+   return GC_ERROR;
 }
