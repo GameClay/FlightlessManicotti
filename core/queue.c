@@ -14,8 +14,6 @@
  */
  
 #include "core/queue.h"
-#include "core/memory.h"
-#include "core/error.h"
 
 void gc_init_queue(gc_queue* queue, size_t element_size, size_t num_elements, void* buffer)
 {

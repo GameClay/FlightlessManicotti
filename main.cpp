@@ -48,7 +48,7 @@ int main(int argc, const char* argv[])
    // Enqueue
    for(int i = 0; i < NUM_TEST; i++)
    {
-      while(gc_enqueue(&test_queue, &test_set[i]) < 0)
+      while(gc_enqueue(&test_queue, &test_set[i]) == GC_RETRY)
          ;
    }
    
@@ -60,7 +60,7 @@ int main(int argc, const char* argv[])
    int test_i;
    for(int i = 0; i < NUM_TEST; i++)
    {
-      while(gc_dequeue(&test_queue, &test_i) < 0)
+      while(gc_dequeue(&test_queue, &test_i) == GC_RETRY)
          ;
       assert(test_set[i] == test_i);
    }

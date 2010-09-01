@@ -23,6 +23,7 @@ extern "C" {
 #include <stddef.h>
 #include <stdatomic.h>
 #include "core/memory.h"
+#include "core/error.h"
 
 /// A lockless, thread-safe ring-buffer based queue.
 GC_ALIGNED_STRUCT_PRE(16)
