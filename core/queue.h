@@ -41,10 +41,10 @@ GC_ALIGNED_STRUCT_PRE(16)
 /// This function does not allocate any memory. A queue initialized using
 /// this function should not call gc_free_queue.
 ///
-/// @param queue Queue to initialize.
-/// @param element_size The size of each element in the queue.
-/// @param max_num_elements The maximum number of elements in the queue.
-/// @param buffer The buffer of memory which should be used to store the queue.
+/// @param[in,out] queue Queue to initialize.
+/// @param[in] element_size The size of each element in the queue.
+/// @param[in] max_num_elements The maximum number of elements in the queue.
+/// @param[in] buffer The buffer of memory which should be used to store the queue.
 void gc_init_queue(gc_queue* queue, size_t element_size, size_t max_num_elements, void* buffer);
 
 /// Initializes a queue using memory allocated by the function.
@@ -52,9 +52,9 @@ void gc_init_queue(gc_queue* queue, size_t element_size, size_t max_num_elements
 /// Queues initialized using this function must call gc_free_queue to free the
 /// associated memory.
 ///
-/// @param queue The queue to initialize.
-/// @param element_size The size of each element in the queue.
-/// @param max_num_elements The maximum number of elements in the queue.
+/// @param[in,out] queue The queue to initialize.
+/// @param[in] element_size The size of each element in the queue.
+/// @param[in] max_num_elements The maximum number of elements in the queue.
 /// @return GC_SUCCESS if the allocation was successful.
 ///         GC_ERROR if the allocation failed.
 int gc_alloc_queue(gc_queue* queue, size_t element_size, size_t max_num_elements);
@@ -63,14 +63,14 @@ int gc_alloc_queue(gc_queue* queue, size_t element_size, size_t max_num_elements
 ///
 /// @attention You should only call this funtion on queues initialized using gc_alloc_queue.
 ///
-/// @param queue The queue to free.
+/// @param queue[in,out] The queue to free.
 void gc_free_queue(gc_queue* queue);
 
 /// Returns a pointer to the current first element in the queue.
 ///
 /// @note Depending on usage of your queue, this may change at any time.
 ///
-/// @param queue The queue to peek.
+/// @param[in] queue The queue to peek.
 /// @return Pointer to the first element in the queue.
 inline void* gc_peek_queue(const gc_queue* queue)
 {
@@ -86,8 +86,8 @@ inline void* gc_peek_queue(const gc_queue* queue)
 ///    ;
 /// @endcode
 ///
-/// @param queue The queue on which to add an item.
-/// @param item The item to enqueue.
+/// @param[in,out] queue The queue on which to add an item.
+/// @param[in] item The item to enqueue.
 /// @return GC_SUCCESS if the item was enqueued successfully.
 ///         GC_RETRY if the caller should retry.
 ///         GC_ERROR if the queue is full.
@@ -102,8 +102,8 @@ int gc_enqueue(gc_queue* queue, const void* item);
 ///    ;
 /// @endcode
 ///
-/// @param queue The queue on which to remove an item.
-/// @param item The location to store the dequeued item.
+/// @param[in,out] queue The queue on which to remove an item.
+/// @param[out] item The location to store the dequeued item.
 /// @return GC_SUCCESS if the item was dequeued successfully.
 ///         GC_RETRY if the caller should retry.
 ///         GC_ERROR if the queue is empty.

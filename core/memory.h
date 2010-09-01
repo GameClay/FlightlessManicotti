@@ -33,8 +33,8 @@ typedef void* (*gc_memrcpy_fn_ptr)(void* restrict dest, const void* restrict src
 ///
 /// @note The amount of allocated memory may exceed the size specified.
 ///
-/// @param size The size of the allocation.
-/// @param align_size The boundary on which the allocated memory should be aligned.
+/// @param[in] size The size of the allocation.
+/// @param[in] align_size The boundary on which the allocated memory should be aligned.
 /// @return Pointer the block of allocated memory, aligned on the specified boundary,
 ///         or NULL if the allocation failed.
 extern gc_aligned_malloc_fn_ptr gc_heap_alloc;
@@ -43,7 +43,7 @@ extern gc_aligned_malloc_fn_ptr gc_heap_alloc;
 ///
 /// @see gc_aligned_free_fn_ptr
 ///
-/// @param pointer Pointer to the block of memory to free.
+/// @param[in] pointer Pointer to the block of memory to free.
 extern gc_aligned_free_fn_ptr gc_heap_free;
 
 /// Small-block memory copy. 
@@ -54,9 +54,9 @@ extern gc_aligned_free_fn_ptr gc_heap_free;
 ///
 /// @see gc_memrcpy_fn_ptr
 ///
-/// @param dest Destination address.
-/// @param src Source address.
-/// @param size The size of memory to be copied.
+/// @param[out] dest Destination address.
+/// @param[in] src Source address.
+/// @param[in] size The size of memory to be copied.
 /// @return The destination address.
 extern gc_memrcpy_fn_ptr gc_microrcpy;
 
