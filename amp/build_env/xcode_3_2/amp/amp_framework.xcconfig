@@ -1,0 +1,23 @@
+//
+//  amp_framework.xcconfig
+//  amp
+//
+//  Created by Björn Knafla on 02.11.09.
+//  Copyright 2009 Bjoern Knafla Parallelization + AI + Gamedev Consulting. All rights reserved.
+//
+
+#include "amp"
+#include "amp_preprocessor_settings_primary"
+
+HEADER_SEARCH_PATHS = $(AMP_HEADER_PATHS)
+
+GCC_PREPROCESSOR_DEFINITIONS = $(AMP_PREPROCESSOR_DEFINITIONS)
+
+GCC_VERSION = com.apple.compilers.llvm.clang.1_0
+
+INSTALL_PATH = @executable_path/../Frameworks
+
+FRAMEWORK_VERSION = A
+INFOPLIST_FILE = amp-Info.plist
+PRODUCT_NAME = amp
+

@@ -1,0 +1,19 @@
+//
+//  amp_framework_test.xcconfig
+//  amp
+//
+//  Created by Björn Knafla on 16.10.09.
+//  Copyright 2009 Bjoern Knafla Parallelization + AI + Gamedev Consulting. All rights reserved.
+//
+
+#include "UnitTest++"
+#include "amp"
+#include "amp_preprocessor_settings_primary"
+
+GCC_PREPROCESSOR_DEFINITIONS = $(AMP_PREPROCESSOR_DEFINITIONS)
+
+HEADER_SEARCH_PATHS = $(AMP_HEADER_PATHS) $(UNITTESTCPP_HEADER_PATH)
+LIBRARY_SEARCH_PATHS = $(inherited) "$(UNITTESTCPP_LIBRARY_PATH)"
+
+GCC_INLINES_ARE_PRIVATE_EXTERN = NO
+GCC_SYMBOLS_PRIVATE_EXTERN = NO
