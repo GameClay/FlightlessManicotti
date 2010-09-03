@@ -49,6 +49,6 @@ void* default_malloc(size_t size, size_t align_size)
 void default_free(void* pointer)
 {
    intptr_t* ptr2 = (intptr_t*)pointer - 1;
-   pointer -= *ptr2;
+   (char*)pointer -= *ptr2;
    free(pointer);
 }
