@@ -171,7 +171,7 @@ int amp_semaphore_trywait_PROPOSED(amp_semaphore_t semaphore)
 {
     int retval = AMP_SUCCESS;
     
-    assert(NULL != semaphore);
+    //assert(NULL != semaphore); // TODO: Why is this line causing a compile error?
 	
     DWORD return_code = WaitForSingleObject(semaphore->semaphore_handle, 0);
 	
