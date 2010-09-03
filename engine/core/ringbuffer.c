@@ -26,9 +26,14 @@ void gc_init_ringbuffer(gc_ringbuffer* ringbuffer, size_t size, void* buffer)
 int gc_alloc_ringbuffer(gc_ringbuffer* ringbuffer, size_t size)
 {
    ringbuffer->buffer = gc_heap_alloc(size, 16);
+   if(ringbuffer->buffer == NULL)
+      return GC_ERROR;
+      
    ringbuffer->start = 0;
    ringbuffer->end = 0;
    ringbuffer->size = size;
+   
+   return GC_SUCCESS;
 }
 
 void gc_free_ringbuffer(gc_ringbuffer* ringbuffer)
