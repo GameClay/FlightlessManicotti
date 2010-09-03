@@ -17,11 +17,11 @@
 #include <lauxlib.h>
 #include <amp/amp.h>
 #include "script/script.h"
-#include "core/queue.h"
+#include "core/ringbuffer.h"
 
 struct _gc_script_context
 {
-   gc_queue event_queue;
+   gc_ringbuffer event_queue;
    lua_State* lua_state;
 };
 
@@ -32,7 +32,7 @@ int gc_script_init(gc_script_context* context, size_t event_queue_size)
    if(sctx == NULL)
       return GC_ERROR;
    
-   if(gc_alloc_queue(&sctx->event_queue, sizeof(int), event_queue_size) != GC_SUCCESS)
+   if(gc_alloc_ringbuffer(&sctx->event_queue, event_queue_size) != GC_SUCCESS)
    {
       lua_close(sctx->lua_state);
       gc_heap_free(sctx);
@@ -91,7 +91,7 @@ void gc_script_destroy(gc_script_context* context)
    struct _gc_script_context* sctx = *context;
    
    lua_close(sctx->lua_state);
-   gc_free_queue(&sctx->event_queue);
+   gc_free_ringbuffer(&sctx->event_queue);
    
    gc_heap_free(sctx);
 }
