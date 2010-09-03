@@ -22,7 +22,7 @@
 extern "C" {
 #endif
 
-#include "ccompat.h"
+#include "fm.h"
 
 typedef void* (*gc_aligned_malloc_fn_ptr)(size_t size, size_t align_size);
 typedef void (*gc_aligned_free_fn_ptr)(void* pointer);
@@ -38,14 +38,14 @@ typedef void* (*gc_memrcpy_fn_ptr)(void* restrict dest, const void* restrict src
 /// @param[in] align_size The boundary on which the allocated memory should be aligned.
 /// @return Pointer the block of allocated memory, aligned on the specified boundary,
 ///         or NULL if the allocation failed.
-extern gc_aligned_malloc_fn_ptr gc_heap_alloc;
+GC_API extern gc_aligned_malloc_fn_ptr gc_heap_alloc;
 
 /// Aligned free function.
 ///
 /// @see gc_aligned_free_fn_ptr
 ///
 /// @param[in] pointer Pointer to the block of memory to free.
-extern gc_aligned_free_fn_ptr gc_heap_free;
+GC_API extern gc_aligned_free_fn_ptr gc_heap_free;
 
 /// Small-block memory copy. 
 ///
@@ -59,7 +59,7 @@ extern gc_aligned_free_fn_ptr gc_heap_free;
 /// @param[in] src Source address.
 /// @param[in] size The size of memory to be copied.
 /// @return The destination address.
-extern gc_memrcpy_fn_ptr gc_microrcpy;
+GC_API extern gc_memrcpy_fn_ptr gc_microrcpy;
 
 // Alignment pre/post-fix for VC/GCC
 #if _MSC_VER

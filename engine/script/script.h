@@ -22,9 +22,10 @@
 extern "C" {
 #endif
 
+#include "fm.h"
 #include <stdbool.h>
 
-typedef struct
+GC_API typedef struct
 {
    int event_id;
    int sender_id;
@@ -32,7 +33,7 @@ typedef struct
    void* payload;
 } gc_script_event_TEMP;
 
-typedef struct _gc_script_context* gc_script_context;
+GC_API typedef struct _gc_script_context* gc_script_context;
 
 /// Allocate and initialize a script-task processor.
 ///
@@ -42,15 +43,15 @@ typedef struct _gc_script_context* gc_script_context;
 /// @param event_queue_size[in] The memory size of the event queue for this script context.
 /// @return GC_SUCCESS if initialization was successful.
 ///         GC_ERROR if initialization failed.
-int gc_script_init(gc_script_context* context, size_t event_queue_size);
+GC_API int gc_script_init(gc_script_context* context, size_t event_queue_size);
 
 /// Immediately evaluate a script event.
 ///
 /// 
-int gc_script_evaluate();
+GC_API int gc_script_evaluate();
 
 /// Run a script file
-int gc_script_run(gc_script_context context, const char* file_name, bool threaded, int argc, const char** argv);
+GC_API int gc_script_run(gc_script_context context, const char* file_name, bool threaded, int argc, const char** argv);
 
 /// Destroy a script-task processor.
 ///
@@ -59,13 +60,13 @@ int gc_script_run(gc_script_context context, const char* file_name, bool threade
 /// @note This function does not free, or modify gc_script_queue.
 ///
 /// @param context[out] This script context will be deallocated.
-void gc_script_destroy(gc_script_context* context);
+GC_API void gc_script_destroy(gc_script_context* context);
 
 
 // Queue manipulation
 
-int gc_script_queue_push(gc_script_context context);
-int gc_script_queue_pop(gc_script_context context);
+GC_API int gc_script_queue_push(gc_script_context context);
+GC_API int gc_script_queue_pop(gc_script_context context);
 
 #ifdef __cplusplus
 }

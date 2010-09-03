@@ -22,13 +22,12 @@
 extern "C" {
 #endif
 
+#include "fm.h"
 #include <stddef.h>
 #include <stdatomic.h>
-#include "core/memory.h"
-#include "core/error.h"
 
 /// A lockless, thread-safe ring-buffer based queue.
-GC_ALIGNED_STRUCT_PRE(16)
+GC_API GC_ALIGNED_STRUCT_PRE(16)
 {
    atomic_size_t start;
    atomic_size_t end;
@@ -44,7 +43,7 @@ GC_ALIGNED_STRUCT_PRE(16)
 /// @param[out] queue Ring-buffer to initialize.
 /// @param[in] size The size of the buffer parameter.
 /// @param[in] buffer The buffer of memory used to back the ring-buffer.
-void gc_init_ringbuffer(gc_ringbuffer* ringbuffer, size_t size, void* buffer);
+GC_API void gc_init_ringbuffer(gc_ringbuffer* ringbuffer, size_t size, void* buffer);
 
 /// Initializes a ring-buffer using memory allocated by the function.
 ///
@@ -55,7 +54,7 @@ void gc_init_ringbuffer(gc_ringbuffer* ringbuffer, size_t size, void* buffer);
 /// @param[in] size The size of the memory to allocate.
 /// @return GC_SUCCESS if the allocation was successful.
 ///         GC_ERROR if the allocation failed.
-int gc_alloc_ringbuffer(gc_ringbuffer* ringbuffer, size_t size);
+GC_API int gc_alloc_ringbuffer(gc_ringbuffer* ringbuffer, size_t size);
 
 /// Frees the memory associated with a ring-buffer initialized using gc_alloc_ringbuffer.
 ///
@@ -63,7 +62,7 @@ int gc_alloc_ringbuffer(gc_ringbuffer* ringbuffer, size_t size);
 /// using gc_alloc_ringbuffer.
 ///
 /// @param queue[out] The queue to free.
-void gc_free_ringbuffer(gc_ringbuffer* ringbuffer);
+GC_API void gc_free_ringbuffer(gc_ringbuffer* ringbuffer);
 
 /// Returns a pointer to the current first element in the ring-buffer.
 ///
@@ -82,7 +81,7 @@ inline void* gc_peek_ringbuffer(const gc_ringbuffer* ringbuffer, size_t size)
 /// @param[in] size Size of memory to reserve.
 /// @return A pointer to the reserved memory if successful.
 ///         NULL if the memory reservation failed.
-void* gc_reserve_ringbuffer(gc_ringbuffer* ringbuffer, size_t size);
+GC_API void* gc_reserve_ringbuffer(gc_ringbuffer* ringbuffer, size_t size);
 
 /// Retrieve a chunk of memory from a ring-buffer.
 ///
@@ -91,7 +90,7 @@ void* gc_reserve_ringbuffer(gc_ringbuffer* ringbuffer, size_t size);
 /// @param[out] item The location to store the recovered memory.
 /// @return GC_SUCCESS if the memory was recovered successfully.
 ///         GC_ERROR if the ring-buffer was empty.
-int gc_retrieve_ringbuffer(gc_ringbuffer* ringbuffer, size_t size, void* item);
+GC_API int gc_retrieve_ringbuffer(gc_ringbuffer* ringbuffer, size_t size, void* item);
 
 #ifdef __cplusplus
 }

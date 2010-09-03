@@ -1,8 +1,10 @@
 from SCons.Util import flatten
 import os
+import sys
 
 Import('env')
-coreEnv = env.Clone()
+lib_env = env.Clone()
+bin_env = env.Clone()
 
 excluded_files = []
 
@@ -20,24 +22,28 @@ lib_files = core_files + c1x_files + script_files
 lib_files = [f for f in lib_files if f not in excluded_files]     # Omit excluded files
 lib_files = [f for f in lib_files if f not in executable_files]   # Omit executable source files
 
-# TODO: If Windows...
-platform_cpppath = ['engine/windows']
+# Additional paths required for specific platforms
+platform_cpppath = []
+if (sys.platform == 'win32' or sys.platform == 'cygwin'):
+    platform_cpppath = ['engine/windows']
 
-core_lib = coreEnv.SharedLibrary('FlightlessManicotti', 
+# Build FM dynamic library
+lib_env.Append(CPPDEFINES=['GC_BUILD_LIBRARY'])
+core_lib = lib_env.SharedLibrary('FlightlessManicotti', 
 	lib_files,
 	CPPPATH = ['engine','lib/C1x','lib/amp/src/c','lib/lua-5.1.4/src'] + platform_cpppath,
 	CCFLAGS = ['-g','-std=c99'],
 	LIBS=['amp','lua'], 
-	LIBPATH=['.','lib/amp','lib/lua-5.1.4/src']
+	LIBPATH=['.','lib/lua-5.1.4/.build', 'lib/amp/.build']
 )
 
-executable = coreEnv.Program('FlightlessManicotti',
+executable = bin_env.Program('FlightlessManicotti',
    executable_files,
    CPPPATH = ['engine'] + platform_cpppath,
    CXXFLAGS = ['-g'],
    LIBS=['FlightlessManicotti'], 
    LIBPATH=['.']
 )
-coreEnv.Requires(executable, core_lib)
+bin_env.Requires(executable, core_lib)
 
 Return(['core_lib', 'executable'])

@@ -24,11 +24,10 @@ extern "C" {
 
 #include <stddef.h>
 #include <stdatomic.h>
-#include "core/memory.h"
-#include "core/error.h"
+#include "fm.h"
 
 /// A lockless, thread-safe ring-buffer based queue.
-GC_ALIGNED_STRUCT_PRE(16)
+GC_API GC_ALIGNED_STRUCT_PRE(16)
 {
    atomic_size_t start;
    atomic_size_t end;
@@ -47,7 +46,7 @@ GC_ALIGNED_STRUCT_PRE(16)
 /// @param[in] element_size The size of each element in the queue.
 /// @param[in] max_num_elements The maximum number of elements in the queue.
 /// @param[in] buffer The buffer of memory which should be used to store the queue.
-void gc_init_queue(gc_queue* queue, size_t element_size, size_t max_num_elements, void* buffer);
+GC_API void gc_init_queue(gc_queue* queue, size_t element_size, size_t max_num_elements, void* buffer);
 
 /// Initializes a queue using memory allocated by the function.
 ///
@@ -59,14 +58,14 @@ void gc_init_queue(gc_queue* queue, size_t element_size, size_t max_num_elements
 /// @param[in] max_num_elements The maximum number of elements in the queue.
 /// @return GC_SUCCESS if the allocation was successful.
 ///         GC_ERROR if the allocation failed.
-int gc_alloc_queue(gc_queue* queue, size_t element_size, size_t max_num_elements);
+GC_API int gc_alloc_queue(gc_queue* queue, size_t element_size, size_t max_num_elements);
 
 /// Frees the memory associated with a queue initialized using gc_alloc_queue.
 ///
 /// @attention You should only call this funtion on queues initialized using gc_alloc_queue.
 ///
 /// @param queue[in,out] The queue to free.
-void gc_free_queue(gc_queue* queue);
+GC_API void gc_free_queue(gc_queue* queue);
 
 /// Returns a pointer to the current first element in the queue.
 ///
@@ -93,7 +92,7 @@ inline void* gc_peek_queue(const gc_queue* queue)
 /// @return GC_SUCCESS if the item was enqueued successfully.
 ///         GC_RETRY if the caller should retry.
 ///         GC_ERROR if the queue is full.
-int gc_enqueue(gc_queue* queue, const void* item);
+GC_API int gc_enqueue(gc_queue* queue, const void* item);
 
 /// Dequeue an item.
 ///
@@ -109,7 +108,7 @@ int gc_enqueue(gc_queue* queue, const void* item);
 /// @return GC_SUCCESS if the item was dequeued successfully.
 ///         GC_RETRY if the caller should retry.
 ///         GC_ERROR if the queue is empty.
-int gc_dequeue(gc_queue* queue, void* item);
+GC_API int gc_dequeue(gc_queue* queue, void* item);
 
 #ifdef __cplusplus
 }
