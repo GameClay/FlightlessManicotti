@@ -48,7 +48,7 @@ int gc_script_init(gc_script_context* context, size_t event_queue_size);
 int gc_script_evaluate();
 
 /// Run a script file
-int gc_script_run(gc_script_context context, const char* file_name, bool threaded);
+int gc_script_run(gc_script_context context, const char* file_name, bool threaded, int argc, const char** argv);
 
 /// Destroy a script-task processor.
 ///

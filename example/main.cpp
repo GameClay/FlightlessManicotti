@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "script/script.h"
+#include "core/error.h"
 
 int main(int argc, const char* argv[])
 {
@@ -27,11 +28,12 @@ int main(int argc, const char* argv[])
    }
    
    gc_script_context script_context;
-   gc_script_init(&script_context, 1 << 10);
-   
-   gc_script_run(script_context, "script.lua", true);
- 
-   gc_script_destroy(&script_context);
+   if(gc_script_init(&script_context, 1 << 10) == GC_SUCCESS)
+   {
+      gc_script_run(script_context, "example/script.lua", true, argc, argv);
+
+      gc_script_destroy(&script_context);
+   }
    
    return 0;
 }

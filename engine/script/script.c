@@ -15,6 +15,7 @@
  
 #include <lua.h>
 #include <lauxlib.h>
+#include <lualib.h>
 #include <amp/amp.h>
 #include "script/script.h"
 #include "core/ringbuffer.h"
@@ -34,7 +35,6 @@ int gc_script_init(gc_script_context* context, size_t event_queue_size)
    
    if(gc_alloc_ringbuffer(&sctx->event_queue, event_queue_size) != GC_SUCCESS)
    {
-      lua_close(sctx->lua_state);
       gc_heap_free(sctx);
       return GC_ERROR;
    }
@@ -46,13 +46,44 @@ int gc_script_init(gc_script_context* context, size_t event_queue_size)
    return GC_SUCCESS;
 }
 
+typedef struct
+{
+   lua_State* state;
+   int argc;
+   const char** argv;
+} script_run_arg;
+
 void _gc_script_run_internal(void* arg)
 {
-   lua_pcall((lua_State*)arg, 0, LUA_MULTRET, 0);
+   script_run_arg* run_arg = (script_run_arg*)arg;
+   
+   // Push function name onto lua stack
+   lua_getfield(run_arg->state, LUA_GLOBALSINDEX, "main");
+   
+   // If there is no 'main' function, pop off that function name
+   // and just execute the file
+   if(lua_isnil(run_arg->state, -1))
+      lua_pop(run_arg->state, 1);
+   else
+   {
+      // Load argv onto the lua stack
+      for(int i = 0; i < run_arg->argc; i++)
+      {
+         lua_pushstring(run_arg->state, run_arg->argv[i]);
+      }
+   }
+   
+   lua_call(run_arg->state, 0, 0);
 }
 
-int gc_script_run(gc_script_context context, const char* file_name, bool threaded)
+int gc_script_run(gc_script_context context, const char* file_name, bool threaded, int argc, const char** argv)
 {
+   //
+   script_run_arg run_args;
+   run_args.state = context->lua_state;
+   run_args.argc = argc;
+   run_args.argv = argv;
+   
    // Load the file, and if successful, execute
    switch(luaL_loadfile(context->lua_state, file_name))
    {
@@ -63,7 +94,7 @@ int gc_script_run(gc_script_context context, const char* file_name, bool threade
             amp_thread_t script_thread;
 
             int create_res = amp_thread_create_and_launch(&script_thread, AMP_DEFAULT_ALLOCATOR, 
-               context->lua_state, _gc_script_run_internal);
+               &run_args, _gc_script_run_internal);
             
             if(create_res != 0)
                return GC_ERROR;
@@ -71,7 +102,7 @@ int gc_script_run(gc_script_context context, const char* file_name, bool threade
             amp_thread_join_and_destroy(&script_thread, AMP_DEFAULT_ALLOCATOR);
          }
          else
-            _gc_script_run_internal(context->lua_state);
+            _gc_script_run_internal(&run_args);
          return GC_SUCCESS;
       }
       
@@ -89,7 +120,7 @@ int gc_script_run(gc_script_context context, const char* file_name, bool threade
 void gc_script_destroy(gc_script_context* context)
 {
    struct _gc_script_context* sctx = *context;
-   
+
    lua_close(sctx->lua_state);
    gc_free_ringbuffer(&sctx->event_queue);
    
