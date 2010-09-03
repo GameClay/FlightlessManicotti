@@ -18,13 +18,7 @@
 #include "core/queue.h"
 #include <assert.h>
 #include "amp/amp.h"
-
-#define NUM_TEST 1000000
-
-void thread_proc(void* arg)
-{
-   printf("Face!\n");
-}
+#include "script/script.h"
 
 int main(int argc, const char* argv[])
 {
@@ -35,42 +29,12 @@ int main(int argc, const char* argv[])
       printf("\targ %d: %s\n", i, argv[i]);
    }
    
-   gc_queue test_queue;
-   gc_alloc_queue(&test_queue, sizeof(int), NUM_TEST + 1);
+   gc_script_context script_context;
+   gc_script_init(&script_context, 1 << 10);
    
-   // Build test set
-   int test_set[NUM_TEST];
-   for(int i = 0; i < NUM_TEST; i++)
-   {
-      test_set[i] = rand();
-   }
-   
-   // Enqueue
-   for(int i = 0; i < NUM_TEST; i++)
-   {
-      while(gc_enqueue(&test_queue, &test_set[i]) == GC_RETRY)
-         ;
-   }
-   
-   amp_thread_t test_thread;
-   
-   int create_res = amp_thread_create_and_launch(&test_thread, AMP_DEFAULT_ALLOCATOR, NULL, thread_proc);
-   
-   // Dequeue and verify
-   int test_i;
-   for(int i = 0; i < NUM_TEST; i++)
-   {
-      while(gc_dequeue(&test_queue, &test_i) == GC_RETRY)
-         ;
-      assert(test_set[i] == test_i);
-   }
-   
-   if(create_res == 0)
-   {
-      amp_thread_join_and_destroy(&test_thread, AMP_DEFAULT_ALLOCATOR);
-   }
-   
-   gc_free_queue(&test_queue);
+   gc_script_run(script_context, "script.lua", true);
+ 
+   gc_script_destroy(&script_context);
    
    return 0;
 }
