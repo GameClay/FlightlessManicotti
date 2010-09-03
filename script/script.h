@@ -20,7 +20,7 @@
 extern "C" {
 #endif
 
-#include "core/queue.h"
+#include <stdbool.h>
 
 typedef struct
 {
@@ -32,34 +32,38 @@ typedef struct
 
 typedef struct _gc_script_context* gc_script_context;
 
-/// Initialize the script-task processor.
+/// Allocate and initialize a script-task processor.
 ///
 /// @note This function assumes that gc_script_queue has been initialized.
 ///
+/// @param context[out] This holds the allocated script context.
+/// @param event_queue_size[in] The memory size of the event queue for this script context.
 /// @return GC_SUCCESS if initialization was successful.
 ///         GC_ERROR if initialization failed.
-int gc_script_init(gc_script_context* context);
+int gc_script_init(gc_script_context* context, size_t event_queue_size);
 
 /// Immediately evaluate a script event.
 ///
 /// 
 int gc_script_evaluate();
 
-/// Destroy the script-task processor.
+/// Run a script file
+int gc_script_run(gc_script_context context, const char* file_name, bool threaded);
+
+/// Destroy a script-task processor.
+///
+/// Destroys a script-task processor and frees the associated memory.
 ///
 /// @note This function does not free, or modify gc_script_queue.
+///
+/// @param context[out] This script context will be deallocated.
 void gc_script_destroy(gc_script_context* context);
 
-/// Commnication queue for the script-task processor.
-///
-/// All communication to and from the scripting engine takes place on this
-/// queue.
-///
-/// @see gc_script_event_TEMP
-///
-/// @note It is possible to immediately execute a script event, but most
-///       tasks should be processed using this queue. 
-extern gc_queue gc_script_queue;
+
+// Queue manipulation
+
+int gc_script_queue_push(gc_script_context context);
+int gc_script_queue_pop(gc_script_context context);
 
 #ifdef __cplusplus
 }
