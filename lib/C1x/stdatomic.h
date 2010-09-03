@@ -24,14 +24,25 @@ extern "C" {
 
 #include <stdint.h>
 #include <stdbool.h>
+
+#ifdef _MSC_VER
+#  define WIN32_LEAN_AND_MEAN 1
+#  include "windows.h"
+#endif
+
 #include "core/memory.h"
 
-// If GCC
+#ifdef _MSC_VER
+static bool atomic_compare_exchange_weak(volatile size_t* restrict object, size_t* restrict expected, size_t desired)
+{
+   return (InterlockedCompareExchange((volatile LONG*)object, desired, *expected) == desired);
+}
+#else
 static bool atomic_compare_exchange_weak(volatile size_t* restrict object, size_t* restrict expected, size_t desired)
 {
    return __sync_bool_compare_and_swap(object, *expected, desired);
 }
-// Endif
+#endif
 
 // Atomic types:
 // NOTE: these are only aligned versions of their normal types with these typedefs

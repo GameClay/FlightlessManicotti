@@ -18,6 +18,10 @@
 #ifndef GC_CCOMPAT_H
 #define GC_CCOMPAT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // http://en.wikipedia.org/wiki/C99
 #if __STDC_VERSION__ >= 199901L
    // "inline" is a keyword
@@ -27,9 +31,22 @@
 #     define inline static
 #  endif
 
+// Visual Studio will have a bad time if we #define restrict __restrict
+// because it uses '__declspec(restrict)' in these headers. It's a total
+// hack, but include these first, and then redefine 'restrict'
+#  ifdef _MSC_VER
+#     include <stdlib.h>
+#     include <malloc.h>
+#  endif
+
 #  ifndef restrict
 #     define restrict __restrict
 #  endif
+
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif

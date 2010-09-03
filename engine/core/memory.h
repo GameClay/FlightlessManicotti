@@ -22,7 +22,6 @@
 extern "C" {
 #endif
 
-#include <stddef.h>
 #include "ccompat.h"
 
 typedef void* (*gc_aligned_malloc_fn_ptr)(size_t size, size_t align_size);
@@ -63,7 +62,7 @@ extern gc_aligned_free_fn_ptr gc_heap_free;
 extern gc_memrcpy_fn_ptr gc_microrcpy;
 
 // Alignment pre/post-fix for VC/GCC
-#if 0 // Visual Studio
+#if _MSC_VER
 #  define GC_ALIGNPRE(x) __declspec(align(x))
 #  define GC_ALIGNPOST(x) 
 #else
