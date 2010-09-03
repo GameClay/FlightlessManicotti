@@ -15,9 +15,6 @@
  
 #include <stdio.h>
 #include <stdlib.h>
-#include "core/queue.h"
-#include <assert.h>
-#include "amp/amp.h"
 #include "script/script.h"
 
 int main(int argc, const char* argv[])

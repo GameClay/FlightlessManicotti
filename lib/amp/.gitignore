@@ -49,3 +49,6 @@ CMakeFiles/
 CMakeCache.txt
 Makefile
 cmake_install.cmake
+
+#Ignore output binaries
+libamp.a
