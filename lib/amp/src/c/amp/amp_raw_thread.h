@@ -49,10 +49,10 @@
 #   include <stdint.h>
 #elif defined(AMP_USE_WINTHREADS)
 #   define WIN32_LEAN_AND_MEAN
+#   include <windows.h>
 #   if !defined(_WIN32_WINNT) || (_WIN32_WINNT < 0x0400) /* To support SwitchToThread function */
 #       error Windows version not supported.
 #   endif
-#   include <windows.h>
 #else
 #   error Unsupported platform.
 #endif
