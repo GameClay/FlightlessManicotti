@@ -1,0 +1,6 @@
+from SCons.Util import flatten
+import os
+
+env = Environment(CXXFILESUFFIX='.cpp', ENV=os.environ)
+Export('env')
+SConscript('SConscript', build_dir='.build')

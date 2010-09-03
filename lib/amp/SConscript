@@ -1,0 +1,80 @@
+from SCons.Util import flatten
+import os
+import sys
+
+Import('env')
+coreEnv = env.Clone()
+
+# Files used for all platforms/configurations
+lib_files = [
+    'src/c/amp/amp_barrier_common.c',
+    'src/c/amp/amp_condition_variable_common.c',
+    'src/c/amp/amp_memory.c',
+    'src/c/amp/amp_mutex_common.c',
+    'src/c/amp/amp_platform_common.c',
+    'src/c/amp/amp_semaphore_common.c',
+    'src/c/amp/amp_thread_array.c',
+    'src/c/amp/amp_thread_common.c',
+    'src/c/amp/amp_thread_local_slot_common.c',
+]
+
+# Building Release
+coreEnv.Append(CPPDEFINES=['DNDEBUG'])
+
+# Pick barrier type
+# if AMP_USE_GENERIC_BROADCAST_BARRIERS in env.__dict and not (env['AMP_USE_GENERIC_BROADCAST_BARRIERS']is None):
+if 0:
+    coreEnv.Append(CPPDEFINES=['AMP_USE_GENERIC_BROADCAST_BARRIERS'])
+    lib_files += ['src/c/amp/amp_barrier_generic_broadcast.c']
+else:
+    coreEnv.Append(CPPDEFINES=['AMP_USE_GENERIC_SIGNAL_BARRIERS'])
+    lib_files += ['src/c/amp/amp_barrier_generic_signal.c']
+
+# Platform specific files
+if (sys.platform == 'win32' or sys.platform == 'cygwin'):
+    coreEnv.Append(CPPDEFINES=['AMP_USE_WINTHREADS'])
+    lib_files += [
+        'src/c/amp/amp_condition_variable_winthreads.c',
+        'src/c/amp/amp_mutex_winthreads.c',
+        'src/c/amp/amp_internal_platform_win_system_info.c',
+        'src/c/amp/amp_internal_platform_win_system_logical_processor_information.c',
+        'src/c/amp/amp_semaphore_winthreads.c',
+        'src/c/amp/amp_thread_local_slot_winthreads.c',
+        'src/c/amp/amp_thread_winthreads.c'
+    ]
+else:
+    coreEnv.Append(CPPDEFINES=['AMP_USE_PTHREADS'])
+    lib_files += [
+        'src/c/amp/amp_condition_variable_pthreads.c',
+        'src/c/amp/amp_mutex_pthreads.c',
+        'src/c/amp/amp_thread_local_slot_pthreads.c',
+        'src/c/amp/amp_thread_pthreads.c'
+    ]
+    if sys.platform == 'darwin':
+        coreEnv.Append(CPPDEFINES=['AMP_USE_LIBDISPATCH_SEMAPHORES'])
+        lib_files += [
+            'src/c/amp/amp_semaphore_libdispatch.c',
+            'src/c/amp/amp_platform_sysctl.c'
+        ]
+    elif sys.platform == 'linux2':
+        coreEnv.Append(CPPDEFINES=['AMP_USE_POSIX_1003_1B_SEMAPHORES', {'SEM_VALUE_MAX' : '2147483647'}])
+        lib_files += [
+            'src/c/amp/amp_semaphore_posix_1003_1b.c',
+            'src/c/amp/amp_platform_gnuc.c'
+        ]
+    else:
+        lib_files += [
+            'src/c/amp/amp_platform_sysconf.c',
+            'src/c/amp/amp_semaphore_pthreads.c'
+        ]
+
+# lib target
+amp_lib = coreEnv.StaticLibrary('amp', 
+	lib_files,
+	CPPPATH = ['src/c'],
+	CCFLAGS = ['-O3','-std=c99'],
+	LIBS=[], 
+	LIBPATH=['.']
+)
+
+Return(['amp_lib'])
