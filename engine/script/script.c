@@ -69,7 +69,8 @@ void _gc_script_run_internal(void* arg)
    else
    {
       // Load argv onto the lua stack
-      for(int i = 0; i < run_arg->argc; i++)
+      int i;
+      for(i = 0; i < run_arg->argc; i++)
       {
          lua_pushstring(run_arg->state, run_arg->argv[i]);
       }
