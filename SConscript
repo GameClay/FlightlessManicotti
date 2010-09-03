@@ -32,8 +32,8 @@ executable = coreEnv.Program('FlightlessManicotti',
    executable_files,
    CPPPATH = ['.','C1x','amp/src/c'],
    CXXFLAGS = ['-g'],
-   LIBS=['FlightlessManicotti', 'amp'], 
-   LIBPATH=['.','amp']
+   LIBS=['FlightlessManicotti','amp','lua'], 
+   LIBPATH=['.','amp','script/lua-5.1.4/src']
 )
 coreEnv.Requires(executable, core_lib)
 

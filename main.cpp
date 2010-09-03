@@ -18,6 +18,7 @@
 #include "core/queue.h"
 #include <assert.h>
 #include "amp/amp.h"
+#include "script/script.h"
 
 #define NUM_TEST 1000000
 
@@ -34,6 +35,9 @@ int main(int argc, const char* argv[])
    {
       printf("\targ %d: %s\n", i, argv[i]);
    }
+   
+   gc_script_context script_context;
+   gc_script_init(&script_context);
    
    gc_queue test_queue;
    gc_alloc_queue(&test_queue, sizeof(int), NUM_TEST + 1);
@@ -71,6 +75,7 @@ int main(int argc, const char* argv[])
    }
    
    gc_free_queue(&test_queue);
+   gc_script_destroy(&script_context);
    
    return 0;
 }
