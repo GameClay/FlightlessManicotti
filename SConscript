@@ -23,7 +23,7 @@ lib_files = [f for f in lib_files if f not in executable_files]   # Omit executa
 core_lib = coreEnv.SharedLibrary('FlightlessManicotti', 
 	lib_files,
 	CPPPATH = ['engine','lib/C1x','lib/amp/src/c','lib/lua-5.1.4/src'],
-	CCFLAGS = ['-g'],
+	CCFLAGS = ['-g','-std=c99'],
 	LIBS=['amp','lua'], 
 	LIBPATH=['.','lib/amp','lib/lua-5.1.4/src']
 )

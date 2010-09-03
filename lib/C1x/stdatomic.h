@@ -25,7 +25,7 @@ extern "C" {
 #include "core/memory.h"
 
 // If GCC
-inline bool atomic_compare_exchange_weak(volatile size_t* restrict object, size_t* restrict expected, size_t desired)
+static bool atomic_compare_exchange_weak(volatile size_t* restrict object, size_t* restrict expected, size_t desired)
 {
    return __sync_bool_compare_and_swap(object, *expected, desired);
 }
