@@ -22,6 +22,8 @@
 #include "script/script.h"
 #include "core/logger.h"
 
+#include <swig_autogen.h>
+
 struct _gc_script_context
 {
    lua_State* lua_state;
@@ -36,6 +38,7 @@ int gc_script_init(gc_script_context* context, size_t event_queue_size)
 
    sctx->lua_state = lua_open();
    luaL_openlibs(sctx->lua_state);
+   LOAD_SWIG_LIBS(sctx->lua_state);
    
    (*context) = sctx;
    return GC_SUCCESS;
