@@ -23,6 +23,7 @@ extern "C" {
 #endif
 
 #include "fm.h"
+#include <stddef.h>
 
 typedef void* (*gc_aligned_malloc_fn_ptr)(size_t size, size_t align_size);
 typedef void (*gc_aligned_free_fn_ptr)(void* pointer);
