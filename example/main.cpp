@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "script/script.h"
-#include "core/error.h"
+#include "core/error_codes.h"
 
 int main(int argc, const char* argv[])
 {

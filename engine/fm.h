@@ -37,7 +37,7 @@ extern "C" {
 #include "ccompat.h"
 
 #include "core/memory.h"
-#include "core/error.h"
+#include "core/error_codes.h"
 
 // TODO: Include more stuff?
 
