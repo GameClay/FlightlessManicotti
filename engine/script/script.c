@@ -20,6 +20,7 @@
 #include <lualib.h>
 #include <amp/amp.h>
 #include "script/script.h"
+#include "core/logger.h"
 
 struct _gc_script_context
 {
@@ -28,7 +29,7 @@ struct _gc_script_context
 
 int gc_script_init(gc_script_context* context, size_t event_queue_size)
 {
-   struct _gc_script_context* sctx = gc_heap_alloc(sizeof(struct _gc_script_context), 16);
+   struct _gc_script_context* sctx = gc_heap_alloc(sizeof(struct _gc_script_context), 4);
 
    if(sctx == NULL)
       return GC_ERROR;
@@ -45,17 +46,44 @@ typedef struct
    lua_State* state;
    int argc;
    const char** argv;
+   const char* file_name;
 } script_run_arg;
+
+void _on_lua_err(lua_State* state)
+{
+   size_t str_sz;
+   int top_idx = lua_gettop(state);
+   const char* syntax_err = lua_tolstring(state, top_idx, &str_sz);
+   GC_LOGF(GC_LL_ERR, "%s\n", syntax_err);
+   lua_pop(state, 1);
+}
 
 void _gc_script_run_internal(void* arg)
 {
    script_run_arg* run_arg = (script_run_arg*)arg;
    
-   // Push function name onto lua stack
-   lua_getfield(run_arg->state, LUA_GLOBALSINDEX, "main");
+   // Execute the script file
+   switch(lua_pcall(run_arg->state, 0, 0, 0))
+   {
+      case 0: break;
+      
+      // Runtime error
+      case LUA_ERRRUN:
+      {
+         _on_lua_err(run_arg->state);
+         break;
+      }
+      
+      default:
+      {
+         GC_LOGF(GC_LL_ERR, "Unknown error loading file '%s'", run_arg->file_name);
+      }
+   }
    
-   // If there is no 'main' function, pop off that function name
-   // and just execute the file
+   // Push function name onto lua stack
+   lua_getglobal(run_arg->state, "main");
+   
+   // If there is no 'main' function, we are done.
    if(lua_isnil(run_arg->state, -1))
       lua_pop(run_arg->state, 1);
    else
@@ -66,9 +94,26 @@ void _gc_script_run_internal(void* arg)
       {
          lua_pushstring(run_arg->state, run_arg->argv[i]);
       }
+      
+      // Invoke the main function
+      switch(lua_pcall(run_arg->state, run_arg->argc, 0, 0))
+      {
+         case 0: break;
+
+         // Runtime error
+         case LUA_ERRRUN:
+         {
+            _on_lua_err(run_arg->state);
+            break;
+         }
+
+         default:
+         {
+            GC_LOGF(GC_LL_ERR, "Unknown error calling main function.");
+            break;
+         }
+      }
    }
-   
-   lua_call(run_arg->state, 0, 0);
 }
 
 int gc_script_run(gc_script_context context, const char* file_name, bool threaded, int argc, const char** argv)
@@ -78,6 +123,7 @@ int gc_script_run(gc_script_context context, const char* file_name, bool threade
    run_args.state = context->lua_state;
    run_args.argc = argc;
    run_args.argv = argv;
+   run_args.file_name = file_name;
    
    // Load the file, and if successful, execute
    switch(luaL_loadfile(context->lua_state, file_name))
@@ -103,8 +149,20 @@ int gc_script_run(gc_script_context context, const char* file_name, bool threade
       
       // Possible errors
       case LUA_ERRFILE:
+      {
+         GC_LOGF(GC_LL_ERR, "File '%s' not found.\n", file_name);
+         return GC_ERROR;
+      }
       case LUA_ERRSYNTAX:
+      {
+         _on_lua_err(context->lua_state);
+         return GC_ERROR;
+      }
       case LUA_ERRMEM: 
+      {
+         GC_LOGF(GC_LL_ERR, "lua ran out of memory opening file %s.\n", file_name);
+         return GC_ERROR;
+      }
       default:
       {
          return GC_ERROR;

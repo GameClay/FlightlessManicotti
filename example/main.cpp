@@ -21,15 +21,9 @@
 #include "core/error_codes.h"
 
 int main(int argc, const char* argv[])
-{
-   printf("FlightlessManicotti\n");
-   
-   for(int i = 0; i < argc; i++)
-   {
-      printf("\targ %d: %s\n", i, argv[i]);
-   }
-   
+{   
    gc_script_context script_context;
+   
    if(gc_script_init(&script_context, 1 << 10) == GC_SUCCESS)
    {
       gc_script_run(script_context, "example/script.lua", true, argc, argv);
