@@ -15,8 +15,8 @@
  * limitations under the License.
  */
  
-#ifndef GC_ERROR_H_
-#define GC_ERROR_H_
+#ifndef _GC_ERROR_CODES_H_
+#define _GC_ERROR_CODES_H_
 
 #ifdef __cplusplus
 extern "C" {

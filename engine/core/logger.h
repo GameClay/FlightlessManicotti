@@ -15,8 +15,8 @@
  * limitations under the License.
  */
  
-#ifndef GC_LOGGER_H_
-#define GC_LOGGER_H_
+#ifndef _GC_LOGGER_H_
+#define _GC_LOGGER_H_
 
 #ifdef __cplusplus
 extern "C" {

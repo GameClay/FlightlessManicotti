@@ -15,8 +15,8 @@
  * limitations under the License.
  */
  
-#ifndef GC_STDBOOL_H
-#define GC_STDBOOL_H
+#ifndef _GC_STDBOOL_H_
+#define _GC_STDBOOL_H_
 
 #ifdef __cplusplus
 extern "C" {

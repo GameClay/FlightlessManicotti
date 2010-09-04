@@ -15,8 +15,8 @@
  * limitations under the License.
  */
  
-#ifndef GC_STDATOMIC_H_
-#define GC_STDATOMIC_H_
+#ifndef _GC_STDATOMIC_H_
+#define _GC_STDATOMIC_H_
 
 #ifdef __cplusplus
 extern "C" {

@@ -15,8 +15,8 @@
  * limitations under the License.
  */
  
-#ifndef GC_MEMORY_H_
-#define GC_MEMORY_H_
+#ifndef _GC_MEMORY_H_
+#define _GC_MEMORY_H_
 
 #ifdef __cplusplus
 extern "C" {

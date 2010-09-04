@@ -15,8 +15,8 @@
  * limitations under the License.
  */
  
-#ifndef GC_FLIGHTLESS_MANICOTTI_H_
-#define GC_FLIGHTLESS_MANICOTTI_H_
+#ifndef _GC_FLIGHTLESS_MANICOTTI_H_
+#define _GC_FLIGHTLESS_MANICOTTI_H_
 
 #ifdef __cplusplus
 extern "C" {

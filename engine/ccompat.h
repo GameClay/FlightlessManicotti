@@ -15,8 +15,8 @@
  * limitations under the License.
  */
  
-#ifndef GC_CCOMPAT_H
-#define GC_CCOMPAT_H
+#ifndef _GC_CCOMPAT_H_
+#define _GC_CCOMPAT_H_
 
 #ifdef __cplusplus
 extern "C" {
