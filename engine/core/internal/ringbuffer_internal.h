@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-// Note that there is no include guard, this is intentional
+#ifndef _GC_RINGBUFFER_INTERNAL_H_
+#define _GC_RINGBUFFER_INTERNAL_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,6 +24,7 @@ extern "C" {
 
 #include "fm.h"
 #include <stddef.h>
+#include <amp/amp.h>
 
 #define _GC_DECLARE_RINGBUFFER_STRUCT_(t) \
    GC_API typedef struct                  \
@@ -31,10 +33,11 @@ extern "C" {
       size_t end;                         \
       size_t size;                        \
       t* buffer;                          \
+      amp_mutex_t mutex;                  \
    } gc_ringbuffer_##t
 
 
-#define _GC_INIT_RINGBUFFER_FN_(t) void gc_init_ringbuffer_##t(gc_ringbuffer_##t* ringbuffer, size_t size, t* buffer)
+#define _GC_INIT_RINGBUFFER_FN_(t) void gc_init_ringbuffer_##t(gc_ringbuffer_##t* ringbuffer, size_t size, t* buffer, amp_mutex_t mtx)
 #define _GC_ALLOC_RINGBUFFER_FN_(t) int gc_alloc_ringbuffer_##t(gc_ringbuffer_##t* ringbuffer, size_t size)
 #define _GC_FREE_RINGBUFFER_FN_(t) void gc_free_ringbuffer_##t(gc_ringbuffer_##t* ringbuffer)
 #define _GC_RESERVE_RINGBUFFER_FN_(t) int gc_reserve_ringbuffer_##t(gc_ringbuffer_##t* ringbuffer, const t* item)
@@ -57,6 +60,7 @@ extern "C" {
       ringbuffer->start = 0;                                   \
       ringbuffer->end = 0;                                     \
       ringbuffer->size = size;                                 \
+      ringbuffer->mutex = mtx;                                 \
    }                                                           \
    \
    _GC_ALLOC_RINGBUFFER_FN_(t)                                 \
@@ -68,6 +72,7 @@ extern "C" {
       ringbuffer->start = 0;                                   \
       ringbuffer->end = 0;                                     \
       ringbuffer->size = size;                                 \
+      amp_mutex_create(&ringbuffer->mutex, AMP_DEFAULT_ALLOCATOR); \
                                                                \
       return GC_SUCCESS;                                       \
    }                                                           \
@@ -79,34 +84,44 @@ extern "C" {
       ringbuffer->start = 0;                                   \
       ringbuffer->end = 0;                                     \
       ringbuffer->size = 0;                                    \
+      amp_mutex_destroy(&ringbuffer->mutex, AMP_DEFAULT_ALLOCATOR); \
+      ringbuffer->mutex = NULL;                                \
    }                                                           \
    \
    _GC_RESERVE_RINGBUFFER_FN_(t)                               \
    {                                                           \
+      int ret = GC_ERROR;                                      \
+      amp_mutex_lock(ringbuffer->mutex);                       \
       const size_t nend =                                      \
          (ringbuffer->end + 1) % ringbuffer->size;             \
       if(nend % ringbuffer->size != ringbuffer->start)         \
       {                                                        \
          ringbuffer->buffer[nend] = *item;                     \
          ringbuffer->end = nend;                               \
-         return GC_SUCCESS;                                    \
+         ret = GC_SUCCESS;                                     \
       }                                                        \
-      return GC_ERROR;                                         \
+      amp_mutex_unlock(ringbuffer->mutex);                     \
+      return ret;                                              \
    }                                                           \
    \
    _GC_RETRIEVE_RINGBUFFER_FN_(t)                              \
    {                                                           \
+      int ret = GC_ERROR;                                      \
+      amp_mutex_lock(ringbuffer->mutex);                       \
       if(ringbuffer->start != ringbuffer->end)                 \
       {                                                        \
          const size_t nstart =                                 \
             (ringbuffer->start + 1) % ringbuffer->size;        \
          *item = ringbuffer->buffer[nstart];                   \
          ringbuffer->start = nstart;                           \
-         return GC_SUCCESS;                                    \
+         ret = GC_SUCCESS;                                     \
       }                                                        \
-      return GC_ERROR;                                         \
+      amp_mutex_unlock(ringbuffer->mutex);                     \
+      return ret;                                              \
    }
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif
