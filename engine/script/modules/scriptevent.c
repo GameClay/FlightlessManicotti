@@ -38,8 +38,22 @@ static int gc_script_event_dequeue_wrap(lua_State* L)
    return 1;
 }
 
+static int gc_script_event_enqueue_wrap(lua_State* L)
+{
+   gc_script_context sctx = (gc_script_context)lua_topointer(L, 1);
+   
+   gc_script_event_TEMP event;
+   event.event_id = lua_tointeger(L, 2);
+   event.sender_id = lua_tointeger(L, 3);
+   event.payload_size = lua_tointeger(L, 4);
+   event.payload = (void*)lua_topointer(L, 5);
+   
+   lua_pushboolean(L, gc_script_event_enqueue(sctx, &event) == GC_SUCCESS);
+   return 1;
+}
+
 static const struct luaL_reg scriptevent_module [] = {
-    {"enqueue", gc_script_event_dequeue_wrap},
+    {"enqueue", gc_script_event_enqueue_wrap},
     {"dequeue", gc_script_event_dequeue_wrap},
     {NULL, NULL}
 };
