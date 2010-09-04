@@ -34,6 +34,8 @@ struct _gc_script_context
    gc_ringbuffer(gc_script_event_TEMP) event_buffer;
 };
 
+int luaopen_scriptevent(lua_State* L);
+
 int gc_script_init(gc_script_context* context, size_t event_queue_size)
 {     
    // Allocate script context
@@ -52,7 +54,12 @@ int gc_script_init(gc_script_context* context, size_t event_queue_size)
    // Start up lua
    sctx->lua_state = lua_open();
    luaL_openlibs(sctx->lua_state);
+   luaopen_scriptevent(sctx->lua_state);
    LOAD_SWIG_LIBS(sctx->lua_state);
+   
+   // Assign a global for the script context assigned to this lua state
+   lua_pushlightuserdata(sctx->lua_state, sctx);
+   lua_setglobal(sctx->lua_state, "SCTX");
    
    // Return
    (*context) = sctx;
@@ -198,12 +205,43 @@ void gc_script_destroy(gc_script_context* context)
    gc_heap_free(sctx);
 }
 
-int gc_script_event_push(gc_script_context context, const gc_script_event_TEMP* event)
+int gc_script_event_enqueue(gc_script_context context, const gc_script_event_TEMP* event)
 {
    return gc_reserve_ringbuffer(gc_script_event_TEMP, &context->event_buffer, event);
 }
 
-int gc_script_event_pop(gc_script_context context, gc_script_event_TEMP* event)
+int gc_script_event_dequeue(gc_script_context context, gc_script_event_TEMP* event)
 {
    return gc_retrieve_ringbuffer(gc_script_event_TEMP, &context->event_buffer, event);
+}
+
+////
+static int gc_script_event_dequeue_wrap(lua_State* L)
+{
+   gc_script_context sctx = lua_topointer(L, 1);
+   
+   gc_script_event_TEMP event;
+   if(gc_script_event_dequeue(sctx, &event) == GC_SUCCESS)
+   {
+      lua_pushinteger(L, event.event_id);
+      lua_pushinteger(L, event.sender_id);
+      lua_pushinteger(L, event.payload_size);
+      lua_pushlightuserdata(L, event.payload);
+      return 4;
+   }
+   
+   lua_pushnil(L);
+   return 1;
+}
+
+static const struct luaL_reg scriptevent_module [] = {
+    {"enqueue", gc_script_event_dequeue_wrap},
+    {"dequeue", gc_script_event_dequeue_wrap},
+    {NULL, NULL}
+};
+
+int luaopen_scriptevent(lua_State* L)
+{
+   luaL_openlib(L, "scriptevent", scriptevent_module, 0);
+   return 1;
 }

@@ -28,7 +28,7 @@ int main(int argc, const char* argv[])
    {
       gc_script_event_TEMP testevt = {42, 86, 0, NULL};
       
-      gc_script_event_push(script_context, &testevt);
+      gc_script_event_enqueue(script_context, &testevt);
       
       gc_script_run(script_context, "example/script.lua", true, argc, argv);
       
@@ -36,9 +36,12 @@ int main(int argc, const char* argv[])
       gc_script_event_TEMP fooevt = {0, 0, 0, NULL};
       printf("fooevt: %d, %d, %d, %p\n", fooevt.event_id, fooevt.sender_id,
          fooevt.payload_size, fooevt.payload);
-      gc_script_event_pop(script_context, &fooevt);
-      printf("fooevt: %d, %d, %d, %p\n", fooevt.event_id, fooevt.sender_id,
-         fooevt.payload_size, fooevt.payload);
+      
+      if(gc_script_event_dequeue(script_context, &fooevt) == GC_SUCCESS)
+      {
+         printf("fooevt: %d, %d, %d, %p\n", fooevt.event_id, fooevt.sender_id,
+            fooevt.payload_size, fooevt.payload);
+      }
 
       gc_script_destroy(&script_context);
    }

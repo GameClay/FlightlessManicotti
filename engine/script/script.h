@@ -64,8 +64,8 @@ GC_API void gc_script_destroy(gc_script_context* context);
 
 
 // Event-queue manipulation
-GC_API int gc_script_event_push(gc_script_context context, const gc_script_event_TEMP* event);
-GC_API int gc_script_event_pop(gc_script_context context, gc_script_event_TEMP* event);
+GC_API int gc_script_event_enqueue(gc_script_context context, const gc_script_event_TEMP* event);
+GC_API int gc_script_event_dequeue(gc_script_context context, gc_script_event_TEMP* event);
 
 #ifdef __cplusplus
 }
