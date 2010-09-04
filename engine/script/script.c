@@ -21,25 +21,40 @@
 #include <amp/amp.h>
 #include "script/script.h"
 #include "core/logger.h"
+#include "core/ringbuffer.h"
 
 #include <swig_autogen.h>
+
+GC_DECLARE_RINGBUFFER_TYPE(gc_script_event_TEMP);
+GC_IMPLEMENT_RINGBUFFER_TYPE(gc_script_event_TEMP);
 
 struct _gc_script_context
 {
    lua_State* lua_state;
+   gc_ringbuffer(gc_script_event_TEMP) event_buffer;
 };
 
 int gc_script_init(gc_script_context* context, size_t event_queue_size)
-{
+{     
+   // Allocate script context
    struct _gc_script_context* sctx = gc_heap_alloc(sizeof(struct _gc_script_context), 4);
 
    if(sctx == NULL)
       return GC_ERROR;
+      
+   // Allocate event buffer
+   if(gc_alloc_ringbuffer(gc_script_event_TEMP, &sctx->event_buffer, event_queue_size) != GC_SUCCESS)
+   {
+      gc_heap_free(sctx);
+      return GC_ERROR;
+   }
 
+   // Start up lua
    sctx->lua_state = lua_open();
    luaL_openlibs(sctx->lua_state);
    LOAD_SWIG_LIBS(sctx->lua_state);
    
+   // Return
    (*context) = sctx;
    return GC_SUCCESS;
 }
@@ -178,9 +193,17 @@ void gc_script_destroy(gc_script_context* context)
    struct _gc_script_context* sctx = *context;
 
    lua_close(sctx->lua_state);
+   gc_free_ringbuffer(gc_script_event_TEMP, &sctx->event_buffer);
    
    gc_heap_free(sctx);
 }
 
-int gc_script_queue_push(gc_script_context context);
-int gc_script_queue_pop(gc_script_context context);
+int gc_script_event_push(gc_script_context context, const gc_script_event_TEMP* event)
+{
+   return gc_reserve_ringbuffer(gc_script_event_TEMP, &context->event_buffer, event);
+}
+
+int gc_script_event_pop(gc_script_context context, gc_script_event_TEMP* event)
+{
+   return gc_retrieve_ringbuffer(gc_script_event_TEMP, &context->event_buffer, event);
+}

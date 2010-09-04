@@ -29,7 +29,7 @@ GC_API typedef struct
 {
    int event_id;
    int sender_id;
-   int payload_size;
+   size_t payload_size;
    void* payload;
 } gc_script_event_TEMP;
 
@@ -63,10 +63,9 @@ GC_API int gc_script_run(gc_script_context context, const char* file_name, bool 
 GC_API void gc_script_destroy(gc_script_context* context);
 
 
-// Queue manipulation
-
-GC_API int gc_script_queue_push(gc_script_context context);
-GC_API int gc_script_queue_pop(gc_script_context context);
+// Event-queue manipulation
+GC_API int gc_script_event_push(gc_script_context context, const gc_script_event_TEMP* event);
+GC_API int gc_script_event_pop(gc_script_context context, gc_script_event_TEMP* event);
 
 #ifdef __cplusplus
 }
