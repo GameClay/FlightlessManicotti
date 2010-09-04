@@ -72,7 +72,7 @@ GC_API void gc_free_ringbuffer(gc_ringbuffer* ringbuffer);
 /// @return Pointer to the first element in the queue.
 inline void* gc_peek_ringbuffer(const gc_ringbuffer* ringbuffer, size_t size)
 {
-   return ((char*)ringbuffer->buffer) + ringbuffer->start + size;
+   return ((char*)ringbuffer->buffer) + ringbuffer->start;
 }
 
 /// Reserve a chunk of memory in a ring-buffer.
@@ -88,9 +88,17 @@ GC_API void* gc_reserve_ringbuffer(gc_ringbuffer* ringbuffer, size_t size);
 /// @param[in,out] ringbuffer The ring-buffer from which to retrieve the memory.
 /// @param[in] size The size of memory to retrieve.
 /// @param[out] item The location to store the recovered memory.
-/// @return GC_SUCCESS if the memory was recovered successfully.
-///         GC_ERROR if the ring-buffer was empty.
-GC_API int gc_retrieve_ringbuffer(gc_ringbuffer* ringbuffer, size_t size, void* item);
+/// @return An address if the memory was recovered successfully.
+///         NULL if the ring-buffer was empty.
+GC_API void* gc_retrieve_ringbuffer(gc_ringbuffer* ringbuffer, size_t size);
+
+/// Free a chunk of memory from the back of a ring-buffer.
+///
+/// @param[in,out] ringbuffer The ring-buffer from which to free the memory.
+/// @param[in] size The size of memory to free.
+/// @param[in] last_end The end of the ring buffer, as far as you know.
+/// @return The size of the memory that was freed.
+GC_API int gc_unreserve_ringbuffer(gc_ringbuffer* ringbuffer, size_t size, size_t last_end);
 
 #ifdef __cplusplus
 }

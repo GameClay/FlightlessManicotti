@@ -51,7 +51,7 @@ void* gc_reserve_ringbuffer(gc_ringbuffer* ringbuffer, size_t size)
 {
    size_t bend = ringbuffer->end;
    size_t end = (bend + size) % ringbuffer->size;
-   void* dest = ((char*)ringbuffer->buffer) + end + size;
+   void* dest = ((char*)ringbuffer->buffer) + end;
    if((bend + 1) % ringbuffer->size != ringbuffer->start) 
    {
       while(!atomic_compare_exchange_weak(&ringbuffer->end, &bend, end))
@@ -61,17 +61,33 @@ void* gc_reserve_ringbuffer(gc_ringbuffer* ringbuffer, size_t size)
    return NULL;
 }
 
-int gc_retrieve_ringbuffer(gc_ringbuffer* ringbuffer, size_t size, void* item)
+void* gc_retrieve_ringbuffer(gc_ringbuffer* ringbuffer, size_t size)
 {
-   size_t bstart = ringbuffer->start;
-   size_t start = (bstart + size) % ringbuffer->size;
-   void* entry = ((char*)ringbuffer->buffer) + start + size;
+   size_t bstart, start;
+   void* entry;
+   
+gc_rtr_start:
+   bstart = ringbuffer->start;
+   start = (bstart + size) % ringbuffer->size;
+   entry = ((char*)ringbuffer->buffer) + start;
    if(bstart % ringbuffer->size != ringbuffer->end) 
    {
-      while(!atomic_compare_exchange_weak(&ringbuffer->start, &bstart, start))
-         ;
-      gc_microrcpy(item, entry, size);
-      return GC_SUCCESS;
+      if(!atomic_compare_exchange_weak(&ringbuffer->start, &bstart, start))
+         goto gc_rtr_start;
+      return entry;
    }
-   return GC_ERROR;
+   return NULL;
+}
+
+int gc_unreserve_ringbuffer(gc_ringbuffer* ringbuffer, size_t size, size_t last_end)
+{
+   size_t end = (last_end - size) % ringbuffer->size;
+   void* dest = ((char*)ringbuffer->buffer) + end;
+   if((last_end + 1) % ringbuffer->size != ringbuffer->start) 
+   {
+      if(!atomic_compare_exchange_weak(&ringbuffer->end, &last_end, end))
+         return 0;
+      return size;
+   }
+   return 0;
 }
