@@ -25,6 +25,9 @@
 
 #include <swig_autogen.h>
 
+// Extern the lua module loaders
+extern int luaopen_scriptevent(lua_State* L);
+
 GC_DECLARE_RINGBUFFER_TYPE(gc_script_event_TEMP);
 GC_IMPLEMENT_RINGBUFFER_TYPE(gc_script_event_TEMP);
 
@@ -33,8 +36,6 @@ struct _gc_script_context
    lua_State* lua_state;
    gc_ringbuffer(gc_script_event_TEMP) event_buffer;
 };
-
-int luaopen_scriptevent(lua_State* L);
 
 int gc_script_init(gc_script_context* context, size_t event_queue_size)
 {     
@@ -213,35 +214,4 @@ int gc_script_event_enqueue(gc_script_context context, const gc_script_event_TEM
 int gc_script_event_dequeue(gc_script_context context, gc_script_event_TEMP* event)
 {
    return gc_retrieve_ringbuffer(gc_script_event_TEMP, &context->event_buffer, event);
-}
-
-////
-static int gc_script_event_dequeue_wrap(lua_State* L)
-{
-   gc_script_context sctx = lua_topointer(L, 1);
-   
-   gc_script_event_TEMP event;
-   if(gc_script_event_dequeue(sctx, &event) == GC_SUCCESS)
-   {
-      lua_pushinteger(L, event.event_id);
-      lua_pushinteger(L, event.sender_id);
-      lua_pushinteger(L, event.payload_size);
-      lua_pushlightuserdata(L, event.payload);
-      return 4;
-   }
-   
-   lua_pushnil(L);
-   return 1;
-}
-
-static const struct luaL_reg scriptevent_module [] = {
-    {"enqueue", gc_script_event_dequeue_wrap},
-    {"dequeue", gc_script_event_dequeue_wrap},
-    {NULL, NULL}
-};
-
-int luaopen_scriptevent(lua_State* L)
-{
-   luaL_openlib(L, "scriptevent", scriptevent_module, 0);
-   return 1;
 }
