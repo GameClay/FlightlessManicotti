@@ -14,7 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
+#include <string.h>
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
@@ -24,14 +25,15 @@ static int gc_script_event_dequeue_wrap(lua_State* L)
 {
    gc_script_context sctx = (gc_script_context)lua_topointer(L, 1);
    
-   gc_script_event_TEMP event;
+   gc_script_event event;
    if(gc_script_event_dequeue(sctx, &event) == GC_SUCCESS)
    {
-      lua_pushinteger(L, event.event_id);
-      lua_pushinteger(L, event.sender_id);
-      lua_pushinteger(L, event.payload_size);
-      lua_pushlightuserdata(L, event.payload);
-      return 4;
+      lua_pushstring(L, event.name);
+      lua_pushlightuserdata(L, event.context);
+      lua_pushinteger(L, event.a);
+      lua_pushinteger(L, event.b);
+      lua_pushinteger(L, event.c);
+      return 5;
    }
    
    lua_pushnil(L);
@@ -42,11 +44,12 @@ static int gc_script_event_enqueue_wrap(lua_State* L)
 {
    gc_script_context sctx = (gc_script_context)lua_topointer(L, 1);
    
-   gc_script_event_TEMP event;
-   event.event_id = lua_tointeger(L, 2);
-   event.sender_id = lua_tointeger(L, 3);
-   event.payload_size = lua_tointeger(L, 4);
-   event.payload = (void*)lua_topointer(L, 5);
+   gc_script_event event;
+   strncpy(event.name, lua_tostring(L, 2), gc_script_event_name_length);
+   event.context = (void*)lua_topointer(L, 3);
+   event.a = lua_tointeger(L, 4);
+   event.b = lua_tointeger(L, 5);
+   event.c = lua_tointeger(L, 6);
    
    lua_pushboolean(L, gc_script_event_enqueue(sctx, &event) == GC_SUCCESS);
    return 1;

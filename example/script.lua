@@ -1,31 +1,27 @@
 -- an implementation of printf
 
-function printf(...)
-   io.write(string.format(...))
+function dumptable(table)
+   print(tostring(table))
+   for key,value in pairs(table) do
+      print("\t"..key..": "..tostring(value))
+   end
 end
 
-printf("Hello %s from %s on %s\n",os.getenv"USER" or "there",_VERSION,os.date())
+io.write(string.format("[FlightlessManicotti] Hello %s from %s on %s\n",os.getenv"USER" or "there",_VERSION,os.date()))
 
 function main(...)
-   print("FlightlessManicotti")
+   -- Dump the module to make sure we have all our stuff
+   -- dumptable(scriptevent)
 
-   for i = 1, arg["n"] do
-      print("\t" .. arg[i])
+   -- dequeue everything from code
+   name,context,a,b,c = scriptevent.dequeue(SCTX)
+   while name do
+      print("From code: {"..name..","..tostring(context)..","..a..","..b..","..c.."}") 
+      name,context,a,b,c = scriptevent.dequeue(SCTX)
    end
 
-   -- Dump this module
-   for key,value in pairs(scriptevent) do
-      print(key..": "..tostring(value))
+   -- Use enqueue to send the args back to code
+   for i = 2, arg["n"] do
+      scriptevent.enqueue(SCTX, tostring(arg[i]), nil, 0, 1, 2)
    end
-
-   -- Try dequeue
-   evt_id,foo,bar,baz = scriptevent.dequeue(SCTX)
-   while evt_id do
-      print("From code: "..evt_id..","..foo..","..bar..","..tostring(baz)) 
-      evt_id,foo,bar,baz = scriptevent.dequeue(SCTX)
-   end
-
-   -- Try enqueue
-   scriptevent.enqueue(SCTX, 1, 2, 3, 4)
-   scriptevent.enqueue(SCTX, 5, 6, 7, 8)
 end

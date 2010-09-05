@@ -28,13 +28,13 @@
 // Extern the lua module loaders
 extern int luaopen_scriptevent(lua_State* L);
 
-GC_DECLARE_RINGBUFFER_TYPE(gc_script_event_TEMP);
-GC_IMPLEMENT_RINGBUFFER_TYPE(gc_script_event_TEMP);
+GC_DECLARE_RINGBUFFER_TYPE(gc_script_event);
+GC_IMPLEMENT_RINGBUFFER_TYPE(gc_script_event);
 
 struct _gc_script_context
 {
    lua_State* lua_state;
-   gc_ringbuffer(gc_script_event_TEMP) event_buffer;
+   gc_ringbuffer(gc_script_event) event_buffer;
 };
 
 int gc_script_init(gc_script_context* context, size_t event_queue_size)
@@ -46,7 +46,7 @@ int gc_script_init(gc_script_context* context, size_t event_queue_size)
       return GC_ERROR;
       
    // Allocate event buffer
-   if(gc_alloc_ringbuffer(gc_script_event_TEMP, &sctx->event_buffer, event_queue_size) != GC_SUCCESS)
+   if(gc_alloc_ringbuffer(gc_script_event, &sctx->event_buffer, event_queue_size) != GC_SUCCESS)
    {
       gc_heap_free(sctx);
       return GC_ERROR;
@@ -201,17 +201,17 @@ void gc_script_destroy(gc_script_context* context)
    struct _gc_script_context* sctx = *context;
 
    lua_close(sctx->lua_state);
-   gc_free_ringbuffer(gc_script_event_TEMP, &sctx->event_buffer);
+   gc_free_ringbuffer(gc_script_event, &sctx->event_buffer);
    
    gc_heap_free(sctx);
 }
 
-int gc_script_event_enqueue(gc_script_context context, const gc_script_event_TEMP* event)
+int gc_script_event_enqueue(gc_script_context context, const gc_script_event* event)
 {
-   return gc_reserve_ringbuffer(gc_script_event_TEMP, &context->event_buffer, event);
+   return gc_reserve_ringbuffer(gc_script_event, &context->event_buffer, event);
 }
 
-int gc_script_event_dequeue(gc_script_context context, gc_script_event_TEMP* event)
+int gc_script_event_dequeue(gc_script_context context, gc_script_event* event)
 {
-   return gc_retrieve_ringbuffer(gc_script_event_TEMP, &context->event_buffer, event);
+   return gc_retrieve_ringbuffer(gc_script_event, &context->event_buffer, event);
 }

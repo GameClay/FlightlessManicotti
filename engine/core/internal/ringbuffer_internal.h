@@ -25,6 +25,7 @@ extern "C" {
 #include "fm.h"
 #include <stddef.h>
 #include <amp/amp.h>
+#include <string.h>
 
 #define _GC_DECLARE_RINGBUFFER_STRUCT_(t) \
    GC_API typedef struct                  \
@@ -96,7 +97,7 @@ extern "C" {
          (ringbuffer->end + 1) % ringbuffer->size;             \
       if(nend % ringbuffer->size != ringbuffer->start)         \
       {                                                        \
-         ringbuffer->buffer[nend] = *item;                     \
+         memcpy(ringbuffer->buffer + nend, item, sizeof(t));   \
          ringbuffer->end = nend;                               \
          ret = GC_SUCCESS;                                     \
       }                                                        \
@@ -112,7 +113,7 @@ extern "C" {
       {                                                        \
          const size_t nstart =                                 \
             (ringbuffer->start + 1) % ringbuffer->size;        \
-         *item = ringbuffer->buffer[nstart];                   \
+         memcpy(item, ringbuffer->buffer + nstart, sizeof(t)); \
          ringbuffer->start = nstart;                           \
          ret = GC_SUCCESS;                                     \
       }                                                        \
