@@ -56,16 +56,20 @@ lib_files = core_files + c1x_files + script_files + swig_files
 lib_files = [f for f in lib_files if f not in excluded_files]     # Omit excluded files
 lib_files = [f for f in lib_files if f not in executable_files]   # Omit executable source files
 
-# Additional paths required for specific platforms
-platform_cpppath = []
+# Additional paths required for specific platforms/compilers
+
+## Nobody supports C1x yet, so include this by default.
+platform_cpppath = ['std/C1x']
+
+## TODO: Change this to Visual Studio, and check by-version
 if (sys.platform == 'win32' or sys.platform == 'cygwin'):
-    platform_cpppath = ['engine/windows']
+    platform_cpppath = ['std/C99']
 
 # Build FM dynamic library
 lib_env.Append(CPPDEFINES=['GC_BUILD_LIBRARY'])
 core_lib = lib_env.SharedLibrary('FlightlessManicotti', 
 	lib_files,
-	CPPPATH = ['.','engine','lib/C1x','lib/amp/src/c','lib/lua-5.1.4/src'] + platform_cpppath,
+	CPPPATH = ['.','engine','lib/amp/src/c','lib/lua-5.1.4/src'] + platform_cpppath,
 	CCFLAGS = ['-g','-std=c99'],
 	LIBS=['amp','lua'], 
 	LIBPATH=['.','lib/lua-5.1.4/.build', 'lib/amp/.build']
