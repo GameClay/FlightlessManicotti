@@ -25,7 +25,7 @@ extern "C" {
 #include "fm.h"
 #include <stdbool.h>
 
-#define gc_script_event_name_length 32
+#define gc_script_event_name_length (sizeof(int) * 4)
 GC_API typedef struct
 {
    /// The event name.

@@ -6,6 +6,8 @@ Import('env')
 lib_env = env.Clone()
 bin_env = env.Clone()
 
+#lib_env.Replace(CC = "clang")
+
 lib_env.Append(SWIGFLAGS=['-lua'])
 ###
 def build_my_header(target, source, env):
@@ -14,8 +16,8 @@ def build_my_header(target, source, env):
    # Auto-generate header for swig files
    swig_hdr = open(t_name, "w")
 
-   swig_hdr.write("#ifndef _SWIG_AUTOGEN_\n")
-   swig_hdr.write("#define _SWIG_AUTOGEN_\n")
+   swig_hdr.write("#ifndef _SWIG_AUTOGEN_H_\n")
+   swig_hdr.write("#define _SWIG_AUTOGEN_H_\n")
 
    for f in source:
       (dirName, fileName) = os.path.split(str(f))
