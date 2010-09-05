@@ -21,25 +21,48 @@
 #include <amp/amp.h>
 #include "script/script.h"
 #include "core/logger.h"
+#include "core/ringbuffer.h"
 
 #include <swig_autogen.h>
+
+// Extern the lua module loaders
+extern int luaopen_scriptevent(lua_State* L);
+
+GC_DECLARE_RINGBUFFER_TYPE(gc_script_event);
+GC_IMPLEMENT_RINGBUFFER_TYPE(gc_script_event);
 
 struct _gc_script_context
 {
    lua_State* lua_state;
+   gc_ringbuffer(gc_script_event) event_buffer;
 };
 
 int gc_script_init(gc_script_context* context, size_t event_queue_size)
-{
+{     
+   // Allocate script context
    struct _gc_script_context* sctx = gc_heap_alloc(sizeof(struct _gc_script_context), 4);
 
    if(sctx == NULL)
       return GC_ERROR;
+      
+   // Allocate event buffer
+   if(gc_alloc_ringbuffer(gc_script_event, &sctx->event_buffer, event_queue_size) != GC_SUCCESS)
+   {
+      gc_heap_free(sctx);
+      return GC_ERROR;
+   }
 
+   // Start up lua
    sctx->lua_state = lua_open();
    luaL_openlibs(sctx->lua_state);
+   luaopen_scriptevent(sctx->lua_state);
    LOAD_SWIG_LIBS(sctx->lua_state);
    
+   // Assign a global for the script context assigned to this lua state
+   lua_pushlightuserdata(sctx->lua_state, sctx);
+   lua_setglobal(sctx->lua_state, "SCTX");
+   
+   // Return
    (*context) = sctx;
    return GC_SUCCESS;
 }
@@ -178,9 +201,17 @@ void gc_script_destroy(gc_script_context* context)
    struct _gc_script_context* sctx = *context;
 
    lua_close(sctx->lua_state);
+   gc_free_ringbuffer(gc_script_event, &sctx->event_buffer);
    
    gc_heap_free(sctx);
 }
 
-int gc_script_queue_push(gc_script_context context);
-int gc_script_queue_pop(gc_script_context context);
+int gc_script_event_enqueue(gc_script_context context, const gc_script_event* event)
+{
+   return gc_reserve_ringbuffer(gc_script_event, &context->event_buffer, event);
+}
+
+int gc_script_event_dequeue(gc_script_context context, gc_script_event* event)
+{
+   return gc_retrieve_ringbuffer(gc_script_event, &context->event_buffer, event);
+}

@@ -17,8 +17,11 @@ This project may be used with projects which use version 3 of the GPL. Please se
 ### Alternate Licensing
 If the Apache 2 license is incompatible with your project, and that project is an implementation of the C1x standard, please contact us and we will work something out.
 
-## Code Convention
+# Code Convention
 Code submitted to this repository should adhere to this code convention.
+
+## C/C++
+Coding convention for FlightlessManicotti
 
 ### Indentation and Whitespace
 * Be reasonable about line length -- try and stay under 80-ish.
@@ -37,3 +40,6 @@ Code submitted to this repository should adhere to this code convention.
 
 ### Naming
 * Prefix all exposed symbol names with 'gc', and an underscore between 'gc' and the symbol name. `gc_foo()`
+
+## Lua
+I haven't used Lua enough yet to put together a code convention.

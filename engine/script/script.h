@@ -25,13 +25,17 @@ extern "C" {
 #include "fm.h"
 #include <stdbool.h>
 
+#define gc_script_event_name_length 32
 GC_API typedef struct
 {
-   int event_id;
-   int sender_id;
-   int payload_size;
-   void* payload;
-} gc_script_event_TEMP;
+   /// The event name.
+   char name[gc_script_event_name_length];
+   
+   /// An opaque pointer to a context object, or NULL/nil.
+   void* context;
+   
+   int a, b, c; // struct length should be 64 bytes
+} gc_script_event;
 
 GC_API typedef struct _gc_script_context* gc_script_context;
 
@@ -63,10 +67,9 @@ GC_API int gc_script_run(gc_script_context context, const char* file_name, bool 
 GC_API void gc_script_destroy(gc_script_context* context);
 
 
-// Queue manipulation
-
-GC_API int gc_script_queue_push(gc_script_context context);
-GC_API int gc_script_queue_pop(gc_script_context context);
+// Event-queue manipulation
+GC_API int gc_script_event_enqueue(gc_script_context context, const gc_script_event* event);
+GC_API int gc_script_event_dequeue(gc_script_context context, gc_script_event* event);
 
 #ifdef __cplusplus
 }

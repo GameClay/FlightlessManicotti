@@ -26,7 +26,18 @@ int main(int argc, const char* argv[])
    
    if(gc_script_init(&script_context, 1 << 10) == GC_SUCCESS)
    {
+      // Send the script a test event
+      gc_script_event fooevt = {"facepunch", NULL, 0, 1, 2};
+      gc_script_event_enqueue(script_context, &fooevt);
+      
       gc_script_run(script_context, "example/script.lua", true, argc, argv);
+      
+      // Dequeue events from script
+      while(gc_script_event_dequeue(script_context, &fooevt) == GC_SUCCESS)
+      {
+         printf("From script: {%s,%p,%d,%d,%d}\n", fooevt.name, fooevt.context,
+            fooevt.a, fooevt.b, fooevt.c);
+      }
 
       gc_script_destroy(&script_context);
    }

@@ -40,7 +40,8 @@ GC_DECLARE_RINGBUFFER_TYPE(int);
 /// @param[out] ringbuffer ring-buffer to initialize.
 /// @param[in] size The size of the buffer parameter.
 /// @param[in] buffer The buffer of memory used to back the ring-buffer.
-#define gc_init_ringbuffer(T, ringbuffer, size, buffer) gc_init_ringbuffer_##T(ringbuffer, size, buffer)
+/// @param[in] mutex The mutex to use for this ring-buffer.
+#define gc_init_ringbuffer(T, ringbuffer, size, buffer, mtx) gc_init_ringbuffer_##T(ringbuffer, size, buffer, mtx)
 
 
 /// Initializes a ring-buffer using memory allocated by the function.
