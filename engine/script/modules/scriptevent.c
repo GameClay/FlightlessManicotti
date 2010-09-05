@@ -60,6 +60,6 @@ static const struct luaL_reg scriptevent_module [] = {
 
 int luaopen_scriptevent(lua_State* L)
 {
-   luaL_openlib(L, "scriptevent", scriptevent_module, 0);
+   luaL_register(L, "scriptevent", scriptevent_module);
    return 1;
 }
