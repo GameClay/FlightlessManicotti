@@ -142,30 +142,27 @@ All Doxygen tags should use the `@` character to denote a tag, for example `@tag
     ///         the parameters.
 
 #### Types
-* Use standard types unless not possible. This is a short table of types and the header needed to use them.
-    <table>
-       <tr>
-          <td>#include</td>
-          <td>To get types...</td>
-       </tr>
-       <tr>
-           <td>&lt;[stdint.h](http://en.wikipedia.org/wiki/Stdint.h)&gt;</td>
-           <td>`int8_t`, `uint8_t`, `int16_t`, `uint16_t`, `int32_t`, `uint32_t`, `int64_t`, `uint64_t`,
-               `intptr_t`, `uintptr_t`, and more...</td>
-       </tr>
-       <tr>
-            <td>&lt;[stdbool.h](http://en.wikipedia.org/wiki/Stdbool.h)&gt;</td>
-            <td>`bool`</td>
-       </tr>
-       <tr>
-             <td>&lt;[stddef.h](http://en.wikipedia.org/wiki/Stddef.h)&gt;</td>
-             <td>`size_t`, `wchar_t`, `ptrdiff_t`</td>
-       </tr>
-    </table>
-    If a header is not available on a given platform/compiler, than a header will be provided for that
-    platform/compiler to allow for easy use. For example, `stdbool.h` is not provided by Visual Studio,
-    but an implementation is provided in `std/C99/stdbool.h` and is only put into the include-path when 
-    compiling using Visual Studio.
+Use standard types unless not possible. This is a short table of types and the header needed to use them.
+<table>
+   <tr>
+    <td>#include</td>
+    <td>To get types...</td>
+   </tr>
+   <tr>
+     <td>&lt;<a href="http://en.wikipedia.org/wiki/Stdint.h">stdint.h</a>&gt;</td>
+      <td>`int8_t`, `uint8_t`, `int16_t`, `uint16_t`, `int32_t`, `uint32_t`, `int64_t`, `uint64_t`,
+          `intptr_t`, `uintptr_t`, and more...</td>
+   </tr>
+   <tr>
+      <td>&lt;<a href="http://en.wikipedia.org/wiki/Stdbool.h">stdbool.h</a>&gt;</td>
+      <td>`bool`</td>
+   </tr>
+   <tr>
+      <td>&lt;<a href="http://en.wikipedia.org/wiki/Stddef.h">stddef.h</a>&gt;</td>
+      <td>`size_t`, `wchar_t`, `ptrdiff_t`</td>
+   </tr>
+</table>
+If a header is not available on a given platform/compiler, than a header will be provided for that platform/compiler to allow for easy use. For example, `stdbool.h` is not provided by Visual Studio, but an implementation is provided in `std/C99/stdbool.h` and is only put into the include-path when compiling using Visual Studio.
 
 #### Memory usage 
 * You will align your memory.
