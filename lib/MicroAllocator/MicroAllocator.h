@@ -62,6 +62,7 @@
 // All allocations are 16 byte aligned (with the exception of the 8 byte allocations, which are 8 byte aligned every other one).
 //
 
+#ifdef __cplusplus
 
 #ifdef WIN32
 	typedef __int64				NxI64;
@@ -205,5 +206,38 @@ void performUnitTests(void);
 //
 
 }; // end of namespace
+
+extern "C" {
+#endif       // #ifdef __cplusplus
+
+// C interface
+typedef void* (*micro_heap_malloc)(size_t);
+typedef void  (*micro_heap_free)(void*);
+typedef void* (*micro_heap_realloc)(void*, size_t);
+
+extern void  micro_allocator_init(micro_heap_malloc m, micro_heap_free f, micro_heap_realloc r);
+extern void  micro_allocator_destroy();
+
+extern void* micro_malloc(size_t size);
+extern void  micro_free(void* p);
+extern bool  micro_was_allocated(void* p);
+
+#ifdef __cplusplus
+class CMicroHeap : public MICRO_ALLOCATOR::MicroHeap
+{
+public:
+  micro_heap_malloc m;
+  micro_heap_free f;
+  micro_heap_realloc r; 
+
+  CMicroHeap(micro_heap_malloc _m, micro_heap_free _f, micro_heap_realloc _r) 
+    : m(_m), f(_f), r(_r) {}
+  inline void* micro_malloc(size_t size) { return m(size); }
+  inline void  micro_free(void *p) { f(p); }
+  inline void* micro_realloc(void *oldMen,size_t newSize) { return r(oldMen,newSize); }
+};
+
+}
+#endif
 
 #endif

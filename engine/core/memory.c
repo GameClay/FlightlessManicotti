@@ -19,8 +19,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <assert.h>
 #include "nedmalloc.h"
+#include "MicroAllocator.h"
 
 void* aligned_nedmalloc(size_t size, size_t alignment);
 void aligned_nedfree(void* pointer);
@@ -31,6 +33,10 @@ gc_free_fn_ptr gc_heap_free = &nedfree;
 
 gc_aligned_malloc_fn_ptr gc_heap_aligned_alloc = &aligned_nedmalloc;
 gc_aligned_free_fn_ptr gc_heap_aligned_free = &aligned_nedfree;
+
+gc_malloc_fn_ptr gc_micro_alloc = &micro_malloc;
+gc_free_fn_ptr gc_micro_free = &micro_free;
+
 gc_memrcpy_fn_ptr gc_microrcpy = &memcpy;
 
 // Default aligned malloc/free using nedmalloc

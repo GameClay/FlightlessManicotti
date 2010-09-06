@@ -69,10 +69,10 @@ if (sys.platform == 'win32' or sys.platform == 'cygwin'):
 lib_env.Append(CPPDEFINES=['GC_BUILD_LIBRARY'])
 core_lib = lib_env.SharedLibrary('FlightlessManicotti', 
 	lib_files,
-	CPPPATH = ['.','engine','lib/amp/src/c','lib/lua-5.1.4/src','lib/nedmalloc'] + platform_cpppath,
+	CPPPATH = ['.','engine','lib/amp/src/c','lib/lua-5.1.4/src','lib/nedmalloc','lib/MicroAllocator'] + platform_cpppath,
 	CCFLAGS = ['-g','-std=c99'],
-	LIBS=['amp','lua','nedmalloc'], 
-	LIBPATH=['.','lib/lua-5.1.4/.build','lib/amp/.build','lib/nedmalloc/x86/Release'] # hacky
+	LIBS=['amp','lua','nedmalloc','MicroAllocator','libstdc++'], 
+	LIBPATH=['.','lib/lua-5.1.4/.build','lib/amp/.build','lib/nedmalloc/x86/Release','lib/MicroAllocator/.build'] # hacky
 )
 
 executable = bin_env.Program('FlightlessManicotti',

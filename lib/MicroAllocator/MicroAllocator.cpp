@@ -990,3 +990,44 @@ void * heap_realloc(HeapManager *hm,void *oldMem,size_t newSize)
 }
 
 }; // end of namespace
+
+// C interface implementation
+MICRO_ALLOCATOR::MicroAllocator* c_micro_allocator = NULL;
+CMicroHeap* c_micro_heap = NULL;
+
+void micro_allocator_init(micro_heap_malloc m, micro_heap_free f, micro_heap_realloc r)
+{
+    assert(c_micro_heap == NULL);
+    c_micro_heap = (CMicroHeap*)m(sizeof(CMicroHeap));
+    new(c_micro_heap) CMicroHeap(m, f, r);
+    c_micro_allocator = MICRO_ALLOCATOR::createMicroAllocator(c_micro_heap);
+}
+
+void micro_allocator_destroy()
+{
+   assert(c_micro_heap);
+   MICRO_ALLOCATOR::releaseMicroAllocator(c_micro_allocator);
+   const micro_heap_free f = c_micro_heap->f;
+   f(c_micro_heap);
+   c_micro_heap = NULL;
+}
+
+void* micro_malloc(size_t size)
+{
+   assert(c_micro_heap);
+   return c_micro_allocator->malloc(size);
+}
+
+void micro_free(void* p)
+{
+   assert(c_micro_heap);
+   MICRO_ALLOCATOR::MemoryChunk* chunk = c_micro_allocator->isMicroAlloc(p);
+   assert(c_micro_allocator->isMicroAlloc(p));
+   c_micro_allocator->free(p, chunk);
+}
+
+bool micro_was_allocated(void* p)
+{
+   assert(c_micro_heap);
+   return (c_micro_allocator->isMicroAlloc(p) != NULL);
+}
