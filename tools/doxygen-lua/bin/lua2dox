@@ -7,5 +7,4 @@ use warnings;
 use Doxygen::Lua;
 
 my $input = $ARGV[0];
-my $p = Doxygen::Lua->new;
-print $p->parse($input);
+print Doxygen::Lua::parse($input);

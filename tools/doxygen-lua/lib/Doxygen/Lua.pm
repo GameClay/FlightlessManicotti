@@ -2,7 +2,6 @@ package Doxygen::Lua;
 
 use warnings;
 use strict;
-use Moose;
 
 =head1 NAME
 
@@ -15,7 +14,7 @@ Version 0.02
 =cut
 
 our $VERSION = '0.02';
-has 'mark' => ( is => 'rw', isa => 'Str', default => '--!' );
+=has 'mark' => ( is => 'rw', isa => 'Str', default => '--!' );
 
 =head1 SYNOPSIS
 
@@ -46,7 +45,6 @@ This function will parse the given input file and return the result.
 =cut
 
 sub parse {
-    my $self = shift;
     my $input = shift;
 
     my $in_block = 0;
@@ -54,7 +52,7 @@ sub parse {
     my $block_name = q{};
     my $result = q{};
 
-    my $mark = $self->mark;
+    my $mark = '--!';
      
     open FH, "<$input"
         or die "Can't open $input for reading: $!";
