@@ -65,7 +65,7 @@ extern "C" {
    \
    _GC_ALLOC_RINGBUFFER_FN_(t)                                 \
    {                                                           \
-      ringbuffer->buffer = gc_heap_alloc(size * sizeof(t), 4); \
+      ringbuffer->buffer = gc_heap_alloc(size * sizeof(t));    \
       if(ringbuffer->buffer == NULL)                           \
          return GC_ERROR;                                      \
                                                                \

@@ -40,7 +40,7 @@ struct _gc_script_context
 int gc_script_init(gc_script_context* context, size_t event_queue_size)
 {
    // Allocate script context
-   struct _gc_script_context* sctx = gc_heap_alloc(sizeof(struct _gc_script_context), 4);
+   struct _gc_script_context* sctx = gc_heap_alloc(sizeof(struct _gc_script_context));
 
    if(sctx == NULL)
       return GC_ERROR;

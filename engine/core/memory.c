@@ -19,19 +19,24 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <assert.h>
 #include "nedmalloc.h"
 
 void* aligned_nedmalloc(size_t size, size_t alignment);
 void aligned_nedfree(void* pointer);
 
 // Assign default memory operatons
-gc_aligned_malloc_fn_ptr gc_heap_alloc = &aligned_nedmalloc;
-gc_aligned_free_fn_ptr gc_heap_free = &aligned_nedfree;
+gc_malloc_fn_ptr gc_heap_alloc = &nedmalloc;
+gc_free_fn_ptr gc_heap_free = &nedfree;
+
+gc_aligned_malloc_fn_ptr gc_heap_aligned_alloc = &aligned_nedmalloc;
+gc_aligned_free_fn_ptr gc_heap_aligned_free = &aligned_nedfree;
 gc_memrcpy_fn_ptr gc_microrcpy = &memcpy;
 
-// Default malloc/free
+// Default aligned malloc/free using nedmalloc
 void* aligned_nedmalloc(size_t size, size_t align_size)
 {
+   assert(align_size != 16); 
    char *ptr, *ptr2, *aligned_ptr;
    intptr_t align_mask = align_size - 1;
 

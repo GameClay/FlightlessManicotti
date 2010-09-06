@@ -25,9 +25,31 @@ extern "C" {
 #include "fm.h"
 #include <stddef.h>
 
+typedef void* (*gc_malloc_fn_ptr)(size_t size);
+typedef void (*gc_free_fn_ptr)(void* pointer);
 typedef void* (*gc_aligned_malloc_fn_ptr)(size_t size, size_t align_size);
 typedef void (*gc_aligned_free_fn_ptr)(void* pointer);
 typedef void* (*gc_memrcpy_fn_ptr)(void* restrict dest, const void* restrict src, size_t size);
+
+/// Malloc function.
+///
+/// This aligns all returned memory to a 16-byte boundary.
+///
+/// @see gc_malloc_fn_ptr
+///
+/// @note The amount of allocated memory may exceed the size specified.
+///
+/// @param[in] size The size of the allocation.
+/// @return Pointer the block of allocated memory, aligned on a 16-byte boundary,
+///         or NULL if the allocation failed.
+GC_API extern gc_malloc_fn_ptr gc_heap_alloc;
+
+/// Free function.
+///
+/// @see gc_free_fn_ptr
+///
+/// @param[in] pointer Pointer to the block of memory to free.
+GC_API extern gc_free_fn_ptr gc_heap_free;
 
 /// Aligned malloc function.
 ///
@@ -35,18 +57,22 @@ typedef void* (*gc_memrcpy_fn_ptr)(void* restrict dest, const void* restrict src
 ///
 /// @note The amount of allocated memory may exceed the size specified.
 ///
+/// @attention This function will assert if the align_size == 16. If you want alignment
+///            on a 16-byte boundary use gc_heap_malloc, which returns 16-byte aligned
+///            memory at all times.
+///
 /// @param[in] size The size of the allocation.
 /// @param[in] align_size The boundary on which the allocated memory should be aligned.
 /// @return Pointer the block of allocated memory, aligned on the specified boundary,
 ///         or NULL if the allocation failed.
-GC_API extern gc_aligned_malloc_fn_ptr gc_heap_alloc;
+GC_API extern gc_aligned_malloc_fn_ptr gc_heap_aligned_alloc;
 
 /// Aligned free function.
 ///
 /// @see gc_aligned_free_fn_ptr
 ///
 /// @param[in] pointer Pointer to the block of memory to free.
-GC_API extern gc_aligned_free_fn_ptr gc_heap_free;
+GC_API extern gc_aligned_free_fn_ptr gc_heap_aligned_free;
 
 /// Small-block memory copy. 
 ///
