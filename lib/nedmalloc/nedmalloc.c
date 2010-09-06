@@ -69,6 +69,8 @@ DEALINGS IN THE SOFTWARE.
 #include <errno.h>
 #if defined(WIN32)
  #include <malloc.h>
+#elif defined(__APPLE__)
+ #include <malloc/malloc.h>
 #endif
 #ifdef __linux__
 /* Sadly we can't include <malloc.h> as it causes a redefinition error */
