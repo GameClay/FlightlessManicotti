@@ -40,6 +40,7 @@
 #include <new>
 #include <assert.h>
 #include <stdio.h>
+#include <string>
 
 #ifdef WIN32
 #include <windows.h>

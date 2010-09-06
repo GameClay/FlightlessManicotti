@@ -151,6 +151,10 @@
 	#error Unknown platform!
 #endif
 
+#ifndef size_t
+	#include <cstddef>
+#endif
+
 
 namespace MICRO_ALLOCATOR
 {
