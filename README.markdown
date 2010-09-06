@@ -197,8 +197,8 @@ All Doxygen tags should use the `@` character to denote a tag, for example `@tag
     //!            If you need more than one line for any tag,
     //!            it should be indented past that tag.
     //! 
-    //! @param name[in/out] Parameters should include 'in' and/or 'out' 
-    //!        to indicate the usage of the parameter. 
+    //! @param name Parameters should be doccumented as such, and if
+    //!        they require multiple lines, only indent past the 'param'. 
     //! @return Return value should be specified in the same section as 
     //!         the parameters.
 
