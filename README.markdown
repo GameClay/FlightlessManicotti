@@ -249,8 +249,8 @@ The scripting language for FlightlessManicotti is [Lua](http://www.lua.org/).
 I haven't used Lua enough yet to put together a code convention.
 
 #### Indentation and Whitespace
-
-#### Comments
+* Be reasonable about line length -- try and stay under 80-ish.
+* Three shall be the number of the spaces used to indent, and the number of the spaces used to indent shall be three. Tabs are right out.
 
 #### Doxygen Comment Style
 Doxygen support for Lua is achieved using [lua2dox](http://github.com/alecchen/doxygen-lua)
