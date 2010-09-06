@@ -119,7 +119,7 @@ Currently Clang can be used to compile by uncommenting a line in the top-level `
 FlightlessManicotti uses [Doxygen](http://www.doxygen.org/) to generate documentation.
 
 ### lua2dox
-FlightlessManicotti includes a slightly-modified version of the [doxygen-lua](http://github.com/alecchen/doxygen-lua) project. The modifications are based on alecchen/doxygen-lua@a7b2809425bb08174c154b83018194284f189bf7.
+FlightlessManicotti includes a slightly-modified version of the [doxygen-lua](http://github.com/alecchen/doxygen-lua) project. The modifications are based on revision alecchen/doxygen-lua@a7b2809425bb08174c154b83018194284f189bf7.
 
 This is included with FlightlessManicotti and is located at `tools/doxygen-lua`
 
@@ -129,19 +129,19 @@ All library dependencies are included within the repository. These libraries mus
 This section is unfinished.
 
 ## amp
-FlightlessManicotti uses [amp](http://github.com/bjoernknafla/amp) version [a84380c4e2a6d66283bc7c33d70e6fe8f0e1e71f](http://github.com/bjoernknafla/amp/tree/a84380c4e2a6d66283bc7c33d70e6fe8f0e1e71f).
+FlightlessManicotti uses [amp](http://github.com/bjoernknafla/amp) revision bjoernknafla/amp@a84380c4e2a6d66283bc7c33d70e6fe8f0e1e71f.
 
 ### Building
 To build *amp* go to `lib/amp` and run `scons`.
 
 ## nedmalloc
-FlightlessManicotti uses [nedmalloc](http://www.nedprod.com/programs/portable/nedmalloc/) version [3f80a00da9d9198788ad8fca0b31f8fcb665a624](http://github.com/ned14/nedmalloc/tree/3f80a00da9d9198788ad8fca0b31f8fcb665a624).
+FlightlessManicotti uses [nedmalloc](http://www.nedprod.com/programs/portable/nedmalloc/) revision ned14/nedmalloc@3f80a00da9d9198788ad8fca0b31f8fcb665a624.
 
 ### Building
 To build *nedmalloc* go to `lib/nedmalloc` and run `scons --static-lib --notests`.
 
 ## uthash
-FlightlessManicotti uses [uthash](http://github.com/ned14/uthash) version [22bf8c92ba46b3071f782e932b568597d7a9b374](http://github.com/ned14/uthash/tree/22bf8c92ba46b3071f782e932b568597d7a9b374).
+FlightlessManicotti uses [uthash](http://github.com/ned14/uthash) revision ned14/uthash@22bf8c92ba46b3071f782e932b568597d7a9b374.
 
 ### Building
 This lib is entirely implemented in headers, and no building is necessary.
