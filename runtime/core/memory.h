@@ -40,7 +40,7 @@ typedef void* (*gc_memrcpy_fn_ptr)(void* restrict dest, const void* restrict src
 //!
 //! @note The amount of allocated memory may exceed the size specified.
 //!
-//! @param[in] size The size of the allocation.
+//! @param size The size of the allocation.
 //! @return Pointer the block of allocated memory, aligned on a 16-byte boundary,
 //!         or NULL if the allocation failed.
 GC_API extern gc_malloc_fn_ptr gc_heap_alloc;
@@ -49,7 +49,7 @@ GC_API extern gc_malloc_fn_ptr gc_heap_alloc;
 //!
 //! @see gc_free_fn_ptr
 //!
-//! @param[in] pointer Pointer to the block of memory to free.
+//! @param pointer Pointer to the block of memory to free.
 GC_API extern gc_free_fn_ptr gc_heap_free;
 
 //! Aligned malloc function.
@@ -62,8 +62,8 @@ GC_API extern gc_free_fn_ptr gc_heap_free;
 //!            on a 16-byte boundary use gc_heap_malloc, which returns 16-byte aligned
 //!            memory at all times.
 //!
-//! @param[in] size The size of the allocation.
-//! @param[in] align_size The boundary on which the allocated memory should be aligned.
+//! @param size The size of the allocation.
+//! @param align_size The boundary on which the allocated memory should be aligned.
 //! @return Pointer the block of allocated memory, aligned on the specified boundary,
 //!         or NULL if the allocation failed.
 GC_API extern gc_aligned_malloc_fn_ptr gc_heap_aligned_alloc;
@@ -72,7 +72,7 @@ GC_API extern gc_aligned_malloc_fn_ptr gc_heap_aligned_alloc;
 //!
 //! @see gc_aligned_free_fn_ptr
 //!
-//! @param[in] pointer Pointer to the block of memory to free.
+//! @param pointer Pointer to the block of memory to free.
 GC_API extern gc_aligned_free_fn_ptr gc_heap_aligned_free;
 
 //! Micro malloc function.
@@ -84,7 +84,7 @@ GC_API extern gc_aligned_free_fn_ptr gc_heap_aligned_free;
 //! @attention If the allocation size is greater than 256 bytes, this
 //!            function will assert, and return NULL if NDEBUG is defined.
 //!
-//! @param[in] size The size of the allocation.
+//! @param size The size of the allocation.
 //! @return Pointer the block of allocated memory or NULL if the allocation failed.     
 GC_API extern gc_malloc_fn_ptr gc_micro_alloc;
 
@@ -93,7 +93,7 @@ GC_API extern gc_malloc_fn_ptr gc_micro_alloc;
 //! @see gc_free_fn_ptr
 //! @see gc_micro_alloc
 //!
-//! @param[in] pointer Pointer to the block of memory to free.
+//! @param pointer Pointer to the block of memory to free.
 GC_API extern gc_free_fn_ptr gc_micro_free;
 
 //! Small-block memory copy. 
@@ -104,9 +104,9 @@ GC_API extern gc_free_fn_ptr gc_micro_free;
 //!
 //! @see gc_memrcpy_fn_ptr
 //!
-//! @param[out] dest Destination address.
-//! @param[in] src Source address.
-//! @param[in] size The size of memory to be copied.
+//! @param dest Destination address.
+//! @param src Source address.
+//! @param size The size of memory to be copied.
 //! @return The destination address.
 GC_API extern gc_memrcpy_fn_ptr gc_microrcpy;
 

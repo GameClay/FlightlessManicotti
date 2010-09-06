@@ -115,6 +115,14 @@ FlightlessManicotti will use [LLVM](http://llvm.org/) and [Clang](http://clang.l
 
 Currently Clang can be used to compile by uncommenting a line in the top-level `SConscript` file, but no static analysis has been attempted yet.
 
+## Doxygen
+FlightlessManicotti uses [Doxygen](http://www.doxygen.org/) to generate documentation.
+
+### lua2dox
+FlightlessManicotti includes a slightly-modified version of the [doxygen-lua](http://github.com/alecchen/doxygen-lua) project. The modifications are based on alecchen/doxygen-lua@a7b2809425bb08174c154b83018194284f189bf7.
+
+This is included with FlightlessManicotti and is located at `tools/doxygen-lua`
+
 # Libraries
 All library dependencies are included within the repository. These libraries must be built before FlightlessManicotti can be linked.
 
@@ -197,8 +205,8 @@ All Doxygen tags should use the `@` character to denote a tag, for example `@tag
     //!            If you need more than one line for any tag,
     //!            it should be indented past that tag.
     //! 
-    //! @param name[in/out] Parameters should include 'in' and/or 'out' 
-    //!        to indicate the usage of the parameter. 
+    //! @param name Parameters should be doccumented as such, and if
+    //!        they require multiple lines, only indent past the 'param'. 
     //! @return Return value should be specified in the same section as 
     //!         the parameters.
 
@@ -249,8 +257,8 @@ The scripting language for FlightlessManicotti is [Lua](http://www.lua.org/).
 I haven't used Lua enough yet to put together a code convention.
 
 #### Indentation and Whitespace
-
-#### Comments
+* Be reasonable about line length -- try and stay under 80-ish.
+* Three shall be the number of the spaces used to indent, and the number of the spaces used to indent shall be three. Tabs are right out.
 
 #### Doxygen Comment Style
 Doxygen support for Lua is achieved using [lua2dox](http://github.com/alecchen/doxygen-lua)

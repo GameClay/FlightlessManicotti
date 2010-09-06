@@ -44,15 +44,13 @@ GC_API typedef struct _gc_script_context* gc_script_context;
 //!
 //! @note This function assumes that gc_script_queue has been initialized.
 //!
-//! @param context[out] This holds the allocated script context.
-//! @param event_queue_size[in] The memory size of the event queue for this script context.
+//! @param context This holds the allocated script context.
+//! @param event_queue_size The memory size of the event queue for this script context.
 //! @return GC_SUCCESS if initialization was successful.
 //!         GC_ERROR if initialization failed.
 GC_API int gc_script_init(gc_script_context* context, size_t event_queue_size);
 
 //! Immediately evaluate a script event.
-//!
-//! 
 GC_API int gc_script_evaluate();
 
 //! Run a script file
@@ -64,7 +62,7 @@ GC_API int gc_script_run(gc_script_context context, const char* file_name, bool 
 //!
 //! @note This function does not free, or modify gc_script_queue.
 //!
-//! @param context[out] This script context will be deallocated.
+//! @param context This script context will be deallocated.
 GC_API void gc_script_destroy(gc_script_context* context);
 
 

@@ -1,0 +1,10 @@
+#!/usr/bin/env perl
+
+BEGIN{unshift @INC, "tools/doxygen-lua/lib"}
+
+use strict;
+use warnings;
+use Doxygen::Lua;
+
+my $input = $ARGV[0];
+print Doxygen::Lua::parse($input);
