@@ -1,0 +1,17 @@
+from SCons.Util import flatten
+import os
+import sys
+
+Import('env')
+lib_env = env.Clone()
+
+# Build FM dynamic library
+micro_allocate_lib = lib_env.StaticLibrary('MicroAllocator', 
+	['MicroAllocator.cpp'],
+	CPPPATH = ['.'],
+	CCFLAGS = ['-O3'],
+	LIBS=[], 
+	LIBPATH=[]
+)
+
+Return('micro_allocate_lib')
