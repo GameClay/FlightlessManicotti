@@ -89,6 +89,34 @@ FlightlessManicotti will use [LLVM](http://llvm.org/) and [Clang](http://clang.l
 
 Currently Clang can be used to compile by uncommenting a line in the top-level `SConscript` file, but no static analysis has been attempted yet.
 
+# Libs
+All library dependencies are included. The revision should be included in the commit in which they were added. 
+
+This section is unfinished.
+
+## amp
+The source for *amp* is located in FlightlessManicotti at `lib/amp`.
+
+### Building
+To build *amp* go to `lib/amp` and run `scons`.
+
+## nedmalloc
+The source for *nedmalloc* is located in FlightlessManicotti at `lib/nedmalloc`.
+
+### Building
+To build *nedmalloc* go to `lib/nedmalloc` and run `scons --static-lib --notests`.
+
+## uthash
+The source for *uthash* is located in FlightlessManicotti at `lib/nedmalloc/nedtries/uthash`.
+
+### Building
+This lib is entirely implemented in headers, and no building is necessary.
+
+## lua
+
+### Building
+To build *lua*, go to `lib/lua-5.1.4` and run `scons`
+
 # Languages
 ## C
 The use of C for the runtime is as much a philosophical choice as it is practical. The runtime is intended to be fast, portable, and minimalistic.
