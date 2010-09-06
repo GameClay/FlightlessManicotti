@@ -115,6 +115,14 @@ FlightlessManicotti will use [LLVM](http://llvm.org/) and [Clang](http://clang.l
 
 Currently Clang can be used to compile by uncommenting a line in the top-level `SConscript` file, but no static analysis has been attempted yet.
 
+## Doxygen
+FlightlessManicotti uses [Doxygen](http://www.doxygen.org/) to generate documentation.
+
+### lua2dox
+FlightlessManicotti includes a slightly-modified version of the [doxygen-lua](http://github.com/alecchen/doxygen-lua) project. The modifications are based on alecchen/doxygen-lua@a7b2809425bb08174c154b83018194284f189bf7.
+
+This is included with FlightlessManicotti and is located at `tools/doxygen-lua`
+
 # Libraries
 All library dependencies are included within the repository. These libraries must be built before FlightlessManicotti can be linked.
 
