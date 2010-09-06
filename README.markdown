@@ -72,6 +72,30 @@ The overwhelming majority of communication to-and-from script will be done via q
 
 The runtime is not overly concerned about the language used to implement the event handlers. This is intentional, because while FlightlessManicotti uses Lua as a scripting language, by default, there is no reason why a different mechanism for handling events should be prohibited.
 
+## Memory Allocation
+_Don't._
+
+The philosophy for memory allocation in FlightlessManicotti is: don't. 
+
+Unfortunately one can only go so far using this methodology, and so several allocators exist. Each allocation function has a purpose and the allocators are function-pointers which can be reassigned by the user. All allocation from the runtime must use these allocators.
+
+**Todo**: Ensure SWIG, and all libs use these functions.
+
+### gc_heap_alloc
+The `gc_heap_alloc` and `gc_heap_free` functions allocate and free memory aligned on a 16-byte boundary.
+
+These function pointers default to results from the [nedmalloc](http://www.nedprod.com/programs/portable/nedmalloc/) library.
+
+### gc_heap_aligned_alloc
+The `gc_heap_aligned_alloc` and `gc_heap_aligned_free` functions allocate and free memory which is aligned to a boundary other than 16-bytes. `gc_heap_aligned_alloc` will assert if an alignment of 16-bytes is requested, as you should be using `gc_heap_alloc` instead.
+
+These function pointers default to a function which manually aligns results from the [nedmalloc](http://www.nedprod.com/programs/portable/nedmalloc/) library.
+
+### gc_micro_alloc
+The `gc_micro_alloc` and `gc_micro_free` functions allocate and free memory which is 256-bytes or smaller. Any allocation greater than 256-bytes will cause an assertion.
+
+These function pointers default to results from the [MicroAllocator](http://codesuppository.blogspot.com/2009/09/free-open-source-micro-allocator-in-c.html) library.
+
 # Tools
 Tools used to build FlightlessManicotti.
 
@@ -103,7 +127,7 @@ FlightlessManicotti uses [amp](http://github.com/bjoernknafla/amp) version [a843
 To build *amp* go to `lib/amp` and run `scons`.
 
 ## nedmalloc
-FlightlessManicotti uses [nedmalloc](http://github.com/ned14/nedmalloc) version [3f80a00da9d9198788ad8fca0b31f8fcb665a624](http://github.com/ned14/nedmalloc/tree/3f80a00da9d9198788ad8fca0b31f8fcb665a624).
+FlightlessManicotti uses [nedmalloc](http://www.nedprod.com/programs/portable/nedmalloc/) version [3f80a00da9d9198788ad8fca0b31f8fcb665a624](http://github.com/ned14/nedmalloc/tree/3f80a00da9d9198788ad8fca0b31f8fcb665a624).
 
 ### Building
 To build *nedmalloc* go to `lib/nedmalloc` and run `scons --static-lib --notests`.
@@ -121,7 +145,7 @@ FlightlessManicotti currently uses [Lua](http://www.lua.org/) version **5.1.4**.
 To build *lua*, go to `lib/lua` and run `scons`
 
 ## MicroAllocator
-FlightlessManicotti currently uses [MicroAllocator](http://code.google.com/p/microallocator) **r5**.
+FlightlessManicotti currently uses [MicroAllocator](http://codesuppository.blogspot.com/2009/09/free-open-source-micro-allocator-in-c.html) [**r5**](http://code.google.com/p/microallocator).
 
 ### Building
 To build *MicroAllocator* go to `lib/MicroAllocator` and run `scons`.
