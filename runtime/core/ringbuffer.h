@@ -32,56 +32,56 @@ GC_DECLARE_RINGBUFFER_TYPE(int);
 // Macros
 #define gc_ringbuffer(T) gc_ringbuffer_##T
 
-/// Initializes a ring-buffer using a provided buffer.
-///
-/// This function does not allocate any memory. A ring-buffer initialized using
-/// this function should not call gc_free_ringbuffer.
-///
-/// @param[in] T The type of the ring-buffer 
-/// @param[out] ringbuffer ring-buffer to initialize.
-/// @param[in] size The size of the buffer parameter.
-/// @param[in] buffer The buffer of memory used to back the ring-buffer.
-/// @param[in] mutex The mutex to use for this ring-buffer.
+//! Initializes a ring-buffer using a provided buffer.
+//!
+//! This function does not allocate any memory. A ring-buffer initialized using
+//! this function should not call gc_free_ringbuffer.
+//!
+//! @param[in] T The type of the ring-buffer 
+//! @param[out] ringbuffer ring-buffer to initialize.
+//! @param[in] size The size of the buffer parameter.
+//! @param[in] buffer The buffer of memory used to back the ring-buffer.
+//! @param[in] mutex The mutex to use for this ring-buffer.
 #define gc_init_ringbuffer(T, ringbuffer, size, buffer, mtx) gc_init_ringbuffer_##T(ringbuffer, size, buffer, mtx)
 
 
-/// Initializes a ring-buffer using memory allocated by the function.
-///
-/// Ring-buffer initialized using this function must call gc_free_ringbuffer
-/// to free the associated memory.
-///
-/// @param[in] T The type of the ring-buffer 
-/// @param[out] ringbuffer The ring-buffer to initialize.
-/// @param[in] size The size of the memory to allocate.
-/// @return GC_SUCCESS if the allocation was successful.
-///         GC_ERROR if the allocation failed.
+//! Initializes a ring-buffer using memory allocated by the function.
+//!
+//! Ring-buffer initialized using this function must call gc_free_ringbuffer
+//! to free the associated memory.
+//!
+//! @param[in] T The type of the ring-buffer 
+//! @param[out] ringbuffer The ring-buffer to initialize.
+//! @param[in] size The size of the memory to allocate.
+//! @return GC_SUCCESS if the allocation was successful.
+//!         GC_ERROR if the allocation failed.
 #define gc_alloc_ringbuffer(T, ringbuffer, size) gc_alloc_ringbuffer_##T(ringbuffer, size)
 
-/// Frees the memory associated with a ring-buffer initialized using gc_alloc_ringbuffer.
-///
-/// @attention You should only call this funtion on ring-buffer initialized 
-/// using gc_alloc_ringbuffer.
-///
-/// @param[in] T The type of the ring-buffer 
-/// @param queue[out] The ring-buffer to free.
+//! Frees the memory associated with a ring-buffer initialized using gc_alloc_ringbuffer.
+//!
+//! @attention You should only call this funtion on ring-buffer initialized 
+//! using gc_alloc_ringbuffer.
+//!
+//! @param[in] T The type of the ring-buffer 
+//! @param queue[out] The ring-buffer to free.
 #define gc_free_ringbuffer(T, ringbuffer) gc_free_ringbuffer_##T(ringbuffer)
 
-/// Reserve a chunk of memory in a ring-buffer.
-///
-/// @param[in] T The type of the ring-buffer 
-/// @param[in,out] ringbuffer The ring-buffer from which to reserve the memory.
-/// @param[in] item The item to enqueue.
-/// @return GC_SUCCESS if successful.
-///         GC_ERROR if the memory reservation failed.
+//! Reserve a chunk of memory in a ring-buffer.
+//!
+//! @param[in] T The type of the ring-buffer 
+//! @param[in,out] ringbuffer The ring-buffer from which to reserve the memory.
+//! @param[in] item The item to enqueue.
+//! @return GC_SUCCESS if successful.
+//!         GC_ERROR if the memory reservation failed.
 #define gc_reserve_ringbuffer(T, ringbuffer, item) gc_reserve_ringbuffer_##T(ringbuffer, item)
 
-/// Retrieve a chunk of memory from a ring-buffer.
-///
-/// @param[in] T The type of the ring-buffer 
-/// @param[in,out] ringbuffer The ring-buffer from which to retrieve the memory.
-/// @param[out] item The location to store the recovered memory.
-/// @return GC_SUCCESS if the memory was recovered successfully.
-///         GC_ERROR if the ring-buffer was empty.
+//! Retrieve a chunk of memory from a ring-buffer.
+//!
+//! @param[in] T The type of the ring-buffer 
+//! @param[in,out] ringbuffer The ring-buffer from which to retrieve the memory.
+//! @param[out] item The location to store the recovered memory.
+//! @return GC_SUCCESS if the memory was recovered successfully.
+//!         GC_ERROR if the ring-buffer was empty.
 #define gc_retrieve_ringbuffer(T, ringbuffer, item) gc_retrieve_ringbuffer_##T(ringbuffer, item)
 
 #ifdef __cplusplus

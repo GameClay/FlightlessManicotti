@@ -177,30 +177,30 @@ Comments can use both C `/* ... */` and C++ `// ...` styles. I prefer the C++ st
 Doxygen comments, however, must follow the specified convention.
 
 #### Doxygen Comment Style
-Doxygen comments will use the triple-slash style `///`.
+Doxygen comments will use C++ style comments followed by a bang `//!`.
 
 ##### Doxygen tags
 All Doxygen tags should use the `@` character to denote a tag, for example `@tag` 
 
 ##### Inline documentation.
-    ///< Inline doccumentation should use the '<' notation.
+    //!< Inline doccumentation will use this notation.
     
 ##### Documentation blocks.
-    /// Autobrief is a single line that ends with a peroid.
-    /// 
-    /// Detailed description may be many lines, but in between
-    /// section there should be a blank line.
-    /// 
-    /// @note Note blocks come after details.
-    /// 
-    /// @attention Attention blocks come after note blocks.
-    ///            If you need more than one line for any tag,
-    ///            it should be indented past that tag.
-    /// 
-    /// @param name[in/out] Parameters should include 'in' and/or 'out' 
-    ///        to indicate the usage of the parameter. 
-    /// @return Return value should be specified in the same section as 
-    ///         the parameters.
+    //! Autobrief is a single line that ends with a peroid.
+    //! 
+    //! Detailed description may be many lines, but in between
+    //! section there should be a blank line.
+    //! 
+    //! @note Note blocks come after details.
+    //! 
+    //! @attention Attention blocks come after note blocks.
+    //!            If you need more than one line for any tag,
+    //!            it should be indented past that tag.
+    //! 
+    //! @param name[in/out] Parameters should include 'in' and/or 'out' 
+    //!        to indicate the usage of the parameter. 
+    //! @return Return value should be specified in the same section as 
+    //!         the parameters.
 
 #### Types
 Use standard types unless not possible. This is a short table of types and the header needed to use them.
@@ -247,3 +247,15 @@ The scripting language for FlightlessManicotti is [Lua](http://www.lua.org/).
 
 ### Code Convention
 I haven't used Lua enough yet to put together a code convention.
+
+#### Indentation and Whitespace
+
+#### Comments
+
+#### Doxygen Comment Style
+Doxygen support for Lua is achieved using [lua2dox](http://github.com/alecchen/doxygen-lua)
+
+Doxygen comments will use this notation `--!` 
+
+##### Doxygen tags
+All Doxygen tags should use the `@` character to denote a tag, for example `@tag`
