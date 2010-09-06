@@ -20,7 +20,7 @@ This project may be used with projects which use version 3 of the GPL. Please se
 If the Apache 2 license is incompatible with your project, and that project is an implementation of a C standard, please contact us and we will work something out.
 
 ## Platform Compatibility
-FlightlessManicotti is intended for use across many architectures and operating systems. All attempts will be made to keep compatibility with the widest range of platforms.
+FlightlessManicotti is intended for use across many architectures and operating systems. While all attempts will be made to keep compatibility with the widest range of platforms, the project does have priorities.
 
 ### Architecture Priorities
 * ARM
@@ -55,16 +55,18 @@ At its core, FlightlessManicotti is an implementation of several ideas and archi
 ## Runtime
 The runtime is a shared library, but can be compiled as a static library if necessary for the target-platform. The runtime is fast, minimal, and focused on real-time tasks. 
 
-The runtime appears to be 'missing' several features which you would expect. This is intentional.
+The runtime appears to be 'missing' several features which you would expect.
 
 * Resource loading.
 * String management.
 * File format conversion.
 
+This is intentional. One of the most important goals of the runtime is __Keep it small__ and these tasks are not real-time tasks. 
+
 ## Scripting
 _Scripting will never be fast enough._
 
-That may not be true, but it is the philosophy for scripting in FlightlessManicotti. The runtime is coded with the assumption that scripting will never be fast enough for real time, so lets not try to do it in real time. This makes it possible to handle scripting tasks in a thread, if the platform supports it, or 
+That may not be true, but it is the philosophy for scripting in FlightlessManicotti. The runtime is coded with the assumption that scripting will never be fast enough for real time, so lets not try to do it in real time. This makes it possible to handle scripting tasks in a thread, if the platform supports it, or allows it to be processed synchronously.
 
 The overwhelming majority of communication to-and-from script will be done via queues using a producer-consumer relationship. Immediate, synchronous handling of events is possible, however it is discouraged unless there is no other way of accomplishing the task.
 
@@ -95,31 +97,31 @@ All library dependencies are included within the repository. These libraries mus
 This section is unfinished.
 
 ## amp
-The source for *amp* is located in FlightlessManicotti at `lib/amp`.
+FlightlessManicotti uses [amp](http://github.com/bjoernknafla/amp) version [a84380c4e2a6d66283bc7c33d70e6fe8f0e1e71f](http://github.com/bjoernknafla/amp/tree/a84380c4e2a6d66283bc7c33d70e6fe8f0e1e71f).
 
 ### Building
 To build *amp* go to `lib/amp` and run `scons`.
 
 ## nedmalloc
-The source for *nedmalloc* is located in FlightlessManicotti at `lib/nedmalloc`.
+FlightlessManicotti uses [nedmalloc](http://github.com/ned14/nedmalloc) version [3f80a00da9d9198788ad8fca0b31f8fcb665a624](http://github.com/ned14/nedmalloc/tree/3f80a00da9d9198788ad8fca0b31f8fcb665a624).
 
 ### Building
 To build *nedmalloc* go to `lib/nedmalloc` and run `scons --static-lib --notests`.
 
 ## uthash
-The source for *uthash* is located in FlightlessManicotti at `lib/nedmalloc/nedtries/uthash`.
+FlightlessManicotti uses [uthash](http://github.com/ned14/uthash) version [22bf8c92ba46b3071f782e932b568597d7a9b374](http://github.com/ned14/uthash/tree/22bf8c92ba46b3071f782e932b568597d7a9b374).
 
 ### Building
 This lib is entirely implemented in headers, and no building is necessary.
 
 ## lua
+FlightlessManicotti currently uses [Lua](http://www.lua.org/) version **5.1.4**.
 
 ### Building
 To build *lua*, go to `lib/lua-5.1.4` and run `scons`
 
 ## MicroAllocator
-FlightlessManicotti currently uses r5 of http://code.google.com/p/microallocator
-The source for *MicroAllocator* is located in FlightlessManicotti at `lib/MicroAllocator`.
+FlightlessManicotti currently uses [MicroAllocator](http://code.google.com/p/microallocator) **r5**.
 
 ### Building
 To build *MicroAllocator* go to `lib/MicroAllocator` and run `scons`.
@@ -217,6 +219,7 @@ The scripting language for FlightlessManicotti is [Lua](http://www.lua.org/).
 * Performs well on embedded devices.
 * Has compatible licensing.
 * Powerful.
+* Has an LLVM front-end, [llvm-lua](http://code.google.com/p/llvm-lua/).
 
 ### Code Convention
 I haven't used Lua enough yet to put together a code convention.
