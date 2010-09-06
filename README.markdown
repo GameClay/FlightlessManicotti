@@ -118,7 +118,7 @@ This lib is entirely implemented in headers, and no building is necessary.
 FlightlessManicotti currently uses [Lua](http://www.lua.org/) version **5.1.4**.
 
 ### Building
-To build *lua*, go to `lib/lua-5.1.4` and run `scons`
+To build *lua*, go to `lib/lua` and run `scons`
 
 ## MicroAllocator
 FlightlessManicotti currently uses [MicroAllocator](http://code.google.com/p/microallocator) **r5**.
