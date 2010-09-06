@@ -19,22 +19,23 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include "nedmalloc.h"
 
-void* default_malloc(size_t size, size_t alignment);
-void default_free(void* pointer);
+void* aligned_nedmalloc(size_t size, size_t alignment);
+void aligned_nedfree(void* pointer);
 
 // Assign default memory operatons
-gc_aligned_malloc_fn_ptr gc_heap_alloc = &default_malloc;
-gc_aligned_free_fn_ptr gc_heap_free = &default_free;
+gc_aligned_malloc_fn_ptr gc_heap_alloc = &aligned_nedmalloc;
+gc_aligned_free_fn_ptr gc_heap_free = &aligned_nedfree;
 gc_memrcpy_fn_ptr gc_microrcpy = &memcpy;
 
 // Default malloc/free
-void* default_malloc(size_t size, size_t align_size)
+void* aligned_nedmalloc(size_t size, size_t align_size)
 {
    char *ptr, *ptr2, *aligned_ptr;
    intptr_t align_mask = align_size - 1;
 
-   ptr = (char*)malloc(size + align_size + sizeof(intptr_t));
+   ptr = (char*)nedmalloc(size + align_size + sizeof(intptr_t));
    if(ptr == NULL) 
       return NULL;
 
@@ -48,9 +49,9 @@ void* default_malloc(size_t size, size_t align_size)
    return aligned_ptr;
 }
 
-void default_free(void* pointer)
+void aligned_nedfree(void* pointer)
 {
    intptr_t* ptr2 = (intptr_t*)pointer - 1;
    void* free_ptr = (char*)pointer - *ptr2;
-   free(free_ptr);
+   nedfree(free_ptr);
 }
