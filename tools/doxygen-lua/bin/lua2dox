@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
 
+BEGIN{unshift @INC, "tools/doxygen-lua/lib"}
+
 use strict;
 use warnings;
 use Doxygen::Lua;
