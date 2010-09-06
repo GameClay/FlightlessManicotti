@@ -89,8 +89,8 @@ FlightlessManicotti will use [LLVM](http://llvm.org/) and [Clang](http://clang.l
 
 Currently Clang can be used to compile by uncommenting a line in the top-level `SConscript` file, but no static analysis has been attempted yet.
 
-# Libs
-All library dependencies are included. The revision should be included in the commit in which they were added. 
+# Libraries
+All library dependencies are included within the repository. These libraries must be built before FlightlessManicotti can be linked.
 
 This section is unfinished.
 
@@ -116,6 +116,13 @@ This lib is entirely implemented in headers, and no building is necessary.
 
 ### Building
 To build *lua*, go to `lib/lua-5.1.4` and run `scons`
+
+## MicroAllocator
+FlightlessManicotti currently uses r5 of http://code.google.com/p/microallocator
+The source for *MicroAllocator* is located in FlightlessManicotti at `lib/MicroAllocator`.
+
+### Building
+To build *MicroAllocator* go to `lib/MicroAllocator` and run `scons`.
 
 # Languages
 ## C

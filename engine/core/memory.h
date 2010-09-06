@@ -74,6 +74,27 @@ GC_API extern gc_aligned_malloc_fn_ptr gc_heap_aligned_alloc;
 /// @param[in] pointer Pointer to the block of memory to free.
 GC_API extern gc_aligned_free_fn_ptr gc_heap_aligned_free;
 
+/// Micro malloc function.
+///
+/// Allocates small amounts of memory 
+///
+/// @see gc_malloc_fn_ptr
+///
+/// @attention If the allocation size is greater than 256 bytes, this
+///            function will assert, and return NULL if NDEBUG is defined.
+///
+/// @param[in] size The size of the allocation.
+/// @return Pointer the block of allocated memory or NULL if the allocation failed.     
+GC_API extern gc_malloc_fn_ptr gc_micro_alloc;
+
+/// Micro free function.
+///
+/// @see gc_free_fn_ptr
+/// @see gc_micro_alloc
+///
+/// @param[in] pointer Pointer to the block of memory to free.
+GC_API extern gc_free_fn_ptr gc_micro_free;
+
 /// Small-block memory copy. 
 ///
 /// This is a memcpy function which is intended for use in small size copies. 
