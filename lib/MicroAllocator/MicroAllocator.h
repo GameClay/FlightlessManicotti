@@ -223,6 +223,8 @@ extern void  micro_free(void* p);
 extern bool  micro_was_allocated(void* p);
 
 #ifdef __cplusplus
+}
+
 class CMicroHeap : public MICRO_ALLOCATOR::MicroHeap
 {
 public:
@@ -236,8 +238,6 @@ public:
   inline void  micro_free(void *p) { f(p); }
   inline void* micro_realloc(void *oldMen,size_t newSize) { return r(oldMen,newSize); }
 };
-
-}
 #endif
 
 #endif
