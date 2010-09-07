@@ -65,7 +65,7 @@ extern "C" {
    \
    _KL_ALLOC_RINGBUFFER_FN_(t)                                 \
    {                                                           \
-      ringbuffer->buffer = kl_heap_alloc(size * sizeof(t));    \
+      ringbuffer->buffer = (t*)kl_heap_alloc(size * sizeof(t)); \
       if(ringbuffer->buffer == NULL)                           \
          return KL_ERROR;                                      \
                                                                \

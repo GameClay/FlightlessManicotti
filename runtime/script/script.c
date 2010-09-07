@@ -41,7 +41,7 @@ struct _kl_script_context
 int kl_script_init(kl_script_context* context, size_t event_queue_size)
 {
    // Allocate script context
-   struct _kl_script_context* sctx = kl_heap_alloc(sizeof(struct _kl_script_context));
+   struct _kl_script_context* sctx = (struct _kl_script_context*)kl_heap_alloc(sizeof(struct _kl_script_context));
 
    if(sctx == NULL)
       return KL_ERROR;
