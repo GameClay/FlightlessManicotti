@@ -91,9 +91,9 @@ extern "C" {
    _KL_RESERVE_RINGBUFFER_FN_(t)                               \
    {                                                           \
       int ret = KL_ERROR;                                      \
+      size_t nend; /* Make Visual Studio happy */              \
       amp_mutex_lock(ringbuffer->mutex);                       \
-      const size_t nend =                                      \
-         (ringbuffer->end + 1) % ringbuffer->size;             \
+      nend = (ringbuffer->end + 1) % ringbuffer->size;         \
       if(nend % ringbuffer->size != ringbuffer->start)         \
       {                                                        \
          kl_microrcpy(ringbuffer->buffer + nend, item, sizeof(t)); \
