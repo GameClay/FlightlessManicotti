@@ -61,15 +61,14 @@ if env.GetOption('threadcachemax'):
         env['CPPDEFINES']+=[("THREADCACHEMAXBINS",maxbins)]
 if env.GetOption('threadcachemaxbins'): env['CPPDEFINES']+=[("THREADCACHEMAXBINS",env.GetOption('threadcachemaxbins'))]
 if env.GetOption('threadcachemaxfreespace'): env['CPPDEFINES']+=[("THREADCACHEMAXFREESPACE",env.GetOption('threadcachemaxfreespace'))]
-if env.GetOption('static-lib'): env['CPPDEFINES']+=[("STATIC_LIB",env.GetOption('static-lib'))]
 
 # Am I in a 32 or 64 bit environment? Note that not specifying --sse doesn't set any x86 or x64 specific options
 # so it's good to go for ANY platform
 if sys.platform=="win32":
     # Even the very latest scons still screws this up :(
-    env['ENV']['INCLUDE']=os.environ['INCLUDE']
-    env['ENV']['LIB']=os.environ['LIB']
-    env['ENV']['PATH']=os.environ['PATH']
+    env['ENV']['INCLUDE']=(os.environ['INCLUDE'] if os.environ.has_key('INCLUDE') else [])
+    env['ENV']['LIB']=(os.environ['LIB'] if os.environ.has_key('LIB') else [])
+    env['ENV']['PATH']=(os.environ['PATH'] if os.environ.has_key('PATH') else [])
     if not env.GetOption('force32') and os.environ.has_key('LIBPATH') and -1!=os.environ['LIBPATH'].find("\\amd64"):
         architecture="x64"
     else:
