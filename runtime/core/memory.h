@@ -26,35 +26,53 @@ extern "C" {
 #include "fm.h"
 #include <stddef.h>
 
+//! @cond
 typedef void* (*gc_malloc_fn_ptr)(size_t size);
 typedef void (*gc_free_fn_ptr)(void* pointer);
 typedef void* (*gc_aligned_malloc_fn_ptr)(size_t size, size_t align_size);
 typedef void (*gc_aligned_free_fn_ptr)(void* pointer);
 typedef void* (*gc_memrcpy_fn_ptr)(void* restrict dest, const void* restrict src, size_t size);
 
+GC_API extern gc_malloc_fn_ptr gc_heap_alloc_ptr;
+GC_API extern gc_free_fn_ptr gc_heap_free_ptr;
+GC_API extern gc_aligned_malloc_fn_ptr gc_heap_aligned_alloc_ptr;
+GC_API extern gc_aligned_free_fn_ptr gc_heap_aligned_free_ptr;
+GC_API extern gc_malloc_fn_ptr gc_micro_alloc_ptr;
+GC_API extern gc_free_fn_ptr gc_micro_free_ptr;
+GC_API extern gc_memrcpy_fn_ptr gc_microrcpy_ptr;
+//! @endcond
+
+//! @defgroup memory_allocation Memory allocation
+//! Functions which control memory allocation.
+//!
+//! All of these functions inline to function pointer acess. You may
+//! change allocation behavior by reassigning the values of the function
+//! pointers to alternate allocators.
+//! @{   
+
 //! Malloc function.
 //!
 //! This aligns all returned memory to a 16-byte boundary.
-//!
-//! @see gc_malloc_fn_ptr
 //!
 //! @note The amount of allocated memory may exceed the size specified.
 //!
 //! @param size The size of the allocation.
 //! @return Pointer the block of allocated memory, aligned on a 16-byte boundary,
 //!         or NULL if the allocation failed.
-GC_API extern gc_malloc_fn_ptr gc_heap_alloc;
+GC_INLINE void* gc_heap_alloc(size_t size)
+{
+   return gc_heap_alloc_ptr(size);
+}
 
 //! Free function.
 //!
-//! @see gc_free_fn_ptr
-//!
 //! @param pointer Pointer to the block of memory to free.
-GC_API extern gc_free_fn_ptr gc_heap_free;
+GC_INLINE void gc_heap_free(void* pointer)
+{
+   gc_heap_free_ptr(pointer);
+}
 
 //! Aligned malloc function.
-//!
-//! @see gc_aligned_malloc_fn_ptr
 //!
 //! @note The amount of allocated memory may exceed the size specified.
 //!
@@ -66,35 +84,43 @@ GC_API extern gc_free_fn_ptr gc_heap_free;
 //! @param align_size The boundary on which the allocated memory should be aligned.
 //! @return Pointer the block of allocated memory, aligned on the specified boundary,
 //!         or NULL if the allocation failed.
-GC_API extern gc_aligned_malloc_fn_ptr gc_heap_aligned_alloc;
+GC_INLINE void* gc_heap_aligned_alloc(size_t size, size_t align_size)
+{
+   return gc_heap_aligned_alloc_ptr(size, align_size);
+}
 
 //! Aligned free function.
 //!
-//! @see gc_aligned_free_fn_ptr
-//!
 //! @param pointer Pointer to the block of memory to free.
-GC_API extern gc_aligned_free_fn_ptr gc_heap_aligned_free;
+GC_INLINE void gc_heap_aligned_free(void* pointer)
+{
+   gc_heap_aligned_free_ptr(pointer);
+}
 
 //! Micro malloc function.
 //!
 //! Allocates small amounts of memory 
-//!
-//! @see gc_malloc_fn_ptr
 //!
 //! @attention If the allocation size is greater than 256 bytes, this
 //!            function will assert, and return NULL if NDEBUG is defined.
 //!
 //! @param size The size of the allocation.
 //! @return Pointer the block of allocated memory or NULL if the allocation failed.     
-GC_API extern gc_malloc_fn_ptr gc_micro_alloc;
+GC_INLINE void* gc_micro_alloc(size_t size)
+{
+   return gc_micro_alloc_ptr(size);
+}
 
 //! Micro free function.
-//!
-//! @see gc_free_fn_ptr
 //! @see gc_micro_alloc
 //!
 //! @param pointer Pointer to the block of memory to free.
-GC_API extern gc_free_fn_ptr gc_micro_free;
+GC_INLINE void gc_micro_free(void* pointer)
+{
+   gc_micro_free_ptr(pointer);
+}
+
+//! @}
 
 //! Small-block memory copy. 
 //!
@@ -102,14 +128,16 @@ GC_API extern gc_free_fn_ptr gc_micro_free;
 //! The implementation behind this function should cause minimal cache pollution
 //! and not do any kind of large-batch optimization. 
 //!
-//! @see gc_memrcpy_fn_ptr
-//!
 //! @param dest Destination address.
 //! @param src Source address.
 //! @param size The size of memory to be copied.
 //! @return The destination address.
-GC_API extern gc_memrcpy_fn_ptr gc_microrcpy;
+GC_INLINE void* gc_microrcpy(void* restrict dest, const void* restrict src, size_t size)
+{
+   return gc_microrcpy_ptr(dest, src, size);
+}
 
+//! @cond
 // Alignment pre/post-fix for VC/GCC
 #if _MSC_VER
 #  define GC_ALIGNPRE(x) __declspec(align(x))
@@ -122,6 +150,7 @@ GC_API extern gc_memrcpy_fn_ptr gc_microrcpy;
 // Struct helpers
 #define GC_ALIGNED_STRUCT_PRE(alignment) typedef GC_ALIGNPRE(alignment) struct
 #define GC_ALIGNED_STRUCT_POST(structname, alignment) structname GC_ALIGNPOST(alignment)
+//! @endcond
 
 #ifdef __cplusplus
 }
