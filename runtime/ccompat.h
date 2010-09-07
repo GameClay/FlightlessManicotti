@@ -25,12 +25,8 @@ extern "C" {
 
 // http://en.wikipedia.org/wiki/C99
 #if __STDC_VERSION__ >= 199901L
-   // "inline" is a keyword
    // "restrict" is a keyword
 #else
-#  ifndef inline
-#     define inline static
-#  endif
 
 // Visual Studio will have a bad time if we #define restrict __restrict
 // because it uses '__declspec(restrict)' in these headers. It's a total

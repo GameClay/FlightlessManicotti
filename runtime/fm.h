@@ -34,6 +34,9 @@ extern "C" {
 #  define GC_API 
 #endif
 
+// Define GC_INLINE as static
+#define GC_INLINE static
+
 // Include core files
 #include "ccompat.h"
 
