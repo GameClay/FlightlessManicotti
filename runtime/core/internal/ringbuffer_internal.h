@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#ifndef _GC_RINGBUFFER_INTERNAL_H_
-#define _GC_RINGBUFFER_INTERNAL_H_
+#ifndef _KL_RINGBUFFER_INTERNAL_H_
+#define _KL_RINGBUFFER_INTERNAL_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,35 +26,35 @@ extern "C" {
 #include <stddef.h>
 #include <amp/amp.h>
 
-#define _GC_DECLARE_RINGBUFFER_STRUCT_(t) \
-   GC_API typedef struct                  \
+#define _KL_DECLARE_RINGBUFFER_STRUCT_(t) \
+   KL_API typedef struct                  \
    {                                      \
       size_t start;                       \
       size_t end;                         \
       size_t size;                        \
       t* buffer;                          \
       amp_mutex_t mutex;                  \
-   } gc_ringbuffer_##t
+   } kl_ringbuffer_##t
 
 
-#define _GC_INIT_RINGBUFFER_FN_(t) void gc_init_ringbuffer_##t(gc_ringbuffer_##t* ringbuffer, size_t size, t* buffer, amp_mutex_t mtx)
-#define _GC_ALLOC_RINGBUFFER_FN_(t) int gc_alloc_ringbuffer_##t(gc_ringbuffer_##t* ringbuffer, size_t size)
-#define _GC_FREE_RINGBUFFER_FN_(t) void gc_free_ringbuffer_##t(gc_ringbuffer_##t* ringbuffer)
-#define _GC_RESERVE_RINGBUFFER_FN_(t) int gc_reserve_ringbuffer_##t(gc_ringbuffer_##t* ringbuffer, const t* item)
-#define _GC_RETRIEVE_RINGBUFFER_FN_(t) int gc_retrieve_ringbuffer_##t(gc_ringbuffer_##t* ringbuffer, t* item)
+#define _KL_INIT_RINGBUFFER_FN_(t) void kl_init_ringbuffer_##t(kl_ringbuffer_##t* ringbuffer, size_t size, t* buffer, amp_mutex_t mtx)
+#define _KL_ALLOC_RINGBUFFER_FN_(t) int kl_alloc_ringbuffer_##t(kl_ringbuffer_##t* ringbuffer, size_t size)
+#define _KL_FREE_RINGBUFFER_FN_(t) void kl_free_ringbuffer_##t(kl_ringbuffer_##t* ringbuffer)
+#define _KL_RESERVE_RINGBUFFER_FN_(t) int kl_reserve_ringbuffer_##t(kl_ringbuffer_##t* ringbuffer, const t* item)
+#define _KL_RETRIEVE_RINGBUFFER_FN_(t) int kl_retrieve_ringbuffer_##t(kl_ringbuffer_##t* ringbuffer, t* item)
 
 // Declare a ringbuffer type
-#define GC_DECLARE_RINGBUFFER_TYPE(t)           \
-   _GC_DECLARE_RINGBUFFER_STRUCT_(t);           \
-   extern GC_API _GC_INIT_RINGBUFFER_FN_(t);    \
-   extern GC_API _GC_ALLOC_RINGBUFFER_FN_(t);   \
-   extern GC_API _GC_FREE_RINGBUFFER_FN_(t);    \
-   extern GC_API _GC_RESERVE_RINGBUFFER_FN_(t); \
-   extern GC_API _GC_RETRIEVE_RINGBUFFER_FN_(t)
+#define KL_DECLARE_RINGBUFFER_TYPE(t)           \
+   _KL_DECLARE_RINGBUFFER_STRUCT_(t);           \
+   extern KL_API _KL_INIT_RINGBUFFER_FN_(t);    \
+   extern KL_API _KL_ALLOC_RINGBUFFER_FN_(t);   \
+   extern KL_API _KL_FREE_RINGBUFFER_FN_(t);    \
+   extern KL_API _KL_RESERVE_RINGBUFFER_FN_(t); \
+   extern KL_API _KL_RETRIEVE_RINGBUFFER_FN_(t)
 
 // Implement a ringbuffer type
-#define GC_IMPLEMENT_RINGBUFFER_TYPE(t)                        \
-   _GC_INIT_RINGBUFFER_FN_(t)                                  \
+#define KL_IMPLEMENT_RINGBUFFER_TYPE(t)                        \
+   _KL_INIT_RINGBUFFER_FN_(t)                                  \
    {                                                           \
       ringbuffer->buffer = buffer;                             \
       ringbuffer->start = 0;                                   \
@@ -63,23 +63,23 @@ extern "C" {
       ringbuffer->mutex = mtx;                                 \
    }                                                           \
    \
-   _GC_ALLOC_RINGBUFFER_FN_(t)                                 \
+   _KL_ALLOC_RINGBUFFER_FN_(t)                                 \
    {                                                           \
-      ringbuffer->buffer = gc_heap_alloc(size * sizeof(t));    \
+      ringbuffer->buffer = kl_heap_alloc(size * sizeof(t));    \
       if(ringbuffer->buffer == NULL)                           \
-         return GC_ERROR;                                      \
+         return KL_ERROR;                                      \
                                                                \
       ringbuffer->start = 0;                                   \
       ringbuffer->end = 0;                                     \
       ringbuffer->size = size;                                 \
       amp_mutex_create(&ringbuffer->mutex, AMP_DEFAULT_ALLOCATOR); \
                                                                \
-      return GC_SUCCESS;                                       \
+      return KL_SUCCESS;                                       \
    }                                                           \
    \
-   _GC_FREE_RINGBUFFER_FN_(t)                                  \
+   _KL_FREE_RINGBUFFER_FN_(t)                                  \
    {                                                           \
-      gc_heap_free(ringbuffer->buffer);                        \
+      kl_heap_free(ringbuffer->buffer);                        \
       ringbuffer->buffer = NULL;                               \
       ringbuffer->start = 0;                                   \
       ringbuffer->end = 0;                                     \
@@ -88,33 +88,33 @@ extern "C" {
       ringbuffer->mutex = NULL;                                \
    }                                                           \
    \
-   _GC_RESERVE_RINGBUFFER_FN_(t)                               \
+   _KL_RESERVE_RINGBUFFER_FN_(t)                               \
    {                                                           \
-      int ret = GC_ERROR;                                      \
+      int ret = KL_ERROR;                                      \
       amp_mutex_lock(ringbuffer->mutex);                       \
       const size_t nend =                                      \
          (ringbuffer->end + 1) % ringbuffer->size;             \
       if(nend % ringbuffer->size != ringbuffer->start)         \
       {                                                        \
-         gc_microrcpy(ringbuffer->buffer + nend, item, sizeof(t)); \
+         kl_microrcpy(ringbuffer->buffer + nend, item, sizeof(t)); \
          ringbuffer->end = nend;                               \
-         ret = GC_SUCCESS;                                     \
+         ret = KL_SUCCESS;                                     \
       }                                                        \
       amp_mutex_unlock(ringbuffer->mutex);                     \
       return ret;                                              \
    }                                                           \
    \
-   _GC_RETRIEVE_RINGBUFFER_FN_(t)                              \
+   _KL_RETRIEVE_RINGBUFFER_FN_(t)                              \
    {                                                           \
-      int ret = GC_ERROR;                                      \
+      int ret = KL_ERROR;                                      \
       amp_mutex_lock(ringbuffer->mutex);                       \
       if(ringbuffer->start != ringbuffer->end)                 \
       {                                                        \
          const size_t nstart =                                 \
             (ringbuffer->start + 1) % ringbuffer->size;        \
-         gc_microrcpy(item, ringbuffer->buffer + nstart, sizeof(t)); \
+         kl_microrcpy(item, ringbuffer->buffer + nstart, sizeof(t)); \
          ringbuffer->start = nstart;                           \
-         ret = GC_SUCCESS;                                     \
+         ret = KL_SUCCESS;                                     \
       }                                                        \
       amp_mutex_unlock(ringbuffer->mutex);                     \
       return ret;                                              \

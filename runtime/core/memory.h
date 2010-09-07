@@ -16,8 +16,8 @@
  * limitations under the License.
  */
  
-#ifndef _GC_MEMORY_H_
-#define _GC_MEMORY_H_
+#ifndef _KL_MEMORY_H_
+#define _KL_MEMORY_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,19 +27,19 @@ extern "C" {
 #include <stddef.h>
 
 //! @cond
-typedef void* (*gc_malloc_fn_ptr)(size_t size);
-typedef void (*gc_free_fn_ptr)(void* pointer);
-typedef void* (*gc_aligned_malloc_fn_ptr)(size_t size, size_t align_size);
-typedef void (*gc_aligned_free_fn_ptr)(void* pointer);
-typedef void* (*gc_memrcpy_fn_ptr)(void* restrict dest, const void* restrict src, size_t size);
+typedef void* (*kl_malloc_fn_ptr)(size_t size);
+typedef void (*kl_free_fn_ptr)(void* pointer);
+typedef void* (*kl_aligned_malloc_fn_ptr)(size_t size, size_t align_size);
+typedef void (*kl_aligned_free_fn_ptr)(void* pointer);
+typedef void* (*kl_memrcpy_fn_ptr)(void* restrict dest, const void* restrict src, size_t size);
 
-GC_API extern gc_malloc_fn_ptr gc_heap_alloc_ptr;
-GC_API extern gc_free_fn_ptr gc_heap_free_ptr;
-GC_API extern gc_aligned_malloc_fn_ptr gc_heap_aligned_alloc_ptr;
-GC_API extern gc_aligned_free_fn_ptr gc_heap_aligned_free_ptr;
-GC_API extern gc_malloc_fn_ptr gc_micro_alloc_ptr;
-GC_API extern gc_free_fn_ptr gc_micro_free_ptr;
-GC_API extern gc_memrcpy_fn_ptr gc_microrcpy_ptr;
+KL_API extern kl_malloc_fn_ptr kl_heap_alloc_ptr;
+KL_API extern kl_free_fn_ptr kl_heap_free_ptr;
+KL_API extern kl_aligned_malloc_fn_ptr kl_heap_aligned_alloc_ptr;
+KL_API extern kl_aligned_free_fn_ptr kl_heap_aligned_free_ptr;
+KL_API extern kl_malloc_fn_ptr kl_micro_alloc_ptr;
+KL_API extern kl_free_fn_ptr kl_micro_free_ptr;
+KL_API extern kl_memrcpy_fn_ptr kl_microrcpy_ptr;
 //! @endcond
 
 //! @defgroup memory_allocation Memory allocation
@@ -59,17 +59,17 @@ GC_API extern gc_memrcpy_fn_ptr gc_microrcpy_ptr;
 //! @param size The size of the allocation.
 //! @return Pointer the block of allocated memory, aligned on a 16-byte boundary,
 //!         or NULL if the allocation failed.
-GC_INLINE void* gc_heap_alloc(size_t size)
+KL_INLINE void* kl_heap_alloc(size_t size)
 {
-   return gc_heap_alloc_ptr(size);
+   return kl_heap_alloc_ptr(size);
 }
 
 //! Free function.
 //!
 //! @param pointer Pointer to the block of memory to free.
-GC_INLINE void gc_heap_free(void* pointer)
+KL_INLINE void kl_heap_free(void* pointer)
 {
-   gc_heap_free_ptr(pointer);
+   kl_heap_free_ptr(pointer);
 }
 
 //! Aligned malloc function.
@@ -77,24 +77,24 @@ GC_INLINE void gc_heap_free(void* pointer)
 //! @note The amount of allocated memory may exceed the size specified.
 //!
 //! @attention This function will assert if the align_size == 16. If you want alignment
-//!            on a 16-byte boundary use gc_heap_malloc, which returns 16-byte aligned
+//!            on a 16-byte boundary use kl_heap_malloc, which returns 16-byte aligned
 //!            memory at all times.
 //!
 //! @param size The size of the allocation.
 //! @param align_size The boundary on which the allocated memory should be aligned.
 //! @return Pointer the block of allocated memory, aligned on the specified boundary,
 //!         or NULL if the allocation failed.
-GC_INLINE void* gc_heap_aligned_alloc(size_t size, size_t align_size)
+KL_INLINE void* kl_heap_aligned_alloc(size_t size, size_t align_size)
 {
-   return gc_heap_aligned_alloc_ptr(size, align_size);
+   return kl_heap_aligned_alloc_ptr(size, align_size);
 }
 
 //! Aligned free function.
 //!
 //! @param pointer Pointer to the block of memory to free.
-GC_INLINE void gc_heap_aligned_free(void* pointer)
+KL_INLINE void kl_heap_aligned_free(void* pointer)
 {
-   gc_heap_aligned_free_ptr(pointer);
+   kl_heap_aligned_free_ptr(pointer);
 }
 
 //! Micro malloc function.
@@ -106,18 +106,18 @@ GC_INLINE void gc_heap_aligned_free(void* pointer)
 //!
 //! @param size The size of the allocation.
 //! @return Pointer the block of allocated memory or NULL if the allocation failed.     
-GC_INLINE void* gc_micro_alloc(size_t size)
+KL_INLINE void* kl_micro_alloc(size_t size)
 {
-   return gc_micro_alloc_ptr(size);
+   return kl_micro_alloc_ptr(size);
 }
 
 //! Micro free function.
-//! @see gc_micro_alloc
+//! @see kl_micro_alloc
 //!
 //! @param pointer Pointer to the block of memory to free.
-GC_INLINE void gc_micro_free(void* pointer)
+KL_INLINE void kl_micro_free(void* pointer)
 {
-   gc_micro_free_ptr(pointer);
+   kl_micro_free_ptr(pointer);
 }
 
 //! @}
@@ -132,24 +132,24 @@ GC_INLINE void gc_micro_free(void* pointer)
 //! @param src Source address.
 //! @param size The size of memory to be copied.
 //! @return The destination address.
-GC_INLINE void* gc_microrcpy(void* restrict dest, const void* restrict src, size_t size)
+KL_INLINE void* kl_microrcpy(void* restrict dest, const void* restrict src, size_t size)
 {
-   return gc_microrcpy_ptr(dest, src, size);
+   return kl_microrcpy_ptr(dest, src, size);
 }
 
 //! @cond
 // Alignment pre/post-fix for VC/GCC
 #if _MSC_VER
-#  define GC_ALIGNPRE(x) __declspec(align(x))
-#  define GC_ALIGNPOST(x) 
+#  define KL_ALIGNPRE(x) __declspec(align(x))
+#  define KL_ALIGNPOST(x) 
 #else
-#  define GC_ALIGNPRE(x) 
-#  define GC_ALIGNPOST(x) __attribute__ ((aligned (x)))
+#  define KL_ALIGNPRE(x) 
+#  define KL_ALIGNPOST(x) __attribute__ ((aligned (x)))
 #endif
 
 // Struct helpers
-#define GC_ALIGNED_STRUCT_PRE(alignment) typedef GC_ALIGNPRE(alignment) struct
-#define GC_ALIGNED_STRUCT_POST(structname, alignment) structname GC_ALIGNPOST(alignment)
+#define KL_ALIGNED_STRUCT_PRE(alignment) typedef KL_ALIGNPRE(alignment) struct
+#define KL_ALIGNED_STRUCT_POST(structname, alignment) structname KL_ALIGNPOST(alignment)
 //! @endcond
 
 #ifdef __cplusplus

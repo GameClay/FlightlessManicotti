@@ -16,8 +16,8 @@
  * limitations under the License.
  */
  
-#ifndef _GC_STDATOMIC_H_
-#define _GC_STDATOMIC_H_
+#ifndef _KL_STDATOMIC_H_
+#define _KL_STDATOMIC_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -48,9 +48,9 @@ static bool atomic_compare_exchange_weak(volatile size_t* restrict object, size_
 // Atomic types:
 // NOTE: these are only aligned versions of their normal types with these typedefs
 // they do *not* have all of the 
-typedef GC_ALIGNPRE(16) size_t GC_ALIGNPOST(16) atomic_size_t;
+typedef KL_ALIGNPRE(16) size_t KL_ALIGNPOST(16) atomic_size_t;
 
-typedef GC_ALIGNPRE(16) void* GC_ALIGNPOST(16) atomic_address;
+typedef KL_ALIGNPRE(16) void* KL_ALIGNPOST(16) atomic_address;
 
 #ifdef __cplusplus
 }

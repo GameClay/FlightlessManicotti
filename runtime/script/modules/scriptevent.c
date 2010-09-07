@@ -22,12 +22,12 @@
 #include <lualib.h>
 #include "script/script.h"
 
-static int gc_script_event_dequeue_wrap(lua_State* L)
+static int kl_script_event_dequeue_wrap(lua_State* L)
 {
-   gc_script_context sctx = (gc_script_context)lua_topointer(L, 1);
+   kl_script_context sctx = (kl_script_context)lua_topointer(L, 1);
    
-   gc_script_event event;
-   if(gc_script_event_dequeue(sctx, &event) == GC_SUCCESS)
+   kl_script_event event;
+   if(kl_script_event_dequeue(sctx, &event) == KL_SUCCESS)
    {
       lua_pushstring(L, event.name);
       lua_pushlightuserdata(L, event.context);
@@ -41,24 +41,24 @@ static int gc_script_event_dequeue_wrap(lua_State* L)
    return 1;
 }
 
-static int gc_script_event_enqueue_wrap(lua_State* L)
+static int kl_script_event_enqueue_wrap(lua_State* L)
 {
-   gc_script_context sctx = (gc_script_context)lua_topointer(L, 1);
+   kl_script_context sctx = (kl_script_context)lua_topointer(L, 1);
    
-   gc_script_event event;
-   strncpy(event.name, lua_tostring(L, 2), gc_script_event_name_length);
+   kl_script_event event;
+   strncpy(event.name, lua_tostring(L, 2), kl_script_event_name_length);
    event.context = (void*)lua_topointer(L, 3);
    event.a = lua_tointeger(L, 4);
    event.b = lua_tointeger(L, 5);
    event.c = lua_tointeger(L, 6);
    
-   lua_pushboolean(L, gc_script_event_enqueue(sctx, &event) == GC_SUCCESS);
+   lua_pushboolean(L, kl_script_event_enqueue(sctx, &event) == KL_SUCCESS);
    return 1;
 }
 
 static const struct luaL_reg scriptevent_module [] = {
-    {"enqueue", gc_script_event_enqueue_wrap},
-    {"dequeue", gc_script_event_dequeue_wrap},
+    {"enqueue", kl_script_event_enqueue_wrap},
+    {"dequeue", kl_script_event_dequeue_wrap},
     {NULL, NULL}
 };
 

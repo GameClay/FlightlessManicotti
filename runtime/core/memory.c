@@ -28,16 +28,16 @@ void* aligned_nedmalloc(size_t size, size_t alignment);
 void aligned_nedfree(void* pointer);
 
 // Assign default memory operatons
-gc_malloc_fn_ptr gc_heap_alloc_ptr = &nedmalloc;
-gc_free_fn_ptr gc_heap_free_ptr = &nedfree;
+kl_malloc_fn_ptr kl_heap_alloc_ptr = &nedmalloc;
+kl_free_fn_ptr kl_heap_free_ptr = &nedfree;
 
-gc_aligned_malloc_fn_ptr gc_heap_aligned_alloc_ptr = &aligned_nedmalloc;
-gc_aligned_free_fn_ptr gc_heap_aligned_free_ptr = &aligned_nedfree;
+kl_aligned_malloc_fn_ptr kl_heap_aligned_alloc_ptr = &aligned_nedmalloc;
+kl_aligned_free_fn_ptr kl_heap_aligned_free_ptr = &aligned_nedfree;
 
-gc_malloc_fn_ptr gc_micro_alloc_ptr = &micro_malloc;
-gc_free_fn_ptr gc_micro_free_ptr = &micro_free;
+kl_malloc_fn_ptr kl_micro_alloc_ptr = &micro_malloc;
+kl_free_fn_ptr kl_micro_free_ptr = &micro_free;
 
-gc_memrcpy_fn_ptr gc_microrcpy_ptr = &memcpy;
+kl_memrcpy_fn_ptr kl_microrcpy_ptr = &memcpy;
 
 // Default aligned malloc/free using nedmalloc
 void* aligned_nedmalloc(size_t size, size_t align_size)

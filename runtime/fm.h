@@ -16,8 +16,8 @@
  * limitations under the License.
  */
  
-#ifndef _GC_FLIGHTLESS_MANICOTTI_H_
-#define _GC_FLIGHTLESS_MANICOTTI_H_
+#ifndef _KL_TOPLEVEL_H_
+#define _KL_TOPLEVEL_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,17 +25,17 @@ extern "C" {
 
 // Do dllimport/dllexport if needed
 #if _MSC_VER
-#  ifdef GC_BUILD_LIBRARY
-#     define GC_API __declspec(dllexport)
+#  ifdef KL_BUILD_LIBRARY
+#     define KL_API __declspec(dllexport)
 #  else
-#     define GC_API __declspec(dllimport)
+#     define KL_API __declspec(dllimport)
 #  endif
 #else
-#  define GC_API 
+#  define KL_API 
 #endif
 
-// Define GC_INLINE as static
-#define GC_INLINE static
+// Define KL_INLINE as static
+#define KL_INLINE static
 
 // Include core files
 #include "ccompat.h"

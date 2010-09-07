@@ -16,16 +16,16 @@
  * limitations under the License.
  */
  
-#ifndef _GC_ERROR_CODES_H_
-#define _GC_ERROR_CODES_H_
+#ifndef _KL_ERROR_CODES_H_
+#define _KL_ERROR_CODES_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define GC_SUCCESS         0
-#define GC_ERROR           1
-#define GC_RETRY           2
+#define KL_SUCCESS         0
+#define KL_ERROR           1
+#define KL_RETRY           2
 
 #ifdef __cplusplus
 }

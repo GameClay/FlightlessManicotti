@@ -16,8 +16,8 @@
  * limitations under the License.
  */
  
-#ifndef GC_SCRIPT_H_
-#define GC_SCRIPT_H_
+#ifndef _KL_SCRIPT_H_
+#define _KL_SCRIPT_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,49 +26,49 @@ extern "C" {
 #include "fm.h"
 #include <stdbool.h>
 
-#define gc_script_event_name_length (sizeof(int) * 4)
-GC_API typedef struct
+#define kl_script_event_name_length (sizeof(int) * 4)
+KL_API typedef struct
 {
    //! The event name.
-   char name[gc_script_event_name_length];
+   char name[kl_script_event_name_length];
    
    //! An opaque pointer to a context object, or NULL/nil.
    void* context;
    
    int a, b, c; // struct length should be 64 bytes
-} gc_script_event;
+} kl_script_event;
 
-GC_API typedef struct _gc_script_context* gc_script_context;
+KL_API typedef struct _kl_script_context* kl_script_context;
 
 //! Allocate and initialize a script-task processor.
 //!
-//! @note This function assumes that gc_script_queue has been initialized.
+//! @note This function assumes that kl_script_queue has been initialized.
 //!
 //! @param context This holds the allocated script context.
 //! @param event_queue_size The memory size of the event queue for this script context.
-//! @return GC_SUCCESS if initialization was successful.
-//!         GC_ERROR if initialization failed.
-GC_API int gc_script_init(gc_script_context* context, size_t event_queue_size);
+//! @return KL_SUCCESS if initialization was successful.
+//!         KL_ERROR if initialization failed.
+KL_API int kl_script_init(kl_script_context* context, size_t event_queue_size);
 
 //! Immediately evaluate a script event.
-GC_API int gc_script_evaluate();
+KL_API int kl_script_evaluate();
 
 //! Run a script file
-GC_API int gc_script_run(gc_script_context context, const char* file_name, bool threaded, int argc, const char** argv);
+KL_API int kl_script_run(kl_script_context context, const char* file_name, bool threaded, int argc, const char** argv);
 
 //! Destroy a script-task processor.
 //!
 //! Destroys a script-task processor and frees the associated memory.
 //!
-//! @note This function does not free, or modify gc_script_queue.
+//! @note This function does not free, or modify kl_script_queue.
 //!
 //! @param context This script context will be deallocated.
-GC_API void gc_script_destroy(gc_script_context* context);
+KL_API void kl_script_destroy(kl_script_context* context);
 
 
 // Event-queue manipulation
-GC_API int gc_script_event_enqueue(gc_script_context context, const gc_script_event* event);
-GC_API int gc_script_event_dequeue(gc_script_context context, gc_script_event* event);
+KL_API int kl_script_event_enqueue(kl_script_context context, const kl_script_event* event);
+KL_API int kl_script_event_dequeue(kl_script_context context, kl_script_event* event);
 
 #ifdef __cplusplus
 }

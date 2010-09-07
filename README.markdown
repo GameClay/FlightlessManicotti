@@ -80,18 +80,18 @@ Unfortunately one can only go so far using this methodology, and so several allo
 
 **Todo**: Ensure SWIG, and all libs use these functions.
 
-### gc_heap_alloc
-The `gc_heap_alloc` and `gc_heap_free` functions allocate and free memory aligned on a 16-byte boundary.
+### kl_heap_alloc
+The `kl_heap_alloc` and `kl_heap_free` functions allocate and free memory aligned on a 16-byte boundary.
 
 These function pointers default to results from the [nedmalloc](http://www.nedprod.com/programs/portable/nedmalloc/) library.
 
-### gc_heap_aligned_alloc
-The `gc_heap_aligned_alloc` and `gc_heap_aligned_free` functions allocate and free memory which is aligned to a boundary other than 16-bytes. `gc_heap_aligned_alloc` will assert if an alignment of 16-bytes is requested, as you should be using `gc_heap_alloc` instead.
+### kl_heap_aligned_alloc
+The `kl_heap_aligned_alloc` and `kl_heap_aligned_free` functions allocate and free memory which is aligned to a boundary other than 16-bytes. `kl_heap_aligned_alloc` will assert if an alignment of 16-bytes is requested, as you should be using `kl_heap_alloc` instead.
 
 These function pointers default to a function which manually aligns results from the [nedmalloc](http://www.nedprod.com/programs/portable/nedmalloc/) library.
 
-### gc_micro_alloc
-The `gc_micro_alloc` and `gc_micro_free` functions allocate and free memory which is 256-bytes or smaller. Any allocation greater than 256-bytes will cause an assertion.
+### kl_micro_alloc
+The `kl_micro_alloc` and `kl_micro_free` functions allocate and free memory which is 256-bytes or smaller. Any allocation greater than 256-bytes will cause an assertion.
 
 These function pointers default to results from the [MicroAllocator](http://codesuppository.blogspot.com/2009/09/free-open-source-micro-allocator-in-c.html) library.
 
@@ -238,7 +238,7 @@ If a header is not available on a given platform/compiler, than a header will be
 * [You will use const](http://gamesfromwithin.com/the-const-nazi).
 
 #### Naming
-* Prefix all exposed symbol names with 'gc', and an underscore between 'gc' and the symbol name. `gc_foo()`
+* Prefix all exposed symbol names with 'kl', and an underscore between 'kl' and the symbol name. `kl_foo()`
 
 ## Lua
 The scripting language for FlightlessManicotti is [Lua](http://www.lua.org/). 

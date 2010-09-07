@@ -15,8 +15,8 @@
  * limitations under the License.
  */
  
-#ifndef _GC_LOGGER_H_
-#define _GC_LOGGER_H_
+#ifndef _KL_LOGGER_H_
+#define _KL_LOGGER_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,10 +24,10 @@ extern "C" {
 
 #include "fm.h"
 
-#define GC_LL_NRM 0
-#define GC_LL_ERR 1
+#define KL_LL_NRM 0
+#define KL_LL_ERR 1
 
-#define GC_LOGF(ll, fmt, args...) switch(ll) { case GC_LL_ERR: fprintf(stderr, fmt, ## args); break; default: fprintf(stdout, fmt, ## args); }
+#define KL_LOGF(ll, fmt, args...) switch(ll) { case KL_LL_ERR: fprintf(stderr, fmt, ## args); break; default: fprintf(stdout, fmt, ## args); }
 
 #ifdef __cplusplus
 }

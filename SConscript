@@ -66,7 +66,7 @@ if (sys.platform == 'win32' or sys.platform == 'cygwin'):
     platform_cpppath = ['std/C99']
 
 # Build FM dynamic library
-lib_env.Append(CPPDEFINES=['GC_BUILD_LIBRARY'])
+lib_env.Append(CPPDEFINES=['KL_BUILD_LIBRARY'])
 core_lib = lib_env.SharedLibrary('FlightlessManicotti', 
 	lib_files,
 	CPPPATH = ['.','runtime','lib/amp/src/c','lib/lua/src','lib/nedmalloc','lib/MicroAllocator'] + platform_cpppath,

@@ -29,28 +29,28 @@
 // Extern the lua module loaders
 extern int luaopen_scriptevent(lua_State* L);
 
-GC_DECLARE_RINGBUFFER_TYPE(gc_script_event);
-GC_IMPLEMENT_RINGBUFFER_TYPE(gc_script_event);
+KL_DECLARE_RINGBUFFER_TYPE(kl_script_event);
+KL_IMPLEMENT_RINGBUFFER_TYPE(kl_script_event);
 
-struct _gc_script_context
+struct _kl_script_context
 {
    lua_State* lua_state;
-   gc_ringbuffer(gc_script_event) event_buffer;
+   kl_ringbuffer(kl_script_event) event_buffer;
 };
 
-int gc_script_init(gc_script_context* context, size_t event_queue_size)
+int kl_script_init(kl_script_context* context, size_t event_queue_size)
 {
    // Allocate script context
-   struct _gc_script_context* sctx = gc_heap_alloc(sizeof(struct _gc_script_context));
+   struct _kl_script_context* sctx = kl_heap_alloc(sizeof(struct _kl_script_context));
 
    if(sctx == NULL)
-      return GC_ERROR;
+      return KL_ERROR;
       
    // Allocate event buffer
-   if(gc_alloc_ringbuffer(gc_script_event, &sctx->event_buffer, event_queue_size) != GC_SUCCESS)
+   if(kl_alloc_ringbuffer(kl_script_event, &sctx->event_buffer, event_queue_size) != KL_SUCCESS)
    {
-      gc_heap_free(sctx);
-      return GC_ERROR;
+      kl_heap_free(sctx);
+      return KL_ERROR;
    }
 
    // Start up lua
@@ -65,7 +65,7 @@ int gc_script_init(gc_script_context* context, size_t event_queue_size)
    
    // Return
    (*context) = sctx;
-   return GC_SUCCESS;
+   return KL_SUCCESS;
 }
 
 typedef struct
@@ -81,11 +81,11 @@ void _on_lua_err(lua_State* state)
    size_t str_sz;
    int top_idx = lua_gettop(state);
    const char* syntax_err = lua_tolstring(state, top_idx, &str_sz);
-   GC_LOGF(GC_LL_ERR, "%s\n", syntax_err);
+   KL_LOGF(KL_LL_ERR, "%s\n", syntax_err);
    lua_pop(state, 1);
 }
 
-void _gc_script_run_internal(void* arg)
+void _kl_script_run_internal(void* arg)
 {
    script_run_arg* run_arg = (script_run_arg*)arg;
    
@@ -103,7 +103,7 @@ void _gc_script_run_internal(void* arg)
       
       default:
       {
-         GC_LOGF(GC_LL_ERR, "Unknown error loading file '%s'", run_arg->file_name);
+         KL_LOGF(KL_LL_ERR, "Unknown error loading file '%s'", run_arg->file_name);
       }
    }
    
@@ -136,14 +136,14 @@ void _gc_script_run_internal(void* arg)
 
          default:
          {
-            GC_LOGF(GC_LL_ERR, "Unknown error calling main function.");
+            KL_LOGF(KL_LL_ERR, "Unknown error calling main function.");
             break;
          }
       }
    }
 }
 
-int gc_script_run(gc_script_context context, const char* file_name, bool threaded, int argc, const char** argv)
+int kl_script_run(kl_script_context context, const char* file_name, bool threaded, int argc, const char** argv)
 {
    //
    script_run_arg run_args;
@@ -162,57 +162,57 @@ int gc_script_run(gc_script_context context, const char* file_name, bool threade
             amp_thread_t script_thread;
 
             int create_res = amp_thread_create_and_launch(&script_thread, AMP_DEFAULT_ALLOCATOR, 
-               &run_args, _gc_script_run_internal);
+               &run_args, _kl_script_run_internal);
             
             if(create_res != 0)
-               return GC_ERROR;
+               return KL_ERROR;
             
             amp_thread_join_and_destroy(&script_thread, AMP_DEFAULT_ALLOCATOR);
          }
          else
-            _gc_script_run_internal(&run_args);
-         return GC_SUCCESS;
+            _kl_script_run_internal(&run_args);
+         return KL_SUCCESS;
       }
       
       // Possible errors
       case LUA_ERRFILE:
       {
-         GC_LOGF(GC_LL_ERR, "File '%s' not found.\n", file_name);
-         return GC_ERROR;
+         KL_LOGF(KL_LL_ERR, "File '%s' not found.\n", file_name);
+         return KL_ERROR;
       }
       case LUA_ERRSYNTAX:
       {
          _on_lua_err(context->lua_state);
-         return GC_ERROR;
+         return KL_ERROR;
       }
       case LUA_ERRMEM: 
       {
-         GC_LOGF(GC_LL_ERR, "lua ran out of memory opening file %s.\n", file_name);
-         return GC_ERROR;
+         KL_LOGF(KL_LL_ERR, "lua ran out of memory opening file %s.\n", file_name);
+         return KL_ERROR;
       }
       default:
       {
-         return GC_ERROR;
+         return KL_ERROR;
       }
    }
 }
 
-void gc_script_destroy(gc_script_context* context)
+void kl_script_destroy(kl_script_context* context)
 {
-   struct _gc_script_context* sctx = *context;
+   struct _kl_script_context* sctx = *context;
 
    lua_close(sctx->lua_state);
-   gc_free_ringbuffer(gc_script_event, &sctx->event_buffer);
+   kl_free_ringbuffer(kl_script_event, &sctx->event_buffer);
    
-   gc_heap_free(sctx);
+   kl_heap_free(sctx);
 }
 
-int gc_script_event_enqueue(gc_script_context context, const gc_script_event* event)
+int kl_script_event_enqueue(kl_script_context context, const kl_script_event* event)
 {
-   return gc_reserve_ringbuffer(gc_script_event, &context->event_buffer, event);
+   return kl_reserve_ringbuffer(kl_script_event, &context->event_buffer, event);
 }
 
-int gc_script_event_dequeue(gc_script_context context, gc_script_event* event)
+int kl_script_event_dequeue(kl_script_context context, kl_script_event* event)
 {
-   return gc_retrieve_ringbuffer(gc_script_event, &context->event_buffer, event);
+   return kl_retrieve_ringbuffer(kl_script_event, &context->event_buffer, event);
 }
