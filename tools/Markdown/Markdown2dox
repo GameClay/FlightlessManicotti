@@ -1,0 +1,24 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use File::Basename;
+
+my $input = $ARGV[0];
+my $dox_page_id = basename($input);
+my $dox_page_title = basename($input);
+my $html_result = `perl tools/Markdown/Markdown.pl --html4tags $input`;
+my $dox_page_cmd = "\@page $dox_page_id $dox_page_title";
+if($dox_page_id eq "mainpage.markdown" || $dox_page_id eq "README.markdown") { $dox_page_cmd = "\@mainpage $dox_page_title"; }
+
+my $dox_result = <<END
+/*!
+$dox_page_cmd
+\@htmlonly
+$html_result
+\@endhtmlonly
+*/
+END
+; # This ends the previous block
+
+print $dox_result;
