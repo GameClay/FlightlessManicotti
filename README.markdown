@@ -38,9 +38,6 @@ At its core, FlightlessManicotti is an implementation of several ideas and archi
 
 ## Goals
 ### Runtime
-* Keep it small.
-* Keep it simple.
-* Keep it fast.
 * Target many-core platforms.
 * Be able to run in a single thread.
 * Trust the programmer.
@@ -53,6 +50,8 @@ At its core, FlightlessManicotti is an implementation of several ideas and archi
 * Empower the scripter.
 
 ## Runtime
+_Keep it small. Keep it simple. Keep it fast._
+
 The runtime is a shared library, but can be compiled as a static library if necessary for the target-platform. The runtime is fast, minimal, and focused on real-time tasks. 
 
 The runtime appears to be 'missing' several features which you would expect.
@@ -61,7 +60,7 @@ The runtime appears to be 'missing' several features which you would expect.
 * String management.
 * File format conversion.
 
-This is intentional. One of the most important goals of the runtime is __Keep it small__ and these tasks are not real-time tasks. 
+This is intentional. These are not real-time tasks and should, instead, be performed in script.
 
 ## Scripting
 _Scripting will never be fast enough._

@@ -591,7 +591,8 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = /Users/pat/Code/FlightlessManicotti/runtime \
-                         /Users/pat/Code/FlightlessManicotti/example
+                         /Users/pat/Code/FlightlessManicotti/example \
+                         README.markdown
 
 # This tag can be used to specify the character encoding of the source files 
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is 
@@ -621,7 +622,8 @@ FILE_PATTERNS          = *.ii \
                          *.cs \
                          *.inc \
                          *.py \
-                         *.lua
+                         *.lua \
+                         *.markdown
 
 # The RECURSIVE tag can be used to turn specify whether or not subdirectories 
 # should be searched for input files as well. Possible values are YES and NO. 
@@ -700,7 +702,8 @@ INPUT_FILTER           =
 # info on how filters are used. If FILTER_PATTERNS is empty, INPUT_FILTER 
 # is applied to all files.
 
-FILTER_PATTERNS        = *.lua=doc/doxygen-lua/bin/lua2dox
+FILTER_PATTERNS        = *.lua=tools/doxygen-lua/bin/lua2dox \
+                         *.markdown=tools/Markdown/Markdown2dox
 
 # If the FILTER_SOURCE_FILES tag is set to YES, the input filter (if set using 
 # INPUT_FILTER) will be used to filter the input files when producing source 
