@@ -1,5 +1,6 @@
 /* -*- Mode: C; tab-width: 3; c-basic-offset: 3; indent-tabs-mode: nil -*- */
 /* vim: set filetype=C tabstop=3 softtabstop=3 shiftwidth=3 expandtab: */
+
 /* FlightlessManicotti -- Copyright (C) 2009-2010 GameClay LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,15 +16,22 @@
  * limitations under the License.
  */
  
-#include "core/memory.h"
-#include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
 #include <stdbool.h>
 #include <assert.h>
-#include "nedmalloc.h"
+
+#include "fm.h"
+#include "core/memory.h"
+
+// Extern the memory functions used by default
+extern void* nedmalloc(size_t size);
+extern void nedfree(void *mem);
+extern void* nedmalloc2(size_t size, size_t alignment, unsigned flags);
+extern void nedfree2(void *mem, unsigned flags);
+
 #include "MicroAllocator.h"
 
+// Forward declare
 void* aligned_nedmalloc(size_t size, size_t alignment);
 void aligned_nedfree(void* pointer);
 
@@ -43,26 +51,10 @@ kl_memrcpy_fn_ptr kl_microrcpy_ptr = &memcpy;
 void* aligned_nedmalloc(size_t size, size_t align_size)
 {
    assert(align_size != 16); 
-   char *ptr, *ptr2, *aligned_ptr;
-   intptr_t align_mask = align_size - 1;
-
-   ptr = (char*)nedmalloc(size + align_size + sizeof(intptr_t));
-   if(ptr == NULL) 
-      return NULL;
-
-   ptr2 = ptr + sizeof(intptr_t);
-   aligned_ptr = ptr2 + (align_size - ((size_t)ptr2 & align_mask));
-
-
-   ptr2 = aligned_ptr - sizeof(intptr_t);
-   *((intptr_t*)ptr2) = (intptr_t)(aligned_ptr - ptr);
-
-   return aligned_ptr;
+   return nedmalloc2(size, align_size, 0); // No flags
 }
 
 void aligned_nedfree(void* pointer)
 {
-   intptr_t* ptr2 = (intptr_t*)pointer - 1;
-   void* free_ptr = (char*)pointer - *ptr2;
-   nedfree(free_ptr);
+   nedfree2(pointer, 0); // No flags
 }

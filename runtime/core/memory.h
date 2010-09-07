@@ -24,7 +24,6 @@ extern "C" {
 #endif
 
 #include "fm.h"
-#include <stddef.h>
 
 //! @cond
 typedef void* (*kl_malloc_fn_ptr)(size_t size);
