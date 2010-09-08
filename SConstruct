@@ -107,7 +107,8 @@ dependencies = [
     ['lua','src'],
     ['MicroAllocator','.'],
     ['nedmalloc','.'],
-    ['sqlite','.']
+    ['sqlite','.'],
+    ['lsqlite3','.'],
 ]
 
 dep_build_objects = []
