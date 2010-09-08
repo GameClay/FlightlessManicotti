@@ -203,7 +203,7 @@ If a header is not available on a given platform/compiler, than a header will be
 
 #### Memory usage 
 * You will align your memory.
-* You will use restrict.
+* You will use restrict (this is defined to KL_RESTRICT for portability).
 * [You will use const](http://gamesfromwithin.com/the-const-nazi).
 
 #### Naming

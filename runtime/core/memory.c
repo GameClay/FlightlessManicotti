@@ -78,7 +78,7 @@ void kl_heap_aligned_free(void* pointer)
    kl_heap_aligned_free_ptr(pointer);
 }
 
-void* kl_microrcpy(void* restrict dest, const void* restrict src, size_t size)
+void* kl_microrcpy(void* KL_RESTRICT dest, const void* KL_RESTRICT src, size_t size)
 {
    return kl_microrcpy_ptr(dest, src, size);
 }

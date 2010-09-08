@@ -31,7 +31,7 @@ typedef void* (*kl_malloc_fn_ptr)(size_t size);
 typedef void (*kl_free_fn_ptr)(void* pointer);
 typedef void* (*kl_aligned_malloc_fn_ptr)(size_t size, size_t align_size);
 typedef void (*kl_aligned_free_fn_ptr)(void* pointer);
-typedef void* (*kl_memrcpy_fn_ptr)(void* restrict dest, const void* restrict src, size_t size);
+typedef void* (*kl_memrcpy_fn_ptr)(void* KL_RESTRICT dest, const void* KL_RESTRICT src, size_t size);
 
 KL_API extern kl_malloc_fn_ptr kl_heap_alloc_ptr;
 KL_API extern kl_free_fn_ptr kl_heap_free_ptr;
@@ -114,7 +114,7 @@ KL_API void kl_micro_free(void* pointer);
 //! @param src Source address.
 //! @param size The size of memory to be copied.
 //! @return The destination address.
-KL_API void* kl_microrcpy(void* restrict dest, const void* restrict src, size_t size);
+KL_API void* kl_microrcpy(void* KL_RESTRICT dest, const void* KL_RESTRICT src, size_t size);
 
 //! @cond
 // Alignment pre/post-fix for VC/GCC

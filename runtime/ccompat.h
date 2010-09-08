@@ -23,23 +23,13 @@
 extern "C" {
 #endif
 
-// http://en.wikipedia.org/wiki/C99
+
 #if __STDC_VERSION__ >= 199901L
-   // "restrict" is a keyword
+#  define KL_RESTRICT restrict
+#elif _MSC_VER
+#  define KL_RESTRICT __restrict
 #else
-
-// Visual Studio will have a bad time if we #define restrict __restrict
-// because it uses '__declspec(restrict)' in these headers. It's a total
-// hack, but include these first, and then redefine 'restrict'
-#  ifdef _MSC_VER
-#     include <stdlib.h>
-#     include <malloc.h>
-#  endif
-
-#  ifndef restrict
-#     define restrict __restrict
-#  endif
-
+#  define KL_RESTRICT 
 #endif
 
 #ifdef __cplusplus
