@@ -238,3 +238,18 @@ Doxygen comments will use this notation `--!`
 
 ##### Doxygen tags
 All Doxygen tags should use the `@` character to denote a tag, for example `@tag`
+
+# Credits
+
+## Authors
+* [Pat Wilson](http://github.com/ZeroStride)
+
+## Special Thanks]
+* [Robert Blanchet](http://github.com/xgalaxy)
+* Clark Fagot
+* [Mark Frohnmayer](http://github.com/nardo)
+* [Ben Garney](http://github.com/bengarney)
+* [Andy Maloney](http://github.com/asmaloney)
+* [Brian Richardson](http://github.com/bzztbomb)
+* [Alex Scarborough](http://github.com/alexsc)
+* John Quigley
