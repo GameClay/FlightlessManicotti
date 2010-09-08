@@ -1,8 +1,6 @@
 # Flightless Manicotti
 A free-time project.
 
-Contains some cross-platform implementation of the C99, and C1x standards.
-
 ## Untested Code
 This code is untested. Most of it has been coded on a couch. Some of it may be kind of stupid, too.
 
@@ -15,9 +13,6 @@ Each code file has its license located at the top of the file. If any file is mi
 
 ### GPL Compatibility
 This project may be used with projects which use version 3 of the GPL. Please see [Apache License v2.0 and GPL Compatibility](http://www.apache.org/licenses/GPL-compatibility.html) for more details.
-
-### Alternate Licensing
-If the Apache 2 license is incompatible with your project, and that project is an implementation of a C standard, please contact us and we will work something out.
 
 ## Platform Compatibility
 FlightlessManicotti is intended for use across many architectures and operating systems. While all attempts will be made to keep compatibility with the widest range of platforms, the project does have priorities.

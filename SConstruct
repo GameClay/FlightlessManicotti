@@ -47,5 +47,9 @@ else:
 env['KL_LIBPATH'] = [os.path.abspath('runtime/' + variant)]
 env['KL_INCPATH'] = [os.path.abspath('runtime/')]
 
+# If this is Visual Studio, it doesn't have some C99 headers
+if sys.platform =="win32":
+    env['KL_INCPATH'] += [os.path.abspath('std/C99')]
+    
 runtime_library = SConscript('runtime/SConscript', variant_dir='runtime/'+variant, duplicate=False, exports=['env','variant'])
 example = SConscript('example/SConscript', variant_dir='example/'+variant, duplicate=False, exports=['env','variant'])
