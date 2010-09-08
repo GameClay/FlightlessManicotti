@@ -28,6 +28,16 @@ FlightlessManicotti is intended for use across many architectures and operating 
 * MacOS
 * Linux
 
+# Dependencies
+All dependencies are included within the repository, and are built as part of the standard build process.
+
+## Libraries
+* [amp](http://github.com/bjoernknafla/amp) revision bjoernknafla/amp@a84380c4e2a6d66283bc7c33d70e6fe8f0e1e71f
+* [nedmalloc](http://www.nedprod.com/programs/portable/nedmalloc/) revision ned14/nedmalloc@3f80a00da9d9198788ad8fca0b31f8fcb665a624
+* [uthash](http://github.com/ned14/uthash) revision ned14/uthash@22bf8c92ba46b3071f782e932b568597d7a9b374
+* [Lua](http://www.lua.org/) version **5.1.4**
+* [MicroAllocator](http://codesuppository.blogspot.com/2009/09/free-open-source-micro-allocator-in-c.html) version [5](http://code.google.com/p/microallocator/source/browse/?r=5)
+
 # Philosophy
 At its core, FlightlessManicotti is an implementation of several ideas and architectural-philosophies that my colleagues, and I have talked about over beer for several years. 
 
@@ -116,41 +126,6 @@ FlightlessManicotti uses [Doxygen](http://www.doxygen.org/) to generate document
 FlightlessManicotti includes a slightly-modified version of the [doxygen-lua](http://github.com/alecchen/doxygen-lua) project. The modifications are based on revision alecchen/doxygen-lua@a7b2809425bb08174c154b83018194284f189bf7.
 
 This is included with FlightlessManicotti and is located at `tools/doxygen-lua`
-
-# Libraries
-All library dependencies are included within the repository. These libraries must be built before FlightlessManicotti can be linked.
-
-This section is unfinished.
-
-## amp
-FlightlessManicotti uses [amp](http://github.com/bjoernknafla/amp) revision bjoernknafla/amp@a84380c4e2a6d66283bc7c33d70e6fe8f0e1e71f.
-
-### Building
-To build *amp* go to `lib/amp` and run `scons`.
-
-## nedmalloc
-FlightlessManicotti uses [nedmalloc](http://www.nedprod.com/programs/portable/nedmalloc/) revision ned14/nedmalloc@3f80a00da9d9198788ad8fca0b31f8fcb665a624.
-
-### Building
-To build *nedmalloc* go to `lib/nedmalloc` and run `scons --static-lib --notests`.
-
-## uthash
-FlightlessManicotti uses [uthash](http://github.com/ned14/uthash) revision ned14/uthash@22bf8c92ba46b3071f782e932b568597d7a9b374.
-
-### Building
-This lib is entirely implemented in headers, and no building is necessary.
-
-## lua
-FlightlessManicotti currently uses [Lua](http://www.lua.org/) version **5.1.4**.
-
-### Building
-To build *lua*, go to `lib/lua` and run `scons`
-
-## MicroAllocator
-FlightlessManicotti currently uses [MicroAllocator](http://codesuppository.blogspot.com/2009/09/free-open-source-micro-allocator-in-c.html) [**r5**](http://code.google.com/p/microallocator).
-
-### Building
-To build *MicroAllocator* go to `lib/MicroAllocator` and run `scons`.
 
 # Languages
 ## C
