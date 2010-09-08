@@ -54,7 +54,7 @@ env['KL_DEPS'] = []
 
 env['KL_DEP_ROOT'] = 'runtime/lib/'
 dependencies = [
-    #['amp','src/c'],
+    ['amp','src/c'],
     ['lua','src'],
     ['MicroAllocator','.'],
     #['nedmalloc','.']

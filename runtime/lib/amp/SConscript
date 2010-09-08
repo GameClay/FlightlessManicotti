@@ -1,5 +1,3 @@
-from SCons.Util import flatten
-import os
 import sys
 
 Import('env')
@@ -17,9 +15,6 @@ lib_files = [
     'src/c/amp/amp_thread_common.c',
     'src/c/amp/amp_thread_local_slot_common.c',
 ]
-
-# Building Release
-coreEnv.Append(CPPDEFINES=['DNDEBUG'])
 
 # Pick barrier type
 # if AMP_USE_GENERIC_BROADCAST_BARRIERS in env.__dict and not (env['AMP_USE_GENERIC_BROADCAST_BARRIERS']is None):
@@ -72,9 +67,7 @@ else:
 amp_lib = coreEnv.StaticLibrary('amp', 
 	lib_files,
 	CPPPATH = ['src/c'],
-	CCFLAGS = ['-O3','-std=c99'],
-	LIBS=[], 
-	LIBPATH=['.']
+	CCFLAGS = ['-std=c99'] + env['CCFLAGS'],
 )
 
 Return(['amp_lib'])

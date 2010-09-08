@@ -25,12 +25,10 @@ lib_files = [f for f in lib_files if f not in excluded_files]
 lib_src_dir = 'lib/'
     
 runtime_lib_includes = [
-   lib_src_dir + 'amp/src/c',
    lib_src_dir + 'nedmalloc',
 ]
 
 runtime_lib_paths = [
-   lib_src_dir + 'amp/.build',
    lib_src_dir + 'nedmalloc/x86/Release'
 ]
 
