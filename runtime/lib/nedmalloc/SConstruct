@@ -38,7 +38,7 @@ env['CCFLAGS']=[]
 env['LIBS']=[]
 env['LINKFLAGS']=[]
 env['CCFLAGSFORNEDMALLOC']=[]
-env['LIBRARYNAME']="nedmalloc"+('_ptchg' if env.GetOption('replacesystemallocator') else '')+env.GetOption('postfix')
+env['NEDMALLOC_LIBRARYNAME']="nedmalloc"+('_ptchg' if env.GetOption('replacesystemallocator') else '')+env.GetOption('postfix')
 if env.GetOption('debugprint'): env['CPPDEFINES']+=["USE_DEBUGGER_OUTPUT"]
 if env.GetOption('fullsanitychecks'): env['CPPDEFINES']+=["FULLSANITYCHECKS"]
 if env.GetOption('replacesystemallocator'): env['CPPDEFINES']+=["REPLACE_SYSTEM_ALLOCATOR"]
@@ -62,6 +62,7 @@ if env.GetOption('threadcachemax'):
 if env.GetOption('threadcachemaxbins'): env['CPPDEFINES']+=[("THREADCACHEMAXBINS",env.GetOption('threadcachemaxbins'))]
 if env.GetOption('threadcachemaxfreespace'): env['CPPDEFINES']+=[("THREADCACHEMAXFREESPACE",env.GetOption('threadcachemaxfreespace'))]
 if env.GetOption('static-lib'): env['CPPDEFINES']+=[("STATIC_LIB",env.GetOption('static-lib'))]
+if env.GetOption('notests'): env['NEDMALLOC_NO_TESTS'] = 1 else env['NEDMALLOC_NO_TESTS'] = 0
 
 # Am I in a 32 or 64 bit environment? Note that not specifying --sse doesn't set any x86 or x64 specific options
 # so it's good to go for ANY platform
@@ -119,8 +120,8 @@ if sys.platform=='win32':
     
     if not env.GetOption('debug'):
         env['LINKFLAGS']+=["/OPT:REF", "/OPT:ICF"]  # Eliminate redundants
-        if env.GetOption('pgo') or os.path.exists(variant+'/'+env['LIBRARYNAME']+".pgd"):
-            env['LINKFLAGS']+=["/PGD:${VARIANT}/"+env['LIBRARYNAME']+".pgd"]
+        if env.GetOption('pgo') or os.path.exists(variant+'/'+env['NEDMALLOC_LIBRARYNAME']+".pgd"):
+            env['LINKFLAGS']+=["/PGD:${VARIANT}/"+env['NEDMALLOC_LIBRARYNAME']+".pgd"]
             if env.GetOption('pgo'):
                 env['LINKFLAGS']+=["/LTCG:PGINSTRUMENT"]
             else:
