@@ -106,7 +106,8 @@ dependencies = [
     ['amp','src/c'],
     ['lua','src'],
     ['MicroAllocator','.'],
-    ['nedmalloc','.']
+    ['nedmalloc','.'],
+    ['sqlite','.']
 ]
 
 dep_build_objects = []
