@@ -27,7 +27,7 @@ extern "C" {
 #define KL_LL_NRM 0
 #define KL_LL_ERR 1
 
-#define KL_LOGF(ll, fmt, ...) switch(ll) { case KL_LL_ERR: fprintf(stderr, fmt, ##__VA_ARGS__); break; default: fprintf(stdout, fmt, ##__VA_ARGS__); }
+#define KL_LOGF(ll, fmt, ...) do { switch(ll) { case KL_LL_ERR: fprintf(stderr, fmt, ##__VA_ARGS__); break; default: fprintf(stdout, fmt, ##__VA_ARGS__); } } while(0)
 
 #ifdef __cplusplus
 }
