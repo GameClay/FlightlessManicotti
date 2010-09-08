@@ -35,7 +35,7 @@ runtime_libs = []
 if sys.platform =="win32":
    runtime_libs += []
 else:
-   runtime_libs += ['libstdc++']
+   runtime_libs += ['libstdc++','pthread']
 
 # Build runtime library
 runtime_env.Append(CPPDEFINES=['KL_BUILD_LIBRARY'])

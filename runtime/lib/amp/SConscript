@@ -52,7 +52,7 @@ else:
             'src/c/amp/amp_platform_sysctl.c'
         ]
     elif sys.platform == 'linux2':
-        coreEnv.Append(CPPDEFINES=['AMP_USE_POSIX_1003_1B_SEMAPHORES', {'SEM_VALUE_MAX' : '2147483647'}])
+        coreEnv.Append(CPPDEFINES=['AMP_USE_POSIX_1003_1B_SEMAPHORES', 'SEM_VALUE_MAX=2147483647'])
         lib_files += [
             'src/c/amp/amp_semaphore_posix_1003_1b.c',
             'src/c/amp/amp_platform_gnuc.c'

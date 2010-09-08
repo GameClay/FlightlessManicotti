@@ -40,13 +40,14 @@
 #include <new>
 #include <assert.h>
 #include <stdio.h>
-#include <string>
+#include <string.h>
+#include <stdlib.h>
 
 #ifdef WIN32
 #include <windows.h>
 #endif
 
-#if defined(__APPLE__) || defined(LINUX)
+#if defined(__APPLE__) || defined(LINUX) || defined(__linux__)
 #include <pthread.h>
 #endif
 

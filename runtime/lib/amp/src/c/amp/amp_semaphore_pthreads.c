@@ -92,7 +92,7 @@ int amp_raw_semaphore_init(amp_semaphore_t semaphore,
     }
     
     /* Use an error checking mutex while asserts/debug mode are enabled. */
-#if !defined(NDEBUG)
+#if !defined(NDEBUG) && defined(PTHREAD_MUTEX_ERRORCHECK)
     retval = pthread_mutexattr_settype(&mutex_attributes, 
                                        PTHREAD_MUTEX_ERRORCHECK);
     assert(0 == retval);

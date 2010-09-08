@@ -3,6 +3,7 @@ coreEnv = env.Clone()
 
 sqlite = coreEnv.StaticLibrary('sqlite3', 
 	['sqlite3.c'],
+	CPPDEFINES = env['CPPDEFINES'],
 	CCFLAGS = env['CCFLAGS'],
 )
 Return('sqlite')

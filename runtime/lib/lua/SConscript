@@ -1,9 +1,19 @@
+import sys
+
 Import('env')
 coreEnv = env.Clone()
 
-core_lib = coreEnv.StaticLibrary('lua', 
+# Determine additional compiler flags
+lua_ccflags = []
+if sys.platform =="win32":
+   lua_ccflags += []
+else:
+   lua_ccflags += ['-std=c99']
+
+
+lua_lib = coreEnv.StaticLibrary('lua', 
 	['etc/all.c'],
 	CPPPATH = ['src'],
-	CCFLAGS = env['CCFLAGS'],
+	CCFLAGS = lua_ccflags + env['CCFLAGS'],
 )
-Return('core_lib')
+Return('lua_lib')

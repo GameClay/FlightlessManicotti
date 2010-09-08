@@ -78,7 +78,7 @@
 	typedef float				NxF32;
 	typedef double				NxF64;
 
-#elif LINUX
+#elif LINUX || defined(__linux__)
 	typedef long long			NxI64;
 	typedef signed int			NxI32;
 	typedef signed short		NxI16;
