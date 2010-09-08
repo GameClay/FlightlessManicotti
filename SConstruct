@@ -107,7 +107,7 @@ dependencies = [
     ['lua','src'],
     ['MicroAllocator','.'],
     ['nedmalloc','.'],
-    ['sqlite','.'],
+    ['sqlite3','.'],
     ['lsqlite3','.'],
 ]
 
