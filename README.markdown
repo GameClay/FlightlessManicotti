@@ -35,7 +35,7 @@ All dependencies are included within the repository, and are built as part of th
 * [amp](http://github.com/bjoernknafla/amp) revision bjoernknafla/amp@a84380c4e2a6d66283bc7c33d70e6fe8f0e1e71f
 * [nedmalloc](http://www.nedprod.com/programs/portable/nedmalloc/) revision ned14/nedmalloc@3f80a00da9d9198788ad8fca0b31f8fcb665a624
 * [uthash](http://github.com/ned14/uthash) revision ned14/uthash@22bf8c92ba46b3071f782e932b568597d7a9b374
-* [Lua](http://www.lua.org/) version [5.1.4](http://www.lua.org/ftp/lua-5.1.4.tar.gz)
+* [Lua](http://www.lua.org/) version [5.1.4](http://www.lua.org/ftp/lua-5.1.4.tar.gz) with patch [5.1.4-2](http://www.lua.org/ftp/patch-lua-5.1.4-2)
 * [MicroAllocator](http://codesuppository.blogspot.com/2009/09/free-open-source-micro-allocator-in-c.html) version [5](http://code.google.com/p/microallocator/source/browse/?r=5)
 * [sqlite3](http://www.sqlite.org/) version [3.7.2](http://www.sqlite.org/sqlite-amalgamation-3_7_2.zip)
 * [lsqlite3](http://luaforge.net/projects/lua-sqlite3/) version [0.4.1](http://luaforge.net/frs/?group_id=76&release_id=442)
