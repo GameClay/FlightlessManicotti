@@ -9,10 +9,7 @@ I've found a bunch of bugs, bad assumptions, and generally-dumb ideas in my code
 ## License
 Unless otherwise stated in a file, this project is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0), the text of which can be found at the previous link, or in the LICENSE file.
 
-Each code file has its license located at the top of the file. If any file is missing its license, it should be considered to be licensed under the Apache License, Version 2.0. 
-
-### GPL Compatibility
-This project may be used with projects which use version 3 of the GPL. Please see [Apache License v2.0 and GPL Compatibility](http://www.apache.org/licenses/GPL-compatibility.html) for more details.
+Each code file has its license located at the top of the file. If any file is missing its license, it should be considered to be licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0). 
 
 ## Platform Compatibility
 FlightlessManicotti is intended for use across many architectures and operating systems. While all attempts will be made to keep compatibility with the widest range of platforms, the project does have priorities.
