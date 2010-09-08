@@ -244,7 +244,7 @@ All Doxygen tags should use the `@` character to denote a tag, for example `@tag
 ## Authors
 * [Pat Wilson](http://github.com/ZeroStride)
 
-## Special Thanks]
+## Special Thanks
 * [Robert Blanchet](http://github.com/xgalaxy)
 * Clark Fagot
 * [Mark Frohnmayer](http://github.com/nardo)
