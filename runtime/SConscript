@@ -21,25 +21,14 @@ lib_files = core_files + c1x_files + script_files + swig_files
 excluded_files = []
 lib_files = [f for f in lib_files if f not in excluded_files]
 
-# Dependencies of the runtime lib
-lib_src_dir = 'lib/'
-    
-runtime_lib_includes = [
-   lib_src_dir + 'nedmalloc',
-]
-
-runtime_lib_paths = [
-   lib_src_dir + 'nedmalloc/x86/Release'
-]
-
 # Build runtime library
 runtime_env.Append(CPPDEFINES=['KL_BUILD_LIBRARY'])
 runtime_lib = runtime_env.SharedLibrary('FlightlessManicotti', 
 	lib_files,
-	CPPPATH = ['.'] + env['KL_DEP_INCPATH'] + runtime_lib_includes,
+	CPPPATH = ['.'] + env['KL_DEP_INCPATH'],
  	CCFLAGS = ['-std=c99'] + env['CCFLAGS'],
-	LIBS=['amp','nedmalloc','libstdc++'] + env['KL_DEPS'], 
-	LIBPATH=[] + env['KL_DEP_LIBPATH'] + runtime_lib_paths
+	LIBS = ['libstdc++'] + env['KL_DEPS'], 
+	LIBPATH = env['KL_DEP_LIBPATH']
 )
 
 # Find the headers

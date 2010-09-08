@@ -24,6 +24,7 @@ extern "C" {
 #endif
 
 #include "fm.h"
+#include <stddef.h>
 
 //! @cond
 typedef void* (*kl_malloc_fn_ptr)(size_t size);
@@ -58,18 +59,12 @@ KL_API extern kl_memrcpy_fn_ptr kl_microrcpy_ptr;
 //! @param size The size of the allocation.
 //! @return Pointer the block of allocated memory, aligned on a 16-byte boundary,
 //!         or NULL if the allocation failed.
-KL_INLINE void* kl_heap_alloc(size_t size)
-{
-   return kl_heap_alloc_ptr(size);
-}
+KL_API void* kl_heap_alloc(size_t size);
 
 //! Free function.
 //!
 //! @param pointer Pointer to the block of memory to free.
-KL_INLINE void kl_heap_free(void* pointer)
-{
-   kl_heap_free_ptr(pointer);
-}
+KL_API void kl_heap_free(void* pointer);
 
 //! Aligned malloc function.
 //!
@@ -83,18 +78,12 @@ KL_INLINE void kl_heap_free(void* pointer)
 //! @param align_size The boundary on which the allocated memory should be aligned.
 //! @return Pointer the block of allocated memory, aligned on the specified boundary,
 //!         or NULL if the allocation failed.
-KL_INLINE void* kl_heap_aligned_alloc(size_t size, size_t align_size)
-{
-   return kl_heap_aligned_alloc_ptr(size, align_size);
-}
+KL_API void* kl_heap_aligned_alloc(size_t size, size_t align_size);
 
 //! Aligned free function.
 //!
 //! @param pointer Pointer to the block of memory to free.
-KL_INLINE void kl_heap_aligned_free(void* pointer)
-{
-   kl_heap_aligned_free_ptr(pointer);
-}
+KL_API void kl_heap_aligned_free(void* pointer);
 
 //! Micro malloc function.
 //!
@@ -105,19 +94,13 @@ KL_INLINE void kl_heap_aligned_free(void* pointer)
 //!
 //! @param size The size of the allocation.
 //! @return Pointer the block of allocated memory or NULL if the allocation failed.     
-KL_INLINE void* kl_micro_alloc(size_t size)
-{
-   return kl_micro_alloc_ptr(size);
-}
+KL_API void* kl_micro_alloc(size_t size);
 
 //! Micro free function.
 //! @see kl_micro_alloc
 //!
 //! @param pointer Pointer to the block of memory to free.
-KL_INLINE void kl_micro_free(void* pointer)
-{
-   kl_micro_free_ptr(pointer);
-}
+KL_API void kl_micro_free(void* pointer);
 
 //! @}
 
@@ -131,10 +114,7 @@ KL_INLINE void kl_micro_free(void* pointer)
 //! @param src Source address.
 //! @param size The size of memory to be copied.
 //! @return The destination address.
-KL_INLINE void* kl_microrcpy(void* restrict dest, const void* restrict src, size_t size)
-{
-   return kl_microrcpy_ptr(dest, src, size);
-}
+KL_API void* kl_microrcpy(void* restrict dest, const void* restrict src, size_t size);
 
 //! @cond
 // Alignment pre/post-fix for VC/GCC

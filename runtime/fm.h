@@ -37,8 +37,10 @@ extern "C" {
 // Define KL_INLINE as static
 #define KL_INLINE static
 
-// Include files that all FlightlessManicotti users should have
+// Include core files
 #include "ccompat.h"
+
+#include "core/memory.h"
 #include "core/error_codes.h"
 
 // TODO: Include more stuff?

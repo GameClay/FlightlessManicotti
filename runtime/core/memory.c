@@ -47,6 +47,42 @@ kl_free_fn_ptr kl_micro_free_ptr = &micro_free;
 
 kl_memrcpy_fn_ptr kl_microrcpy_ptr = &memcpy;
 
+// Implementations
+void* kl_heap_alloc(size_t size)
+{
+   return kl_heap_alloc_ptr(size);
+}
+
+void kl_heap_free(void* pointer)
+{
+   kl_heap_free_ptr(pointer);
+}
+
+void* kl_micro_alloc(size_t size)
+{
+   return kl_micro_alloc_ptr(size);
+}
+
+void kl_micro_free(void* pointer)
+{
+   kl_micro_free_ptr(pointer);
+}
+
+void* kl_heap_aligned_alloc(size_t size, size_t align_size)
+{
+   return kl_heap_aligned_alloc_ptr(size, align_size);
+}
+
+void kl_heap_aligned_free(void* pointer)
+{
+   kl_heap_aligned_free_ptr(pointer);
+}
+
+void* kl_microrcpy(void* restrict dest, const void* restrict src, size_t size)
+{
+   return kl_microrcpy_ptr(dest, src, size);
+}
+
 // Default aligned malloc/free using nedmalloc
 void* aligned_nedmalloc(size_t size, size_t align_size)
 {
