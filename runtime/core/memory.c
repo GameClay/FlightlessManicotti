@@ -17,7 +17,6 @@
  */
  
 #include <string.h>
-#include <stdbool.h>
 #include <assert.h>
 
 #include "fm.h"

@@ -1027,8 +1027,8 @@ void micro_free(void* p)
    c_micro_allocator->free(p, chunk);
 }
 
-bool micro_was_allocated(void* p)
+int micro_was_allocated(void* p)
 {
    assert(c_micro_heap);
-   return (c_micro_allocator->isMicroAlloc(p) != NULL);
+   return (c_micro_allocator->isMicroAlloc(p) != NULL) ? 1 : 0;
 }

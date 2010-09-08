@@ -220,7 +220,7 @@ extern void  micro_allocator_destroy();
 
 extern void* micro_malloc(size_t size);
 extern void  micro_free(void* p);
-extern bool  micro_was_allocated(void* p);
+extern int   micro_was_allocated(void* p);
 
 #ifdef __cplusplus
 }

@@ -54,7 +54,7 @@ KL_API int kl_script_init(kl_script_context* context, size_t event_queue_size);
 KL_API int kl_script_evaluate();
 
 //! Run a script file
-KL_API int kl_script_run(kl_script_context context, const char* file_name, bool threaded, int argc, const char** argv);
+KL_API int kl_script_run(kl_script_context context, const char* file_name, KT_BOOL threaded, int argc, const char** argv);
 
 //! Destroy a script-task processor.
 //!

@@ -147,7 +147,7 @@ void _kl_script_run_internal(void* arg)
    }
 }
 
-int kl_script_run(kl_script_context context, const char* file_name, bool threaded, int argc, const char** argv)
+int kl_script_run(kl_script_context context, const char* file_name, KT_BOOL threaded, int argc, const char** argv)
 {
    //
    script_run_arg run_args;

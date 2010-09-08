@@ -37,8 +37,19 @@ extern "C" {
 // Define KL_INLINE as static
 #define KL_INLINE static
 
-// Include core files
-#include "ccompat.h"
+// Define KL_RESTRICT
+#if __STDC_VERSION__ >= 199901L
+#  define KL_RESTRICT restrict
+#elif _MSC_VER
+#  define KL_RESTRICT __restrict
+#else
+#  define KL_RESTRICT 
+#endif
+
+// Define KL_BOOL
+#define KT_BOOL int
+#define KT_TRUE 1
+#define KT_FALSE 0
 
 #include "core/memory.h"
 #include "core/error_codes.h"
