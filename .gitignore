@@ -4,3 +4,4 @@ runtime/x86
 runtime/x64
 example/x86
 example/x64
+*.pdb
