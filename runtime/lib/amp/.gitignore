@@ -45,4 +45,5 @@ Thumbs.db
 doc/html/
 
 #Ignore scons build files
-.build/
+x86/
+x64/

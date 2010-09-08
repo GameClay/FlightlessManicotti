@@ -1,0 +1,9 @@
+Import('env')
+coreEnv = env.Clone()
+
+core_lib = coreEnv.StaticLibrary('lua', 
+	['etc/all.c'],
+	CPPPATH = ['src'],
+	CCFLAGS = env['CCFLAGS'],
+)
+Return('core_lib')
