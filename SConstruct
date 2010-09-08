@@ -22,9 +22,9 @@ env['SHCXXCOM']= env['SHCXXCOM'].replace('$CHANGED_SOURCES','$SOURCES.abspath')
 # Am I in a 32 or 64 bit environment? Note that not specifying --sse doesn't set any x86 or x64 specific options
 # so it's good to go for ANY platform
 if sys.platform=="win32":
-    env['ENV']['INCLUDE']=(os.environ['INCLUDE'] if os.environment.contains_key('INCLUDE') else [])
-    env['ENV']['LIB']=(os.environ['LIB'] if os.environment.contains_key('LIB') else [])
-    env['ENV']['PATH']=(os.environ['PATH'] if os.environment.contains_key('PATH') else [])
+    env['ENV']['INCLUDE']=(os.environ['INCLUDE'] if os.environ.has_key('INCLUDE') else [])
+    env['ENV']['LIB']=(os.environ['LIB'] if os.environ.has_key('LIB') else [])
+    env['ENV']['PATH']=(os.environ['PATH'] if os.environ.has_key('PATH') else [])
     if not env.GetOption('force32') and os.environ.has_key('LIBPATH') and -1!=os.environ['LIBPATH'].find("\\amd64"):
         architecture="x64"
     else:
@@ -63,15 +63,15 @@ if sys.platform=='win32':
    else:
        env['CCFLAGS']+=["/O2", "/MT"]
        env['CCFLAGSFORNEDMALLOC']+=["/GL"]         # Do link time code generation
-   env['LIBS']+=["psapi", "user32", "advapi32"]
+   #env['LIBS']+=["psapi", "user32", "advapi32"]
    env['LINKFLAGS']+=["/DEBUG"]                # Output debug symbols
    env['LINKFLAGS']+=["/LARGEADDRESSAWARE"]    # Works past 2Gb
    env['LINKFLAGS']+=["/DYNAMICBASE"]          # Doesn't mind being randomly placed
    env['LINKFLAGS']+=["/NXCOMPAT"]             # Likes no execute
 
-   env['LINKFLAGS']+=["/ENTRY:DllPreMainCRTStartup"]
+   #env['LINKFLAGS']+=["/ENTRY:DllPreMainCRTStartup"]
    env['LINKFLAGS']+=["/VERSION:1.10.0"]        # Version
-   env['LINKFLAGS']+=["/MANIFEST"]             # Be UAC compatible
+   #env['LINKFLAGS']+=["/MANIFEST"]             # Be UAC compatible
 
    if not env.GetOption('debug'):
        env['LINKFLAGS']+=["/OPT:REF", "/OPT:ICF"]  # Eliminate redundants
@@ -114,17 +114,17 @@ dependencies = [
 dep_build_objects = []
 for lib,src_path in dependencies:
     lib_toplevel = env['KL_DEP_ROOT'] + lib
-    
     env['KL_DEPS'] += [lib]
     env['KL_DEP_INCPATH'] += [os.path.abspath(lib_toplevel + '/' + src_path)]
     env['KL_DEP_LIBPATH'] += [os.path.abspath(lib_toplevel + '/' + variant)]
-    
-    dep_build_objects += SConscript(lib_toplevel + '/SConscript', 
-      variant_dir=lib_toplevel+'/'+variant, 
-      duplicate=False, 
-      exports=['env']
+
+    dep_build_objects += SConscript(
+       lib_toplevel + '/SConscript', 
+       variant_dir=lib_toplevel+'/'+variant, 
+       duplicate=False, 
+       exports='env'
     )
-      
+     
 ## Now build the runtime and example
     
 # Where are the libs and includes located for the runtime?
@@ -136,5 +136,5 @@ if sys.platform =="win32":
     env['KL_INCPATH'] += [os.path.abspath('std/C99')]
     
 
-runtime_library = SConscript('runtime/SConscript', variant_dir='runtime/'+variant, duplicate=False, exports=['env'])
-example = SConscript('example/SConscript', variant_dir='example/'+variant, duplicate=False, exports=['env'])
+runtime_library = SConscript('runtime/SConscript', variant_dir='runtime/'+variant, duplicate=False, exports='env')
+example = SConscript('example/SConscript', variant_dir='example/'+variant, duplicate=False, exports='env')

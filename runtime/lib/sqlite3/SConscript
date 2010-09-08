@@ -1,7 +1,7 @@
 Import('env')
 coreEnv = env.Clone()
 
-sqlite = coreEnv.StaticLibrary('sqlite', 
+sqlite = coreEnv.StaticLibrary('sqlite3', 
 	['sqlite3.c'],
 	CCFLAGS = env['CCFLAGS'],
 )

@@ -63,11 +63,18 @@ else:
             'src/c/amp/amp_semaphore_pthreads.c'
         ]
 
+# Additional compile flags
+amp_ccflags = []
+if sys.platform =="win32":
+   amp_ccflags += []
+else:
+   amp_ccflags += ['-std=c99']
+   
 # lib target
 amp_lib = coreEnv.StaticLibrary('amp', 
 	lib_files,
 	CPPPATH = ['src/c'],
-	CCFLAGS = ['-std=c99'] + env['CCFLAGS'],
+	CCFLAGS = amp_ccflags + env['CCFLAGS'],
 )
 
 Return(['amp_lib'])
