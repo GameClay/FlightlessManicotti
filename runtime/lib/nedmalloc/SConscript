@@ -7,13 +7,13 @@ if env['NEDMALLOC_STATIC_LIB']:
     nedmalloclib = env.StaticLibrary(env['NEDMALLOC_LIBRARYNAME'], 
         source = ['nedmalloc.c'], 
         CPPPATH = ['.'],
-        CPPDEFINES=env['CPPDEFINES']+["NEDMALLOC_DLL_EXPORTS"], 
+        CPPDEFINES=env['NEDMALLOCCPPDEFINES']+["NEDMALLOC_DLL_EXPORTS"], 
         CCFLAGS=env['CCFLAGS']+env['CCFLAGSFORNEDMALLOC']
     )
 else:
-    libobjects = env.SharedObject("nedmalloc.c", CPPPATH=[","], CPPDEFINES=env['CPPDEFINES']+["NEDMALLOC_DLL_EXPORTS"], CCFLAGS=env['CCFLAGS']+env['CCFLAGSFORNEDMALLOC'])
+    libobjects = env.SharedObject("nedmalloc.c", CPPPATH=[","], CPPDEFINES=env['NEDMALLOCCPPDEFINES']+["NEDMALLOC_DLL_EXPORTS"], CCFLAGS=env['CCFLAGS']+env['CCFLAGSFORNEDMALLOC'])
     if sys.platform=='win32':
-        libobjects+=env.SharedObject("winpatcher.c", CPPDEFINES=env['CPPDEFINES']+["NEDMALLOC_DLL_EXPORTS"])
+        libobjects+=env.SharedObject("winpatcher.c", CPPDEFINES=env['NEDMALLOCCPPDEFINES']+["NEDMALLOC_DLL_EXPORTS"])
         libobjects+=env.RES("nedmalloc.res", "nedmalloc_dll.rc")
     nedmalloclib = env.SharedLibrary(env['NEDMALLOC_LIBRARYNAME'], source = libobjects)
     if sys.platform=='win32': env.AddPostAction(nedmalloclib, 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;2')

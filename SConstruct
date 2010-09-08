@@ -13,6 +13,12 @@ env['CPPDEFINES']=[]
 
 ## Set up the environment
 
+# Force scons to always use absolute paths in everything
+env['CCCOM']   =    env['CCCOM'].replace('$CHANGED_SOURCES','$SOURCES.abspath')
+env['SHCCCOM'] =  env['SHCCCOM'].replace('$CHANGED_SOURCES','$SOURCES.abspath')
+env['CXXCOM']  =   env['CXXCOM'].replace('$CHANGED_SOURCES','$SOURCES.abspath')
+env['SHCXXCOM']= env['SHCXXCOM'].replace('$CHANGED_SOURCES','$SOURCES.abspath')
+
 # Am I in a 32 or 64 bit environment? Note that not specifying --sse doesn't set any x86 or x64 specific options
 # so it's good to go for ANY platform
 if sys.platform=="win32":
@@ -45,7 +51,50 @@ else:
     env['CPPDEFINES']+=["NDEBUG"]
     variant=architecture+"/Release"
     
+
+# Am I building for Windows or POSIX?
+if sys.platform=='win32':
+   env['CPPDEFINES']+=["WIN32", "_WINDOWS", "UNICODE", "_UNICODE"]
+   env['CCFLAGS']+=["/GF"]             # Eliminate duplicate strings
+   env['CCFLAGS']+=["/Gy"]             # Seperate COMDATs
+   env['CCFLAGS']+=["/Zi"]             # Program database debug info
+   if env.GetOption('debug'):
+       env['CCFLAGS']+=["/Od", "/MTd"]
+   else:
+       env['CCFLAGS']+=["/O2", "/MT"]
+       env['CCFLAGSFORNEDMALLOC']+=["/GL"]         # Do link time code generation
+   env['LIBS']+=["psapi", "user32", "advapi32"]
+   env['LINKFLAGS']+=["/DEBUG"]                # Output debug symbols
+   env['LINKFLAGS']+=["/LARGEADDRESSAWARE"]    # Works past 2Gb
+   env['LINKFLAGS']+=["/DYNAMICBASE"]          # Doesn't mind being randomly placed
+   env['LINKFLAGS']+=["/NXCOMPAT"]             # Likes no execute
+
+   env['LINKFLAGS']+=["/ENTRY:DllPreMainCRTStartup"]
+   env['LINKFLAGS']+=["/VERSION:1.10.0"]        # Version
+   env['LINKFLAGS']+=["/MANIFEST"]             # Be UAC compatible
+
+   if not env.GetOption('debug'):
+       env['LINKFLAGS']+=["/OPT:REF", "/OPT:ICF"]  # Eliminate redundants
+else:
+   env['CPPDEFINES']+=[]
+   env['CCFLAGS']+=["-Wall"]
+   if env.GetOption('debug'):
+       env['CCFLAGS']+=["-O0", "-g"]
+   else:
+       env['CCFLAGS']+=["-O2", "-g"]
+   env['LINKFLAGS']+=[]
+
+# The variant is all sorted out
+env['VARIANT'] = variant
+    
 ## Build the libraries the runtime depends on
+
+# Set up the environment for nedmalloc
+env['NEDMALLOC_STATIC_LIB'] = 1
+env['CCFLAGSFORNEDMALLOC'] = []
+env['NEDMALLOC_LIBRARYNAME'] = 'nedmalloc'
+env['NEDMALLOC_NO_TESTS'] = 1
+env['NEDMALLOCCPPDEFINES']=["ENABLE_TOLERANT_NEDMALLOC","USE_ALLOCATOR=1","USE_LOCKS=1"]
 
 # Will fill in these to pass to the runtime/example build
 env['KL_DEP_LIBPATH'] = []
@@ -57,7 +106,7 @@ dependencies = [
     ['amp','src/c'],
     ['lua','src'],
     ['MicroAllocator','.'],
-    #['nedmalloc','.']
+    ['nedmalloc','.']
 ]
 
 dep_build_objects = []
@@ -71,8 +120,9 @@ for lib,src_path in dependencies:
     dep_build_objects += SConscript(lib_toplevel + '/SConscript', 
       variant_dir=lib_toplevel+'/'+variant, 
       duplicate=False, 
-      exports=['env'])
-    
+      exports=['env']
+    )
+      
 ## Now build the runtime and example
     
 # Where are the libs and includes located for the runtime?
