@@ -11,6 +11,8 @@ AddOption('--sse', dest='sse', nargs=1, type='int', default=1, help='set SSE use
 architecture="generic"
 env['CPPDEFINES']=[]
 
+## Set up the environment
+
 # Am I in a 32 or 64 bit environment? Note that not specifying --sse doesn't set any x86 or x64 specific options
 # so it's good to go for ANY platform
 if sys.platform=="win32":
@@ -43,6 +45,36 @@ else:
     env['CPPDEFINES']+=["NDEBUG"]
     variant=architecture+"/Release"
     
+## Build the libraries the runtime depends on
+
+# Will fill in these to pass to the runtime/example build
+env['KL_DEP_LIBPATH'] = []
+env['KL_DEP_INCPATH'] = []
+env['KL_DEPS'] = []
+
+env['KL_DEP_ROOT'] = 'runtime/lib/'
+dependencies = [
+    #['amp','src/c'],
+    ['lua','src'],
+    ['MicroAllocator','.'],
+    #['nedmalloc','.']
+]
+
+dep_build_objects = []
+for lib,src_path in dependencies:
+    lib_toplevel = env['KL_DEP_ROOT'] + lib
+    
+    env['KL_DEPS'] += [lib]
+    env['KL_DEP_INCPATH'] += [os.path.abspath(lib_toplevel + '/' + src_path)]
+    env['KL_DEP_LIBPATH'] += [os.path.abspath(lib_toplevel + '/' + variant)]
+    
+    dep_build_objects += SConscript(lib_toplevel + '/SConscript', 
+      variant_dir=lib_toplevel+'/'+variant, 
+      duplicate=False, 
+      exports=['env'])
+    
+## Now build the runtime and example
+    
 # Where are the libs and includes located for the runtime?
 env['KL_LIBPATH'] = [os.path.abspath('runtime/' + variant)]
 env['KL_INCPATH'] = [os.path.abspath('runtime/')]
@@ -51,5 +83,6 @@ env['KL_INCPATH'] = [os.path.abspath('runtime/')]
 if sys.platform =="win32":
     env['KL_INCPATH'] += [os.path.abspath('std/C99')]
     
-runtime_library = SConscript('runtime/SConscript', variant_dir='runtime/'+variant, duplicate=False, exports=['env','variant'])
-example = SConscript('example/SConscript', variant_dir='example/'+variant, duplicate=False, exports=['env','variant'])
+
+runtime_library = SConscript('runtime/SConscript', variant_dir='runtime/'+variant, duplicate=False, exports=['env'])
+example = SConscript('example/SConscript', variant_dir='example/'+variant, duplicate=False, exports=['env'])

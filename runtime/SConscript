@@ -26,15 +26,11 @@ lib_src_dir = 'lib/'
     
 runtime_lib_includes = [
    lib_src_dir + 'amp/src/c',
-   lib_src_dir + 'lua/src',
    lib_src_dir + 'nedmalloc',
-   lib_src_dir + 'MicroAllocator'
 ]
 
 runtime_lib_paths = [
-   lib_src_dir + 'lua/.build',
    lib_src_dir + 'amp/.build',
-   lib_src_dir + 'MicroAllocator/.build',
    lib_src_dir + 'nedmalloc/x86/Release'
 ]
 
@@ -42,10 +38,10 @@ runtime_lib_paths = [
 runtime_env.Append(CPPDEFINES=['KL_BUILD_LIBRARY'])
 runtime_lib = runtime_env.SharedLibrary('FlightlessManicotti', 
 	lib_files,
-	CPPPATH = ['.'] + runtime_lib_includes,
- 	CCFLAGS = ['-g','-std=c99'] + env['CCFLAGS'],
-	LIBS=['amp','lua','nedmalloc','MicroAllocator','libstdc++'], 
-	LIBPATH=['.'] + runtime_lib_paths
+	CPPPATH = ['.'] + env['KL_DEP_INCPATH'] + runtime_lib_includes,
+ 	CCFLAGS = ['-std=c99'] + env['CCFLAGS'],
+	LIBS=['amp','nedmalloc','libstdc++'] + env['KL_DEPS'], 
+	LIBPATH=[] + env['KL_DEP_LIBPATH'] + runtime_lib_paths
 )
 
 # Find the headers
