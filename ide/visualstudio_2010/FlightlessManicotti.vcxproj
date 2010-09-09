@@ -42,10 +42,10 @@
     <SourcePath>$(ProjectDir)/../../runtime/;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <NMakeBuildCommandLine>scons</NMakeBuildCommandLine>
-    <NMakeOutput>FlightlessManicotti.exe</NMakeOutput>
-    <NMakeCleanCommandLine>scons -c</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>scons</NMakeReBuildCommandLine>
+    <NMakeBuildCommandLine>cd $(ProjectDir)/../.. &amp;&amp; scons</NMakeBuildCommandLine>
+    <NMakeOutput>$(ProjectDir)/../../example/$(PlatformShortName)/$(Configuration)/FlightlessManicotti.exe</NMakeOutput>
+    <NMakeCleanCommandLine>cd $(ProjectDir)/../.. &amp;&amp; scons -c</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>cd $(ProjectDir)/../.. &amp;&amp; scons</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
   </PropertyGroup>
   <ItemDefinitionGroup>
