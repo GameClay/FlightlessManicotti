@@ -1,0 +1,5 @@
+# Visual Studio files
+*.sdf
+*.opensdf
+*.vcxproj.*
+*.vcproj.*
