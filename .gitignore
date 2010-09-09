@@ -11,4 +11,6 @@ example/i386
 example/armv6
 example/armv7
 
+# Visual Studio specific files
 *.pdb
+*.suo
