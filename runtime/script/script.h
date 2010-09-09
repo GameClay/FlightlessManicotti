@@ -24,7 +24,6 @@ extern "C" {
 #endif
 
 #include "fm.h"
-#include <stdbool.h>
 
 #define kl_script_event_name_length (sizeof(int) * 4)
 KL_API typedef struct
