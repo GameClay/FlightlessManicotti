@@ -43,5 +43,8 @@ int main(int argc, const char* argv[])
       kl_script_destroy(&script_context);
    }
    
+   printf("Press any key to continue...");
+   getchar();
+   
    return 0;
 }
