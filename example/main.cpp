@@ -23,12 +23,12 @@
 
 int main(int argc, const char* argv[])
 {   
-   kl_script_context script_context;
+   kl_script_context_t script_context;
    
    if(kl_script_init(&script_context, 1 << 10) == KL_SUCCESS)
    {
       // Send the script a test event
-      kl_script_event fooevt = {"facepunch", NULL, 0, 1, 2};
+      kl_script_event_t fooevt = {"facepunch", NULL, 0, 1, 2};
       kl_script_event_enqueue(script_context, &fooevt);
       
       kl_script_run(script_context, "example/script.lua", true, argc, argv);

@@ -24,9 +24,9 @@
 
 static int kl_script_event_dequeue_wrap(lua_State* L)
 {
-   kl_script_context sctx = (kl_script_context)lua_topointer(L, 1);
+   kl_script_context_t sctx = (kl_script_context_t)lua_topointer(L, 1);
    
-   kl_script_event event;
+   kl_script_event_t event;
    if(kl_script_event_dequeue(sctx, &event) == KL_SUCCESS)
    {
       lua_pushstring(L, event.name);
@@ -43,10 +43,10 @@ static int kl_script_event_dequeue_wrap(lua_State* L)
 
 static int kl_script_event_enqueue_wrap(lua_State* L)
 {
-   kl_script_context sctx = (kl_script_context)lua_topointer(L, 1);
+   kl_script_context_t sctx = (kl_script_context_t)lua_topointer(L, 1);
    
-   kl_script_event event;
-   strncpy(event.name, lua_tostring(L, 2), kl_script_event_name_length);
+   kl_script_event_t event;
+   strncpy(event.name, lua_tostring(L, 2), kl_script_event_t_name_length);
    event.context = (void*)lua_topointer(L, 3);
    event.a = lua_tointeger(L, 4);
    event.b = lua_tointeger(L, 5);

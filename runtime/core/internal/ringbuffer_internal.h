@@ -34,14 +34,14 @@ extern "C" {
       size_t size;                        \
       t* buffer;                          \
       amp_mutex_t mutex;                  \
-   } kl_ringbuffer_##t
+   } kl_ringbuffer_##t##_t
 
 
-#define _KL_INIT_RINGBUFFER_FN_(t) void kl_init_ringbuffer_##t(kl_ringbuffer_##t* ringbuffer, size_t size, t* buffer, amp_mutex_t mtx)
-#define _KL_ALLOC_RINGBUFFER_FN_(t) int kl_alloc_ringbuffer_##t(kl_ringbuffer_##t* ringbuffer, size_t size)
-#define _KL_FREE_RINGBUFFER_FN_(t) void kl_free_ringbuffer_##t(kl_ringbuffer_##t* ringbuffer)
-#define _KL_RESERVE_RINGBUFFER_FN_(t) int kl_reserve_ringbuffer_##t(kl_ringbuffer_##t* ringbuffer, const t* item)
-#define _KL_RETRIEVE_RINGBUFFER_FN_(t) int kl_retrieve_ringbuffer_##t(kl_ringbuffer_##t* ringbuffer, t* item)
+#define _KL_INIT_RINGBUFFER_FN_(t) void kl_init_ringbuffer_##t(kl_ringbuffer_##t##_t* ringbuffer, size_t size, t* buffer, amp_mutex_t mtx)
+#define _KL_ALLOC_RINGBUFFER_FN_(t) int kl_alloc_ringbuffer_##t(kl_ringbuffer_##t##_t* ringbuffer, size_t size)
+#define _KL_FREE_RINGBUFFER_FN_(t) void kl_free_ringbuffer_##t(kl_ringbuffer_##t##_t* ringbuffer)
+#define _KL_RESERVE_RINGBUFFER_FN_(t) int kl_reserve_ringbuffer_##t(kl_ringbuffer_##t##_t* ringbuffer, const t* item)
+#define _KL_RETRIEVE_RINGBUFFER_FN_(t) int kl_retrieve_ringbuffer_##t(kl_ringbuffer_##t##_t* ringbuffer, t* item)
 
 // Declare a ringbuffer type
 #define KL_DECLARE_RINGBUFFER_TYPE(t)           \

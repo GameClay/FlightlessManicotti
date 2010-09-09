@@ -30,16 +30,16 @@
 extern int luaopen_scriptevent(lua_State* L);
 extern int luaopen_lsqlite3(lua_State* L);
 
-KL_DECLARE_RINGBUFFER_TYPE(kl_script_event);
-KL_IMPLEMENT_RINGBUFFER_TYPE(kl_script_event);
+KL_DECLARE_RINGBUFFER_TYPE(kl_script_event_t);
+KL_IMPLEMENT_RINGBUFFER_TYPE(kl_script_event_t);
 
 struct _kl_script_context
 {
    lua_State* lua_state;
-   kl_ringbuffer(kl_script_event) event_buffer;
+   kl_ringbuffer_t(kl_script_event_t) event_buffer;
 };
 
-int kl_script_init(kl_script_context* context, size_t event_queue_size)
+int kl_script_init(kl_script_context_t* context, size_t event_queue_size)
 {
    // Allocate script context
    struct _kl_script_context* sctx = (struct _kl_script_context*)kl_heap_alloc(sizeof(struct _kl_script_context));
@@ -48,7 +48,7 @@ int kl_script_init(kl_script_context* context, size_t event_queue_size)
       return KL_ERROR;
       
    // Allocate event buffer
-   if(kl_alloc_ringbuffer(kl_script_event, &sctx->event_buffer, event_queue_size) != KL_SUCCESS)
+   if(kl_alloc_ringbuffer(kl_script_event_t, &sctx->event_buffer, event_queue_size) != KL_SUCCESS)
    {
       kl_heap_free(sctx);
       return KL_ERROR;
@@ -147,7 +147,7 @@ void _kl_script_run_internal(void* arg)
    }
 }
 
-int kl_script_run(kl_script_context context, const char* file_name, KT_BOOL threaded, int argc, const char** argv)
+int kl_script_run(kl_script_context_t context, const char* file_name, KT_BOOL threaded, int argc, const char** argv)
 {
    //
    script_run_arg run_args;
@@ -201,22 +201,22 @@ int kl_script_run(kl_script_context context, const char* file_name, KT_BOOL thre
    }
 }
 
-void kl_script_destroy(kl_script_context* context)
+void kl_script_destroy(kl_script_context_t* context)
 {
    struct _kl_script_context* sctx = *context;
 
    lua_close(sctx->lua_state);
-   kl_free_ringbuffer(kl_script_event, &sctx->event_buffer);
+   kl_free_ringbuffer(kl_script_event_t, &sctx->event_buffer);
    
    kl_heap_free(sctx);
 }
 
-int kl_script_event_enqueue(kl_script_context context, const kl_script_event* event)
+int kl_script_event_enqueue(kl_script_context_t context, const kl_script_event_t* event)
 {
-   return kl_reserve_ringbuffer(kl_script_event, &context->event_buffer, event);
+   return kl_reserve_ringbuffer(kl_script_event_t, &context->event_buffer, event);
 }
 
-int kl_script_event_dequeue(kl_script_context context, kl_script_event* event)
+int kl_script_event_dequeue(kl_script_context_t context, kl_script_event_t* event)
 {
-   return kl_retrieve_ringbuffer(kl_script_event, &context->event_buffer, event);
+   return kl_retrieve_ringbuffer(kl_script_event_t, &context->event_buffer, event);
 }

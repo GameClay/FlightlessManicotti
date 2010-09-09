@@ -204,6 +204,7 @@ If a header is not available on a given platform/compiler, than a header will be
 
 #### Naming
 * Prefix all exposed symbol names with 'kl', and an underscore between 'kl' and the symbol name. `kl_foo()`
+* Postfix all exposed types with '_t'. `kl_script_context_t`
 
 ## Lua
 The scripting language for FlightlessManicotti is [Lua](http://www.lua.org/). 

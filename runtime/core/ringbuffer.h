@@ -30,7 +30,7 @@ KL_DECLARE_RINGBUFFER_TYPE(float);
 KL_DECLARE_RINGBUFFER_TYPE(int);
 
 // Macros
-#define kl_ringbuffer(T) kl_ringbuffer_##T
+#define kl_ringbuffer_t(T) kl_ringbuffer_##T##_t
 
 //! Initializes a ring-buffer using a provided buffer.
 //!
