@@ -161,7 +161,7 @@ for lib,src_path in dependencies:
     env['KL_DEPS'] += [lib]
     env['KL_DEP_INCPATH'] += [os.path.abspath(lib_toplevel + '/' + src_path)]
     env['KL_DEP_LIBPATH'] += [os.path.abspath(lib_toplevel + '/' + variant)]
-
+    
     dep_build_objects += SConscript(
        lib_toplevel + '/SConscript', 
        variant_dir=lib_toplevel+'/'+variant, 
@@ -175,10 +175,5 @@ for lib,src_path in dependencies:
 env['KL_LIBPATH'] = [os.path.abspath('runtime/' + variant)]
 env['KL_INCPATH'] = [os.path.abspath('runtime/')]
 
-# If this is Visual Studio, it doesn't have some C99 headers
-if sys.platform =="win32":
-    env['KL_INCPATH'] += [os.path.abspath('std/C99')]
-    
-
 runtime_library = SConscript('runtime/SConscript', variant_dir='runtime/'+variant, duplicate=False, exports='env')
-#example = SConscript('example/SConscript', variant_dir='example/'+variant, duplicate=False, exports='env')
+example = SConscript('example/SConscript', variant_dir='example/'+variant, duplicate=False, exports='env')
