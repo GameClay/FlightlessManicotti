@@ -14,3 +14,4 @@ example/armv7
 # Visual Studio specific files
 *.pdb
 *.suo
+*.ncb
