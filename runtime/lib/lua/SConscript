@@ -13,7 +13,7 @@ else:
 
 lua_lib = coreEnv.StaticLibrary('lua', 
 	['etc/all.c'],
-	CPPPATH = ['src'],
-	CCFLAGS = lua_ccflags + env['CCFLAGS'],
+	CPPPATH = ['src'] + env['KL_PLATFORM_INC_PATH'],
+	CCFLAGS = env['CCFLAGS'],
 )
 Return('lua_lib')

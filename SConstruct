@@ -6,10 +6,19 @@ env = Environment()
 AddOption('--debugbuild', dest='debug', nargs='?', const=True, default=1, help='enable debug build')
 AddOption('--force32', dest='force32', help='force 32 bit build on 64 bit machine')
 AddOption('--sse', dest='sse', nargs=1, type='int', default=1, help='set SSE used (0-4) on 32 bit x86. Defaults to 1 (SSE1).')
+AddOption('--iphone', dest='iphone', nargs='?', default=0, help='cross-compile library for iPhone')
+AddOption('--iphonesimulator', dest='iphonesimulator', nargs='?', default=0, help='cross-compile library for iPhoneSimulator')
 
 # Defaults
 architecture="generic"
+
 env['CPPDEFINES']=[]
+env['CCFLAGS']=[]
+env['LINKFLAGS']=[]
+
+env['KL_PLATFORM_INC_PATH']=[]
+env['KL_PLATFORM_LIB_PATH']=[]
+env['KL_CROSS_TARGET']=0
 
 ## Set up the environment
 
@@ -19,29 +28,65 @@ env['SHCCCOM'] =  env['SHCCCOM'].replace('$CHANGED_SOURCES','$SOURCES.abspath')
 env['CXXCOM']  =   env['CXXCOM'].replace('$CHANGED_SOURCES','$SOURCES.abspath')
 env['SHCXXCOM']= env['SHCXXCOM'].replace('$CHANGED_SOURCES','$SOURCES.abspath')
 
-# Am I in a 32 or 64 bit environment? Note that not specifying --sse doesn't set any x86 or x64 specific options
-# so it's good to go for ANY platform
-if sys.platform=="win32":
-    env['ENV']['INCLUDE']=(os.environ['INCLUDE'] if os.environ.has_key('INCLUDE') else [])
-    env['ENV']['LIB']=(os.environ['LIB'] if os.environ.has_key('LIB') else [])
-    env['ENV']['PATH']=(os.environ['PATH'] if os.environ.has_key('PATH') else [])
-    if not env.GetOption('force32') and os.environ.has_key('LIBPATH') and -1!=os.environ['LIBPATH'].find("\\amd64"):
-        architecture="x64"
-    else:
-        architecture="x86"
-        if   env.GetOption('sse')==1: env['CCFLAGS']+=[ "/arch:SSE" ]
-        elif env.GetOption('sse')>=2: env['CCFLAGS']+=[ "/arch:SSE2" ]
-        if   env.GetOption('sse')>=3: env['CPPDEFINES']+=[("__SSE3__", 1)]
-        if   env.GetOption('sse')>=4: env['CPPDEFINES']+=[("__SSE4__", 1)]
+if (env.GetOption('iphone') or env.GetOption('iphonesimulator')):
+   if env.GetOption('iphone'):
+      architecture="armv6"
+      ccprefix="arm"
+      platform="iPhoneOS"
+   else:
+      architecture="i386"
+      ccprefix="i686"
+      platform="iPhoneSimulator"
+      
+   iphoneos_dev_target="3.2"
+   env['KL_CROSS_TARGET']=1
+	
+   platform_dir="/Developer/Platforms/"+platform+".platform/Developer"
+   platform_bin_dir=platform_dir+"/usr/bin"
+   platform_sdk_dir=platform_dir+"/SDKs/"+platform+iphoneos_dev_target+".sdk"
+
+   #env['CCFLAGS']+=["-isysroot "+platform_sdk_dir]
+   #env['LINKFLAGS']+=['-isysroot '+platform_sdk_dir]
+
+   env['KL_PLATFORM_INC_PATH']=[
+      platform_sdk_dir+'/usr/include',
+      platform_sdk_dir+'/usr/include/c++/'+env['CCVERSION'],
+      platform_sdk_dir+'/usr/include/c++/'+env['CCVERSION']+'/'+architecture+'-apple-darwin10',
+   ]
+   
+   env['KL_PLATFORM_LIB_PATH']=[
+      platform_sdk_dir+'/usr/lib',
+      platform_sdk_dir+'/usr/lib/gcc/'+ccprefix+'-apple-darwin10/'+env['CCVERSION']
+   ]
+
+   env.Replace(CC=platform_bin_dir+"/"+ccprefix+"-apple-darwin10-gcc-"+env['CCVERSION'])
+   env.Replace(CXX=platform_bin_dir+"/"+ccprefix+"-apple-darwin10-g++-"+env['CCVERSION'])
+   #env.Replace(CPP="/Developer/usr/bin/cpp-4.2")
+   #env.Replace(CXXCPP="/Developer/usr/bin/cpp-4.2")
 else:
-    if not env.GetOption('force32') and ('x64' in platform.machine() or 'x86_64' in platform.machine()):
-        architecture="x64"
-    elif platform.machine() in ['i386', 'i486', 'i586', 'i686']:
-        architecture="x86"
-        if env.GetOption('sse'):
-            env['CCFLAGS']+=["-mfpmath=sse"]
-            if env.GetOption('sse')>1: env['CCFLAGS']+=["-msse%s" % str(env.GetOption('sse'))]
-            else: env['CCFLAGS']+=["-msse"]
+   # Am I in a 32 or 64 bit environment? Note that not specifying --sse doesn't set any x86 or x64 specific options
+   # so it's good to go for ANY platform
+   if sys.platform=="win32":
+       env['ENV']['INCLUDE']=(os.environ['INCLUDE'] if os.environ.has_key('INCLUDE') else [])
+       env['ENV']['LIB']=(os.environ['LIB'] if os.environ.has_key('LIB') else [])
+       env['ENV']['PATH']=(os.environ['PATH'] if os.environ.has_key('PATH') else [])
+       if not env.GetOption('force32') and os.environ.has_key('LIBPATH') and -1!=os.environ['LIBPATH'].find("\\amd64"):
+           architecture="x64"
+       else:
+           architecture="x86"
+           if   env.GetOption('sse')==1: env['CCFLAGS']+=[ "/arch:SSE" ]
+           elif env.GetOption('sse')>=2: env['CCFLAGS']+=[ "/arch:SSE2" ]
+           if   env.GetOption('sse')>=3: env['CPPDEFINES']+=[("__SSE3__", 1)]
+           if   env.GetOption('sse')>=4: env['CPPDEFINES']+=[("__SSE4__", 1)]
+   else:
+       if not env.GetOption('force32') and ('x64' in platform.machine() or 'x86_64' in platform.machine()):
+           architecture="x64"
+       elif platform.machine() in ['i386', 'i486', 'i586', 'i686']:
+           architecture="x86"
+           if env.GetOption('sse'):
+               env['CCFLAGS']+=["-mfpmath=sse"]
+               if env.GetOption('sse')>1: env['CCFLAGS']+=["-msse%s" % str(env.GetOption('sse'))]
+               else: env['CCFLAGS']+=["-msse"]
 
 # Am I building a debug or release build?
 if env.GetOption('debug'):
@@ -50,7 +95,6 @@ if env.GetOption('debug'):
 else:
     env['CPPDEFINES']+=["NDEBUG"]
     variant=architecture+"/Release"
-    
 
 # Am I building for Windows or POSIX?
 if sys.platform=='win32':
@@ -77,7 +121,7 @@ if sys.platform=='win32':
        env['LINKFLAGS']+=["/OPT:REF", "/OPT:ICF"]  # Eliminate redundants
 else:
    env['CPPDEFINES']+=[]
-   env['CCFLAGS']+=["-Wall"]
+   env['CCFLAGS']+=["-Wall","-fno-exceptions"]
    if env.GetOption('debug'):
        env['CCFLAGS']+=["-O0", "-g"]
    else:
@@ -137,4 +181,4 @@ if sys.platform =="win32":
     
 
 runtime_library = SConscript('runtime/SConscript', variant_dir='runtime/'+variant, duplicate=False, exports='env')
-example = SConscript('example/SConscript', variant_dir='example/'+variant, duplicate=False, exports='env')
+#example = SConscript('example/SConscript', variant_dir='example/'+variant, duplicate=False, exports='env')

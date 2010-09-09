@@ -6,7 +6,7 @@ Import("env")
 if env['NEDMALLOC_STATIC_LIB']:
     nedmalloclib = env.StaticLibrary(env['NEDMALLOC_LIBRARYNAME'], 
         source = ['nedmalloc.c'], 
-        CPPPATH = ['.'],
+        CPPPATH = ['.'] + env['KL_PLATFORM_INC_PATH'],
         CPPDEFINES=env['NEDMALLOCCPPDEFINES'] + env['CPPDEFINES'], 
         CCFLAGS=env['CCFLAGS']+env['CCFLAGSFORNEDMALLOC']
     )

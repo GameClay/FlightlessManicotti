@@ -3,7 +3,7 @@ coreEnv = env.Clone()
 
 lsqlite3 = coreEnv.StaticLibrary('lsqlite3', 
 	['lsqlite3.c'],
-	CPPPATH=env['KL_DEP_INCPATH'],
+	CPPPATH=env['KL_DEP_INCPATH'] + env['KL_PLATFORM_INC_PATH'],
 	CCFLAGS = env['CCFLAGS'],
 )
 Return('lsqlite3')

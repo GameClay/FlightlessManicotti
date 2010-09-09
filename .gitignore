@@ -2,6 +2,13 @@
 .sconsign.dblite
 runtime/x86
 runtime/x64
+runtime/i386
+runtime/armv6
+runtime/armv7
 example/x86
 example/x64
+example/i386
+example/armv6
+example/armv7
+
 *.pdb

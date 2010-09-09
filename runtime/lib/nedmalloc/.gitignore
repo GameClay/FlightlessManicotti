@@ -1,3 +1,5 @@
-._build
 x86/
 x64/
+i386/
+armv6/
+armv7/

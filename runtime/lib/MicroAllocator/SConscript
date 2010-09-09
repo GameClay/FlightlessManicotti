@@ -3,7 +3,7 @@ lib_env = env.Clone()
 
 micro_allocate_lib = lib_env.StaticLibrary('MicroAllocator', 
 	['MicroAllocator.cpp'],
-	CPPPATH = ['.'],
+	CPPPATH = env['KL_PLATFORM_INC_PATH'],
 	CCFLAGS = env['CCFLAGS'],
 )
 Return('micro_allocate_lib')

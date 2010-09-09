@@ -45,7 +45,7 @@ else:
         'src/c/amp/amp_thread_local_slot_pthreads.c',
         'src/c/amp/amp_thread_pthreads.c'
     ]
-    if sys.platform == 'darwin':
+    if sys.platform == 'darwin' and not coreEnv['KL_CROSS_TARGET']:
         coreEnv.Append(CPPDEFINES=['AMP_USE_LIBDISPATCH_SEMAPHORES'])
         lib_files += [
             'src/c/amp/amp_semaphore_libdispatch.c',
@@ -73,7 +73,7 @@ else:
 # lib target
 amp_lib = coreEnv.StaticLibrary('amp', 
 	lib_files,
-	CPPPATH = ['src/c'],
+	CPPPATH = ['src/c'] + env['KL_PLATFORM_INC_PATH'],
 	CCFLAGS = amp_ccflags + env['CCFLAGS'],
 )
 
