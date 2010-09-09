@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="9.00"
+	Name="FlightlessManicotti"
+	ProjectGUID="{539D6D27-FF7E-48D3-BC24-A4F4260A4DE2}"
+	RootNamespace="FlightlessManicotti"
+	Keyword="MakeFileProj"
+	TargetFrameworkVersion="196613"
+	>
+	<Platforms>
+		<Platform
+			Name="Win32"
+		/>
+	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="0"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="cd $(ProjectDir)/../.. &amp;&amp; scons"
+				ReBuildCommandLine="cd $(ProjectDir)/../.. &amp;&amp; scons"
+				CleanCommandLine="cd $(ProjectDir)/../.. &amp;&amp; scons -c"
+				Output="$(ProjectDir)/../../example/x86/$(ConfigurationName)/FlightlessManicotti.exe"
+				PreprocessorDefinitions="WIN32;_DEBUG"
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="0"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="cd $(ProjectDir)/../.. &amp;&amp; scons"
+				ReBuildCommandLine="cd $(ProjectDir)/../.. &amp;&amp; scons"
+				CleanCommandLine="cd $(ProjectDir)/../.. &amp;&amp; scons -c"
+				Output="$(ProjectDir)/../../example/x86/$(ConfigurationName)/FlightlessManicotti.exe"
+				PreprocessorDefinitions="WIN32;NDEBUG"
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>
