@@ -30,7 +30,7 @@ typedef struct _kl_idx_allocator* kl_idx_allocator_t;
 //! Allocate an index-allocator.
 //!
 //! @param idx_allocator Destination for newly allocated index-allocator.
-extern KL_API int kl_alloc_idx_allocator(kl_idx_allocator_t* idx_allocator, uint32_t max_idx);
+extern KL_API int kl_alloc_idx_allocator(kl_idx_allocator_t* idx_allocator, uint32_t free_list_sz);
 
 //! Free an index-allocator
 //!
@@ -43,7 +43,7 @@ extern KL_API void kl_free_idx_allocator(kl_idx_allocator_t* idx_allocator);
 //!
 //! @param idx_allocator The index-allocator from which to reserve an index.
 //! @return A unique index value.
-extern KL_API uint32_t kl_idx_allocator_reservei(kl_idx_allocator_t idx_allocator);
+extern KL_API uint32_t kl_idx_allocator_reserve(kl_idx_allocator_t idx_allocator);
 
 //! Release an index from use.
 //!
