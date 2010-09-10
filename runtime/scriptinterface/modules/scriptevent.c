@@ -20,7 +20,7 @@
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
-#include "script/script.h"
+#include "scriptinterface/script.h"
 
 static int kl_script_event_dequeue_wrap(lua_State* L)
 {

@@ -20,11 +20,10 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #include <amp/amp.h>
-#include "script/script.h"
+#include "scriptinterface/script.h"
 #include "core/logger.h"
 #include "core/ringbuffer.h"
-
-#include <swig_autogen.h>
+#include "swig_autogen.h"
 
 // Extern the lua module loaders
 extern int luaopen_scriptevent(lua_State* L);

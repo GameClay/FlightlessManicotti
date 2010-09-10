@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "fm.h"
-#include "script/script.h"
+#include "scriptinterface/script.h"
 
 int main(int argc, const char* argv[])
 {   
