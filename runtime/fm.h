@@ -51,10 +51,17 @@ extern "C" {
 #define KT_TRUE 1
 #define KT_FALSE 0
 
+// Define KL_ASSERT
+#if !defined(_NDEBUG) && !defined(KL_ENABLE_ASSERTS)
+#  define KL_ENABLE_ASSERTS
+#  include <assert.h>
+#endif
+#define KL_ASSERT(x, msg) assert(x && msg)
+
+// TODO: Include more stuff?
 #include "core/memory.h"
 #include "core/error_codes.h"
 
-// TODO: Include more stuff?
 
 #ifdef __cplusplus
 }

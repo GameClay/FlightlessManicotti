@@ -17,7 +17,6 @@
  */
  
 #include <string.h>
-#include <assert.h>
 
 #include "fm.h"
 #include "core/memory.h"
@@ -85,7 +84,7 @@ void* kl_microrcpy(void* KL_RESTRICT dest, const void* KL_RESTRICT src, size_t s
 // Default aligned malloc/free using nedmalloc
 void* aligned_nedmalloc(size_t size, size_t align_size)
 {
-   assert(align_size != 16); 
+   KL_ASSERT(align_size != 16, "Use kl_malloc for 16-byte aligned allocations."); 
    return nedmalloc2(size, align_size, 0); // No flags
 }
 

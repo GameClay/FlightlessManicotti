@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-#include <assert.h>
 #include "fm.h"
 #include "core/idxallocator.h"
 #include "core/ringbuffer.h"
@@ -30,7 +29,7 @@ struct _kl_idx_allocator
 
 int kl_alloc_idx_allocator(kl_idx_allocator_t* idx_allocator, uint32_t free_list_sz)
 {
-   assert(idx_allocator != NULL);
+   KL_ASSERT(idx_allocator != NULL, "NULL index-allocator pointer");
    
    int ret = KL_ERROR;
    const uint32_t alloc_sz = sizeof(struct _kl_idx_allocator) + sizeof(uint32_t) * free_list_sz;
@@ -58,8 +57,8 @@ int kl_alloc_idx_allocator(kl_idx_allocator_t* idx_allocator, uint32_t free_list
 
 void kl_free_idx_allocator(kl_idx_allocator_t* idx_allocator)
 {
-   assert(idx_allocator != NULL);
-   assert(*idx_allocator != NULL);
+   KL_ASSERT(idx_allocator != NULL, "NULL index-allocator pointer");
+   KL_ASSERT(*idx_allocator != NULL, "NULL index-allocator");
    
    kl_heap_free(*idx_allocator);
 }
@@ -68,7 +67,7 @@ uint32_t kl_idx_allocator_reserve(kl_idx_allocator_t idx_allocator)
 {
    uint32_t ret = UINT32_MAX;
    struct _kl_idx_allocator* idxalloc = idx_allocator;
-   assert(idxalloc != NULL);
+   KL_ASSERT(idxalloc != NULL, "NULL index-allocator");
    
    if(idxalloc->free_tail_idx > 0)
    {
@@ -83,8 +82,13 @@ uint32_t kl_idx_allocator_reserve(kl_idx_allocator_t idx_allocator)
 void kl_idx_allocator_release(kl_idx_allocator_t idx_allocator, uint32_t idx)
 {
    struct _kl_idx_allocator* idxalloc = idx_allocator;
-   assert(idxalloc != NULL);
-   assert(idx < idxalloc->free_list_sz);
+   KL_ASSERT(idxalloc != NULL, "NULL index-allocator");
+   KL_ASSERT(idx < idxalloc->free_list_sz, "Index out of range for index-allocator.");
+   
+#ifdef KL_ENABLE_ASSERTS
+   for(int i = 0; i < idxalloc->free_tail_idx; i++)
+      KL_ASSERT(idxalloc->free_list[i] != idx, "Index was freed twice.");
+#endif
    
    if(idxalloc->free_tail_idx < idxalloc->free_list_sz)
    {
