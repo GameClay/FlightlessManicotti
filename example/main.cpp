@@ -29,7 +29,7 @@ int main(int argc, const char* argv[])
       kl_script_event_t fooevt = {"facepunch", NULL, 0, 1, 2};
       kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &fooevt);
       
-      kl_mainloop("example/script.lua", argc, argv);
+      kl_mainloop("example/main.lua", argc, argv);
       
       // Dequeue events from script
       while(kl_script_event_dequeue(KL_DEFAULT_SCRIPT_CONTEXT, &fooevt) == KL_SUCCESS)

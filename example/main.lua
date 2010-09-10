@@ -1,3 +1,6 @@
+-- Set up script library location
+package.path = package.path..';./script/?.lua'
+
 function dumptable(table)
    print(tostring(table))
    for key,value in pairs(table) do
@@ -5,17 +8,18 @@ function dumptable(table)
    end
 end
 
-io.write(string.format("[FlightlessManicotti] Hello %s from %s on %s\n",os.getenv"USER" or "there",_VERSION,os.date()))
+-- Bring in script library
+require 'script'
 
 function main(...)
    -- Dump the module to make sure we have all our stuff
    -- dumptable(scriptevent)
 
    -- dequeue everything from code
-   name,context,a,b,c = scriptevent.dequeue(SCTX)
+   name,context,a,b,c = script.events.dequeue(SCTX)
    while name do
       print("From code: {"..name..","..tostring(context)..","..a..","..b..","..c.."}") 
-      name,context,a,b,c = scriptevent.dequeue(SCTX)
+      name,context,a,b,c = script.events.dequeue(SCTX)
    end
 
    -- Use enqueue to send the args back to code
@@ -24,7 +28,7 @@ function main(...)
    --       ways to do dumb stuff, and one of the design philosophies is:
    ---      'empower the scripter' so I am leaning twords keeping it  in.
    for i = 2, arg["n"] do
-      scriptevent.enqueue(SCTX, tostring(arg[i]), nil, 0, 1, 2)
+      script.events.enqueue(SCTX, tostring(arg[i]), nil, 0, 1, 2)
    end
 
    -- simple lsqlite3 test

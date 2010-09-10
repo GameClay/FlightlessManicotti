@@ -26,7 +26,7 @@
 #include "swig_autogen.h"
 
 // Extern the lua module loaders
-extern int luaopen_scriptevent(lua_State* L);
+extern int luaopen_scriptevents(lua_State* L);
 extern int luaopen_lsqlite3(lua_State* L);
 
 KL_DECLARE_RINGBUFFER_TYPE(kl_script_event_t);
@@ -66,7 +66,7 @@ int kl_script_init(kl_script_context_t* context, size_t event_queue_size)
    sctx->lua_state = lua_open();
    luaL_openlibs(sctx->lua_state);
    
-   luaopen_scriptevent(sctx->lua_state);
+   luaopen_scriptevents(sctx->lua_state);
    luaopen_lsqlite3(sctx->lua_state);
    
    LOAD_SWIG_LIBS(sctx->lua_state);
