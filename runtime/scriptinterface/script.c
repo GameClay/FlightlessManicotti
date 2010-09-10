@@ -82,7 +82,7 @@ int kl_script_init(kl_script_context_t* context, size_t event_queue_size)
 
 typedef struct
 {
-   lua_State* state;
+   kl_script_context_t sctx;
    int argc;
    const char** argv;
    const char* file_name;
@@ -103,14 +103,14 @@ void _kl_script_run_internal(void* arg)
    script_run_arg* run_arg = (script_run_arg*)arg;
    
    // Execute the script file
-   switch(lua_pcall(run_arg->state, 0, 0, 0))
+   switch(lua_pcall(run_arg->sctx->lua_state, 0, 0, 0))
    {
       case 0: break;
       
       // Runtime error
       case LUA_ERRRUN:
       {
-         _on_lua_err(run_arg->state);
+         _on_lua_err(run_arg->sctx->lua_state);
          break;
       }
       
@@ -121,22 +121,22 @@ void _kl_script_run_internal(void* arg)
    }
    
    // Push function name onto lua stack
-   lua_getglobal(run_arg->state, "main");
+   lua_getglobal(run_arg->sctx->lua_state, "main");
    
    // If there is no 'main' function, we are done.
-   if(lua_isnil(run_arg->state, -1))
-      lua_pop(run_arg->state, 1);
+   if(lua_isnil(run_arg->sctx->lua_state, -1))
+      lua_pop(run_arg->sctx->lua_state, 1);
    else
    {
       // Load argv onto the lua stack
       int i;
       for(i = 0; i < run_arg->argc; i++)
       {
-         lua_pushstring(run_arg->state, run_arg->argv[i]);
+         lua_pushstring(run_arg->sctx->lua_state, run_arg->argv[i]);
       }
       
       // Invoke the main function
-      switch(lua_pcall(run_arg->state, run_arg->argc, 0, 0))
+      switch(lua_pcall(run_arg->sctx->lua_state, run_arg->argc, 0, 0))
       {
          case 0:
          {
@@ -144,7 +144,7 @@ void _kl_script_run_internal(void* arg)
             {
                while(KL_TRUE)
                {
-                  kl_script_event_pump(run_arg->state);
+                  kl_script_event_pump(run_arg->sctx);
                }
             }
             break;
@@ -153,7 +153,7 @@ void _kl_script_run_internal(void* arg)
          // Runtime error
          case LUA_ERRRUN:
          {
-            _on_lua_err(run_arg->state);
+            _on_lua_err(run_arg->sctx->lua_state);
             break;
          }
 
@@ -168,17 +168,15 @@ void _kl_script_run_internal(void* arg)
 
 int kl_script_run(kl_script_context_t context, const char* file_name, KL_BOOL threaded, int argc, const char** argv)
 {  
-   
+   kl_script_context_t sctx = (context == KL_DEFAULT_SCRIPT_CONTEXT ? g_script_context : context);
    script_run_arg run_args;
-   run_args.state = NULL;
+   run_args.sctx = NULL;
    run_args.argc = argc;
    run_args.argv = argv;
    run_args.file_name = file_name;
    
-   kl_script_context_t sctx = (context == KL_DEFAULT_SCRIPT_CONTEXT ? g_script_context : context);
-   
    KL_ASSERT(sctx, "NULL context.");
-   run_args.state = sctx->lua_state;
+   run_args.sctx = sctx;
    
    // Load the file, and if successful, execute
    switch(luaL_loadfile(sctx->lua_state, file_name))
