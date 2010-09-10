@@ -23,7 +23,9 @@ int kl_mainloop(const char* main_script, int argc, const char* argv[])
 {
    int ret = KL_SUCCESS;
    
-   kl_script_run(KL_DEFAULT_SCRIPT_CONTEXT, main_script, KL_TRUE, argc, argv);
+   kl_script_run(KL_DEFAULT_SCRIPT_CONTEXT, main_script, argc, argv);
+   
+   //kl_script_event_pump(KL_DEFAULT_SCRIPT_CONTEXT);
    
    return ret;
 }

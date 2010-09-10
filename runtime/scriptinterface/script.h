@@ -49,13 +49,13 @@ typedef struct _kl_script_context* kl_script_context_t;
 //! @param event_queue_size The memory size of the event queue for this script context.
 //! @return KL_SUCCESS if initialization was successful.
 //!         KL_ERROR if initialization failed.
-extern KL_API int kl_script_init(kl_script_context_t* context, size_t event_queue_size);
+extern KL_API int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_queue_size);
 
 //! Immediately evaluate a script event.
 extern KL_API int kl_script_evaluate();
 
 //! Run a script file
-extern KL_API int kl_script_run(kl_script_context_t context, const char* file_name, KL_BOOL threaded, int argc, const char** argv);
+extern KL_API int kl_script_run(kl_script_context_t context, const char* file_name, int argc, const char** argv);
 
 //! Destroy a script-task processor.
 //!

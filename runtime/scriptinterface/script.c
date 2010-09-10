@@ -36,12 +36,19 @@ struct _kl_script_context
 {
    lua_State* lua_state;
    kl_ringbuffer_t(kl_script_event_t) event_buffer;
+   KL_BOOL threaded;
+   KL_BOOL keep_running;
+   amp_thread_t thread;
+   
+   int argc;
+   const char** argv;
+   const char* file_name;
 };
 
 // KL_DEFAULT_SCRIPT_CONTEXT
 kl_script_context_t g_script_context = NULL;
 
-int kl_script_init(kl_script_context_t* context, size_t event_queue_size)
+int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_queue_size)
 {
    struct _kl_script_context* sctx = NULL;
    
@@ -61,6 +68,11 @@ int kl_script_init(kl_script_context_t* context, size_t event_queue_size)
       kl_heap_free(sctx);
       return KL_ERROR;
    }
+   
+   // Set threaded or not
+   sctx->threaded = threaded;
+   sctx->thread = NULL;
+   sctx->keep_running = KL_TRUE;
 
    // Start up lua
    sctx->lua_state = lua_open();
@@ -80,15 +92,6 @@ int kl_script_init(kl_script_context_t* context, size_t event_queue_size)
    return KL_SUCCESS;
 }
 
-typedef struct
-{
-   kl_script_context_t sctx;
-   int argc;
-   const char** argv;
-   const char* file_name;
-   KL_BOOL threaded;
-} script_run_arg;
-
 void _on_lua_err(lua_State* state)
 {
    size_t str_sz;
@@ -100,51 +103,52 @@ void _on_lua_err(lua_State* state)
 
 void _kl_script_run_internal(void* arg)
 {
-   script_run_arg* run_arg = (script_run_arg*)arg;
+   kl_script_context_t sctx = (kl_script_context_t)arg;
    
    // Execute the script file
-   switch(lua_pcall(run_arg->sctx->lua_state, 0, 0, 0))
+   switch(lua_pcall(sctx->lua_state, 0, 0, 0))
    {
       case 0: break;
       
       // Runtime error
       case LUA_ERRRUN:
       {
-         _on_lua_err(run_arg->sctx->lua_state);
+         _on_lua_err(sctx->lua_state);
          break;
       }
       
       default:
       {
-         KL_LOGF(KL_LL_ERR, "Unknown error loading file '%s'", run_arg->file_name);
+         KL_LOGF(KL_LL_ERR, "Unknown error loading file '%s'", sctx->file_name);
       }
    }
    
    // Push function name onto lua stack
-   lua_getglobal(run_arg->sctx->lua_state, "main");
+   lua_getglobal(sctx->lua_state, "main");
    
    // If there is no 'main' function, we are done.
-   if(lua_isnil(run_arg->sctx->lua_state, -1))
-      lua_pop(run_arg->sctx->lua_state, 1);
+   if(lua_isnil(sctx->lua_state, -1))
+      lua_pop(sctx->lua_state, 1);
    else
    {
       // Load argv onto the lua stack
       int i;
-      for(i = 0; i < run_arg->argc; i++)
+      for(i = 0; i < sctx->argc; i++)
       {
-         lua_pushstring(run_arg->sctx->lua_state, run_arg->argv[i]);
+         lua_pushstring(sctx->lua_state, sctx->argv[i]);
       }
       
       // Invoke the main function
-      switch(lua_pcall(run_arg->sctx->lua_state, run_arg->argc, 0, 0))
+      switch(lua_pcall(sctx->lua_state, sctx->argc, 0, 0))
       {
          case 0:
          {
-            if(run_arg->threaded)
+            // Threaded execution, so run the message pump.
+            if(sctx->threaded)
             {
-               while(KL_TRUE)
+               while(sctx->keep_running == KL_TRUE)
                {
-                  kl_script_event_pump(run_arg->sctx);
+                  kl_script_event_pump(sctx);
                }
             }
             break;
@@ -153,7 +157,7 @@ void _kl_script_run_internal(void* arg)
          // Runtime error
          case LUA_ERRRUN:
          {
-            _on_lua_err(run_arg->sctx->lua_state);
+            _on_lua_err(sctx->lua_state);
             break;
          }
 
@@ -166,38 +170,30 @@ void _kl_script_run_internal(void* arg)
    }
 }
 
-int kl_script_run(kl_script_context_t context, const char* file_name, KL_BOOL threaded, int argc, const char** argv)
+int kl_script_run(kl_script_context_t context, const char* file_name, int argc, const char** argv)
 {  
    kl_script_context_t sctx = (context == KL_DEFAULT_SCRIPT_CONTEXT ? g_script_context : context);
-   script_run_arg run_args;
-   run_args.sctx = NULL;
-   run_args.argc = argc;
-   run_args.argv = argv;
-   run_args.file_name = file_name;
-   
    KL_ASSERT(sctx, "NULL context.");
-   run_args.sctx = sctx;
+
+   sctx->argc = argc;
+   sctx->argv = argv;
+   sctx->file_name = file_name;
    
    // Load the file, and if successful, execute
    switch(luaL_loadfile(sctx->lua_state, file_name))
    {
       case 0:
       {
-         if(threaded)
+         if(sctx->threaded)
          {
-            amp_thread_t script_thread;
-
-            int create_res = amp_thread_create_and_launch(&script_thread, AMP_DEFAULT_ALLOCATOR, 
-               &run_args, _kl_script_run_internal);
+            int create_res = amp_thread_create_and_launch(&sctx->thread, AMP_DEFAULT_ALLOCATOR, 
+               sctx, _kl_script_run_internal);
             
             if(create_res != 0)
                return KL_ERROR;
-            
-            
-            amp_thread_join_and_destroy(&script_thread, AMP_DEFAULT_ALLOCATOR);
          }
          else
-            _kl_script_run_internal(&run_args);
+            _kl_script_run_internal(sctx->thread);
          return KL_SUCCESS;
       }
       
@@ -232,7 +228,15 @@ void kl_script_destroy(kl_script_context_t* context)
    if(context != NULL)
    {  
       sctx = *context;
-
+      
+      // Stop threading
+      if(sctx->threaded)
+      {
+         KL_ASSERT(sctx->thread != NULL, "Contex marked as threaded, but no thread found.");
+         amp_thread_join_and_destroy(&sctx->thread, AMP_DEFAULT_ALLOCATOR);
+         sctx->thread = NULL;
+      }
+      
       lua_close(sctx->lua_state);
       kl_free_ringbuffer(kl_script_event_t, &sctx->event_buffer);
    
@@ -260,11 +264,11 @@ int kl_script_event_pump(kl_script_context_t context)
    kl_script_context_t sctx = (context == KL_DEFAULT_SCRIPT_CONTEXT ? g_script_context : context);
    KL_ASSERT(sctx, "NULL context.");
    
-   // Push function name onto lua stack
+   // Push function name onto lua stack, and invoke message handler if it exists
    lua_getglobal(sctx->lua_state, "script.events.handler");
-   
-   // If there is no 'main' function, we are done.
-   if(!lua_isnil(sctx->lua_state, -1))
+   if(lua_isnil(sctx->lua_state, -1))
+      lua_pop(sctx->lua_state, 1);
+   else
    {
       // Invoke the main function
       switch(lua_pcall(sctx->lua_state, 0, 0, 0))
