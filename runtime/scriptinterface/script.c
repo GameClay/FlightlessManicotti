@@ -86,6 +86,7 @@ typedef struct
    int argc;
    const char** argv;
    const char* file_name;
+   KL_BOOL threaded;
 } script_run_arg;
 
 void _on_lua_err(lua_State* state)
@@ -137,7 +138,17 @@ void _kl_script_run_internal(void* arg)
       // Invoke the main function
       switch(lua_pcall(run_arg->state, run_arg->argc, 0, 0))
       {
-         case 0: break;
+         case 0:
+         {
+            if(run_arg->threaded)
+            {
+               while(KL_TRUE)
+               {
+                  kl_script_event_pump(run_arg->state);
+               }
+            }
+            break;
+         }
 
          // Runtime error
          case LUA_ERRRUN:
@@ -183,6 +194,7 @@ int kl_script_run(kl_script_context_t context, const char* file_name, KL_BOOL th
             
             if(create_res != 0)
                return KL_ERROR;
+            
             
             amp_thread_join_and_destroy(&script_thread, AMP_DEFAULT_ALLOCATOR);
          }
@@ -242,4 +254,43 @@ int kl_script_event_dequeue(kl_script_context_t context, kl_script_event_t* even
    kl_script_context_t sctx = (context == KL_DEFAULT_SCRIPT_CONTEXT ? g_script_context : context);
    KL_ASSERT(sctx, "NULL context.");
    return kl_retrieve_ringbuffer(kl_script_event_t, &sctx->event_buffer, event);
+}
+
+int kl_script_event_pump(kl_script_context_t context)
+{
+   int ret = KL_ERROR;
+   kl_script_context_t sctx = (context == KL_DEFAULT_SCRIPT_CONTEXT ? g_script_context : context);
+   KL_ASSERT(sctx, "NULL context.");
+   
+   // Push function name onto lua stack
+   lua_getglobal(sctx->lua_state, "script.events.handler");
+   
+   // If there is no 'main' function, we are done.
+   if(!lua_isnil(sctx->lua_state, -1))
+   {
+      // Invoke the main function
+      switch(lua_pcall(sctx->lua_state, 0, 0, 0))
+      {
+         case 0: 
+         {
+            ret = KL_SUCCESS;
+            break;
+         }
+
+         // Runtime error
+         case LUA_ERRRUN:
+         {
+            _on_lua_err(sctx->lua_state);
+            break;
+         }
+
+         default:
+         {
+            KL_LOGF(KL_LL_ERR, "Unknown error invoking script.events.pump().");
+            break;
+         }
+      }
+   }
+   
+   return ret;
 }

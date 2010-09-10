@@ -27,7 +27,7 @@ extern "C" {
 #include <amp/amp.h>
 
 #define _KL_DECLARE_RINGBUFFER_STRUCT_(t) \
-   KL_API typedef struct                  \
+   typedef struct                         \
    {                                      \
       size_t start;                       \
       size_t end;                         \

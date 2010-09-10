@@ -26,7 +26,7 @@ extern "C" {
 #include "fm.h"
 
 #define kl_script_event_t_name_length (sizeof(int) * 4)
-KL_API typedef struct
+typedef struct
 {
    //! The event name.
    char name[kl_script_event_t_name_length];
@@ -37,7 +37,7 @@ KL_API typedef struct
    int a, b, c; // struct length should be 64 bytes
 } kl_script_event_t;
 
-KL_API typedef struct _kl_script_context* kl_script_context_t;
+typedef struct _kl_script_context* kl_script_context_t;
 
 #define KL_DEFAULT_SCRIPT_CONTEXT NULL
 
@@ -49,13 +49,13 @@ KL_API typedef struct _kl_script_context* kl_script_context_t;
 //! @param event_queue_size The memory size of the event queue for this script context.
 //! @return KL_SUCCESS if initialization was successful.
 //!         KL_ERROR if initialization failed.
-KL_API int kl_script_init(kl_script_context_t* context, size_t event_queue_size);
+extern KL_API int kl_script_init(kl_script_context_t* context, size_t event_queue_size);
 
 //! Immediately evaluate a script event.
-KL_API int kl_script_evaluate();
+extern KL_API int kl_script_evaluate();
 
 //! Run a script file
-KL_API int kl_script_run(kl_script_context_t context, const char* file_name, KL_BOOL threaded, int argc, const char** argv);
+extern KL_API int kl_script_run(kl_script_context_t context, const char* file_name, KL_BOOL threaded, int argc, const char** argv);
 
 //! Destroy a script-task processor.
 //!
@@ -64,12 +64,12 @@ KL_API int kl_script_run(kl_script_context_t context, const char* file_name, KL_
 //! @note This function does not free, or modify kl_script_queue.
 //!
 //! @param context This script context will be deallocated.
-KL_API void kl_script_destroy(kl_script_context_t* context);
-
+extern KL_API void kl_script_destroy(kl_script_context_t* context);
 
 // Event-queue manipulation
-KL_API int kl_script_event_enqueue(kl_script_context_t context, const kl_script_event_t* event);
-KL_API int kl_script_event_dequeue(kl_script_context_t context, kl_script_event_t* event);
+extern KL_API int kl_script_event_enqueue(kl_script_context_t context, const kl_script_event_t* event);
+extern KL_API int kl_script_event_dequeue(kl_script_context_t context, kl_script_event_t* event);
+extern KL_API int kl_script_event_pump(kl_script_context_t context);
 
 #ifdef __cplusplus
 }
