@@ -23,7 +23,7 @@
 
 int main(int argc, const char* argv[])
 {
-   if(kl_initialize() == KL_SUCCESS)
+   if(kl_initialize(KL_TRUE) == KL_SUCCESS)
    {
       // Send the script a test event
       kl_script_event_t fooevt = {"facepunch", NULL, 0, 1, 2};

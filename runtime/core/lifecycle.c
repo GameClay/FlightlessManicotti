@@ -28,14 +28,15 @@ kl_runtime_state_t g_runtime_state = { KL_FALSE };
 // KL_DEFAULT_SCRIPT_CONTEXT from scriptinterface/script.c
 extern kl_script_context_t g_script_context;
 
-int kl_initialize()
+int kl_initialize(KL_BOOL use_threads)
 {
    int ret = KL_ERROR;
    
    KL_ASSERT(!g_runtime_state.initialized, "Runtime already initialized.");
    KL_ASSERT(g_script_context == NULL, "KL_DEFAULT_SCRIPT_CONTEXT already initialized.");
    
-   ret = kl_script_init(&g_script_context, 1 << 10);
+   // TODO: Don't hard code ring-buffer size
+   ret = kl_script_init(&g_script_context, use_threads, 1 << 10);
    
    g_runtime_state.initialized = (ret == KL_SUCCESS ? KL_TRUE : KL_FALSE);
    return ret;

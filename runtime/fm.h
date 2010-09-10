@@ -66,7 +66,7 @@ extern "C" {
 //!
 //! @return KL_SUCCESS if successful.
 //!         KL_ERROR if unsuccessful.
-extern KL_API int kl_initialize();
+extern KL_API int kl_initialize(KL_BOOL use_threads);
 
 //! Destroy the runtime.
 extern KL_API void kl_destroy();
