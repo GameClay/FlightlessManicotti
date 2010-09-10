@@ -43,6 +43,8 @@ struct _kl_script_context
    int argc;
    const char** argv;
    const char* file_name;
+
+   int event_handler_ref;
 };
 
 // KL_DEFAULT_SCRIPT_CONTEXT
@@ -73,6 +75,9 @@ int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_
    sctx->threaded = threaded;
    sctx->thread = NULL;
    sctx->keep_running = KL_TRUE;
+
+   // No event handler ref yet
+   sctx->event_handler_ref = 0;
 
    // Start up lua
    sctx->lua_state = lua_open();
@@ -264,13 +269,45 @@ int kl_script_event_pump(kl_script_context_t context)
    kl_script_context_t sctx = (context == KL_DEFAULT_SCRIPT_CONTEXT ? g_script_context : context);
    KL_ASSERT(sctx, "NULL context.");
    
-   // Push function name onto lua stack, and invoke message handler if it exists
-   lua_getglobal(sctx->lua_state, "script.events.handler");
-   if(lua_isnil(sctx->lua_state, -1))
+   // Skip this if we already have a ref to the handler function
+   if(sctx->event_handler_ref == 0)
+   {
+      // Push function name onto lua stack, and invoke message handler if it exists
+      lua_getglobal(sctx->lua_state, "script");
+      KL_ASSERT(!lua_isnil(sctx->lua_state, -1), "Could not find 'script' table. This is very bad.");
+      if(lua_isnil(sctx->lua_state, -1))
+         lua_pop(sctx->lua_state, 1);
+      else
+      {
+         // Grab the 'events' table
+         lua_pushstring(sctx->lua_state, "events");
+         lua_gettable(sctx->lua_state, -2);
+         KL_ASSERT(!lua_isnil(sctx->lua_state, -1), "Could not find 'script.events' table. This is very bad.");
+
+         // Grab the 'handler' value
+         lua_getfield(sctx->lua_state, -1, "handler");
+         KL_ASSERT(lua_isfunction(sctx->lua_state, -1), "Value for 'events.script.handler' was not a function.");
+
+         // Pop/store the handler
+         sctx->event_handler_ref = luaL_ref(sctx->lua_state, LUA_REGISTRYINDEX);
+         
+         // Clean up the stack
+         lua_pop(sctx->lua_state, 2);
+      }
+   }
+
+   // Push the function ref back onto the stack
+   lua_rawgeti(sctx->lua_state, LUA_REGISTRYINDEX, sctx->event_handler_ref);
+   KL_ASSERT(lua_isfunction(sctx->lua_state, -1), "Stored value for 'events.script.handler' was not a function.");
+
+   // Invoke event handler
+   if(!lua_isfunction(sctx->lua_state, -1))
+   {
+      KL_ASSERT(KL_FALSE, "Stored value for 'events.script.handler' was not a function.");
       lua_pop(sctx->lua_state, 1);
+   }
    else
    {
-      // Invoke the main function
       switch(lua_pcall(sctx->lua_state, 0, 0, 0))
       {
          case 0: 

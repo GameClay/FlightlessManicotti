@@ -12,16 +12,8 @@ end
 require 'script'
 
 function main(...)
-   -- Dump the module to make sure we have all our stuff
-   -- dumptable(scriptevent)
-
-   -- dequeue everything from code
-   name,context,a,b,c = script.events.dequeue(SCTX)
-   while name do
-      print("From code: {"..name..","..tostring(context)..","..a..","..b..","..c.."}") 
-      name,context,a,b,c = script.events.dequeue(SCTX)
-   end
-
+   --dumptable(script.events)
+   
    -- Use enqueue to send the args back to code
    -- NOTE: I am not sure if Lua will be able to enqueue to the script event queue,
    --       as this could cause a bad. On the other hand, people can find unlimited
@@ -46,3 +38,14 @@ function main(...)
      print(row.id, row.content)
    end
 end
+
+function event_handler()
+   -- dequeue everything from code
+   name,context,a,b,c = script.events.dequeue(SCTX)
+   while name do
+      print("From code: {"..name..","..tostring(context)..","..a..","..b..","..c.."}") 
+      name,context,a,b,c = script.events.dequeue(SCTX)
+   end
+end
+
+script.events.handler = event_handler
