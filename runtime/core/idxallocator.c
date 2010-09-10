@@ -23,24 +23,24 @@
 
 struct _kl_idx_allocator
 {
-   size_t max_idx;
-   size_t free_tail_idx;
-   size_t* free_list;
+   uint32_t free_tail_idx;
+   uint32_t max_idx;
+   uint32_t* free_list;
 };
 
-int kl_alloc_idx_allocator(kl_idx_allocator_t* idx_allocator, size_t max_idx)
+int kl_alloc_idx_allocator(kl_idx_allocator_t* idx_allocator, uint32_t max_idx)
 {
    assert(idx_allocator != NULL);
    
    int ret = KL_ERROR;
-   const size_t alloc_sz = sizeof(struct _kl_idx_allocator) + sizeof(size_t) * max_idx;
+   const uint32_t alloc_sz = sizeof(struct _kl_idx_allocator) + sizeof(uint32_t) * max_idx;
    struct _kl_idx_allocator* idxalloc = (struct _kl_idx_allocator*)kl_heap_alloc(alloc_sz);
    
-   if(*idx_allocator != NULL)
+   if(idxalloc != NULL)
    {
       idxalloc->max_idx = max_idx;
       idxalloc->free_tail_idx = 0;
-      idxalloc->free_list = (struct _kl_idx_allocator*)((char*)idxalloc + sizeof(struct _kl_idx_allocator));
+      idxalloc->free_list = (uint32_t*)(((char*)idxalloc) + sizeof(struct _kl_idx_allocator));
       *idx_allocator = idxalloc;
       ret = KL_SUCCESS;
    }
@@ -48,11 +48,33 @@ int kl_alloc_idx_allocator(kl_idx_allocator_t* idx_allocator, size_t max_idx)
    return ret;
 }
 
-
 void kl_free_idx_allocator(kl_idx_allocator_t* idx_allocator)
 {
    assert(idx_allocator != NULL);
    assert(*idx_allocator != NULL);
    
-   kl_heap_free((char*)*idx_allocator - sizeof(struct _kl_idx_allocator));
+   kl_heap_free(*idx_allocator);
+}
+
+uint32_t kl_idx_allocator_reservei(kl_idx_allocator_t idx_allocator)
+{
+   uint32_t ret = UINT32_MAX;
+   struct _kl_idx_allocator* idxalloc = idx_allocator;
+   assert(idxalloc != NULL);
+   
+   if(idxalloc->free_tail_idx > 0)
+   {
+      // TODO: Use compxchng.
+      ret = idxalloc->free_list[--idxalloc->free_tail_idx];
+   }
+   
+   return ret;
+}
+
+
+void kl_idx_allocator_release(kl_idx_allocator_t idx_allocator, uint32_t idx)
+{
+   struct _kl_idx_allocator* idxalloc = idx_allocator;
+   assert(idxalloc != NULL);
+   idxalloc->free_list[idxalloc->free_tail_idx++] = idx;
 }
