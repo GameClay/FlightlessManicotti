@@ -38,10 +38,19 @@ struct _kl_script_context
    kl_ringbuffer_t(kl_script_event_t) event_buffer;
 };
 
+// KL_DEFAULT_SCRIPT_CONTEXT
+kl_script_context_t g_script_context = NULL;
+
 int kl_script_init(kl_script_context_t* context, size_t event_queue_size)
 {
+   struct _kl_script_context* sctx = NULL;
+   
+   KL_ASSERT(context != NULL, "Cannot use KL_DEFAULT_SCRIPT_CONTEXT during allocation.");
+   if(context == NULL)
+      return KL_ERROR;
+      
    // Allocate script context
-   struct _kl_script_context* sctx = (struct _kl_script_context*)kl_heap_alloc(sizeof(struct _kl_script_context));
+   sctx = (struct _kl_script_context*)kl_heap_alloc(sizeof(struct _kl_script_context));
 
    if(sctx == NULL)
       return KL_ERROR;
@@ -146,17 +155,22 @@ void _kl_script_run_internal(void* arg)
    }
 }
 
-int kl_script_run(kl_script_context_t context, const char* file_name, KT_BOOL threaded, int argc, const char** argv)
-{
-   //
+int kl_script_run(kl_script_context_t context, const char* file_name, KL_BOOL threaded, int argc, const char** argv)
+{  
+   
    script_run_arg run_args;
-   run_args.state = context->lua_state;
+   run_args.state = NULL;
    run_args.argc = argc;
    run_args.argv = argv;
    run_args.file_name = file_name;
    
+   kl_script_context_t sctx = (context == KL_DEFAULT_SCRIPT_CONTEXT ? g_script_context : context);
+   
+   KL_ASSERT(sctx, "NULL context.");
+   run_args.state = sctx->lua_state;
+   
    // Load the file, and if successful, execute
-   switch(luaL_loadfile(context->lua_state, file_name))
+   switch(luaL_loadfile(sctx->lua_state, file_name))
    {
       case 0:
       {
@@ -185,7 +199,7 @@ int kl_script_run(kl_script_context_t context, const char* file_name, KT_BOOL th
       }
       case LUA_ERRSYNTAX:
       {
-         _on_lua_err(context->lua_state);
+         _on_lua_err(sctx->lua_state);
          return KL_ERROR;
       }
       case LUA_ERRMEM: 
@@ -202,20 +216,30 @@ int kl_script_run(kl_script_context_t context, const char* file_name, KT_BOOL th
 
 void kl_script_destroy(kl_script_context_t* context)
 {
-   struct _kl_script_context* sctx = *context;
-
-   lua_close(sctx->lua_state);
-   kl_free_ringbuffer(kl_script_event_t, &sctx->event_buffer);
+   struct _kl_script_context* sctx = NULL;
    
-   kl_heap_free(sctx);
+   KL_ASSERT(context != NULL, "Cannot use KL_DEFAULT_SCRIPT_CONTEXT during allocation.");
+   if(context != NULL)
+   {  
+      sctx = *context;
+
+      lua_close(sctx->lua_state);
+      kl_free_ringbuffer(kl_script_event_t, &sctx->event_buffer);
+   
+      kl_heap_free(sctx);
+   }
 }
 
 int kl_script_event_enqueue(kl_script_context_t context, const kl_script_event_t* event)
 {
-   return kl_reserve_ringbuffer(kl_script_event_t, &context->event_buffer, event);
+   kl_script_context_t sctx = (context == KL_DEFAULT_SCRIPT_CONTEXT ? g_script_context : context);
+   KL_ASSERT(sctx, "NULL context.");
+   return kl_reserve_ringbuffer(kl_script_event_t, &sctx->event_buffer, event);
 }
 
 int kl_script_event_dequeue(kl_script_context_t context, kl_script_event_t* event)
 {
-   return kl_retrieve_ringbuffer(kl_script_event_t, &context->event_buffer, event);
+   kl_script_context_t sctx = (context == KL_DEFAULT_SCRIPT_CONTEXT ? g_script_context : context);
+   KL_ASSERT(sctx, "NULL context.");
+   return kl_retrieve_ringbuffer(kl_script_event_t, &sctx->event_buffer, event);
 }

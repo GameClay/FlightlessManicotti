@@ -15,35 +15,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fm.h"
 #include "scriptinterface/script.h"
 
-int main(int argc, const char* argv[])
+typedef struct
 {
-   if(kl_initialize() == KL_SUCCESS)
-   {
-      // Send the script a test event
-      kl_script_event_t fooevt = {"facepunch", NULL, 0, 1, 2};
-      kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &fooevt);
-      
-      kl_mainloop("example/script.lua", argc, argv);
-      
-      // Dequeue events from script
-      while(kl_script_event_dequeue(KL_DEFAULT_SCRIPT_CONTEXT, &fooevt) == KL_SUCCESS)
-      {
-         printf("From script: {%s,%p,%d,%d,%d}\n", fooevt.name, fooevt.context,
-            fooevt.a, fooevt.b, fooevt.c);
-      }
-      
-      kl_destroy();
-   }
-#ifdef WIN32
-   printf("Press any key to continue...");
-   getchar();
-#endif
+   KL_BOOL initialized;
+} kl_runtime_state_t;
+
+kl_runtime_state_t g_runtime_state = { KL_FALSE };
+
+// KL_DEFAULT_SCRIPT_CONTEXT from scriptinterface/script.c
+extern kl_script_context_t g_script_context;
+
+int kl_initialize()
+{
+   int ret = KL_ERROR;
    
-   return 0;
+   KL_ASSERT(!g_runtime_state.initialized, "Runtime already initialized.");
+   KL_ASSERT(g_script_context == NULL, "KL_DEFAULT_SCRIPT_CONTEXT already initialized.");
+   
+   ret = kl_script_init(&g_script_context, 1 << 10);
+   
+   g_runtime_state.initialized = (ret == KL_SUCCESS ? KL_TRUE : KL_FALSE);
+   return ret;
+}
+
+void kl_destroy()
+{
+   KL_ASSERT(g_runtime_state.initialized, "Runtime not initialized.");
+   kl_script_destroy(&g_script_context);
+   g_script_context = NULL;
 }

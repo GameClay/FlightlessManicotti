@@ -47,9 +47,9 @@ extern "C" {
 #endif
 
 // Define KL_BOOL
-#define KT_BOOL int
-#define KT_TRUE 1
-#define KT_FALSE 0
+#define KL_BOOL int
+#define KL_TRUE 1
+#define KL_FALSE 0
 
 // Define KL_ASSERT
 #if !defined(_NDEBUG) && !defined(KL_ENABLE_ASSERTS)
@@ -62,6 +62,23 @@ extern "C" {
 #include "core/memory.h"
 #include "core/error_codes.h"
 
+//! Initialize the runtime.
+//!
+//! @return KL_SUCCESS if successful.
+//!         KL_ERROR if unsuccessful.
+extern KL_API int kl_initialize();
+
+//! Destroy the runtime.
+extern KL_API void kl_destroy();
+
+//! Main loop.
+//!
+//! @param main_script The startup script.
+//! @param argc Number of arguments.
+//! @param argv Array of arguments.
+//! @return KL_SUCCESS if terminated normally.
+//!         KL_ERROR if terminated abnormally.
+extern KL_API int kl_mainloop(const char* main_script, int argc, const char* argv[]);
 
 #ifdef __cplusplus
 }
