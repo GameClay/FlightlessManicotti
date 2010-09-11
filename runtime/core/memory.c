@@ -106,3 +106,8 @@ void aligned_nedfree(void* pointer)
 {
    nedfree2(pointer, 0); // No flags
 }
+
+void kl_zero_mem(void* dest, size_t size)
+{
+   memset(dest, 0, size);
+}
