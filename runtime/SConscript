@@ -25,7 +25,7 @@ runtime_ccflags = []
 if sys.platform =="win32":
    runtime_ccflags += []
 else:
-   runtime_ccflags += ['-std=c99']
+   runtime_ccflags += ['-std=c99','-Werror']
 
 # Determine additional libraries
 runtime_libs = []
