@@ -63,8 +63,15 @@ extern KL_API int kl_script_run(kl_script_context_t context, const char* file_na
 //!
 //! @note This function does not free, or modify kl_script_queue.
 //!
-//! @param context This script context will be deallocated.
+//! @param context This script-context will be deallocated.
 extern KL_API void kl_script_destroy(kl_script_context_t* context);
+
+//! Check if the script-context is threaded.
+//!
+//! @param context The script-context to query.
+//! @return KL_TRUE if the script-context is threaded.
+//!         KL_FALSE if the script-context is not threaded.
+extern KL_API KL_BOOL kl_script_is_threaded(kl_script_context_t context);
 
 // Event-queue manipulation
 extern KL_API int kl_script_event_enqueue(kl_script_context_t context, const kl_script_event_t* event);

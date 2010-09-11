@@ -238,6 +238,7 @@ void kl_script_destroy(kl_script_context_t* context)
       if(sctx->threaded)
       {
          KL_ASSERT(sctx->thread != NULL, "Contex marked as threaded, but no thread found.");
+         sctx->keep_running = KL_FALSE;
          amp_thread_join_and_destroy(&sctx->thread, AMP_DEFAULT_ALLOCATOR);
          sctx->thread = NULL;
       }
@@ -263,6 +264,13 @@ int kl_script_event_dequeue(kl_script_context_t context, kl_script_event_t* even
    return kl_retrieve_ringbuffer(kl_script_event_t, &sctx->event_buffer, event);
 }
 
+KL_BOOL kl_script_is_threaded(kl_script_context_t context)
+{
+   kl_script_context_t sctx = (context == KL_DEFAULT_SCRIPT_CONTEXT ? g_script_context : context);
+   KL_ASSERT(sctx, "NULL context.");
+   return sctx->threaded;
+}
+
 int kl_script_event_pump(kl_script_context_t context)
 {
    int ret = KL_ERROR;
@@ -270,6 +278,7 @@ int kl_script_event_pump(kl_script_context_t context)
    KL_ASSERT(sctx, "NULL context.");
    
    // Skip this if we already have a ref to the handler function
+   // TODO: Currently no way to change handler. Should this stay the case?
    if(sctx->event_handler_ref == 0)
    {
       // Push function name onto lua stack, and invoke message handler if it exists
