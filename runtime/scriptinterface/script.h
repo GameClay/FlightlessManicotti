@@ -76,6 +76,7 @@ extern KL_API KL_BOOL kl_script_is_threaded(kl_script_context_t context);
 // Event-queue manipulation
 extern KL_API int kl_script_event_enqueue(kl_script_context_t context, const kl_script_event_t* event);
 extern KL_API int kl_script_event_dequeue(kl_script_context_t context, kl_script_event_t* event);
+extern KL_API int kl_script_event_endframe(kl_script_context_t context);
 extern KL_API int kl_script_event_pump(kl_script_context_t context);
 
 #ifdef __cplusplus

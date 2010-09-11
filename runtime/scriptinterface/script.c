@@ -271,6 +271,12 @@ KL_BOOL kl_script_is_threaded(kl_script_context_t context)
    return sctx->threaded;
 }
 
+int kl_script_event_endframe(kl_script_context_t context)
+{
+   static kl_script_event_t eof_evt = {"EOF", NULL, 0, 0, 0};
+   return kl_script_event_enqueue(context, &eof_evt);
+}
+
 int kl_script_event_pump(kl_script_context_t context)
 {
    int ret = KL_ERROR;

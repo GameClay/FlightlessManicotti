@@ -56,9 +56,17 @@ static int kl_script_event_enqueue_wrap(lua_State* L)
    return 1;
 }
 
+static int kl_script_event_endframe_wrap(lua_State* L)
+{
+   kl_script_context_t sctx = (kl_script_context_t)lua_topointer(L, 1);
+   lua_pushboolean(L, kl_script_event_endframe(sctx) == KL_SUCCESS);
+   return 1;
+}
+
 static const struct luaL_reg scriptevent_module [] = {
     {"enqueue", kl_script_event_enqueue_wrap},
     {"dequeue", kl_script_event_dequeue_wrap},
+    {"endframe",kl_script_event_endframe_wrap},
     {NULL, NULL}
 };
 

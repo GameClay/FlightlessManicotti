@@ -23,20 +23,17 @@
 
 int main(int argc, const char* argv[])
 {
-   if(kl_initialize(KL_TRUE) == KL_SUCCESS)
+   if(kl_initialize(KL_FALSE) == KL_SUCCESS)
    {
       // Send the script a test event
       kl_script_event_t fooevt = {"facepunch", NULL, 0, 1, 2};
+      kl_script_event_t barevt = {"omg", NULL, 2, 1, 0};
+   
       kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &fooevt);
+      kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT);
+      kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &barevt);
       
       kl_mainloop("example/main.lua", argc, argv);
-      
-      // Dequeue events from script
-      while(kl_script_event_dequeue(KL_DEFAULT_SCRIPT_CONTEXT, &fooevt) == KL_SUCCESS)
-      {
-         printf("From script: {%s,%p,%d,%d,%d}\n", fooevt.name, fooevt.context,
-            fooevt.a, fooevt.b, fooevt.c);
-      }
       
       kl_destroy();
    }

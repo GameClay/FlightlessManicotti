@@ -19,13 +19,30 @@
 #include "fm.h"
 #include "scriptinterface/script.h"
 
+KL_BOOL g_keep_running = KL_TRUE;
+
 int kl_mainloop(const char* main_script, int argc, const char* argv[])
 {
    int ret = KL_SUCCESS;
+   KL_BOOL pump_script = (kl_script_is_threaded(KL_DEFAULT_SCRIPT_CONTEXT) == KL_FALSE);
    
    kl_script_run(KL_DEFAULT_SCRIPT_CONTEXT, main_script, argc, argv);
    
-   //kl_script_event_pump(KL_DEFAULT_SCRIPT_CONTEXT);
+   
+   // The main loop.
+   while(g_keep_running)
+   {
+      // Update packet frame
+      // ...
+      
+      // Update script frame 
+      if(pump_script)
+         kl_script_event_pump(KL_DEFAULT_SCRIPT_CONTEXT);
+         
+      // Update simulation frame
+      // ...
+      
+   }
    
    return ret;
 }

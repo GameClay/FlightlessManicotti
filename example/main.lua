@@ -42,7 +42,7 @@ end
 function event_handler()
    -- dequeue everything from code
    name,context,a,b,c = script.events.dequeue(SCTX)
-   while name do
+   while (name and not (name == "EOF")) do
       print("From code: {"..name..","..tostring(context)..","..a..","..b..","..c.."}") 
       name,context,a,b,c = script.events.dequeue(SCTX)
    end
