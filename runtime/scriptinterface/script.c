@@ -65,7 +65,7 @@ int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_
       return KL_ERROR;
       
    // Allocate event buffer
-   if(kl_alloc_ringbuffer(kl_script_event_t, &sctx->event_buffer, event_queue_size) != KL_SUCCESS)
+   if(kl_alloc_ringbuffer(kl_script_event_t, &sctx->event_buffer, event_queue_size / sizeof(kl_script_event_t)) != KL_SUCCESS)
    {
       kl_heap_free(sctx);
       return KL_ERROR;

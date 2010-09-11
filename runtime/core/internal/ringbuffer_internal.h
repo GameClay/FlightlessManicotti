@@ -23,22 +23,22 @@ extern "C" {
 #endif
 
 #include "fm.h"
-#include <stddef.h>
+#include <stdint.h>
 #include <amp/amp.h>
 
 #define _KL_DECLARE_RINGBUFFER_STRUCT_(t) \
    typedef struct                         \
    {                                      \
-      size_t start;                       \
-      size_t end;                         \
-      size_t size;                        \
+      uint32_t start;                       \
+      uint32_t end;                         \
+      uint32_t size;                        \
       t* buffer;                          \
       amp_mutex_t mutex;                  \
    } kl_ringbuffer_##t##_t
 
 
 #define _KL_INIT_RINGBUFFER_FN_(t) void kl_init_ringbuffer_##t(kl_ringbuffer_##t##_t* ringbuffer, size_t size, t* buffer, amp_mutex_t mtx)
-#define _KL_ALLOC_RINGBUFFER_FN_(t) int kl_alloc_ringbuffer_##t(kl_ringbuffer_##t##_t* ringbuffer, size_t size)
+#define _KL_ALLOC_RINGBUFFER_FN_(t) int kl_alloc_ringbuffer_##t(kl_ringbuffer_##t##_t* ringbuffer, uint32_t size)
 #define _KL_FREE_RINGBUFFER_FN_(t) void kl_free_ringbuffer_##t(kl_ringbuffer_##t##_t* ringbuffer)
 #define _KL_RESERVE_RINGBUFFER_FN_(t) int kl_reserve_ringbuffer_##t(kl_ringbuffer_##t##_t* ringbuffer, const t* item)
 #define _KL_RETRIEVE_RINGBUFFER_FN_(t) int kl_retrieve_ringbuffer_##t(kl_ringbuffer_##t##_t* ringbuffer, t* item)
@@ -59,7 +59,7 @@ extern "C" {
       ringbuffer->buffer = buffer;                             \
       ringbuffer->start = 0;                                   \
       ringbuffer->end = 0;                                     \
-      ringbuffer->size = size;                                 \
+      ringbuffer->size = size / sizeof(t);                     \
       ringbuffer->mutex = mtx;                                 \
    }                                                           \
    \
@@ -91,7 +91,7 @@ extern "C" {
    _KL_RESERVE_RINGBUFFER_FN_(t)                               \
    {                                                           \
       int ret = KL_ERROR;                                      \
-      size_t nend;                                             \
+      uint32_t nend;                                         \
       amp_mutex_lock(ringbuffer->mutex);                       \
       nend = (ringbuffer->end + 1) % ringbuffer->size;         \
       if(nend % ringbuffer->size != ringbuffer->start)         \
@@ -110,7 +110,7 @@ extern "C" {
       amp_mutex_lock(ringbuffer->mutex);                       \
       if(ringbuffer->start != ringbuffer->end)                 \
       {                                                        \
-         const size_t nstart =                                 \
+         const uint32_t nstart =                                \
             (ringbuffer->start + 1) % ringbuffer->size;        \
          kl_microrcpy(item, ringbuffer->buffer + nstart, sizeof(t)); \
          ringbuffer->start = nstart;                           \
