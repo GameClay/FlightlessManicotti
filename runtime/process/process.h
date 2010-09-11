@@ -29,6 +29,8 @@ extern "C" {
 //! Opaque pointer to a process-object manager
 typedef struct _kl_process_object_manager* kl_process_object_manager_t;
 
+#define KL_DEFAULT_PROCESS_OBJECT_MANAGER NULL
+
 extern KL_API int kl_alloc_process_object_manager(kl_process_object_manager_t* mgr, uint32_t num_objects);
 extern KL_API void kl_free_process_object_manager(kl_process_object_manager_t* mgr);
 
