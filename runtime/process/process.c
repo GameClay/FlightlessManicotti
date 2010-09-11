@@ -26,6 +26,7 @@ struct _kl_process_object_manager
    kl_process_object_advance_time_ptr* advance_time;
    kl_idx_allocator_t id_allocator;
    uint32_t num_objects;
+   uint32_t max_id_allocated;
 };
 
 kl_process_object_manager_t g_process_object_manager = NULL;
@@ -40,15 +41,20 @@ int kl_alloc_process_object_manager(kl_process_object_manager_t* mgr, uint32_t n
    
    if(pom != NULL)
    {
+      // TODO: More error checking
       pom->tick = kl_heap_alloc(sizeof(kl_process_object_tick_ptr) * num_objects);
+      KL_ASSERT(pom->tick != NULL, "Tick-function list allocation failed.");
       kl_zero_mem(pom->tick, sizeof(kl_process_object_tick_ptr) * num_objects);
 
       pom->advance_time = kl_heap_alloc(sizeof(kl_process_object_advance_time_ptr) * num_objects);
+      KL_ASSERT(pom->advance_time != NULL, "AdvanceTime-function list allocation failed.");
       kl_zero_mem(pom->advance_time, sizeof(kl_process_object_advance_time_ptr) * num_objects);
       
       ret = kl_alloc_idx_allocator(&pom->id_allocator, num_objects);
       KL_ASSERT(ret == KL_SUCCESS, "Failed to allocate index allocator.");
+      
       pom->num_objects = num_objects;
+      pom->max_id_allocated = 0;
 
       *mgr = pom;
       ret = KL_SUCCESS;
@@ -72,9 +78,12 @@ void kl_free_process_object_manager(kl_process_object_manager_t* mgr)
 
 uint32_t kl_reserve_process_object_id(kl_process_object_manager_t mgr)
 {
+   uint32_t ret;
    kl_process_object_manager_t pom = (mgr == KL_DEFAULT_PROCESS_OBJECT_MANAGER ? g_process_object_manager : mgr);
    KL_ASSERT(pom != NULL, "NULL process-object manager.");
-   return kl_idx_allocator_reserve(pom->id_allocator);
+   ret = kl_idx_allocator_reserve(pom->id_allocator);
+   pom->max_id_allocated = (ret > pom->max_id_allocated ? ret : pom->max_id_allocated);
+   return ret;
 }
 
 void kl_release_process_object_id(kl_process_object_manager_t mgr, uint32_t id)
@@ -93,7 +102,7 @@ int kl_tick_process_object_list(const kl_process_object_manager_t mgr)
    tick_fn = pom->tick;
    int i;
    
-   for(i = 0; i < pom->num_objects; i++)
+   for(i = 0; i < pom->max_id_allocated; i++)
    {
       if(tick_fn[i] != NULL)
          tick_fn[i]();
@@ -111,7 +120,7 @@ int kl_advance_process_object_list(const kl_process_object_manager_t mgr, float 
    KL_ASSERT(pom != NULL, "NULL process-object manager.");
    advance_time_fn = pom->advance_time;
    
-   for(i = 0; i < pom->num_objects; i++)
+   for(i = 0; i < pom->max_id_allocated; i++)
    {
       if(advance_time_fn[i] != NULL)
          advance_time_fn[i](dt);
