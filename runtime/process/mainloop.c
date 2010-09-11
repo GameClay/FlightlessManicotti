@@ -18,6 +18,7 @@
 
 #include "fm.h"
 #include "scriptinterface/script.h"
+#include "process/process.h"
 
 kl_script_event_fence_t scriptfence;
 KL_BOOL pump_script;
@@ -62,6 +63,7 @@ int kl_mainloop_iteration(const char* main_script, int argc, const char* argv[])
    // Update packet frame
    //////////////////////
 
+<<<<<<< HEAD
    // ...
    
    //////////////////////
@@ -73,6 +75,25 @@ int kl_mainloop_iteration(const char* main_script, int argc, const char* argv[])
    {
       if(kl_script_event_pump(KL_DEFAULT_SCRIPT_CONTEXT) != KL_SUCCESS)
          return KL_ERROR;
+=======
+      // TODO: If tick-time has past
+      kl_tick_process_object_list(KL_DEFAULT_PROCESS_OBJECT_MANAGER);
+      
+      kl_advance_process_object_list(KL_DEFAULT_PROCESS_OBJECT_MANAGER, 0.0f);
+      
+      ////////////////////////////
+      // Runtime frame is complete
+      ////////////////////////////
+      
+      // Send endframe to script-event queue.
+      kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT, &scriptfence);
+      
+      ////////////
+      // Do output
+      ////////////
+      
+      // ...
+>>>>>>> Integrated process object manager into main loop.
    }
    else
    {
