@@ -81,6 +81,7 @@ uint32_t kl_reserve_process_object_id(kl_process_object_manager_t mgr)
    uint32_t ret;
    kl_process_object_manager_t pom = (mgr == KL_DEFAULT_PROCESS_OBJECT_MANAGER ? g_process_object_manager : mgr);
    KL_ASSERT(pom != NULL, "NULL process-object manager.");
+   
    ret = kl_idx_allocator_reserve(pom->id_allocator);
    pom->max_id_allocated = (ret > pom->max_id_allocated ? ret : pom->max_id_allocated);
    return ret;
@@ -90,6 +91,9 @@ void kl_release_process_object_id(kl_process_object_manager_t mgr, uint32_t id)
 {
    kl_process_object_manager_t pom = (mgr == KL_DEFAULT_PROCESS_OBJECT_MANAGER ? g_process_object_manager : mgr);
    KL_ASSERT(pom != NULL, "NULL process-object manager.");
+   
+   pom->tick[id] = NULL;
+   pom->advance_time[id] = NULL;
    kl_idx_allocator_release(pom->id_allocator, id);
 }
 
