@@ -153,7 +153,7 @@ void _kl_script_run_internal(void* arg)
             {
                while(sctx->keep_running == KL_TRUE)
                {
-                  kl_script_event_pump(sctx);
+                  sctx->keep_running &= (kl_script_event_pump(sctx) == KL_SUCCESS);
                }
             }
             break;

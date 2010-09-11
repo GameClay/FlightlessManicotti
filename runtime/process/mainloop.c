@@ -37,7 +37,7 @@ int kl_mainloop(const char* main_script, int argc, const char* argv[])
       
       // Update script frame 
       if(pump_script)
-         kl_script_event_pump(KL_DEFAULT_SCRIPT_CONTEXT);
+         g_keep_running &= (kl_script_event_pump(KL_DEFAULT_SCRIPT_CONTEXT) == KL_SUCCESS);
          
       // Update simulation frame
       // ...
