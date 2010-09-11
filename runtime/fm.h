@@ -61,6 +61,7 @@ extern "C" {
 // TODO: Include more stuff?
 #include "core/memory.h"
 #include "core/error_codes.h"
+#include "core/logger.h"
 
 //! Initialize the runtime.
 //!

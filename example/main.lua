@@ -14,13 +14,8 @@ require 'script'
 function main(...)
    --dumptable(script.events)
    
-   -- Use enqueue to send the args back to code
-   -- NOTE: I am not sure if Lua will be able to enqueue to the script event queue,
-   --       as this could cause a bad. On the other hand, people can find unlimited
-   --       ways to do dumb stuff, and one of the design philosophies is:
-   ---      'empower the scripter' so I am leaning twords keeping it  in.
    for i = 2, arg["n"] do
-      script.events.enqueue(SCTX, tostring(arg[i]), nil, 0, 1, 2)
+      print("   "..tostring(arg[i]))
    end
 
    -- simple lsqlite3 test
@@ -39,13 +34,21 @@ function main(...)
    end
 end
 
+-- Define and assign event-handler.
 function event_handler()
    -- dequeue everything from code
    name,context,a,b,c = script.events.dequeue(SCTX)
-   while (name and not (name == "EOF")) do
-      print("From code: {"..name..","..tostring(context)..","..a..","..b..","..c.."}") 
+   while (not name or not (name == "EOF")) do
+      if name then
+         print("From code: {"..name..","..tostring(context)..","..a..","..b..","..c.."}")
+      end
+      
       name,context,a,b,c = script.events.dequeue(SCTX)
    end
-end
 
+   -- If we just hit EOF, acknowledge the EOF
+   if(name == "EOF") then
+      script.events.framedone(SCTX, context)
+   end
+end
 script.events.handler = event_handler

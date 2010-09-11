@@ -41,24 +41,22 @@ static int kl_script_event_dequeue_wrap(lua_State* L)
    return 1;
 }
 
-static int kl_script_event_enqueue_wrap(lua_State* L)
+static int kl_script_frame_done(lua_State* L)
 {
-   kl_script_context_t sctx = (kl_script_context_t)lua_topointer(L, 1);
+   kl_script_event_fence_t* fence;
+   kl_script_context_t sctx;
    
-   kl_script_event_t event;
-   strncpy(event.name, lua_tostring(L, 2), kl_script_event_t_name_length);
-   event.context = (void*)lua_topointer(L, 3);
-   event.a = lua_tointeger(L, 4);
-   event.b = lua_tointeger(L, 5);
-   event.c = lua_tointeger(L, 6);
+   sctx = (kl_script_context_t)lua_topointer(L, 1);
+   fence = (kl_script_event_fence_t*)lua_topointer(L, 2);
+   if(fence != NULL)
+      kl_script_event_fence_notify(fence);
    
-   lua_pushboolean(L, kl_script_event_enqueue(sctx, &event) == KL_SUCCESS);
-   return 1;
+   return 0;
 }
 
 static const struct luaL_reg scriptevent_module [] = {
-    {"enqueue", kl_script_event_enqueue_wrap},
     {"dequeue", kl_script_event_dequeue_wrap},
+    {"framedone", kl_script_frame_done},
     {NULL, NULL}
 };
 

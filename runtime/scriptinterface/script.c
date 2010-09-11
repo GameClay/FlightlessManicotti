@@ -273,8 +273,22 @@ KL_BOOL kl_script_is_threaded(kl_script_context_t context)
 
 int kl_script_event_endframe(kl_script_context_t context, kl_script_event_fence_t* fence)
 {
-   static kl_script_event_t eof_evt = {"EOF", NULL, 0, 0, 0};
+   kl_script_event_t eof_evt = {"EOF", fence, 0, 0, 0};
+   if(fence != NULL)
+      fence->processed = KL_FALSE;
    return kl_script_event_enqueue(context, &eof_evt);
+}
+
+int kl_script_event_fence_wait(const kl_script_event_fence_t* fence)
+{
+   return (fence->processed == KL_TRUE ? KL_SUCCESS : KL_RETRY);
+}
+
+int kl_script_event_fence_notify(kl_script_event_fence_t* fence)
+{
+   KL_ASSERT(fence->processed == KL_FALSE, "Fence has already been notified.");
+   fence->processed = KL_TRUE;
+   return KL_SUCCESS;
 }
 
 int kl_script_event_pump(kl_script_context_t context)

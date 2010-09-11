@@ -23,6 +23,7 @@ extern "C" {
 #endif
 
 #include "fm.h"
+#include <stdio.h>
 
 #define KL_LL_NRM 0
 #define KL_LL_ERR 1

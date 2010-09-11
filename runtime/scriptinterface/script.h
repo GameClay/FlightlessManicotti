@@ -42,7 +42,10 @@ typedef struct
 //! Opaque pointer to a script-event fence.
 //!
 //! @see kl_script_event_endframe
-typedef struct _kl_script_frame_fence* kl_script_event_fence_t;
+typedef struct
+{
+   KL_BOOL processed;
+} kl_script_event_fence_t;
 
 //! Opaque pointer to a script-context.
 //! 
@@ -135,6 +138,10 @@ extern KL_API int kl_script_event_pump(kl_script_context_t context);
 //!         KL_ERROR if unsuccessful.
 extern KL_API int kl_script_event_endframe(kl_script_context_t context, kl_script_event_fence_t* fence);
 
+
+extern KL_API int kl_script_event_fence_wait(const kl_script_event_fence_t* fence);
+
+extern KL_API int kl_script_event_fence_notify(kl_script_event_fence_t* fence);
 
 #ifdef __cplusplus
 }

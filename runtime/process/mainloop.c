@@ -24,24 +24,74 @@ KL_BOOL g_keep_running = KL_TRUE;
 int kl_mainloop(const char* main_script, int argc, const char* argv[])
 {
    int ret = KL_SUCCESS;
+   kl_script_event_fence_t scriptfence;
    KL_BOOL pump_script = (kl_script_is_threaded(KL_DEFAULT_SCRIPT_CONTEXT) == KL_FALSE);
    
-   kl_script_run(KL_DEFAULT_SCRIPT_CONTEXT, main_script, argc, argv);
+   //////////////////////////////////
+   // Get the script processing ready
+   //////////////////////////////////
    
+   // If main script fails to load, bail.
+   if(kl_script_run(KL_DEFAULT_SCRIPT_CONTEXT, main_script, argc, argv) != KL_SUCCESS)
+   {
+      ret = KL_ERROR;
+      g_keep_running = KL_FALSE;
+      KL_ASSERT(KL_FALSE, "Main script execution failed.");
+   }
    
+   // Prime the script-event queue.
+   kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT, &scriptfence);
+   if(pump_script && (kl_script_event_pump(KL_DEFAULT_SCRIPT_CONTEXT) != KL_SUCCESS))
+   {
+      ret = KL_ERROR;
+      g_keep_running = KL_FALSE;
+      KL_ASSERT(KL_FALSE, "Script-event handler execution failed.");
+   }
+   kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT, NULL);
+   
+   /////////////////
    // The main loop.
+   /////////////////
    while(g_keep_running)
    {
+      //////////////////////
       // Update packet frame
+      //////////////////////
+
       // ...
       
-      // Update script frame 
+      //////////////////////
+      // Update script frame
+      //////////////////////
+      
+      // Pump the script-event queue if this is unthreaded script
       if(pump_script)
          g_keep_running &= (kl_script_event_pump(KL_DEFAULT_SCRIPT_CONTEXT) == KL_SUCCESS);
-         
+      else
+      {
+         // Wait on fence from previous frame
+         while(kl_script_event_fence_wait(&scriptfence) == KL_RETRY)
+            ;
+      }
+
+      //////////////////////////
       // Update simulation frame
+      //////////////////////////
+
       // ...
       
+      ////////////////////////////
+      // Runtime frame is complete
+      ////////////////////////////
+      
+      // Send endframe to script-event queue.
+      kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT, &scriptfence);
+      
+      ////////////
+      // Do output
+      ////////////
+      
+      // ...
    }
    
    return ret;
