@@ -198,7 +198,7 @@ int kl_script_run(kl_script_context_t context, const char* file_name, int argc, 
                return KL_ERROR;
          }
          else
-            _kl_script_run_internal(sctx->thread);
+            _kl_script_run_internal(sctx);
          return KL_SUCCESS;
       }
       
