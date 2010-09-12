@@ -58,6 +58,9 @@ extern "C" {
 #endif
 #define KL_ASSERT(x, msg) assert(x && msg)
 
+// Define KL_UNUSED
+#define KL_UNUSED(x) (void)x
+
 // TODO: Include more stuff?
 #include "core/memory.h"
 #include "core/error_codes.h"
