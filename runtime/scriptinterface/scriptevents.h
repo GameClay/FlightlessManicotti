@@ -32,15 +32,17 @@ extern "C" {
 //! 
 typedef union
 {
-   uint32_t \
-            id,      //!< Event id.
-            context, //!< Event-defined context.
-            arg1,    //!< Event-defined argument.
-            arg2;    //!< Event defined argument.
+   uint64_t _dont_use64,   //!< Don't use this value.
+            context64;     //!< Context as a 64-bit value.
+            
+   uint32_t id,            //!< Event id.
+            arg,           //!< Event-defined argument.
+            context,       //!< Context as a 32-bit value.
+            _dont_use32;   //!< Don't use this value.
             
    //! Representation of the script-event as an __m128.
-   __m128 as_m128;
-} kl_script_event_PROPOSED;
+   __m128i as_m128i;
+} kl_script_event_t;
 
 extern KL_API uint32_t kl_register_script_event(const char* name);
 

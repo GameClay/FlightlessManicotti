@@ -29,13 +29,10 @@
 extern int luaopen_scriptevents(lua_State* L);
 extern int luaopen_lsqlite3(lua_State* L);
 
-KL_DECLARE_RINGBUFFER_TYPE(kl_script_event_t);
-KL_IMPLEMENT_RINGBUFFER_TYPE(kl_script_event_t);
-
 struct _kl_script_context
 {
    lua_State* lua_state;
-   kl_ringbuffer_t(kl_script_event_t) event_buffer;
+   kl_ringbuffer_t(__m128i) event_buffer;
    KL_BOOL threaded;
    KL_BOOL keep_running;
    amp_thread_t thread;
@@ -50,7 +47,10 @@ struct _kl_script_context
 // KL_DEFAULT_SCRIPT_CONTEXT
 kl_script_context_t g_script_context = NULL;
 
-int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_queue_size)
+// script.events.EOF
+kl_script_event_t g_event_EOF;
+
+int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_queue_max)
 {
    struct _kl_script_context* sctx = NULL;
    
@@ -65,7 +65,7 @@ int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_
       return KL_ERROR;
       
    // Allocate event buffer
-   if(kl_alloc_ringbuffer(kl_script_event_t, &sctx->event_buffer, event_queue_size / sizeof(kl_script_event_t)) != KL_SUCCESS)
+   if(kl_alloc_ringbuffer(__m128i, &sctx->event_buffer, event_queue_max * sizeof(__m128)) != KL_SUCCESS)
    {
       kl_heap_free(sctx);
       return KL_ERROR;
@@ -78,6 +78,11 @@ int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_
 
    // No event handler ref yet
    sctx->event_handler_ref = 0;
+   
+   // Set up EOF event
+   g_event_EOF.id = kl_register_script_event("EOF");
+   g_event_EOF.context = 0;
+   g_event_EOF.arg = 0;
 
    // Start up lua
    sctx->lua_state = lua_open();
@@ -244,7 +249,7 @@ void kl_script_destroy(kl_script_context_t* context)
       }
       
       lua_close(sctx->lua_state);
-      kl_free_ringbuffer(kl_script_event_t, &sctx->event_buffer);
+      kl_free_ringbuffer(__m128i, &sctx->event_buffer);
    
       kl_heap_free(sctx);
    }
@@ -254,14 +259,14 @@ int kl_script_event_enqueue(kl_script_context_t context, const kl_script_event_t
 {
    kl_script_context_t sctx = (context == KL_DEFAULT_SCRIPT_CONTEXT ? g_script_context : context);
    KL_ASSERT(sctx, "NULL context.");
-   return kl_reserve_ringbuffer(kl_script_event_t, &sctx->event_buffer, event);
+   return kl_reserve_ringbuffer(__m128i, &sctx->event_buffer, &event->as_m128i);
 }
 
 int kl_script_event_dequeue(kl_script_context_t context, kl_script_event_t* event)
 {
    kl_script_context_t sctx = (context == KL_DEFAULT_SCRIPT_CONTEXT ? g_script_context : context);
    KL_ASSERT(sctx, "NULL context.");
-   return kl_retrieve_ringbuffer(kl_script_event_t, &sctx->event_buffer, event);
+   return kl_retrieve_ringbuffer(__m128i, &sctx->event_buffer, &event->as_m128i);
 }
 
 KL_BOOL kl_script_is_threaded(kl_script_context_t context)
@@ -273,9 +278,16 @@ KL_BOOL kl_script_is_threaded(kl_script_context_t context)
 
 int kl_script_event_endframe(kl_script_context_t context, kl_script_event_fence_t* fence)
 {
-   kl_script_event_t eof_evt = {"EOF", fence, 0, 0, 0};
+   kl_script_event_t eof_evt;
+   __m128i xmm0 = _mm_load_si128(&g_event_EOF.as_m128i);
+   _mm_store_si128(&eof_evt.as_m128i, xmm0);
+   
    if(fence != NULL)
+   {
+      eof_evt.context = (uintptr_t)fence;
       fence->processed = KL_FALSE;
+   }
+
    return kl_script_event_enqueue(context, &eof_evt);
 }
 

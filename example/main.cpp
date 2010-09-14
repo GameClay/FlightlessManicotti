@@ -26,11 +26,15 @@ int main(int argc, const char* argv[])
    if(kl_initialize(KL_FALSE) == KL_SUCCESS)
    {
       // Send the script a test event
-      kl_script_event_t fooevt = {"facepunch", NULL, 0, 1, 2};
-      kl_script_event_t barevt = {"omg", NULL, 2, 1, 0};
+      kl_script_event_t fooevt;
+      fooevt.id = kl_register_script_event("TestEvent");
+      fooevt.context = NULL;
+      fooevt.arg = 0;
+      
+      //kl_script_event_t barevt = {"omg", NULL, 2, 1, 0};
    
       kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &fooevt);
-      kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &barevt);
+      //kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &barevt);
       
       kl_mainloop("example/main.lua", argc, argv);
       

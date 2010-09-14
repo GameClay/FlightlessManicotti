@@ -29,9 +29,9 @@ extern "C" {
 #define _KL_DECLARE_RINGBUFFER_STRUCT_(t) \
    typedef struct                         \
    {                                      \
-      uint32_t start;                       \
-      uint32_t end;                         \
-      uint32_t size;                        \
+      uint32_t start;                     \
+      uint32_t end;                       \
+      uint32_t size;                      \
       t* buffer;                          \
       amp_mutex_t mutex;                  \
    } kl_ringbuffer_##t##_t

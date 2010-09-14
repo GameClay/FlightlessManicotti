@@ -30,12 +30,10 @@ static int kl_script_event_dequeue_wrap(lua_State* L)
    kl_script_event_t event;
    if(kl_script_event_dequeue(sctx, &event) == KL_SUCCESS)
    {
-      lua_pushstring(L, event.name);
-      lua_pushlightuserdata(L, event.context);
-      lua_pushinteger(L, event.a);
-      lua_pushinteger(L, event.b);
-      lua_pushinteger(L, event.c);
-      return 5;
+      lua_pushinteger(L, event.id);
+      lua_pushlightuserdata(L, (void*)(uintptr_t)event.context);
+      lua_pushinteger(L, event.arg);
+      return 3;
    }
    
    lua_pushnil(L);
