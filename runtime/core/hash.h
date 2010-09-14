@@ -16,34 +16,19 @@
  * limitations under the License.
  */
  
-#include <stdio.h>
-#include <stdlib.h>
-#include "fm.h"
-#include "scriptinterface/script.h"
+#ifndef _KL_HASH_H_
+#define _KL_HASH_H_
 
-int main(int argc, const char* argv[])
-{
-   if(kl_initialize(KL_FALSE) == KL_SUCCESS)
-   {
-      // Send the script a test event
-      kl_script_event_t fooevt;
-      fooevt.event.id = kl_register_script_event("TestEvent");
-      fooevt.event.context.as_ptr = NULL;
-      fooevt.event.arg = 0;
-      
-      //kl_script_event_t barevt = {"omg", NULL, 2, 1, 0};
-   
-      kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &fooevt);
-      //kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &barevt);
-      
-      kl_mainloop("example/main.lua", argc, argv);
-      
-      kl_destroy();
-   }
-#ifdef WIN32
-   printf("Press any key to continue...");
-   getchar();
+#ifdef __cplusplus
+extern "C" {
 #endif
-   
-   return 0;
+
+#include "fm.h"
+
+extern KL_API uint32_t kl_hash(const void* key, size_t length, uint32_t initval);
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif

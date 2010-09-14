@@ -24,20 +24,7 @@ extern "C" {
 #endif
 
 #include "fm.h"
-
-// TODO: I'm really not happy with this structure at all.
-//       it should probably be an __m128. 
-#define kl_script_event_t_name_length (sizeof(int) * 4)
-typedef struct
-{
-   //! The event name.
-   char name[kl_script_event_t_name_length];
-   
-   //! An opaque pointer to a context object, or NULL/nil.
-   void* context;
-   
-   int a, b, c; // struct length should be 64 bytes
-} kl_script_event_t;
+#include "scriptinterface/scriptevents.h"
 
 //! Opaque pointer to a script-event fence.
 //!
@@ -73,10 +60,10 @@ typedef struct _kl_script_context* kl_script_context_t;
 //!
 //! @param context This holds the allocated script context.
 //! @param threaded Should this script-context run in a thread.
-//! @param event_queue_size The memory size of the event queue for this script context.
+//! @param event_queue_max The maximum number of events that can fit in the event queue for this script context.
 //! @return KL_SUCCESS if initialization was successful.
 //!         KL_ERROR if initialization failed.
-extern KL_API int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_queue_size);
+extern KL_API int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_queue_max);
 
 //! Immediately evaluate a script event.
 extern KL_API int kl_script_evaluate();

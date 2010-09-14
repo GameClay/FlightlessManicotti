@@ -16,34 +16,42 @@
  * limitations under the License.
  */
  
-#include <stdio.h>
-#include <stdlib.h>
-#include "fm.h"
-#include "scriptinterface/script.h"
+#ifndef _KL_SCRIPT_EVENTS_H_
+#define _KL_SCRIPT_EVENTS_H_
 
-int main(int argc, const char* argv[])
-{
-   if(kl_initialize(KL_FALSE) == KL_SUCCESS)
-   {
-      // Send the script a test event
-      kl_script_event_t fooevt;
-      fooevt.event.id = kl_register_script_event("TestEvent");
-      fooevt.event.context.as_ptr = NULL;
-      fooevt.event.arg = 0;
-      
-      //kl_script_event_t barevt = {"omg", NULL, 2, 1, 0};
-   
-      kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &fooevt);
-      //kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &barevt);
-      
-      kl_mainloop("example/main.lua", argc, argv);
-      
-      kl_destroy();
-   }
-#ifdef WIN32
-   printf("Press any key to continue...");
-   getchar();
+#ifdef __cplusplus
+extern "C" {
 #endif
+
+#include "fm.h"
+#include <xmmintrin.h> // TODO: This is not portable, neither is usage of '__m128'. Must typedef or something.
+#include <stdint.h>
+
+//! Script-event.
+//!
+//! 
+typedef union
+{
+   struct
+   {
+      uint32_t id;            //!< Event id.
+      uint32_t arg;           //!< Event-defined argument.
    
-   return 0;
+      union
+      {
+         uint64_t as_64;
+         void* as_ptr;
+      } context;
+   } event;
+            
+   //! Representation of the script-event as an __m128.
+   __m128i as_m128i;
+} kl_script_event_t;
+
+extern KL_API uint32_t kl_register_script_event(const char* name);
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif

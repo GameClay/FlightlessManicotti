@@ -21,6 +21,7 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #include "scriptinterface/script.h"
+#include "scriptinterface/scriptevents.h"
 
 static int kl_script_event_dequeue_wrap(lua_State* L)
 {
@@ -29,12 +30,10 @@ static int kl_script_event_dequeue_wrap(lua_State* L)
    kl_script_event_t event;
    if(kl_script_event_dequeue(sctx, &event) == KL_SUCCESS)
    {
-      lua_pushstring(L, event.name);
-      lua_pushlightuserdata(L, event.context);
-      lua_pushinteger(L, event.a);
-      lua_pushinteger(L, event.b);
-      lua_pushinteger(L, event.c);
-      return 5;
+      lua_pushinteger(L, event.event.id);
+      lua_pushlightuserdata(L, event.event.context.as_ptr);
+      lua_pushinteger(L, event.event.arg);
+      return 3;
    }
    
    lua_pushnil(L);
@@ -54,9 +53,20 @@ static int kl_script_frame_done(lua_State* L)
    return 0;
 }
 
+static int kl_register_script_event_wrap(lua_State* L)
+{
+   kl_script_context_t sctx = (kl_script_context_t)lua_topointer(L, 1);
+   KL_UNUSED(sctx);
+   
+   const char* name = lua_tostring(L, 2);
+   lua_pushinteger(L, kl_register_script_event(name));
+   return 1;
+}
+
 static const struct luaL_reg scriptevent_module [] = {
     {"dequeue", kl_script_event_dequeue_wrap},
     {"framedone", kl_script_frame_done},
+    {"register", kl_register_script_event_wrap},
     {NULL, NULL}
 };
 
