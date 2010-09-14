@@ -20,3 +20,81 @@
 
 KL_IMPLEMENT_RINGBUFFER_TYPE(float);
 KL_IMPLEMENT_RINGBUFFER_TYPE(int);
+
+// Custom implementation of __m128i type
+_KL_INIT_RINGBUFFER_FN_(__m128i)
+{
+   ringbuffer->buffer = buffer;
+   ringbuffer->start = 0;
+   ringbuffer->end = 0;
+   ringbuffer->size = size / sizeof(__m128i);
+   ringbuffer->mutex = mtx;
+}
+
+_KL_ALLOC_RINGBUFFER_FN_(__m128i)
+{
+   ringbuffer->buffer = (__m128i*)kl_heap_alloc(size * sizeof(__m128i));
+   KL_ASSERT(((uintptr_t)ringbuffer->buffer & 0xF) == 0, "Unaligned destination.");
+   if(ringbuffer->buffer == NULL)
+      return KL_ERROR;
+
+   ringbuffer->start = 0;
+   ringbuffer->end = 0;
+   ringbuffer->size = size;
+   amp_mutex_create(&ringbuffer->mutex, AMP_DEFAULT_ALLOCATOR); 
+
+   return KL_SUCCESS;
+}
+
+_KL_FREE_RINGBUFFER_FN_(__m128i)
+{
+   kl_heap_free(ringbuffer->buffer);
+   ringbuffer->buffer = NULL;
+   ringbuffer->start = 0;
+   ringbuffer->end = 0;
+   ringbuffer->size = 0;
+   amp_mutex_destroy(&ringbuffer->mutex, AMP_DEFAULT_ALLOCATOR);
+   ringbuffer->mutex = NULL;
+}
+
+_KL_RESERVE_RINGBUFFER_FN_(__m128i)
+{
+   int ret = KL_ERROR;
+   uint32_t nend;
+   
+   amp_mutex_lock(ringbuffer->mutex);
+   nend = (ringbuffer->end + 1) % ringbuffer->size;
+   if(nend % ringbuffer->size != ringbuffer->start)
+   {
+      void* dest = ringbuffer->buffer + nend;
+      KL_ASSERT(((uintptr_t)dest & 0xF) == 0, "Unaligned destination.");
+      __m128i xmm0 = _mm_load_si128(item);
+      _mm_store_si128(ringbuffer->buffer + nend, xmm0);
+      
+      ringbuffer->end = nend;
+      ret = KL_SUCCESS;
+   }
+   amp_mutex_unlock(ringbuffer->mutex);
+   
+   return ret;
+}
+
+_KL_RETRIEVE_RINGBUFFER_FN_(__m128i)
+{
+   int ret = KL_ERROR;
+   amp_mutex_lock(ringbuffer->mutex);
+   if(ringbuffer->start != ringbuffer->end)
+   {
+      const uint32_t nstart = 
+         (ringbuffer->start + 1) % ringbuffer->size;
+         
+      __m128i xmm0 = _mm_load_si128(ringbuffer->buffer + nstart);
+      _mm_store_si128(item, xmm0);
+      
+      ringbuffer->start = nstart;
+      ret = KL_SUCCESS;
+   }
+   amp_mutex_unlock(ringbuffer->mutex);
+   
+   return ret;
+}
