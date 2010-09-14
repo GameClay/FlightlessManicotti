@@ -17,7 +17,7 @@
  */
  
 #include <string.h>
-
+#include <stdint.h>
 #include "fm.h"
 #include "core/memory.h"
 
@@ -32,10 +32,12 @@ extern void nedfree2(void *mem, unsigned flags);
 // Forward declare
 void* aligned_nedmalloc(size_t size, size_t alignment);
 void aligned_nedfree(void* pointer);
+void* default_malloc(size_t size);
+void default_free(void* pointer);
 
 // Assign default memory operatons
-kl_malloc_fn_ptr kl_heap_alloc_ptr = &nedmalloc;
-kl_free_fn_ptr kl_heap_free_ptr = &nedfree;
+kl_malloc_fn_ptr kl_heap_alloc_ptr = &default_malloc;
+kl_free_fn_ptr kl_heap_free_ptr = &default_free;
 
 kl_aligned_malloc_fn_ptr kl_heap_aligned_alloc_ptr = &aligned_nedmalloc;
 kl_aligned_free_fn_ptr kl_heap_aligned_free_ptr = &aligned_nedfree;
@@ -82,6 +84,18 @@ void* kl_microrcpy(void* KL_RESTRICT dest, const void* KL_RESTRICT src, size_t s
 }
 
 // Default aligned malloc/free using nedmalloc
+void* default_malloc(size_t size)
+{
+   void* ret = nedmalloc2(size, 16, 0);
+   KL_ASSERT((((uintptr_t)ret) & 0xF) == 0, "Return was not aligned!");
+   return ret;
+}
+
+void default_free(void* p)
+{
+   nedfree2(p, 0);
+}
+
 void* aligned_nedmalloc(size_t size, size_t align_size)
 {
    KL_ASSERT(align_size != 16, "Use kl_malloc for 16-byte aligned allocations."); 
