@@ -80,9 +80,9 @@ int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_
    sctx->event_handler_ref = 0;
    
    // Set up EOF event
-   g_event_EOF.id = kl_register_script_event("EOF");
-   g_event_EOF.context = 0;
-   g_event_EOF.arg = 0;
+   g_event_EOF.event.id = kl_register_script_event("EOF");
+   g_event_EOF.event.context.as_64 = 0;
+   g_event_EOF.event.arg = 0;
 
    // Start up lua
    sctx->lua_state = lua_open();
@@ -284,7 +284,7 @@ int kl_script_event_endframe(kl_script_context_t context, kl_script_event_fence_
    
    if(fence != NULL)
    {
-      eof_evt.context = (uintptr_t)fence;
+      eof_evt.event.context.as_ptr = fence;
       fence->processed = KL_FALSE;
    }
 

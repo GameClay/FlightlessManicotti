@@ -32,13 +32,17 @@ extern "C" {
 //! 
 typedef union
 {
-   uint64_t _dont_use64,   //!< Don't use this value.
-            context64;     //!< Context as a 64-bit value.
-            
-   uint32_t id,            //!< Event id.
-            arg,           //!< Event-defined argument.
-            context,       //!< Context as a 32-bit value.
-            _dont_use32;   //!< Don't use this value.
+   struct
+   {
+      uint32_t id;            //!< Event id.
+      uint32_t arg;           //!< Event-defined argument.
+   
+      union
+      {
+         uint64_t as_64;
+         void* as_ptr;
+      } context;
+   } event;
             
    //! Representation of the script-event as an __m128.
    __m128i as_m128i;

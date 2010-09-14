@@ -22,6 +22,8 @@
 
 uint32_t kl_register_script_event(const char* name)
 {
+   uint32_t ret = kl_hash(name, strlen(name), 0);
+   KL_LOGF(KL_LL_NRM, "-Registering event: %s as %u\n", name, ret);
    // TODO: track allocated ids in debug?
-   return kl_hash(name, strlen(name), 0);
+   return ret;
 }

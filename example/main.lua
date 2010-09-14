@@ -35,23 +35,22 @@ function main(...)
 end
 
 -- Test registration of an event
-test_evt_id = script.events.register(SCTX,"TestEvent")
-print(test_evt_id)
+eof_evt_id = script.events.register(SCTX,"EOF")
 
 -- Define and assign event-handler.
 function event_handler()
    -- dequeue everything from code
-   name,context,arg = script.events.dequeue(SCTX)
-   while (not name or not (name == "EOF")) do
-      if name then
-         print("From code: {"..name..","..tostring(context)..","..arg.."}")
+   id,context,arg = script.events.dequeue(SCTX)
+   while (not id or not (id == eof_evt_id)) do
+      if id then
+         print("From code: {"..id..","..tostring(context)..","..arg.."}")
       end
       
-      name,context,arg = script.events.dequeue(SCTX)
+      id,context,arg = script.events.dequeue(SCTX)
    end
 
    -- If we just hit EOF, acknowledge the EOF
-   if(name == "EOF") then
+   if(id == eof_evt_id) then
       script.events.framedone(SCTX, context)
    end
 end

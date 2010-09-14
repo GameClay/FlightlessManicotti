@@ -30,9 +30,9 @@ static int kl_script_event_dequeue_wrap(lua_State* L)
    kl_script_event_t event;
    if(kl_script_event_dequeue(sctx, &event) == KL_SUCCESS)
    {
-      lua_pushinteger(L, event.id);
-      lua_pushlightuserdata(L, (void*)(uintptr_t)event.context);
-      lua_pushinteger(L, event.arg);
+      lua_pushinteger(L, event.event.id);
+      lua_pushlightuserdata(L, event.event.context.as_ptr);
+      lua_pushinteger(L, event.event.arg);
       return 3;
    }
    

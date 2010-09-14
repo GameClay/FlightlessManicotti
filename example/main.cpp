@@ -27,9 +27,9 @@ int main(int argc, const char* argv[])
    {
       // Send the script a test event
       kl_script_event_t fooevt;
-      fooevt.id = kl_register_script_event("TestEvent");
-      fooevt.context = NULL;
-      fooevt.arg = 0;
+      fooevt.event.id = kl_register_script_event("TestEvent");
+      fooevt.event.context.as_ptr = NULL;
+      fooevt.event.arg = 0;
       
       //kl_script_event_t barevt = {"omg", NULL, 2, 1, 0};
    
