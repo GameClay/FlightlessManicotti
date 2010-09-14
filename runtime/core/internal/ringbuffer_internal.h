@@ -91,12 +91,12 @@ extern "C" {
    _KL_RESERVE_RINGBUFFER_FN_(t)                               \
    {                                                           \
       int ret = KL_ERROR;                                      \
-      uint32_t nend;                                         \
+      uint32_t nend;                                           \
       amp_mutex_lock(ringbuffer->mutex);                       \
       nend = (ringbuffer->end + 1) % ringbuffer->size;         \
-      if(nend % ringbuffer->size != ringbuffer->start)         \
+      if(nend != ringbuffer->start)                            \
       {                                                        \
-         kl_microrcpy(ringbuffer->buffer + nend, item, sizeof(t)); \
+         ringbuffer->buffer[ringbuffer->end] = *item;          \
          ringbuffer->end = nend;                               \
          ret = KL_SUCCESS;                                     \
       }                                                        \
@@ -110,10 +110,8 @@ extern "C" {
       amp_mutex_lock(ringbuffer->mutex);                       \
       if(ringbuffer->start != ringbuffer->end)                 \
       {                                                        \
-         const uint32_t nstart =                                \
-            (ringbuffer->start + 1) % ringbuffer->size;        \
-         kl_microrcpy(item, ringbuffer->buffer + nstart, sizeof(t)); \
-         ringbuffer->start = nstart;                           \
+         *item = ringbuffer->buffer[ringbuffer->start];        \
+         ringbuffer->start = (ringbuffer->start + 1) % ringbuffer->size; \
          ret = KL_SUCCESS;                                     \
       }                                                        \
       amp_mutex_unlock(ringbuffer->mutex);                     \
