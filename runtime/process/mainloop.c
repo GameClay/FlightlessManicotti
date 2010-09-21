@@ -50,7 +50,6 @@ int kl_init_mainloop(const char* main_script, int argc, const char* argv[])
    }
    kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT, NULL);
    
-   
    return ret;
 }
 
@@ -58,12 +57,11 @@ int kl_mainloop_iteration(const char* main_script, int argc, const char* argv[])
 {
    int ret = KL_SUCCESS;
    
-
+   
    //////////////////////
    // Update packet frame
    //////////////////////
-
-<<<<<<< HEAD
+   
    // ...
    
    //////////////////////
@@ -75,7 +73,7 @@ int kl_mainloop_iteration(const char* main_script, int argc, const char* argv[])
    {
       if(kl_script_event_pump(KL_DEFAULT_SCRIPT_CONTEXT) != KL_SUCCESS)
          return KL_ERROR;
-=======
+      
       // TODO: If tick-time has past
       kl_tick_process_object_list(KL_DEFAULT_PROCESS_OBJECT_MANAGER);
       
@@ -93,7 +91,6 @@ int kl_mainloop_iteration(const char* main_script, int argc, const char* argv[])
       ////////////
       
       // ...
->>>>>>> Integrated process object manager into main loop.
    }
    else
    {
