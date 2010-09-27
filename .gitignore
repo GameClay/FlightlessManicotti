@@ -15,3 +15,6 @@ example/armv7
 *.pdb
 *.suo
 *.ncb
+
+# e project file
+.eprj
