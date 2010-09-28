@@ -107,6 +107,8 @@ if sys.platform=='win32':
    #
    # Visual Studio Compiler Flags
    #
+   env['CCFLAGS']+=["/nologo"]         # Suppress the version spam before every file is compiled
+   
    env['CCFLAGS']+=["/GF"]             # String pooling
    env['CCFLAGS']+=["/Gy"]             # Enable function-level linking
    env['CCFLAGS']+=["/Zi"]             # Program database debug info
@@ -114,7 +116,7 @@ if sys.platform=='win32':
    env['CCFLAGS']+=["/WX"]             # Warnings as errors
    env['CCFLAGS']+=["/W3"]             # Warning level 3
    
-   env['CCFLAGS']+=["/EHs"]            # No exceptions.
+   env['CCFLAGS']+=["/EHs"]            # No exceptions
    
    if env.GetOption('debug'):
        env['CCFLAGS']+=["/Od", "/MTd"]
