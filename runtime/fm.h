@@ -68,21 +68,18 @@ extern "C" {
 
 //! Initialize the runtime.
 //!
-//! @return KL_SUCCESS if successful.
-//!         KL_ERROR if unsuccessful.
-extern KL_API int kl_initialize(KL_BOOL use_threads);
-
-//! Destroy the runtime.
-extern KL_API void kl_destroy();
-
-//! Main loop.
-//!
 //! @param main_script The startup script.
 //! @param argc Number of arguments.
 //! @param argv Array of arguments.
-//! @return KL_SUCCESS if terminated normally.
-//!         KL_ERROR if terminated abnormally.
-extern KL_API int kl_mainloop(const char* main_script, int argc, const char* argv[]);
+//! @return KL_SUCCESS if successful.
+//!         KL_ERROR if unsuccessful.
+extern KL_API int kl_initialize(KL_BOOL use_threads, const char* main_script, int argc, const char* argv[]);
+
+//! Execute a single iteration of the "main loop"
+extern KL_API int kl_mainloop_iteration();
+
+//! Destroy the runtime.
+extern KL_API void kl_destroy();
 
 #ifdef __cplusplus
 }

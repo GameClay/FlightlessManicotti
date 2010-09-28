@@ -28,7 +28,10 @@ kl_runtime_state_t g_runtime_state = { KL_FALSE };
 // KL_DEFAULT_SCRIPT_CONTEXT from scriptinterface/script.c
 extern kl_script_context_t g_script_context;
 
-int kl_initialize(KL_BOOL use_threads)
+// kl_init_mainloop from process/mainloop.c
+extern int kl_init_mainloop(const char* main_script, int argc, const char* argv[]);
+
+int kl_initialize(KL_BOOL use_threads, const char* main_script, int argc, const char* argv[])
 {
    int ret = KL_ERROR;
    
@@ -37,6 +40,10 @@ int kl_initialize(KL_BOOL use_threads)
    
    // TODO: Don't hard code ring-buffer size
    ret = kl_script_init(&g_script_context, use_threads, 1 << 10);
+   
+   // Let the "main loop" do initialization
+   if(ret == KL_SUCCESS)
+      ret = kl_init_mainloop(main_script, argc, argv);
    
    g_runtime_state.initialized = (ret == KL_SUCCESS ? KL_TRUE : KL_FALSE);
    return ret;
