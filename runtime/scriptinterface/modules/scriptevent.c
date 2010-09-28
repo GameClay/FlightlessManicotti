@@ -56,9 +56,9 @@ static int kl_script_frame_done(lua_State* L)
 static int kl_register_script_event_wrap(lua_State* L)
 {
    kl_script_context_t sctx = (kl_script_context_t)lua_topointer(L, 1);
+   const char* name = lua_tostring(L, 2);
    KL_UNUSED(sctx);
    
-   const char* name = lua_tostring(L, 2);
    lua_pushinteger(L, kl_register_script_event(name));
    return 1;
 }

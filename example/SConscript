@@ -7,7 +7,7 @@ executable_files = ['main.cpp']
 executable = bin_env.Program('FlightlessManicotti',
    executable_files,
    CPPPATH = [] + env['KL_INCPATH'],
-   CXXFLAGS = ['-g'] + env['CCFLAGS'],
+   CXXFLAGS = env['CCFLAGS'],
    LIBS=['FlightlessManicotti'], 
    LIBPATH=[] + env['KL_LIBPATH']
 )

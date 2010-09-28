@@ -24,7 +24,7 @@ extern "C" {
 #endif
 
 #include "core/internal/ringbuffer_internal.h"
-#include <xmmintrin.h>
+#include <emmintrin.h>
 
 // Default ring buffer types
 KL_DECLARE_RINGBUFFER_TYPE(float);

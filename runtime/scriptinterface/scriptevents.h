@@ -24,7 +24,7 @@ extern "C" {
 #endif
 
 #include "fm.h"
-#include <xmmintrin.h> // TODO: This is not portable, neither is usage of '__m128'. Must typedef or something.
+#include <emmintrin.h> // TODO: This is not portable, neither is usage of '__m128'. Must typedef or something.
 #include <stdint.h>
 
 //! Script-event.
