@@ -23,7 +23,9 @@
 extern "C" {
 #endif
 
+////////////////////////////////////
 // Do dllimport/dllexport if needed
+////////////////////////////////////
 #if _MSC_VER
 #  ifdef KL_BUILD_LIBRARY
 #     define KL_API __declspec(dllexport)
@@ -34,10 +36,14 @@ extern "C" {
 #  define KL_API 
 #endif
 
+/////////////////////////////
 // Define KL_INLINE as static
+/////////////////////////////
 #define KL_INLINE static
 
+/////////////////////
 // Define KL_RESTRICT
+/////////////////////
 #if __STDC_VERSION__ >= 199901L
 #  define KL_RESTRICT restrict
 #elif _MSC_VER
@@ -46,19 +52,46 @@ extern "C" {
 #  define KL_RESTRICT 
 #endif
 
+//////////////////
+// Define KL_DEBUG
+//////////////////
+
+// Sanity check what is defined
+#if defined(DEBUG) || defined(_DEBUG)
+#  if defined(NDEBUG)
+#     error "Mismatch in debug flags."
+#  endif
+#elif defined(NDEBUG)
+#  if defined(DEBUG) || defined(_DEBUG)
+#     error "Mismatch in debug flags."
+#  endif
+#endif
+
+#if (defined(DEBUG) || defined(_DEBUG)) && !defined(KL_DEBUG)
+#  define KL_DEBUG 1
+#else
+#  undef KL_DEBUG
+#endif
+
+/////////////////
 // Define KL_BOOL
+/////////////////
 #define KL_BOOL int
 #define KL_TRUE 1
 #define KL_FALSE 0
 
+///////////////////
 // Define KL_ASSERT
-#if !defined(_NDEBUG) && !defined(KL_ENABLE_ASSERTS)
+///////////////////
+#if defined(KL_DEBUG) || defined(KL_ENABLE_ASSERTS)
 #  define KL_ENABLE_ASSERTS
 #  include <assert.h>
 #endif
 #define KL_ASSERT(x, msg) assert(x && msg)
 
+///////////////////
 // Define KL_UNUSED
+///////////////////
 #define KL_UNUSED(x) (void)x
 
 // TODO: Include more stuff?

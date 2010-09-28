@@ -90,7 +90,7 @@ KL_API void kl_heap_aligned_free(void* pointer);
 //! Allocates small amounts of memory 
 //!
 //! @attention If the allocation size is greater than 256 bytes, this
-//!            function will assert, and return NULL if NDEBUG is defined.
+//!            function will assert, and return NULL.
 //!
 //! @param size The size of the allocation.
 //! @return Pointer the block of allocated memory or NULL if the allocation failed.     
