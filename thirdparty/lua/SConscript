@@ -3,13 +3,6 @@ import sys
 Import('env')
 coreEnv = env.Clone()
 
-# Determine additional compiler flags
-lua_ccflags = []
-if sys.platform =="win32":
-   lua_ccflags += []
-else:
-   lua_ccflags += ['-std=c99']
-
 
 lua_lib = coreEnv.StaticLibrary('lua', 
 	['etc/all.c'],

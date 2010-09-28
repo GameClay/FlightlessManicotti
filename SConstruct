@@ -98,16 +98,33 @@ else:
 
 # Am I building for Windows or POSIX?
 if sys.platform=='win32':
-   env['CPPDEFINES']+=["WIN32", "_WINDOWS", "UNICODE", "_UNICODE"]
-   env['CCFLAGS']+=["/GF"]             # Eliminate duplicate strings
-   env['CCFLAGS']+=["/Gy"]             # Seperate COMDATs
+   
+   #
+   # Pre-Processor defines
+   #
+   env['CPPDEFINES']+=["WIN32", "_WINDOWS", "UNICODE", "_UNICODE", "_CRT_SECURE_NO_WARNINGS"]
+   
+   #
+   # Visual Studio Compiler Flags
+   #
+   env['CCFLAGS']+=["/GF"]             # String pooling
+   env['CCFLAGS']+=["/Gy"]             # Enable function-level linking
    env['CCFLAGS']+=["/Zi"]             # Program database debug info
+   
+   env['CCFLAGS']+=["/WX"]             # Warnings as errors
+   env['CCFLAGS']+=["/W3"]             # Warning level 3
+   
+   env['CCFLAGS']+=["/EHs"]            # No exceptions.
+   
    if env.GetOption('debug'):
        env['CCFLAGS']+=["/Od", "/MTd"]
    else:
        env['CCFLAGS']+=["/O2", "/MT"]
        env['CCFLAGSFORNEDMALLOC']+=["/GL"]         # Do link time code generation
-   #env['LIBS']+=["psapi", "user32", "advapi32"]
+       
+   #
+   # Visual Studio Linker Settings
+   #
    env['LINKFLAGS']+=["/DEBUG"]                # Output debug symbols
    env['LINKFLAGS']+=["/LARGEADDRESSAWARE"]    # Works past 2Gb
    env['LINKFLAGS']+=["/DYNAMICBASE"]          # Doesn't mind being randomly placed
@@ -116,16 +133,19 @@ if sys.platform=='win32':
    #env['LINKFLAGS']+=["/ENTRY:DllPreMainCRTStartup"]
    env['LINKFLAGS']+=["/VERSION:1.10.0"]        # Version
    #env['LINKFLAGS']+=["/MANIFEST"]             # Be UAC compatible
+   env['LINKFLAGS']+=["/WX"]                    # Warnings as errors
 
    if not env.GetOption('debug'):
        env['LINKFLAGS']+=["/OPT:REF", "/OPT:ICF"]  # Eliminate redundants
 else:
    env['CPPDEFINES']+=[]
+   
    env['CCFLAGS']+=["-Wall","-fno-exceptions"]
    if env.GetOption('debug'):
        env['CCFLAGS']+=["-O0", "-g"]
    else:
        env['CCFLAGS']+=["-O2", "-g"]
+       
    env['LINKFLAGS']+=[]
 
 # The variant is all sorted out

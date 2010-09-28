@@ -312,7 +312,7 @@ static int dbvm_get_value(lua_State *L) {
 
 static int dbvm_get_name(lua_State *L) {
     sdb_vm *svm = lsqlite_checkvm(L, 1);
-    int index = luaL_checknumber(L, 2);
+    int index = luaL_checkint(L, 2);
     dbvm_check_index(L, svm, index);
     lua_pushstring(L, sqlite3_column_name(svm->vm, index));
     return 1;
@@ -320,7 +320,7 @@ static int dbvm_get_name(lua_State *L) {
 
 static int dbvm_get_type(lua_State *L) {
     sdb_vm *svm = lsqlite_checkvm(L, 1);
-    int index = luaL_checknumber(L, 2);
+    int index = luaL_checkint(L, 2);
     dbvm_check_index(L, svm, index);
     lua_pushstring(L, sqlite3_column_decltype(svm->vm, index));
     return 1;
@@ -470,7 +470,7 @@ static int dbvm_bind_parameter_count(lua_State *L) {
 
 static int dbvm_bind_parameter_name(lua_State *L) {
     sdb_vm *svm = lsqlite_checkvm(L, 1);
-    int index = luaL_checknumber(L, 2);
+    int index = luaL_checkint(L, 2);
     dbvm_check_bind_index(L, svm, index);
     lua_pushstring(L, sqlite3_bind_parameter_name(svm->vm, index));
     return 1;
@@ -1386,8 +1386,7 @@ static int db_exec_callback(void* user, int columns, char **data, char **names) 
 
     /* call lua function */
     if (!lua_pcall(L, 4, 1, 0)) {
-        if (lua_isnumber(L, -1))
-            result = lua_tonumber(L, -1);
+        result = luaL_checkint(L, -1);
     }
 
     lua_settop(L, top);

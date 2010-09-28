@@ -710,6 +710,10 @@ static void ValidateFreePageLists(AddressSpaceReservation_t *RESTRICT addr)
     }
   }
   assert(count==addr->freepages);
+#else
+  // Eliminate warnings
+  (void*)n; 
+  (void*)pf;
 #endif
 #endif
 #endif
