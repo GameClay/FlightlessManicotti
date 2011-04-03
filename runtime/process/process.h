@@ -29,19 +29,20 @@ extern "C" {
 //! Opaque pointer to a process-object manager
 typedef struct _kl_process_object_manager* kl_process_object_manager_t;
 
+typedef void (*kl_process_object_tick_ptr)(void* context);
+typedef void (*kl_process_object_advance_time_ptr)(float dt, void* context);
+
 #define KL_DEFAULT_PROCESS_OBJECT_MANAGER NULL
 
 extern KL_API int kl_alloc_process_object_manager(kl_process_object_manager_t* mgr, uint32_t num_objects);
 extern KL_API void kl_free_process_object_manager(kl_process_object_manager_t* mgr);
 
-extern KL_API uint32_t kl_reserve_process_object_id(kl_process_object_manager_t mgr);
+extern KL_API uint32_t kl_reserve_process_object_id(kl_process_object_manager_t mgr,
+   kl_process_object_tick_ptr tick_fn, kl_process_object_advance_time_ptr advance_time_fn, void* context);
 extern KL_API void kl_release_process_object_id(kl_process_object_manager_t mgr, uint32_t id);
 
 extern KL_API int kl_tick_process_object_list(const kl_process_object_manager_t mgr);
 extern KL_API int kl_advance_process_object_list(const kl_process_object_manager_t mgr, float dt);
-
-typedef void (*kl_process_object_tick_ptr)();
-typedef void (*kl_process_object_advance_time_ptr)(float dt);
 
 #ifdef __cplusplus
 }
