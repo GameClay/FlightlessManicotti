@@ -29,12 +29,9 @@ int main(int argc, const char* argv[])
       kl_script_event_t fooevt;
       fooevt.event.id = kl_register_script_event("TestEvent");
       fooevt.event.context.as_ptr = NULL;
-      fooevt.event.arg = 0;
+      fooevt.event.arg = 42;
       
-      //kl_script_event_t barevt = {"omg", NULL, 2, 1, 0};
-   
       kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &fooevt);
-      //kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &barevt);
       
       while(kl_mainloop_iteration() == KL_SUCCESS)
          ;
