@@ -28,6 +28,7 @@
 // Extern the lua module loaders
 extern int luaopen_scriptevents(lua_State* L);
 extern int luaopen_lsqlite3(lua_State* L);
+extern int luaopen_cast(lua_State* L);
 
 struct _kl_script_context
 {
@@ -75,7 +76,7 @@ int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_
    sctx->threaded = threaded;
    sctx->thread = NULL;
    sctx->keep_running = KL_TRUE;
-
+   
    // No event handler ref yet
    sctx->event_handler_ref = 0;
    
@@ -83,13 +84,14 @@ int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_
    g_event_EOF.event.id = kl_register_script_event("EOF");
    g_event_EOF.event.context.as_64 = 0;
    g_event_EOF.event.arg = 0;
-
+   
    // Start up lua
    sctx->lua_state = lua_open();
    luaL_openlibs(sctx->lua_state);
    
    luaopen_scriptevents(sctx->lua_state);
    luaopen_lsqlite3(sctx->lua_state);
+   luaopen_cast(sctx->lua_state);
    
    LOAD_SWIG_LIBS(sctx->lua_state);
    

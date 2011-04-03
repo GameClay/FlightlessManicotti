@@ -36,6 +36,8 @@ end
 
 -- Test registration of an event
 eof_evt_id = script.events.register(SCTX,"EOF")
+advance_time_id = script.events.register(SCTX,"AdvanceTime")
+process_tick_id = script.events.register(SCTX,"ProcessTick")
 
 -- Define and assign event-handler.
 function event_handler()
@@ -43,7 +45,15 @@ function event_handler()
    id,context,arg = script.events.dequeue(SCTX)
    while (not id or not (id == eof_evt_id)) do
       if id then
-         print("From code: {"..id..","..tostring(context)..","..arg.."}")
+         if id == advance_time_id then
+            arg = cast.int_to_float(arg)
+            
+            -- Pass to script advance time list
+         elseif id == process_tick_id then
+            -- Pass to script process tick list
+         else
+            print("From code: {"..id..","..tostring(context)..","..arg.."}")
+         end
       end
       
       id,context,arg = script.events.dequeue(SCTX)

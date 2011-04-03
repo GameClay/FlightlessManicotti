@@ -19,6 +19,7 @@
 #include "process/process.h"
 #include "core/memory.h"
 #include "core/idxallocator.h"
+#include "scriptinterface/script.h"
 
 struct _kl_process_object_manager
 {
@@ -31,6 +32,8 @@ struct _kl_process_object_manager
 };
 
 kl_process_object_manager_t g_process_object_manager = NULL;
+kl_script_event_t g_advance_time_script_event;
+kl_script_event_t g_tick_script_event;
 
 int kl_alloc_process_object_manager(kl_process_object_manager_t* mgr, uint32_t num_objects)
 {
@@ -57,6 +60,14 @@ int kl_alloc_process_object_manager(kl_process_object_manager_t* mgr, uint32_t n
       
       ret = kl_alloc_idx_allocator(&pom->id_allocator, num_objects);
       KL_ASSERT(ret == KL_SUCCESS, "Failed to allocate index allocator.");
+      
+      g_advance_time_script_event.event.id = kl_register_script_event("AdvanceTime");
+      g_advance_time_script_event.event.context.as_ptr = NULL;
+      g_advance_time_script_event.event.arg = 0;
+      
+      g_tick_script_event.event.id = kl_register_script_event("ProcessTick");
+      g_tick_script_event.event.context.as_ptr = NULL;
+      g_tick_script_event.event.arg = 0;
       
       pom->num_objects = num_objects;
       pom->max_id_allocated = 0;
@@ -128,6 +139,8 @@ int kl_tick_process_object_list(const kl_process_object_manager_t mgr)
          tick_fn[i](context[i]);
    }
    
+   kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &g_tick_script_event);
+   
    return KL_SUCCESS;
 }
 
@@ -147,6 +160,9 @@ int kl_advance_process_object_list(const kl_process_object_manager_t mgr, float 
       if(advance_time_fn[i] != NULL)
          advance_time_fn[i](dt, context[i]);
    }
+   
+   g_advance_time_script_event.event.arg = *((uint32_t*)&dt);
+   kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &g_advance_time_script_event);
    
    return KL_SUCCESS;   
 }
