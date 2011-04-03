@@ -66,6 +66,11 @@ int kl_mainloop_iteration()
    kl_absolute_time_t delta_ns;
    float dt;
    
+   ////////////////////
+   // Prepare for frame
+   ////////////////////
+   
+   // Get a delta time since last frame
    kl_high_resolution_timer_query(&frame_timestamp);
    delta_ns = frame_timestamp - last_frame_time;
    
@@ -119,6 +124,11 @@ int kl_mainloop_iteration()
    
    // Record end time of this frame
    kl_high_resolution_timer_query(&last_frame_time);
+   
+   // Get how long it took this frame to execute
+   delta_ns = last_frame_time - frame_timestamp;
+   kl_absolute_time_to_ns(&delta_ns);
+   dt = (float)delta_ns * 1e-6;
    
    return ret;
 }
