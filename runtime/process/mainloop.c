@@ -73,24 +73,6 @@ int kl_mainloop_iteration(const char* main_script, int argc, const char* argv[])
    {
       if(kl_script_event_pump(KL_DEFAULT_SCRIPT_CONTEXT) != KL_SUCCESS)
          return KL_ERROR;
-      
-      // TODO: If tick-time has past
-      kl_tick_process_object_list(KL_DEFAULT_PROCESS_OBJECT_MANAGER);
-      
-      kl_advance_process_object_list(KL_DEFAULT_PROCESS_OBJECT_MANAGER, 0.0f);
-      
-      ////////////////////////////
-      // Runtime frame is complete
-      ////////////////////////////
-      
-      // Send endframe to script-event queue.
-      kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT, &scriptfence);
-      
-      ////////////
-      // Do output
-      ////////////
-      
-      // ...
    }
    else
    {
@@ -98,11 +80,20 @@ int kl_mainloop_iteration(const char* main_script, int argc, const char* argv[])
       while(kl_script_event_fence_wait(&scriptfence) == KL_RETRY)
          ;
    }
-
+   
    //////////////////////////
    // Update simulation frame
    //////////////////////////
-
+   
+   // TODO: If tick-time has past
+   kl_tick_process_object_list(KL_DEFAULT_PROCESS_OBJECT_MANAGER);
+   
+   kl_advance_process_object_list(KL_DEFAULT_PROCESS_OBJECT_MANAGER, 0.0f);
+   
+   ////////////
+   // Do output
+   ////////////
+   
    // ...
    
    ////////////////////////////
@@ -111,12 +102,6 @@ int kl_mainloop_iteration(const char* main_script, int argc, const char* argv[])
    
    // Send endframe to script-event queue.
    kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT, &scriptfence);
-   
-   ////////////
-   // Do output
-   ////////////
-   
-   // ...
    
    return ret;
 }
