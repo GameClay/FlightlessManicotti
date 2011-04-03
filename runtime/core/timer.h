@@ -15,41 +15,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-#ifndef _KL_SCRIPT_EVENTS_H_
-#define _KL_SCRIPT_EVENTS_H_
+
+#ifndef _KL_TIMER_H_
+#define _KL_TIMER_H_
+
+// TODO: Proper platform stuff
+#include <mach/mach_time.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include "fm.h"
-#include <emmintrin.h> // TODO: This is not portable, neither is usage of '__m128'. Must typedef or something.
-#include <stdint.h>
 
-//! Script-event.
+#define kl_absolute_time_t uint64_t
+
+//! Get the current time from the highest-resolution timer available on the platform.
 //!
-//! 
-typedef union
-{
-   struct
-   {
-      uint32_t id;            //!< Event id.
-      uint32_t arg;           //!< Event-defined argument.
+//! @param time_ptr Pointer to a high-resolution timer structure.
+#define kl_high_resolution_timer_query(time_ptr) (*time_ptr = mach_absolute_time())
+
+//! Convert absolute-time to nanoseconds.
+//!
+//! @param time Pointer to absolute time to convert to nanoseconds.
+//!
+//! @return The absolute time in nanoseconds as a uint64_t
+extern KL_API uint64_t kl_absolute_time_to_ns(kl_absolute_time_t* time);
    
-      union
-      {
-         uint64_t as_64;
-         void* as_ptr;
-      } context;
-   } event;
-            
-   //! Representation of the script-event as an __m128.
-   __m128i as_m128i;
-} kl_script_event_t;
-
-extern KL_API uint32_t kl_register_script_event(const char* name);
-
 #ifdef __cplusplus
 }
 #endif

@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 3; c-basic-offset: 3; indent-tabs-mode: nil -*- */
 /* vim: set filetype=C tabstop=3 softtabstop=3 shiftwidth=3 expandtab: */
 
-/* FlightlessManicotti -- Copyright (C) 2009-2010 GameClay LLC
+/* FlightlessManicotti -- Copyright (C) 2009-2011 GameClay LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ int kl_alloc_idx_allocator(kl_idx_allocator_t* idx_allocator, uint32_t free_list
    int ret = KL_ERROR;
    const uint32_t alloc_sz = sizeof(struct _kl_idx_allocator) + sizeof(uint32_t) * free_list_sz;
    struct _kl_idx_allocator* idxalloc = NULL;
+   int i;
    
    KL_ASSERT(idx_allocator != NULL, "NULL index-allocator pointer");
    
@@ -44,10 +45,9 @@ int kl_alloc_idx_allocator(kl_idx_allocator_t* idx_allocator, uint32_t free_list
       idxalloc->free_list = (uint32_t*)(((char*)idxalloc) + sizeof(struct _kl_idx_allocator));
       
       // Prep free-list
-      while(free_list_sz > 0)
+      for(i = 0; i < free_list_sz; i++)
       {
-         free_list_sz--;
-         idxalloc->free_list[free_list_sz] = free_list_sz;
+         idxalloc->free_list[i] = i;
       }
       
       *idx_allocator = idxalloc;

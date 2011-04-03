@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 3; c-basic-offset: 3; indent-tabs-mode: nil -*- */
 /* vim: set filetype=C tabstop=3 softtabstop=3 shiftwidth=3 expandtab: */
 
-/* FlightlessManicotti -- Copyright (C) 2009-2010 GameClay LLC
+/* FlightlessManicotti -- Copyright (C) 2009-2011 GameClay LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,13 +33,13 @@ typedef void* (*kl_aligned_malloc_fn_ptr)(size_t size, size_t align_size);
 typedef void (*kl_aligned_free_fn_ptr)(void* pointer);
 typedef void* (*kl_memrcpy_fn_ptr)(void* KL_RESTRICT dest, const void* KL_RESTRICT src, size_t size);
 
-KL_API extern kl_malloc_fn_ptr kl_heap_alloc_ptr;
-KL_API extern kl_free_fn_ptr kl_heap_free_ptr;
-KL_API extern kl_aligned_malloc_fn_ptr kl_heap_aligned_alloc_ptr;
-KL_API extern kl_aligned_free_fn_ptr kl_heap_aligned_free_ptr;
-KL_API extern kl_malloc_fn_ptr kl_micro_alloc_ptr;
-KL_API extern kl_free_fn_ptr kl_micro_free_ptr;
-KL_API extern kl_memrcpy_fn_ptr kl_microrcpy_ptr;
+extern KL_API kl_malloc_fn_ptr kl_heap_alloc_ptr;
+extern KL_API kl_free_fn_ptr kl_heap_free_ptr;
+extern KL_API kl_aligned_malloc_fn_ptr kl_heap_aligned_alloc_ptr;
+extern KL_API kl_aligned_free_fn_ptr kl_heap_aligned_free_ptr;
+extern KL_API kl_malloc_fn_ptr kl_micro_alloc_ptr;
+extern KL_API kl_free_fn_ptr kl_micro_free_ptr;
+extern KL_API kl_memrcpy_fn_ptr kl_microrcpy_ptr;
 //! @endcond
 
 //! @defgroup memory_allocation Memory allocation
@@ -59,12 +59,12 @@ KL_API extern kl_memrcpy_fn_ptr kl_microrcpy_ptr;
 //! @param size The size of the allocation.
 //! @return Pointer the block of allocated memory, aligned on a 16-byte boundary,
 //!         or NULL if the allocation failed.
-KL_API void* kl_heap_alloc(size_t size);
+extern KL_API void* kl_heap_alloc(size_t size);
 
 //! Free function.
 //!
 //! @param pointer Pointer to the block of memory to free.
-KL_API void kl_heap_free(void* pointer);
+extern KL_API void kl_heap_free(void* pointer);
 
 //! Aligned malloc function.
 //!
@@ -78,12 +78,12 @@ KL_API void kl_heap_free(void* pointer);
 //! @param align_size The boundary on which the allocated memory should be aligned.
 //! @return Pointer the block of allocated memory, aligned on the specified boundary,
 //!         or NULL if the allocation failed.
-KL_API void* kl_heap_aligned_alloc(size_t size, size_t align_size);
+extern KL_API void* kl_heap_aligned_alloc(size_t size, size_t align_size);
 
 //! Aligned free function.
 //!
 //! @param pointer Pointer to the block of memory to free.
-KL_API void kl_heap_aligned_free(void* pointer);
+extern KL_API void kl_heap_aligned_free(void* pointer);
 
 //! Micro malloc function.
 //!
@@ -94,13 +94,13 @@ KL_API void kl_heap_aligned_free(void* pointer);
 //!
 //! @param size The size of the allocation.
 //! @return Pointer the block of allocated memory or NULL if the allocation failed.     
-KL_API void* kl_micro_alloc(size_t size);
+extern KL_API void* kl_micro_alloc(size_t size);
 
 //! Micro free function.
 //! @see kl_micro_alloc
 //!
 //! @param pointer Pointer to the block of memory to free.
-KL_API void kl_micro_free(void* pointer);
+extern KL_API void kl_micro_free(void* pointer);
 
 //! @}
 
@@ -114,7 +114,9 @@ KL_API void kl_micro_free(void* pointer);
 //! @param src Source address.
 //! @param size The size of memory to be copied.
 //! @return The destination address.
-KL_API void* kl_microrcpy(void* KL_RESTRICT dest, const void* KL_RESTRICT src, size_t size);
+extern KL_API void* kl_microrcpy(void* KL_RESTRICT dest, const void* KL_RESTRICT src, size_t size);
+
+extern KL_API void kl_zero_mem(void* dest, size_t size);
 
 //! @cond
 // Alignment pre/post-fix for VC/GCC

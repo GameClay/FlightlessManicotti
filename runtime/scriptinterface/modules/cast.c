@@ -15,43 +15,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-#ifndef _KL_SCRIPT_EVENTS_H_
-#define _KL_SCRIPT_EVENTS_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+#include <string.h>
+#include <lua.h>
+#include <lauxlib.h>
+#include <lualib.h>
 #include "fm.h"
-#include <emmintrin.h> // TODO: This is not portable, neither is usage of '__m128'. Must typedef or something.
-#include <stdint.h>
 
-//! Script-event.
-//!
-//! 
-typedef union
+static int kl_cast_int_to_number(lua_State* L)
 {
-   struct
-   {
-      uint32_t id;            //!< Event id.
-      uint32_t arg;           //!< Event-defined argument.
-   
-      union
-      {
-         uint64_t as_64;
-         void* as_ptr;
-      } context;
-   } event;
-            
-   //! Representation of the script-event as an __m128.
-   __m128i as_m128i;
-} kl_script_event_t;
-
-extern KL_API uint32_t kl_register_script_event(const char* name);
-
-#ifdef __cplusplus
+   lua_Integer iint = lua_tointeger(L, 1);
+   lua_pushnumber(L, *((lua_Number*)&iint));
+   return 1;
 }
-#endif
 
-#endif
+static const struct luaL_reg cast_module [] = {
+    {"int_to_float", kl_cast_int_to_number},
+    {NULL, NULL}
+};
+
+int luaopen_cast(lua_State* L)
+{
+   luaL_register(L, "cast", cast_module);
+   return 1;
+}
