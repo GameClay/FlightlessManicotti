@@ -19,9 +19,11 @@
 #include "fm.h"
 #include "scriptinterface/script.h"
 #include "process/process.h"
+#include "core/timer.h"
 
 kl_script_event_fence_t scriptfence;
 KL_BOOL pump_script;
+kl_absolute_time_t last_frame_time;
 
 int kl_init_mainloop(const char* main_script, int argc, const char* argv[])
 {
@@ -50,13 +52,25 @@ int kl_init_mainloop(const char* main_script, int argc, const char* argv[])
    }
    kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT, NULL);
    
+   // Initialize last frame time to now
+   kl_high_resolution_timer_query(&last_frame_time);
+   
    return ret;
 }
 
-int kl_mainloop_iteration(const char* main_script, int argc, const char* argv[])
+int kl_mainloop_iteration()
 {
    int ret = KL_SUCCESS;
    
+   kl_absolute_time_t frame_timestamp;
+   kl_absolute_time_t delta_ns;
+   float dt;
+   
+   kl_high_resolution_timer_query(&frame_timestamp);
+   delta_ns = frame_timestamp - last_frame_time;
+   
+   kl_absolute_time_to_ns(&delta_ns);
+   dt = (float)delta_ns * 1e-6;
    
    //////////////////////
    // Update packet frame
@@ -88,7 +102,7 @@ int kl_mainloop_iteration(const char* main_script, int argc, const char* argv[])
    // TODO: If tick-time has past
    kl_tick_process_object_list(KL_DEFAULT_PROCESS_OBJECT_MANAGER);
    
-   kl_advance_process_object_list(KL_DEFAULT_PROCESS_OBJECT_MANAGER, 0.0f);
+   kl_advance_process_object_list(KL_DEFAULT_PROCESS_OBJECT_MANAGER, dt);
    
    ////////////
    // Do output
@@ -102,6 +116,9 @@ int kl_mainloop_iteration(const char* main_script, int argc, const char* argv[])
    
    // Send endframe to script-event queue.
    kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT, &scriptfence);
+   
+   // Record end time of this frame
+   kl_high_resolution_timer_query(&last_frame_time);
    
    return ret;
 }
