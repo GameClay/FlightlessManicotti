@@ -19,11 +19,11 @@
 --! Base class for components.
 --!
 --! A Component encapsulates a specific piece of functionality for
---! a GameObject. To create complex functionality, multiple components
+--! a Entity. To create complex functionality, multiple components
 --! are aggregated together, as opposed to creating large inheretable 
 --! object structures.
 --!
---! @see GameObject
+--! @see Entity
 Component = {}
 
 --! Constructor.
@@ -56,14 +56,21 @@ end
 
 --! Register a Component with an object.
 --!
---! @param owner The GameObject with which to register this Component.
+--! @param owner The Entity with which to register this Component.
 --! @param name The name to assign to the Component.
+--!
+--! @return True if the Entity registering this Component should 
+--!         continue with the registration, otherwise registration will fail.
 function Component:register(owner, name)
    assert(not self:isregistered(), "Trying to register an already-registered component!")
+   
    self._name = name
-   self:owner(owner)
+   self._owner = owner
+   
    self:onadded()
    self._isregistered = true
+   
+   return true
 end
 
 --! Unregisters a Component.
@@ -79,7 +86,7 @@ end
 
 --! Tell the Component to re-acquire any references to its owner or other Components.
 --!
---! This function is called by a GameObject on all of its Components
+--! This function is called by a Entity on all of its Components
 --! whenever a Component is added or removed.
 function Component:reset()
    self:onreset()

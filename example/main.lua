@@ -11,7 +11,10 @@ end
 -- Bring in script library
 require 'script'
 require 'game.Component'
+require 'game.Entity'
 
+-- Main is executed only once, it is not a loop. It receives the arguments
+-- that were passed to the 'kl_initialize' function.
 function main(...)
    --dumptable(script.events)
    
