@@ -10,6 +10,7 @@ end
 
 -- Bring in script library
 require 'script'
+require 'game.Component'
 
 function main(...)
    --dumptable(script.events)
@@ -32,6 +33,9 @@ function main(...)
    for row in db:nrows("SELECT * FROM test") do
      print(row.id, row.content)
    end
+   
+   test = Component:new()
+   print("I made a component! Is it registered? "..tostring(test:isregistered()))
 end
 
 -- Test registration of an event
