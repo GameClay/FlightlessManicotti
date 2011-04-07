@@ -16,10 +16,10 @@
 -- limitations under the License.
 
 --! Add docs here!
-Entity = {}
+ComponentBucket = {}
 
 --! Constructor.
-function Entity:new(o)
+function ComponentBucket:new(o)
    o = o or {}
    setmetatable(o, self)
    self.__index = self
@@ -29,20 +29,20 @@ function Entity:new(o)
    return o
 end
 
---! Get all Components aggrigated into this Entity.
-function Entity:components()
+--! Get all Components aggrigated into this ComponentBucket.
+function ComponentBucket:components()
    return self._components
 end
 
---! Aggregates a Component onto this Entity.
+--! Aggregates a Component onto this ComponentBucket.
 --!
 --! @param component The component instance to aggregate.
 --! @param name The name with which to register the provided component.
 --!
 --! @return True if the component was aggregated, false if not.
-function Entity:addcomponent(component, name)
+function ComponentBucket:addcomponent(component, name)
    -- If a component is registered with the same name, assert
-   assert(self._components[name] == nil, "Component with name '"..name.."' already aggregated into this Entity.")
+   assert(self._components[name] == nil, "Component with name '"..name.."' already aggregated into this ComponentBucket. (I already haz that in mah bukkit!)")
    
    -- If the component doesn't want to be aggregated with us, bail gracefully
    if not (component:register(self, name)) then
@@ -59,8 +59,8 @@ function Entity:addcomponent(component, name)
    return true
 end
 
---! Remove a Component from this Entity.
-function Entity:removecomponent(component)
+--! Remove a Component from this ComponentBucket.
+function ComponentBucket:removecomponent(component)
    -- Find component
    found = false
    for k,v in pairs(self._components) do
@@ -73,7 +73,7 @@ function Entity:removecomponent(component)
    end
    
    -- Component not found, bail
-   assert(found, "Component has not been aggregated into this Entity.")
+   assert(found, "Component has not been aggregated into this ComponentBucket. (Nooo! They be takin mah bukkit!)")
    
    -- Tell all the components to reset
    for k,v in pairs(self._components) do
