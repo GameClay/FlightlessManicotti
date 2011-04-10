@@ -38,15 +38,15 @@ if (env.GetOption('iphone') or env.GetOption('iphonesimulator')):
       ccprefix="i686"
       platform="iPhoneSimulator"
       
-   iphoneos_dev_target="3.2"
+   iphoneos_dev_target="4.2"
    env['KL_CROSS_TARGET']=1
 	
    platform_dir="/Developer/Platforms/"+platform+".platform/Developer"
    platform_bin_dir=platform_dir+"/usr/bin"
    platform_sdk_dir=platform_dir+"/SDKs/"+platform+iphoneos_dev_target+".sdk"
 
-   #env['CCFLAGS']+=["-isysroot "+platform_sdk_dir]
-   #env['LINKFLAGS']+=['-isysroot '+platform_sdk_dir]
+   env['CCFLAGS']+=['-isysroot '+platform_sdk_dir]
+   env['LINKFLAGS']+=['-isysroot '+platform_sdk_dir]
 
    env['KL_PLATFORM_INC_PATH']=[
       platform_sdk_dir+'/usr/include',

@@ -11,9 +11,8 @@ if env['KL_CROSS_TARGET']:
 
 executable = bin_env.Program('FlightlessManicotti',
    executable_files,
-   CPPPATH = [] + env['KL_INCPATH'],
-   CXXFLAGS = env['CCFLAGS'],
+   CPPPATH = [] + env['KL_INCPATH'] + env['KL_PLATFORM_INC_PATH'],
    LIBS=example_libs, 
-   LIBPATH=[] + env['KL_LIBPATH']
+   LIBPATH=[] + env['KL_LIBPATH'] + env['KL_PLATFORM_LIB_PATH']
 )
 Return('executable')
