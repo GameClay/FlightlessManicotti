@@ -17,11 +17,10 @@
  */
 #include "core/timer.h"
 
-#include <CoreServices/CoreServices.h>
-
 uint64_t kl_absolute_time_to_ns(kl_absolute_time_t* time)
 {
-   Nanoseconds elapsedNano;
-   elapsedNano = AbsoluteToNanoseconds(*((AbsoluteTime*)time));
-   return *((uint64_t*)&elapsedNano);
+   static mach_timebase_info_data_t s_timebase_info;
+   if(s_timebase_info.denom == 0) mach_timebase_info(&s_timebase_info);
+   
+   return ((*time) * s_timebase_info.numer) / s_timebase_info.denom;
 }
