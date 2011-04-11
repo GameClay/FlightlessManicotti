@@ -21,19 +21,19 @@
 KL_IMPLEMENT_RINGBUFFER_TYPE(float);
 KL_IMPLEMENT_RINGBUFFER_TYPE(int);
 
-// Custom implementation of __m128i type
-_KL_INIT_RINGBUFFER_FN_(__m128i)
+// Custom implementation of kl_int32x4_t type
+_KL_INIT_RINGBUFFER_FN_(kl_int32x4_t)
 {
    ringbuffer->buffer = buffer;
    ringbuffer->start = 0;
    ringbuffer->end = 0;
-   ringbuffer->size = size / sizeof(__m128i);
+   ringbuffer->size = size / sizeof(kl_int32x4_t);
    ringbuffer->mutex = mtx;
 }
 
-_KL_ALLOC_RINGBUFFER_FN_(__m128i)
+_KL_ALLOC_RINGBUFFER_FN_(kl_int32x4_t)
 {
-   ringbuffer->buffer = (__m128i*)kl_heap_alloc(size * sizeof(__m128i));
+   ringbuffer->buffer = (kl_int32x4_t*)kl_heap_alloc(size * sizeof(kl_int32x4_t));
    if(ringbuffer->buffer == NULL)
       return KL_ERROR;
 
@@ -45,7 +45,7 @@ _KL_ALLOC_RINGBUFFER_FN_(__m128i)
    return KL_SUCCESS;
 }
 
-_KL_FREE_RINGBUFFER_FN_(__m128i)
+_KL_FREE_RINGBUFFER_FN_(kl_int32x4_t)
 {
    kl_heap_free(ringbuffer->buffer);
    ringbuffer->buffer = NULL;
@@ -56,7 +56,7 @@ _KL_FREE_RINGBUFFER_FN_(__m128i)
    ringbuffer->mutex = NULL;
 }
 
-_KL_RESERVE_RINGBUFFER_FN_(__m128i)
+_KL_RESERVE_RINGBUFFER_FN_(kl_int32x4_t)
 {
    int ret = KL_ERROR;
    uint32_t nend;
@@ -65,8 +65,8 @@ _KL_RESERVE_RINGBUFFER_FN_(__m128i)
    nend = (ringbuffer->end + 1) % ringbuffer->size;
    if(nend != ringbuffer->start)
    {
-      __m128i xmm0 = _mm_load_si128(item);
-      _mm_store_si128(ringbuffer->buffer + ringbuffer->end, xmm0);
+      kl_int32x4_t xmm0 = kl_load_int32x4(item);
+      kl_store_int32x4(ringbuffer->buffer + ringbuffer->end, xmm0);
       
       ringbuffer->end = nend;
       ret = KL_SUCCESS;
@@ -76,14 +76,14 @@ _KL_RESERVE_RINGBUFFER_FN_(__m128i)
    return ret;
 }
 
-_KL_RETRIEVE_RINGBUFFER_FN_(__m128i)
+_KL_RETRIEVE_RINGBUFFER_FN_(kl_int32x4_t)
 {
    int ret = KL_ERROR;
    amp_mutex_lock(ringbuffer->mutex);
    if(ringbuffer->start != ringbuffer->end)
    { 
-      __m128i xmm0 = _mm_load_si128(ringbuffer->buffer + ringbuffer->start);
-      _mm_store_si128(item, xmm0);
+      kl_int32x4_t xmm0 = kl_load_int32x4(ringbuffer->buffer + ringbuffer->start);
+      kl_store_int32x4(item, xmm0);
       
       ringbuffer->start = (ringbuffer->start + 1) % ringbuffer->size;
       ret = KL_SUCCESS;

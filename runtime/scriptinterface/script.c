@@ -23,6 +23,7 @@
 #include "scriptinterface/script.h"
 #include "core/logger.h"
 #include "core/ringbuffer.h"
+#include "core/simd.h"
 #include "swig_autogen.h"
 
 // Extern the lua module loaders
@@ -33,7 +34,7 @@ extern int luaopen_cast(lua_State* L);
 struct _kl_script_context
 {
    lua_State* lua_state;
-   kl_ringbuffer_t(__m128i) event_buffer;
+   kl_ringbuffer_t(kl_int32x4_t) event_buffer;
    KL_BOOL threaded;
    KL_BOOL keep_running;
    amp_thread_t thread;
@@ -66,7 +67,7 @@ int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_
       return KL_ERROR;
       
    // Allocate event buffer
-   if(kl_alloc_ringbuffer(__m128i, &sctx->event_buffer, event_queue_max * sizeof(__m128)) != KL_SUCCESS)
+   if(kl_alloc_ringbuffer(kl_int32x4_t, &sctx->event_buffer, event_queue_max * sizeof(kl_int32x4_t)) != KL_SUCCESS)
    {
       kl_heap_free(sctx);
       return KL_ERROR;
@@ -251,7 +252,7 @@ void kl_script_destroy(kl_script_context_t* context)
       }
       
       lua_close(sctx->lua_state);
-      kl_free_ringbuffer(__m128i, &sctx->event_buffer);
+      kl_free_ringbuffer(kl_int32x4_t, &sctx->event_buffer);
    
       kl_heap_free(sctx);
    }
@@ -261,14 +262,14 @@ int kl_script_event_enqueue(kl_script_context_t context, const kl_script_event_t
 {
    kl_script_context_t sctx = (context == KL_DEFAULT_SCRIPT_CONTEXT ? g_script_context : context);
    KL_ASSERT(sctx, "NULL context.");
-   return kl_reserve_ringbuffer(__m128i, &sctx->event_buffer, &event->as_m128i);
+   return kl_reserve_ringbuffer(kl_int32x4_t, &sctx->event_buffer, &event->as_int32x4);
 }
 
 int kl_script_event_dequeue(kl_script_context_t context, kl_script_event_t* event)
 {
    kl_script_context_t sctx = (context == KL_DEFAULT_SCRIPT_CONTEXT ? g_script_context : context);
    KL_ASSERT(sctx, "NULL context.");
-   return kl_retrieve_ringbuffer(__m128i, &sctx->event_buffer, &event->as_m128i);
+   return kl_retrieve_ringbuffer(kl_int32x4_t, &sctx->event_buffer, &event->as_int32x4);
 }
 
 KL_BOOL kl_script_is_threaded(kl_script_context_t context)
@@ -281,8 +282,8 @@ KL_BOOL kl_script_is_threaded(kl_script_context_t context)
 int kl_script_event_endframe(kl_script_context_t context, kl_script_event_fence_t* fence)
 {
    kl_script_event_t eof_evt;
-   __m128i xmm0 = _mm_load_si128(&g_event_EOF.as_m128i);
-   _mm_store_si128(&eof_evt.as_m128i, xmm0);
+   kl_int32x4_t xmm0 = kl_load_int32x4(&g_event_EOF.as_int32x4);
+   kl_store_int32x4(&eof_evt.as_int32x4, xmm0);
    
    if(fence != NULL)
    {

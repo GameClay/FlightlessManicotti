@@ -96,6 +96,20 @@ else:
     env['CPPDEFINES']+=["NDEBUG"]
     variant=architecture+"/Release"
 
+# Set proper preprocessor defines
+if architecture == "x86":
+   env['CPPDEFINES']+=["KL_ARCH_X86"]
+elif architecture == "i386":
+   env['CPPDEFINES']+=["KL_ARCH_X86"]
+elif architecture == "x64":
+   env['CPPDEFINES']+=["KL_ARCH_X64"]
+elif architecture == "arm":
+   env['CPPDEFINES']+=["KL_ARCH_ARM"]
+elif architecture == "ppc":
+   env['CPPDEFINES']+=["KL_ARCH_PPC"]
+else:
+   env['CPPDEFINES']+=["KL_ARCH_UNKNOWN"]
+
 # Am I building for Windows or POSIX?
 if sys.platform=='win32':
    

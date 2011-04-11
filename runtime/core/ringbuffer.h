@@ -24,12 +24,12 @@ extern "C" {
 #endif
 
 #include "core/internal/ringbuffer_internal.h"
-#include <emmintrin.h>
+#include "core/simd.h"
 
 // Default ring buffer types
 KL_DECLARE_RINGBUFFER_TYPE(float);
 KL_DECLARE_RINGBUFFER_TYPE(int);
-KL_DECLARE_RINGBUFFER_TYPE(__m128i);
+KL_DECLARE_RINGBUFFER_TYPE(kl_int32x4_t);
 
 // Macros
 #define kl_ringbuffer_t(T) kl_ringbuffer_##T##_t
