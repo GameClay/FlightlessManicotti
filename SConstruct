@@ -8,7 +8,7 @@ AddOption('--force32', dest='force32', help='force 32 bit build on 64 bit machin
 AddOption('--sse', dest='sse', nargs=1, type='int', default=1, help='set SSE used (0-4) on 32 bit x86. Defaults to 1 (SSE1).')
 AddOption('--iphone', dest='iphone', nargs='?', default=0, help='cross-compile library for iPhone')
 AddOption('--iphonesimulator', dest='iphonesimulator', nargs='?', default=0, help='cross-compile library for iPhoneSimulator')
-AddOption('--microalloc', dest='microalloc', help='include John Ratcliff\'s MicroAllocator (c++)')
+AddOption('--microalloc', dest='microalloc', nargs='?', default=0, help='include John Ratcliff\'s MicroAllocator (c++)')
 
 # Defaults
 architecture="generic"
@@ -34,6 +34,7 @@ if (env.GetOption('iphone') or env.GetOption('iphonesimulator')):
       architecture="armv6"
       ccprefix="arm"
       platform="iPhoneOS"
+      env['CCFLAGS']+=["-mfloat-abi=softfp","-mfpu=neon"]
    else:
       architecture="i386"
       ccprefix="i686"
@@ -107,7 +108,7 @@ elif architecture == "i386":
    env['CPPDEFINES']+=["KL_ARCH_IPHONE_SIMULATOR"]
 elif architecture == "x64":
    env['CPPDEFINES']+=["KL_ARCH_X64"]
-elif architecture == "arm":
+elif architecture == "armv6":
    env['CPPDEFINES']+=["KL_ARCH_ARM"]
 elif architecture == "ppc":
    env['CPPDEFINES']+=["KL_ARCH_PPC"]

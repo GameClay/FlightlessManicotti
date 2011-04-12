@@ -26,14 +26,16 @@
 typedef __m128i kl_int32x4_t;
 
 #define kl_load_int32x4(const_kl_int32x4_t_ptr) _mm_load_si128(const_kl_int32x4_t_ptr)
-#define kl_store_int32x4(dest_int32_t_ptr, src_kl_int32x4_t) _mm_store_si128(dest_int32_t_ptr, src_kl_int32x4_t)// ARM = vst1q_s32
+#define kl_store_int32x4(dest_int32_t_ptr, src_kl_int32x4_t) _mm_store_si128(dest_int32_t_ptr, src_kl_int32x4_t)
 
 #elif defined(KL_ARCH_ARM)
 
+#include <arm_neon.h>
+
 typedef int32x4_t kl_int32x4_t;
 
-#define kl_load_int32x4(const_kl_int32x4_t_ptr) vld1q_s32(const_kl_int32x4_t_ptr)
-#define kl_store_int32x4(dest_int32_t_ptr, src_kl_int32x4_t) vst1q_s32(dest_int32_t_ptr, src_kl_int32x4_t)
+#define kl_load_int32x4(const_kl_int32x4_t_ptr) vld1q_s32((int32_t*)const_kl_int32x4_t_ptr)
+#define kl_store_int32x4(dest_int32_t_ptr, src_kl_int32x4_t) vst1q_s32((int32_t*)dest_int32_t_ptr, src_kl_int32x4_t)
 
 #else
 
