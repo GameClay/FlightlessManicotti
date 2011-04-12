@@ -33,10 +33,15 @@ if sys.platform =="win32":
    runtime_libs += []
 else:
    runtime_libs += ['libstdc++','pthread']
-
+   
+# Determine build function
+buildFn = runtime_env.SharedLibrary
+if env['KL_CROSS_TARGET']:
+   buildFn = runtime_env.StaticLibrary
+   
 # Build runtime library
 runtime_env.Append(CPPDEFINES=['KL_BUILD_LIBRARY'])
-runtime_lib = runtime_env.SharedLibrary('FlightlessManicotti', 
+runtime_lib = buildFn('FlightlessManicotti', 
    lib_files,
    CPPPATH = ['.'] + env['KL_DEP_INCPATH'] + env['KL_INCPATH'] + env['KL_PLATFORM_INC_PATH'],
    CCFLAGS = runtime_ccflags + env['CCFLAGS'],
