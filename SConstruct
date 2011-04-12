@@ -50,17 +50,23 @@ if (env.GetOption('iphone') or env.GetOption('iphonesimulator')):
 
    env['KL_PLATFORM_INC_PATH']=[
       platform_sdk_dir+'/usr/include',
+      platform_dir+'/usr/lib/gcc/'+ccprefix+'-apple-darwin10/'+env['CCVERSION']+'/include',
+      
       platform_sdk_dir+'/usr/include/c++/'+env['CCVERSION'],
+      platform_sdk_dir+'/usr/include/c++/'+env['CCVERSION']+'/'+ccprefix+'-apple-darwin10',
       platform_sdk_dir+'/usr/include/c++/'+env['CCVERSION']+'/'+architecture+'-apple-darwin10',
    ]
    
    env['KL_PLATFORM_LIB_PATH']=[
       platform_sdk_dir+'/usr/lib',
-      platform_sdk_dir+'/usr/lib/gcc/'+ccprefix+'-apple-darwin10/'+env['CCVERSION']
+      platform_dir+'/usr/lib/gcc/'+ccprefix+'-apple-darwin10/'+env['CCVERSION'],
+      
+#      platform_sdk_dir+'/usr/lib/gcc/'+ccprefix+'-apple-darwin10/'+env['CCVERSION']
    ]
 
    env.Replace(CC=platform_bin_dir+"/"+ccprefix+"-apple-darwin10-gcc-"+env['CCVERSION'])
    env.Replace(CXX=platform_bin_dir+"/"+ccprefix+"-apple-darwin10-g++-"+env['CCVERSION'])
+   env.Replace(LD=platform_bin_dir+"/"+ccprefix+"-apple-darwin10-gcc-"+env['CCVERSION'])
    #env.Replace(CPP="/Developer/usr/bin/cpp-4.2")
    #env.Replace(CXXCPP="/Developer/usr/bin/cpp-4.2")
 else:
@@ -100,7 +106,7 @@ else:
 if architecture == "x86":
    env['CPPDEFINES']+=["KL_ARCH_X86"]
 elif architecture == "i386":
-   env['CPPDEFINES']+=["KL_ARCH_X86"]
+   env['CPPDEFINES']+=["KL_ARCH_IPHONE_SIMULATOR"]
 elif architecture == "x64":
    env['CPPDEFINES']+=["KL_ARCH_X64"]
 elif architecture == "arm":

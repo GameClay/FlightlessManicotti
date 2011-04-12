@@ -5,14 +5,16 @@ bin_env = env.Clone()
 executable_files = ['main.cpp']
 
 example_libs = ['FlightlessManicotti']
+example_libpath = env['KL_LIBPATH']
 
 if env['KL_CROSS_TARGET']:
    example_libs += env['KL_DEPS']
+   example_libpath += env['KL_DEP_LIBPATH']
 
 executable = bin_env.Program('FlightlessManicotti',
    executable_files,
    CPPPATH = [] + env['KL_INCPATH'] + env['KL_PLATFORM_INC_PATH'],
    LIBS=example_libs, 
-   LIBPATH=[] + env['KL_LIBPATH'] + env['KL_PLATFORM_LIB_PATH']
+   LIBPATH=[] + example_libpath + env['KL_PLATFORM_LIB_PATH']
 )
 Return('executable')
