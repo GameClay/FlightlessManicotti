@@ -87,7 +87,11 @@ extern KL_API void kl_heap_aligned_free(void* pointer);
 
 //! Micro malloc function.
 //!
-//! Allocates small amounts of memory 
+//! Allocates small amounts of memory.
+//!
+//! @note This is not assured to be a specalized micro-allocator. If 
+//!       KL_USE_MICROALLOCATOR is defined, it will John Ratcliff's 
+//!       microallocator.
 //!
 //! @attention If the allocation size is greater than 256 bytes, this
 //!            function will assert, and return NULL.
@@ -97,6 +101,8 @@ extern KL_API void kl_heap_aligned_free(void* pointer);
 extern KL_API void* kl_micro_alloc(size_t size);
 
 //! Micro free function.
+//!
+//! Frees memory allocated by kl_micro_alloc.
 //! @see kl_micro_alloc
 //!
 //! @param pointer Pointer to the block of memory to free.

@@ -27,7 +27,9 @@ extern void nedfree(void *mem);
 extern void* nedmalloc2(size_t size, size_t alignment, unsigned flags);
 extern void nedfree2(void *mem, unsigned flags);
 
-#include "MicroAllocator.h"
+#if defined(KL_USE_MICROALLOCATOR)
+#  include "MicroAllocator.h"
+#endif
 
 // Forward declare
 void* aligned_nedmalloc(size_t size, size_t alignment);
@@ -42,8 +44,13 @@ kl_free_fn_ptr kl_heap_free_ptr = &default_free;
 kl_aligned_malloc_fn_ptr kl_heap_aligned_alloc_ptr = &aligned_nedmalloc;
 kl_aligned_free_fn_ptr kl_heap_aligned_free_ptr = &aligned_nedfree;
 
+#if defined(KL_USE_MICROALLOCATOR)
 kl_malloc_fn_ptr kl_micro_alloc_ptr = &micro_malloc;
 kl_free_fn_ptr kl_micro_free_ptr = &micro_free;
+#else
+kl_malloc_fn_ptr kl_micro_alloc_ptr = &default_malloc;
+kl_free_fn_ptr kl_micro_free_ptr = &default_free;
+#endif
 
 kl_memrcpy_fn_ptr kl_microrcpy_ptr = &memcpy;
 
@@ -60,6 +67,7 @@ void kl_heap_free(void* pointer)
 
 void* kl_micro_alloc(size_t size)
 {
+   KL_ASSERT(size <= 256, "Can not allocate more than 256 bytes with kl_micro_alloc.");
    return kl_micro_alloc_ptr(size);
 }
 

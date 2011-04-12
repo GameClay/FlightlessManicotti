@@ -8,6 +8,7 @@ AddOption('--force32', dest='force32', help='force 32 bit build on 64 bit machin
 AddOption('--sse', dest='sse', nargs=1, type='int', default=1, help='set SSE used (0-4) on 32 bit x86. Defaults to 1 (SSE1).')
 AddOption('--iphone', dest='iphone', nargs='?', default=0, help='cross-compile library for iPhone')
 AddOption('--iphonesimulator', dest='iphonesimulator', nargs='?', default=0, help='cross-compile library for iPhoneSimulator')
+AddOption('--microalloc', dest='microalloc', help='include John Ratcliff\'s MicroAllocator (c++)')
 
 # Defaults
 architecture="generic"
@@ -60,15 +61,12 @@ if (env.GetOption('iphone') or env.GetOption('iphonesimulator')):
    env['KL_PLATFORM_LIB_PATH']=[
       platform_sdk_dir+'/usr/lib',
       platform_dir+'/usr/lib/gcc/'+ccprefix+'-apple-darwin10/'+env['CCVERSION'],
-      
-#      platform_sdk_dir+'/usr/lib/gcc/'+ccprefix+'-apple-darwin10/'+env['CCVERSION']
    ]
 
    env.Replace(CC=platform_bin_dir+"/"+ccprefix+"-apple-darwin10-gcc-"+env['CCVERSION'])
    env.Replace(CXX=platform_bin_dir+"/"+ccprefix+"-apple-darwin10-g++-"+env['CCVERSION'])
    env.Replace(LD=platform_bin_dir+"/"+ccprefix+"-apple-darwin10-gcc-"+env['CCVERSION'])
-   #env.Replace(CPP="/Developer/usr/bin/cpp-4.2")
-   #env.Replace(CXXCPP="/Developer/usr/bin/cpp-4.2")
+
 else:
    # Am I in a 32 or 64 bit environment? Note that not specifying --sse doesn't set any x86 or x64 specific options
    # so it's good to go for ANY platform
@@ -191,12 +189,15 @@ env['KL_DEP_ROOT'] = 'thirdparty/'
 dependencies = [
     ['amp','src/c'],
     ['lua','src'],
-    ['MicroAllocator','.'],
     ['nedmalloc','.'],
     ['sqlite3','.'],
     ['lsqlite3','.'],
 ]
 
+if env.GetOption('microalloc'):
+   dependencies += ['MicroAllocator','.']
+   env['CPPDEFINES']+=['KL_USE_MICROALLOCATOR']
+   
 dep_build_objects = []
 for lib,src_path in dependencies:
     lib_toplevel = env['KL_DEP_ROOT'] + lib
