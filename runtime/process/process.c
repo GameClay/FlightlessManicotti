@@ -126,13 +126,12 @@ int kl_tick_process_object_list(const kl_process_object_manager_t mgr)
 {
    kl_process_object_tick_ptr* tick_fn;
    void** context;
+   int i;
    kl_process_object_manager_t pom = (mgr == KL_DEFAULT_PROCESS_OBJECT_MANAGER ? g_process_object_manager : mgr);
    KL_ASSERT(pom != NULL, "NULL process-object manager.");
    
    tick_fn = pom->tick;
    context = pom->context;
-   int i;
-   
    for(i = 0; i < pom->max_id_allocated; i++)
    {
       if(tick_fn[i] != NULL)

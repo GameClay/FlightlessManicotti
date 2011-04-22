@@ -41,7 +41,26 @@ extern KL_API uint32_t kl_reserve_process_object_id(kl_process_object_manager_t 
    kl_process_object_tick_ptr tick_fn, kl_process_object_advance_time_ptr advance_time_fn, void* context);
 extern KL_API void kl_release_process_object_id(kl_process_object_manager_t mgr, uint32_t id);
 
+//! Tick the process list.
+//!
+//! This invokes the respective tick function on all registered process objects.
+//! A process object receives a tick for every 32ms of time that passes. This means
+//! That a process object could get it's tick function called several times in 
+//! rapid succession if the simulation needs to "catch up".
+//!
+//! @param  mgr   The process object manager to tick.
+//! @return KL_SUCCESS if successful.
 extern KL_API int kl_tick_process_object_list(const kl_process_object_manager_t mgr);
+
+//! Advance time on the process list.
+//!
+//! This invokes the respective advance time function on all registered process objects.
+//! A process object will receive this call once per frame, every frame.
+//!
+//! @param  mgr   The process object manager on which to advance time.
+//! @param  dt    The amount of time, in milliseconds, which has passed since the last time
+//!               kl_advance_process_object_list was called on this manager.
+//! @return KL_SUCCESS if successful.
 extern KL_API int kl_advance_process_object_list(const kl_process_object_manager_t mgr, float dt);
 
 #ifdef __cplusplus

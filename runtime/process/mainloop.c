@@ -24,10 +24,13 @@
 kl_script_event_fence_t scriptfence;
 KL_BOOL pump_script;
 kl_absolute_time_t last_frame_time;
+kl_absolute_time_t last_tick_time;
+kl_absolute_time_t tick_frequency;
 
 int kl_init_mainloop(const char* main_script, int argc, const char* argv[])
 {
    int ret = KL_SUCCESS;
+   uint64_t tick_frequency_ns = 32 * 1e6;
    
    //////////////////////////////////
    // Get the script processing ready
@@ -54,6 +57,10 @@ int kl_init_mainloop(const char* main_script, int argc, const char* argv[])
    
    // Initialize last frame time to now
    kl_high_resolution_timer_query(&last_frame_time);
+   last_tick_time = last_frame_time;
+   
+   // Compute tick frequency in absolute-time
+   kl_ns_to_absolute_time(&tick_frequency_ns, &tick_frequency);
    
    return ret;
 }
@@ -105,8 +112,11 @@ int kl_mainloop_iteration()
    // Update simulation frame
    //////////////////////////
    
-   // TODO: If tick-time has past
-   kl_tick_process_object_list(KL_DEFAULT_PROCESS_OBJECT_MANAGER);
+   while(last_tick_time + tick_frequency < frame_timestamp)
+   {
+      kl_tick_process_object_list(KL_DEFAULT_PROCESS_OBJECT_MANAGER);
+      last_tick_time += tick_frequency;
+   }
    
    kl_advance_process_object_list(KL_DEFAULT_PROCESS_OBJECT_MANAGER, dt);
    
