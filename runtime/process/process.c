@@ -41,7 +41,7 @@ int kl_alloc_process_object_manager(kl_process_object_manager_t* mgr, uint32_t n
    kl_process_object_manager_t pom;
    
    KL_ASSERT(mgr != NULL, "NULL manager pointer.");
-   pom = kl_heap_alloc(num_objects * sizeof(struct _kl_process_object_manager));
+   pom = kl_heap_alloc(sizeof(struct _kl_process_object_manager));
    
    if(pom != NULL)
    {
