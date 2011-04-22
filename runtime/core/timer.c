@@ -25,3 +25,10 @@ void kl_absolute_time_to_ns(const kl_absolute_time_t* time, uint64_t* out_ns)
    
    *out_ns = ((*time) * s_timebase_info.numer) / s_timebase_info.denom;
 }
+
+void kl_ns_to_absolute_time(const uint64_t* ns, kl_absolute_time_t* out_absolute_time)
+{
+   if(s_timebase_info.denom == 0) mach_timebase_info(&s_timebase_info);
+   
+   *out_absolute_time = ((*ns) * s_timebase_info.denom) / s_timebase_info.numer;
+}
