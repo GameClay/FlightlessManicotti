@@ -17,10 +17,11 @@
  */
 #include "core/timer.h"
 
-uint64_t kl_absolute_time_to_ns(kl_absolute_time_t* time)
+static mach_timebase_info_data_t s_timebase_info;
+
+void kl_absolute_time_to_ns(const kl_absolute_time_t* time, uint64_t* out_ns)
 {
-   static mach_timebase_info_data_t s_timebase_info;
    if(s_timebase_info.denom == 0) mach_timebase_info(&s_timebase_info);
    
-   return ((*time) * s_timebase_info.numer) / s_timebase_info.denom;
+   *out_ns = ((*time) * s_timebase_info.numer) / s_timebase_info.denom;
 }

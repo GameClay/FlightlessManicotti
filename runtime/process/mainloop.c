@@ -63,7 +63,8 @@ int kl_mainloop_iteration()
    int ret = KL_SUCCESS;
    
    kl_absolute_time_t frame_timestamp;
-   kl_absolute_time_t delta_ns;
+   kl_absolute_time_t delta_time;
+   uint64_t delta_ns;
    float dt;
    
    ////////////////////
@@ -72,10 +73,10 @@ int kl_mainloop_iteration()
    
    // Get a delta time since last frame
    kl_high_resolution_timer_query(&frame_timestamp);
-   delta_ns = frame_timestamp - last_frame_time;
+   delta_time = frame_timestamp - last_frame_time;
    
-   kl_absolute_time_to_ns(&delta_ns);
-   dt = (float)delta_ns * 1e-6;
+   kl_absolute_time_to_ns(&delta_time, &delta_ns);
+   dt = (float)delta_ns * 1e-6; // Convert to ms
    
    //////////////////////
    // Update packet frame
@@ -126,8 +127,8 @@ int kl_mainloop_iteration()
    kl_high_resolution_timer_query(&last_frame_time);
    
    // Get how long it took this frame to execute
-   delta_ns = last_frame_time - frame_timestamp;
-   kl_absolute_time_to_ns(&delta_ns);
+   delta_time = last_frame_time - frame_timestamp;
+   kl_absolute_time_to_ns(&delta_time, &delta_ns);
    dt = (float)delta_ns * 1e-6;
    
    return ret;

@@ -37,10 +37,9 @@ extern "C" {
 
 //! Convert absolute-time to nanoseconds.
 //!
-//! @param time Pointer to absolute time to convert to nanoseconds.
-//!
-//! @return The absolute time in nanoseconds as a uint64_t
-extern KL_API uint64_t kl_absolute_time_to_ns(kl_absolute_time_t* time);
+//! @param time   Pointer to absolute time to convert to nanoseconds.
+//! @param out_ns The resulting absolute time in nanoseconds.
+extern KL_API void kl_absolute_time_to_ns(const kl_absolute_time_t* time, uint64_t* out_ns);
    
 #ifdef __cplusplus
 }
