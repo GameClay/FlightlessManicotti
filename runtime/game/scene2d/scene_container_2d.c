@@ -15,35 +15,58 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "game/scene2d/scene_container_2d.h"
-#include "process/process.h"
 
+#include "game/scene2d/scene_container_2d.h"
+#include "core/idxallocator.h"
+
+
+// Forward declare process object callbacks
+void _kl_scene_container_2d_process_tick(void* context);
+void _kl_scene_container_2d_advance_time(float dt, void* context);
+
+// Opaque scene container
 struct _kl_scene_container_2d
 {
    uint32_t pid;
+   kl_process_object_manager_t process_manager;
 };
 
-int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container)
+int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container, kl_process_object_manager_t process_manager)
 {
    int ret = KL_ERROR;
    kl_scene_container_2d_t sctr;
    
-   KL_ASSERT(container != NULL, "NULL manager pointer.");
+   KL_ASSERT(container != NULL, "NULL container pointer.");
    sctr = kl_heap_alloc(sizeof(struct _kl_scene_container_2d));
    
    if(sctr != NULL)
    {
-      sctr->pid = kl_reserve_process_object_id(KL_DEFAULT_PROCESS_OBJECT_MANAGER, NULL, NULL, sctr);
-      ret = KL_SUCCESS;
+      sctr->process_manager = process_manager;
+      sctr->pid = kl_reserve_process_object_id(process_manager, NULL, NULL, sctr);
       *container = sctr;
+      
+      ret = KL_SUCCESS;
    }
+   
    return ret;
 }
 
 void kl_free_scene_container_2d(kl_scene_container_2d_t* container)
 {
    kl_scene_container_2d_t sctr = *container;
-   kl_release_process_object_id(KL_DEFAULT_PROCESS_OBJECT_MANAGER, sctr->pid);
+   kl_release_process_object_id(sctr->process_manager, sctr->pid);
    kl_heap_free(sctr);
    *container = NULL;
+}
+
+// Internal callbacks for process manager
+void _kl_scene_container_2d_process_tick(void* context)
+{
+   kl_scene_container_2d_t sctr = (kl_scene_container_2d_t)context;
+   
+}
+
+void _kl_scene_container_2d_advance_time(float dt, void* context)
+{
+   kl_scene_container_2d_t sctr = (kl_scene_container_2d_t)context;
 }

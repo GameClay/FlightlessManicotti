@@ -24,11 +24,11 @@ extern "C" {
 #endif
 
 #include "fm.h"
-#include <stdint.h>
+#include "process/process.h"
 
 typedef struct _kl_scene_container_2d* kl_scene_container_2d_t;
 
-extern KL_API int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container);
+extern KL_API int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container, kl_process_object_manager_t process_manager);
 extern KL_API void kl_free_scene_container_2d(kl_scene_container_2d_t* container);
 
 extern KL_API uint32_t kl_reserve_scene_container_2d_id(kl_scene_container_2d_t container);
