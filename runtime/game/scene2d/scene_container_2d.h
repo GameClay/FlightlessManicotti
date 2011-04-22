@@ -24,14 +24,15 @@ extern "C" {
 #endif
 
 #include "fm.h"
+#include <stdint.h>
 
-typedef struct _kl_scene_container_2d_t* kl_scene_container_2d_t;
+typedef struct _kl_scene_container_2d* kl_scene_container_2d_t;
 
-extern KL_API int kl_alloc_scene_container_2d(kl_scene_container_2d_t* mgr);
-extern KL_API void kl_free_scene_container_2d(kl_scene_container_2d_t* mgr);
+extern KL_API int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container);
+extern KL_API void kl_free_scene_container_2d(kl_scene_container_2d_t* container);
 
-extern KL_API uint32_t kl_reserve_scene_container_2d_id(kl_scene_container_2d_t mgr);
-extern KL_API void kl_free_scene_container_2d_id(kl_scene_container_2d_t mgr, uint32_t id);
+extern KL_API uint32_t kl_reserve_scene_container_2d_id(kl_scene_container_2d_t container);
+extern KL_API void kl_free_scene_container_2d_id(kl_scene_container_2d_t container, uint32_t id);
 
 #ifdef __cplusplus
 }
