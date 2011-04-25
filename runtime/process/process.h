@@ -25,6 +25,7 @@ extern "C" {
 
 #include "fm.h"
 #include <stdint.h>
+#include "scriptinterface/scriptevents.h"
 
 //! Opaque pointer to a process-object manager
 typedef struct _kl_process_object_manager* kl_process_object_manager_t;
@@ -62,6 +63,12 @@ extern KL_API int kl_tick_process_object_list(const kl_process_object_manager_t 
 //!               kl_advance_process_object_list was called on this manager.
 //! @return KL_SUCCESS if successful.
 extern KL_API int kl_advance_process_object_list(const kl_process_object_manager_t mgr, float dt);
+
+//! Advance time script event.
+extern kl_script_event_t g_advance_time_script_event;
+
+//! Tick script event.
+extern kl_script_event_t g_tick_script_event;
 
 #ifdef __cplusplus
 }

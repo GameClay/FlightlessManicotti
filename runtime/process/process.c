@@ -138,8 +138,6 @@ int kl_tick_process_object_list(const kl_process_object_manager_t mgr)
          tick_fn[i](context[i]);
    }
    
-   kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &g_tick_script_event);
-   
    return KL_SUCCESS;
 }
 
@@ -159,9 +157,6 @@ int kl_advance_process_object_list(const kl_process_object_manager_t mgr, float 
       if(advance_time_fn[i] != NULL)
          advance_time_fn[i](dt, context[i]);
    }
-   
-   g_advance_time_script_event.event.arg = *((uint32_t*)&dt);
-   kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &g_advance_time_script_event);
    
    return KL_SUCCESS;   
 }

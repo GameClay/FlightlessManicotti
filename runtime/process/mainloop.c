@@ -115,10 +115,14 @@ int kl_mainloop_iteration()
    while(last_tick_time + tick_frequency < frame_timestamp)
    {
       kl_tick_process_object_list(KL_DEFAULT_PROCESS_OBJECT_MANAGER);
+      kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &g_tick_script_event);
       last_tick_time += tick_frequency;
    }
    
    kl_advance_process_object_list(KL_DEFAULT_PROCESS_OBJECT_MANAGER, dt);
+   
+   g_advance_time_script_event.event.arg = *((uint32_t*)&dt);
+   kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &g_advance_time_script_event);
    
    ////////////
    // Do output
