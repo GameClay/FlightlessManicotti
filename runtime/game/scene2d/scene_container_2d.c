@@ -20,7 +20,7 @@
 #include "core/idxallocator.h"
 
 
-// Forward declare process object callbacks
+// Forward declare process manager callbacks
 void _kl_scene_container_2d_process_tick(void* context);
 void _kl_scene_container_2d_advance_time(float dt, void* context);
 
@@ -28,10 +28,10 @@ void _kl_scene_container_2d_advance_time(float dt, void* context);
 struct _kl_scene_container_2d
 {
    uint32_t pid;
-   kl_process_object_manager_t process_manager;
+   kl_process_manager_t process_manager;
 };
 
-int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container, kl_process_object_manager_t process_manager)
+int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container, kl_process_manager_t process_manager)
 {
    int ret = KL_ERROR;
    kl_scene_container_2d_t sctr;
@@ -42,7 +42,7 @@ int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container, kl_process_o
    if(sctr != NULL)
    {
       sctr->process_manager = process_manager;
-      sctr->pid = kl_reserve_process_object_id(process_manager, NULL, NULL, sctr);
+      sctr->pid = kl_reserve_process_id(process_manager, NULL, NULL, sctr);
       *container = sctr;
       
       ret = KL_SUCCESS;
@@ -54,7 +54,7 @@ int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container, kl_process_o
 void kl_free_scene_container_2d(kl_scene_container_2d_t* container)
 {
    kl_scene_container_2d_t sctr = *container;
-   kl_release_process_object_id(sctr->process_manager, sctr->pid);
+   kl_release_process_id(sctr->process_manager, sctr->pid);
    kl_heap_free(sctr);
    *container = NULL;
 }
@@ -63,10 +63,11 @@ void kl_free_scene_container_2d(kl_scene_container_2d_t* container)
 void _kl_scene_container_2d_process_tick(void* context)
 {
    kl_scene_container_2d_t sctr = (kl_scene_container_2d_t)context;
-   
+   KL_UNUSED(sctr);
 }
 
 void _kl_scene_container_2d_advance_time(float dt, void* context)
 {
    kl_scene_container_2d_t sctr = (kl_scene_container_2d_t)context;
+   KL_UNUSED(sctr);
 }
