@@ -29,8 +29,8 @@ kl_runtime_state_t g_runtime_state = { KL_FALSE };
 // KL_DEFAULT_SCRIPT_CONTEXT from scriptinterface/script.c
 extern kl_script_context_t g_script_context;
 
-// KL_DEFAULT_PROCESS_OBJECT_MANAGER from process/process.c
-extern kl_process_object_manager_t g_process_object_manager;
+// KL_DEFAULT_PROCESS_MANAGER from process/process.c
+extern kl_process_manager_t g_process_manager;
 
 // kl_init_mainloop from process/mainloop.c
 extern int kl_init_mainloop(const char* main_script, int argc, const char* argv[]);
@@ -41,7 +41,7 @@ int kl_initialize(KL_BOOL use_threads, const char* main_script, int argc, const 
    
    KL_ASSERT(!g_runtime_state.initialized, "Runtime already initialized.");
    KL_ASSERT(g_script_context == NULL, "KL_DEFAULT_SCRIPT_CONTEXT already initialized.");
-   KL_ASSERT(g_process_object_manager == NULL, "already initialized.");
+   KL_ASSERT(g_process_manager == NULL, "KL_DEFAULT_PROCESS_MANAGER already initialized.");
    
    // TODO: Don't hard code ring-buffer size
    ret = kl_script_init(&g_script_context, use_threads, 1 << 10);
@@ -51,7 +51,7 @@ int kl_initialize(KL_BOOL use_threads, const char* main_script, int argc, const 
       ret = kl_init_mainloop(main_script, argc, argv);
    
    // TODO: Growable process list size
-   ret |= kl_alloc_process_object_manager(&g_process_object_manager, 128);
+   ret |= kl_alloc_process_manager(&g_process_manager, 128);
    
    g_runtime_state.initialized = (ret == KL_SUCCESS ? KL_TRUE : KL_FALSE);
    return ret;
@@ -61,6 +61,6 @@ void kl_destroy()
 {
    KL_ASSERT(g_runtime_state.initialized, "Runtime not initialized.");
    kl_script_destroy(&g_script_context);
-   kl_free_process_object_manager(&g_process_object_manager);
+   kl_free_process_manager(&g_process_manager);
    g_script_context = NULL;
 }

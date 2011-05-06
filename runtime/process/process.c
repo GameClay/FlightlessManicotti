@@ -21,44 +21,44 @@
 #include "core/idxallocator.h"
 #include "scriptinterface/script.h"
 
-struct _kl_process_object_manager
+struct _kl_process_manager
 {
-   kl_process_object_tick_ptr* tick;
-   kl_process_object_advance_time_ptr* advance_time;
+   kl_process_tick_ptr* tick;
+   kl_process_advance_time_ptr* advance_time;
    void** context;
    kl_idx_allocator_t id_allocator;
-   uint32_t num_objects;
+   uint32_t num_processes;
    uint32_t max_id_allocated;
 };
 
-kl_process_object_manager_t g_process_object_manager = NULL;
+kl_process_manager_t g_process_manager = NULL;
 kl_script_event_t g_advance_time_script_event;
 kl_script_event_t g_tick_script_event;
 
-int kl_alloc_process_object_manager(kl_process_object_manager_t* mgr, uint32_t num_objects)
+int kl_alloc_process_manager(kl_process_manager_t* mgr, uint32_t num_processes)
 {
    int ret = KL_ERROR;
-   kl_process_object_manager_t pom;
+   kl_process_manager_t pom;
    
    KL_ASSERT(mgr != NULL, "NULL manager pointer.");
-   pom = kl_heap_alloc(sizeof(struct _kl_process_object_manager));
+   pom = kl_heap_alloc(sizeof(struct _kl_process_manager));
    
    if(pom != NULL)
    {
       // TODO: More error checking
-      pom->tick = kl_heap_alloc(sizeof(kl_process_object_tick_ptr) * num_objects);
+      pom->tick = kl_heap_alloc(sizeof(kl_process_tick_ptr) * num_processes);
       KL_ASSERT(pom->tick != NULL, "Tick-function list allocation failed.");
-      kl_zero_mem(pom->tick, sizeof(kl_process_object_tick_ptr) * num_objects);
+      kl_zero_mem(pom->tick, sizeof(kl_process_tick_ptr) * num_processes);
 
-      pom->advance_time = kl_heap_alloc(sizeof(kl_process_object_advance_time_ptr) * num_objects);
+      pom->advance_time = kl_heap_alloc(sizeof(kl_process_advance_time_ptr) * num_processes);
       KL_ASSERT(pom->advance_time != NULL, "AdvanceTime-function list allocation failed.");
-      kl_zero_mem(pom->advance_time, sizeof(kl_process_object_advance_time_ptr) * num_objects);
+      kl_zero_mem(pom->advance_time, sizeof(kl_process_advance_time_ptr) * num_processes);
       
-      pom->context = kl_heap_alloc(sizeof(void**) * num_objects);
+      pom->context = kl_heap_alloc(sizeof(void**) * num_processes);
       KL_ASSERT(pom->context != NULL, "Context list allocation failed.");
-      kl_zero_mem(pom->context, sizeof(void**) * num_objects);
+      kl_zero_mem(pom->context, sizeof(void**) * num_processes);
       
-      ret = kl_alloc_idx_allocator(&pom->id_allocator, num_objects);
+      ret = kl_alloc_idx_allocator(&pom->id_allocator, num_processes);
       KL_ASSERT(ret == KL_SUCCESS, "Failed to allocate index allocator.");
       
       g_advance_time_script_event.event.id = kl_register_script_event("AdvanceTime");
@@ -69,7 +69,7 @@ int kl_alloc_process_object_manager(kl_process_object_manager_t* mgr, uint32_t n
       g_tick_script_event.event.context.as_ptr = NULL;
       g_tick_script_event.event.arg = 0;
       
-      pom->num_objects = num_objects;
+      pom->num_processes = num_processes;
       pom->max_id_allocated = 0;
 
       *mgr = pom;
@@ -79,9 +79,9 @@ int kl_alloc_process_object_manager(kl_process_object_manager_t* mgr, uint32_t n
    return ret;
 }
 
-void kl_free_process_object_manager(kl_process_object_manager_t* mgr)
+void kl_free_process_manager(kl_process_manager_t* mgr)
 {
-   kl_process_object_manager_t pom;
+   kl_process_manager_t pom;
    KL_ASSERT(mgr != NULL, "NULL manager pointer.");
    pom = *mgr;
    
@@ -93,12 +93,12 @@ void kl_free_process_object_manager(kl_process_object_manager_t* mgr)
    *mgr = NULL;
 }
 
-uint32_t kl_reserve_process_object_id(kl_process_object_manager_t mgr,
-   kl_process_object_tick_ptr tick_fn, kl_process_object_advance_time_ptr advance_time_fn, void* context)
+uint32_t kl_reserve_process_id(kl_process_manager_t mgr,
+   kl_process_tick_ptr tick_fn, kl_process_advance_time_ptr advance_time_fn, void* context)
 {
    uint32_t ret;
-   kl_process_object_manager_t pom = (mgr == KL_DEFAULT_PROCESS_OBJECT_MANAGER ? g_process_object_manager : mgr);
-   KL_ASSERT(pom != NULL, "NULL process-object manager.");
+   kl_process_manager_t pom = (mgr == KL_DEFAULT_PROCESS_MANAGER ? g_process_manager : mgr);
+   KL_ASSERT(pom != NULL, "NULL process manager.");
    
    ret = kl_idx_allocator_reserve(pom->id_allocator);
    pom->max_id_allocated = (ret > pom->max_id_allocated ? ret : pom->max_id_allocated);
@@ -110,9 +110,9 @@ uint32_t kl_reserve_process_object_id(kl_process_object_manager_t mgr,
    return ret;
 }
 
-void kl_release_process_object_id(kl_process_object_manager_t mgr, uint32_t id)
+void kl_release_process_id(kl_process_manager_t mgr, uint32_t id)
 {
-   kl_process_object_manager_t pom = (mgr == KL_DEFAULT_PROCESS_OBJECT_MANAGER ? g_process_object_manager : mgr);
+   kl_process_manager_t pom = (mgr == KL_DEFAULT_PROCESS_MANAGER ? g_process_manager : mgr);
    KL_ASSERT(pom != NULL, "NULL process-object manager.");
    
    pom->tick[id] = NULL;
@@ -122,13 +122,13 @@ void kl_release_process_object_id(kl_process_object_manager_t mgr, uint32_t id)
    kl_idx_allocator_release(pom->id_allocator, id);
 }
 
-int kl_tick_process_object_list(const kl_process_object_manager_t mgr)
+int kl_tick_process_list(const kl_process_manager_t mgr)
 {
-   kl_process_object_tick_ptr* tick_fn;
+   kl_process_tick_ptr* tick_fn;
    void** context;
    int i;
-   kl_process_object_manager_t pom = (mgr == KL_DEFAULT_PROCESS_OBJECT_MANAGER ? g_process_object_manager : mgr);
-   KL_ASSERT(pom != NULL, "NULL process-object manager.");
+   kl_process_manager_t pom = (mgr == KL_DEFAULT_PROCESS_MANAGER ? g_process_manager : mgr);
+   KL_ASSERT(pom != NULL, "NULL process manager.");
    
    tick_fn = pom->tick;
    context = pom->context;
@@ -141,14 +141,14 @@ int kl_tick_process_object_list(const kl_process_object_manager_t mgr)
    return KL_SUCCESS;
 }
 
-int kl_advance_process_object_list(const kl_process_object_manager_t mgr, float dt)
+int kl_advance_process_list(const kl_process_manager_t mgr, float dt)
 {
-   kl_process_object_advance_time_ptr* advance_time_fn;
+   kl_process_advance_time_ptr* advance_time_fn;
    void** context;
    int i;
-   kl_process_object_manager_t pom = (mgr == KL_DEFAULT_PROCESS_OBJECT_MANAGER ? g_process_object_manager : mgr);
+   kl_process_manager_t pom = (mgr == KL_DEFAULT_PROCESS_MANAGER ? g_process_manager : mgr);
    
-   KL_ASSERT(pom != NULL, "NULL process-object manager.");
+   KL_ASSERT(pom != NULL, "NULL process manager.");
    advance_time_fn = pom->advance_time;
    context = pom->context;
    
