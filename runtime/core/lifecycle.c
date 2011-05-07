@@ -46,12 +46,12 @@ int kl_initialize(KL_BOOL use_threads, const char* main_script, int argc, const 
    // TODO: Don't hard code ring-buffer size
    ret = kl_script_init(&g_script_context, use_threads, 1 << 10);
    
+   // TODO: Growable process list size
+   ret |= kl_alloc_process_manager(&g_process_manager, 128);
+   
    // Let the "main loop" do initialization
    if(ret == KL_SUCCESS)
       ret = kl_init_mainloop(main_script, argc, argv);
-   
-   // TODO: Growable process list size
-   ret |= kl_alloc_process_manager(&g_process_manager, 128);
    
    g_runtime_state.initialized = (ret == KL_SUCCESS ? KL_TRUE : KL_FALSE);
    return ret;
