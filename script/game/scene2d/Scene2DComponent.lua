@@ -17,12 +17,13 @@
 
 
 --! Component which does stuff and things for a 2d scene.
-Scene2DComponent = Component
+Scene2DComponent = {}
+setmetatable(Scene2DComponent, {__index = Component})
 
 --! Constructor.
 function Scene2DComponent.new(o)
    o = o or {}
-   setmetatable(o, {__index = self or Scene2DComponent})
+   setmetatable(o, {__index = Scene2DComponent})
    return o
 end
 
