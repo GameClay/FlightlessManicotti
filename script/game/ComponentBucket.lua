@@ -19,12 +19,11 @@
 ComponentBucket = {}
 
 --! Constructor.
-function ComponentBucket:new(o)
+function ComponentBucket.new(o)
    o = o or {}
-   setmetatable(o, self)
-   self.__index = self
+   setmetatable(o, {__index = ComponentBucket})
    
-   self._components = {}
+   o._components = {}
    
    return o
 end

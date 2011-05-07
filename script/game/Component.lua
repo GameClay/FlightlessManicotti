@@ -27,14 +27,13 @@
 Component = {}
 
 --! Constructor.
-function Component:new(o)
+function Component.new(o)
    o = o or {}
-   setmetatable(o, self)
-   self.__index = self
+   setmetatable(o, {__index = Component})
    
-   self._isregistered = false
-   self._owner = nil
-   self._name = nil
+   o._isregistered = false
+   o._owner = nil
+   o._name = nil
    
    return o
 end

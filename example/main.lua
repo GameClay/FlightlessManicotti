@@ -37,7 +37,7 @@ function main(...)
      print(row.id, row.content)
    end
    
-   test = Component:new()
+   test = Component.new()
    print("I made a component! Is it registered? "..tostring(test:isregistered()))
 end
 
