@@ -20,11 +20,9 @@
 Scene2DComponent = Component
 
 --! Constructor.
-function Scene2DComponent:new(o)
+function Scene2DComponent.new(o)
    o = o or {}
-   setmetatable(o, self)
-   self.__index = self
-   
+   setmetatable(o, {__index = self or Scene2DComponent})
    return o
 end
 
