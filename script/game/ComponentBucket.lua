@@ -19,8 +19,8 @@
 ComponentBucket = {}
 
 --! Constructor.
-function ComponentBucket.new(o)
-   o = o or {}
+function ComponentBucket.new()
+   o = {}
    setmetatable(o, {__index = ComponentBucket})
    
    o._components = {}

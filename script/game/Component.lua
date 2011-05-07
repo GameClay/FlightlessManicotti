@@ -27,8 +27,8 @@
 Component = {}
 
 --! Constructor.
-function Component.new(o)
-   o = o or {}
+function Component.new()
+   o = {}
    setmetatable(o, {__index = Component})
    
    o._isregistered = false
