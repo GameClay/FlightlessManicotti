@@ -21,13 +21,20 @@
 #include <lualib.h>
 #include "game/scene2d/scene_container_2d.h"
 
+#define SCENE2D_LIB "Scene2D"
+
 static int Scene2D_new(lua_State* L)
 {
-   kl_scene_container_2d_t* sctr = (kl_scene_container_2d_t*)lua_newuserdata(L, sizeof(kl_scene_container_2d_t));
+   uint32_t max_entries;
+   kl_scene_container_2d_t* sctr;
+   luaL_checkinteger(L, 1);
    
-   if(kl_alloc_scene_container_2d(sctr, KL_DEFAULT_PROCESS_MANAGER) == KL_SUCCESS)
+   sctr = (kl_scene_container_2d_t*)lua_newuserdata(L, sizeof(kl_scene_container_2d_t));
+   max_entries = lua_tointeger(L, 1);
+   
+   if(kl_alloc_scene_container_2d(sctr, KL_DEFAULT_PROCESS_MANAGER, max_entries) == KL_SUCCESS)
    {
-      luaL_getmetatable(L, "Scene2D");
+      luaL_getmetatable(L, SCENE2D_LIB);
       lua_setmetatable(L, -2);
    }
    else
@@ -42,24 +49,52 @@ static int Scene2D_new(lua_State* L)
 
 static int Scene2D_gc(lua_State *L)
 {
-   KL_LOGF(KL_LL_NRM, "Destructing a Scene2D...\n");
    kl_scene_container_2d_t* sctr = (kl_scene_container_2d_t*)lua_touserdata(L, 1);
-   if(sctr) kl_free_scene_container_2d(sctr);
+   if(sctr != NULL) kl_free_scene_container_2d(sctr);
+   return 0;
+}
+
+static int Scene2D_reserveid(lua_State *L)
+{
+   kl_scene_container_2d_t* sctr;
+   luaL_checkudata(L, 1, SCENE2D_LIB);
+   
+   sctr = (kl_scene_container_2d_t*)lua_touserdata(L, 1);
+   if(sctr != NULL)  lua_pushinteger(L, kl_reserve_scene_container_2d_id(*sctr));
+   else              lua_pushnil(L);
+   KL_LOGF(KL_LL_NRM, "Reserved id: %d\n", (int)lua_tointeger(L,lua_gettop(L)));
+   return 1;
+}
+
+static int Scene2D_releaseid(lua_State *L)
+{
+   int scene_id;
+   kl_scene_container_2d_t* sctr;
+   
+   luaL_checkudata(L, 1, SCENE2D_LIB);
+   luaL_argcheck(L, lua_type(L, 2) == LUA_TNUMBER, 2, "Expected scene id as argument");
+   
+   sctr = (kl_scene_container_2d_t*)lua_touserdata(L, 1);
+   scene_id = lua_tointeger(L, 2);
+   KL_LOGF(KL_LL_NRM, "Released id: %d\n", scene_id);
+   if(sctr != NULL) kl_free_scene_container_2d_id(*sctr, scene_id);
    return 0;
 }
 
 static const struct luaL_reg Scene2D_instance_methods [] = {
-    {NULL, NULL}
+   {"reserveid", Scene2D_reserveid},
+   {"releaseid", Scene2D_releaseid},
+   {NULL, NULL}
 };
 
 static const struct luaL_reg Scene2D_class_methods [] = {
-    {"new", Scene2D_new},
-    {NULL, NULL}
+   {"new", Scene2D_new},
+   {NULL, NULL}
 };
 
 int luaopen_scene2d(lua_State* L)
 {
-   luaL_newmetatable(L, "Scene2D");
+   luaL_newmetatable(L, SCENE2D_LIB);
    luaL_register(L, 0, Scene2D_instance_methods);
    lua_pushvalue(L, -1);
    lua_setfield(L, -2, "__index");
@@ -67,7 +102,7 @@ int luaopen_scene2d(lua_State* L)
    lua_pushcfunction(L, Scene2D_gc);
    lua_setfield(L, -2, "__gc");
    
-   luaL_register(L, "Scene2D", Scene2D_class_methods);
+   luaL_register(L, SCENE2D_LIB, Scene2D_class_methods);
    
    return 1;
 }

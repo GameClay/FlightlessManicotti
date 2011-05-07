@@ -17,7 +17,7 @@
 
 
 --! Component which does stuff and things for a 2d scene.
-Scene2DComponent = Component;
+Scene2DComponent = Component
 
 --! Constructor.
 function Scene2DComponent:new(o)
@@ -30,16 +30,20 @@ end
 
 function Scene2DComponent:onadded()
    -- Register with the C code and reserve an id
+   if self._scene then
+      self._scene_id = self._scene:reserveid()
+   else
+      error("No scene assigned. Call 'assignscene' before registering component.")
+   end
 end
 
 function Scene2DComponent:onremoved()
    -- Release our reserved id
+   if self._scene_id then
+      self._scene:releaseid(self._scene_id)
+   end
 end
 
-function Scene2DComponent:onreset()
-   -- Not anything I don't think
-end
-
-function Scene2DComponent:raycast()
-   -- Query the C code
+function Scene2DComponent:assignscene(scene)
+   self._scene = scene
 end

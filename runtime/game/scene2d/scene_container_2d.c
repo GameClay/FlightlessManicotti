@@ -19,7 +19,6 @@
 #include "game/scene2d/scene_container_2d.h"
 #include "core/idxallocator.h"
 
-
 // Forward declare process manager callbacks
 void _kl_scene_container_2d_process_tick(void* context);
 void _kl_scene_container_2d_advance_time(float dt, void* context);
@@ -29,9 +28,12 @@ struct _kl_scene_container_2d
 {
    uint32_t pid;
    kl_process_manager_t process_manager;
+   kl_idx_allocator_t id_allocator;
+   uint32_t max_entries;
 };
 
-int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container, kl_process_manager_t process_manager)
+int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container, 
+   kl_process_manager_t process_manager, uint32_t max_entries)
 {
    int ret = KL_ERROR;
    kl_scene_container_2d_t sctr;
@@ -41,10 +43,17 @@ int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container, kl_process_m
    
    if(sctr != NULL)
    {
-      sctr->process_manager = process_manager;
-      sctr->pid = kl_reserve_process_id(process_manager, NULL, NULL, sctr);
-      *container = sctr;
+      sctr->max_entries = max_entries;
       
+      ret = kl_alloc_idx_allocator(&sctr->id_allocator, max_entries);
+      KL_ASSERT(ret == KL_SUCCESS, "Failed to allocate index allocator.");
+      
+      sctr->process_manager = process_manager;
+      sctr->pid = kl_reserve_process_id(process_manager, 
+         &_kl_scene_container_2d_process_tick,
+         &_kl_scene_container_2d_advance_time, sctr);
+      
+      *container = sctr;
       ret = KL_SUCCESS;
    }
    
@@ -54,9 +63,20 @@ int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container, kl_process_m
 void kl_free_scene_container_2d(kl_scene_container_2d_t* container)
 {
    kl_scene_container_2d_t sctr = *container;
+   kl_free_idx_allocator(&sctr->id_allocator);
    kl_release_process_id(sctr->process_manager, sctr->pid);
    kl_heap_free(sctr);
    *container = NULL;
+}
+
+uint32_t kl_reserve_scene_container_2d_id(kl_scene_container_2d_t container)
+{
+   return kl_idx_allocator_reserve(container->id_allocator);
+}
+
+void kl_free_scene_container_2d_id(kl_scene_container_2d_t container, uint32_t id)
+{
+   kl_idx_allocator_release(container->id_allocator, id);
 }
 
 // Internal callbacks for process manager
