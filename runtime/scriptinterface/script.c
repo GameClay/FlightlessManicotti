@@ -30,6 +30,7 @@
 extern int luaopen_scriptevents(lua_State* L);
 extern int luaopen_lsqlite3(lua_State* L);
 extern int luaopen_cast(lua_State* L);
+extern int luaopen_scene2d(lua_State* L);
 
 struct _kl_script_context
 {
@@ -93,6 +94,7 @@ int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_
    luaopen_scriptevents(sctx->lua_state);
    luaopen_lsqlite3(sctx->lua_state);
    luaopen_cast(sctx->lua_state);
+   luaopen_scene2d(sctx->lua_state);
    
    LOAD_SWIG_LIBS(sctx->lua_state);
    
