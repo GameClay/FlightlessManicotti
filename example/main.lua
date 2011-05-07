@@ -12,7 +12,6 @@ end
 
 require 'events'
 require 'game.components'
-require 'game.components.ProcessComponent'
 require 'game.scene2d.Scene2DComponent'
 
 -- Main is executed only once, it is not a loop. It receives the arguments
