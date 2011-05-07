@@ -21,8 +21,8 @@ Scene2DComponent = {}
 setmetatable(Scene2DComponent, {__index = Component})
 
 --! Constructor.
-function Scene2DComponent.new(o)
-   o = o or {}
+function Scene2DComponent.new()
+   o = {}
    setmetatable(o, {__index = Scene2DComponent})
    return o
 end
