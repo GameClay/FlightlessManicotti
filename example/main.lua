@@ -3,8 +3,10 @@ package.path = './script/?.lua;./script/?/init.lua;'..package.path
 
 function dumptable(table)
    print(tostring(table))
-   for key,value in pairs(table) do
-      print("\t"..key..": "..tostring(value))
+   if table then
+      for key,value in pairs(table) do
+         print("\t"..key..": "..tostring(value))
+      end
    end
 end
 
