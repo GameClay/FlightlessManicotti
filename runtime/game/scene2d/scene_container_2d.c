@@ -30,6 +30,17 @@ struct _kl_scene_container_2d
    kl_process_manager_t process_manager;
    kl_idx_allocator_t id_allocator;
    uint32_t max_entries;
+   
+   uint32_t* typemask;
+   
+   float* pos_xyz;
+   
+   float* radius;
+   
+   float* f;
+   
+   float* anchor_xyz;
+   float* rotation;
 };
 
 int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container, 

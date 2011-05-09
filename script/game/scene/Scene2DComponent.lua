@@ -46,3 +46,15 @@ end
 function Scene2DComponent:assignscene(scene)
    self._scene = scene
 end
+
+function Scene2DComponent:position()
+   
+end
+
+function Scene2DComponent:circle()
+   
+end
+
+function Scene2DComponent:aabb()
+   
+end
