@@ -16,3 +16,8 @@
 -- limitations under the License.
 
 io.write(string.format("[FlightlessManicotti] Hello %s from %s on %s\n",os.getenv"USER" or "there",_VERSION,os.date()))
+
+--! @defgroup script Script
+--! Script documentation for FlightlessManicotti.
+--! @{
+--! @}

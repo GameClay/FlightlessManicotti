@@ -15,8 +15,21 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
--- Define and assign event-handler.
-Events.handler = function()
+--! @addtogroup script
+--! @{
+
+--! @addtogroup script_events
+--! @{
+
+--! Subscribe to events.
+--!
+--! @param  o  Object that desires subscription.
+function Events.subscribe(o)
+   
+end
+
+--! Event handler.
+function Events.handler()
    -- dequeue everything from code
    id,context,arg = Events.dequeue(SCTX)
    while (not id or not (id == Events.eof)) do
@@ -40,3 +53,5 @@ Events.handler = function()
       Events.framedone(SCTX, context)
    end
 end
+--! @}
+--! @}
