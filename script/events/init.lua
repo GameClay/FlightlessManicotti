@@ -20,29 +20,10 @@
 
 --! @defgroup script_events Events
 --! Script event handling.
---! @{
-
---! End-of-frame event.
-Events.eof = Events.register(SCTX, "EOF")
-
---! AdvanceTime event.
 --!
---! This event occurs once, and only once, each frame.
---!
---! The amount of time which has past since the previous
---! AdvanceTime event is provided as an argument to the event handler.
-Events.advancetime = Events.register(SCTX, "AdvanceTime")
+--! Details, details...
 
---! ProcessTick event.
---!
---! This event occurs once for each tick which has past. This means
---! that several ProcessTick events may occur in rapid succession if
---! the simulation needs to "catch up".
---!
---! There are no arguments passed to this event handler.
-Events.processtick = Events.register(SCTX, "ProcessTick")
+--! @}
 
---@}
---@}
-
+require 'events.Common'
 require 'events.Handler'

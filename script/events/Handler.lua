@@ -18,10 +18,10 @@
 --! @addtogroup script_events
 --! @{
    
---! Table of event subscriptions.
+--! @cond
 Events.subscriptions = {}
 
---! Table of argument/context conditioners for specific events.
+-- Table of argument/context conditioners for specific events.
 Events.conditioners = {
    [Events.advancetime] = function(arg, context)
       return Cast.int_to_float(arg),context
@@ -30,6 +30,7 @@ Events.conditioners = {
       return arg,context
    end
 }
+--! @endcond
 
 --! Subscribe to events.
 --!
