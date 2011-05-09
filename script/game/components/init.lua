@@ -21,7 +21,20 @@
 --! @defgroup script_components Components
 --! Components.
 --! @{
+
+--! Declare a new component type.
+--!
+--! This helper function sets up the metatable and stuff.
+--!
+--! @relates Component
+function DeclareComponentType(name, subtype)
+   assert(type(name) == "string", "First parameter of DeclareComponentType should be a string.")
+   assert(not subtype or type(subtype) == "table", "Second parameter of DeclareComponentType should be a table.")
    
+   _G[name] = {}
+   setmetatable(_G[name], {__index = subtype or Component})
+end
+
 --! @}
 --! @}
 

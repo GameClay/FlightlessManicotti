@@ -18,6 +18,7 @@
 --! @addtogroup script_components
 --! @{
 
+--! @class Component
 --! Base class for components.
 --!
 --! A Component encapsulates a specific piece of functionality for
@@ -26,6 +27,7 @@
 --! object structures.
 --!
 --! @see ComponentBucket
+--! @see DeclareComponentType
 Component = {}
 
 --! Constructor.

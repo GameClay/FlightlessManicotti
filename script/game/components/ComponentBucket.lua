@@ -18,6 +18,7 @@
 --! @addtogroup script_components
 --! @{
 
+--! @class ComponentBucket
 --! Add docs here!
 ComponentBucket = {}
 

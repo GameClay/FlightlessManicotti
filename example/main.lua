@@ -9,9 +9,9 @@ function dumptable(table)
 end
 
 -- Bring in script library
-require 'script'
-require 'game.components'
 require 'events'
+require 'game.components'
+require 'game.components.ProcessComponent'
 
 -- Main is executed only once, it is not a loop. It receives the arguments
 -- that were passed to the 'kl_initialize' function.
@@ -37,6 +37,7 @@ function main(...)
      print(row.id, row.content)
    end
    
-   local test = Component.new()
+   local test = ProcessComponent.new(function() print("Tick!") end)
+   test:register(nil, "facepunch")
    print("I made a component! Is it registered? "..tostring(test:isregistered()))
 end

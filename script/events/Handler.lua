@@ -50,11 +50,11 @@ end
 --! @param  fn       Event handler to remove.
 --! @param  eventid  Event id from which to unsubscribe.
 --! @return True if successful.
-function Events.unsubscribe(fn_or_pos, eventid)
+function Events.unsubscribe(fn, eventid)
    if type(fn) == "function" then
       local handlers = Events.subscriptions[eventid] or {}
       for i,v in ipairs(handlers) do
-         if v == fn_or_pos then
+         if v == fn then
             table.remove()
             return true
          end
