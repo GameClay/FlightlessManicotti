@@ -15,43 +15,78 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
---! @addtogroup script
---! @{
-
 --! @addtogroup script_events
 --! @{
+   
+--! Table of event subscriptions.
+Events.subscriptions = {}
+
+--! Table of argument/context conditioners for specific events.
+Events.conditioners = {
+   [Events.advancetime] = function(arg, context)
+      return Cast.int_to_float(arg),context
+   end,
+   default = function(arg, context)
+      return arg,context
+   end
+}
 
 --! Subscribe to events.
 --!
---! @param  o  Object that desires subscription.
-function Events.subscribe(o)
+--! @param  fn       Event handler being registered.
+--! @param  eventid  Event id for which the specified object desires updates.
+function Events.subscribe(fn, eventid)
+   if type(fn) == "function" then
+      Events.subscriptions[eventid] = Events.subscriptions[eventid] or {}
+      table.insert(Events.subscriptions[eventid], fn)
+   else
+      error("First argument to Events.subscribe should be a function.")
+   end
+end
+
+--! Unsubscribe from events.
+--!
+--! @param  fn       Event handler to remove.
+--! @param  eventid  Event id from which to unsubscribe.
+--! @return True if successful.
+function Events.unsubscribe(fn_or_pos, eventid)
+   if type(fn) == "function" then
+      local handlers = Events.subscriptions[eventid] or {}
+      for i,v in ipairs(handlers) do
+         if v == fn_or_pos then
+            table.remove()
+            return true
+         end
+      end
+   else
+      error("First argument to Events.unsubscribe should be a function.")
+   end
    
+   return false
 end
 
 --! Event handler.
 function Events.handler()
-   -- dequeue everything from code
-   id,context,arg = Events.dequeue(SCTX)
+   -- Dequeue all events from code
+   local id,context,arg = Events.dequeue(SCTX)
    while (not id or not (id == Events.eof)) do
-      if id then
-         if id == Events.advancetime then
-            arg = Cast.int_to_float(arg)
-            
-            -- Pass to script advance time list
-         elseif id == Events.processtick then
-            -- Pass to script process tick list
-         else
-            print("Event: {"..id..","..tostring(context)..","..arg.."}")
-         end
+      -- Do any event-specific argument/context conditioning
+      local conditioner = Events.conditioners[id] or Events.conditioners.default
+      arg,context = conditioner(arg, context)
+      
+      -- Execute handlers
+      local handlers = Events.subscriptions[id] or {}
+      for _,v in ipairs(handlers) do
+         v(arg, context)
       end
       
+      -- Next event
       id,context,arg = Events.dequeue(SCTX)
    end
 
    -- If we hit end-of-frame, acknowledge it
-   if(id == Events.eof) then
+   if id == Events.eof then
       Events.framedone(SCTX, context)
    end
 end
---! @}
 --! @}
