@@ -9,11 +9,11 @@ Doxygen::Lua - Make Doxygen support Lua
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =cut
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 =has 'mark' => ( is => 'rw', isa => 'Str', default => '--!' );
 
 =head1 SYNOPSIS
@@ -76,6 +76,7 @@ sub parse {
         elsif ($line =~ /^function/) {
             $in_function = 1;
             $line .= q{;};
+            $line =~ s/:/-/;
             $result .= "$line\n";
         }
         # function end

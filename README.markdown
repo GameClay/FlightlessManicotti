@@ -122,7 +122,7 @@ Currently Clang can be used to compile by uncommenting a line in the top-level `
 FlightlessManicotti uses [Doxygen](http://www.doxygen.org/) to generate documentation.
 
 ### lua2dox
-FlightlessManicotti includes a slightly-modified version of the [doxygen-lua](http://github.com/alecchen/doxygen-lua) project. The modifications are based on revision [a7b2809](http://github.com/alecchen/doxygen-lua/tree/a7b2809425bb08174c154b83018194284f189bf7).
+FlightlessManicotti includes a slightly-modified version of the [doxygen-lua](http://github.com/alecchen/doxygen-lua) project. The modifications are based on revision [2c33a4a](http://github.com/alecchen/doxygen-lua/tree/2c33a4a9cd27a8d934af51fd798c19065316762e).
 
 This is included with FlightlessManicotti and is located at `tools/doxygen-lua`
 
