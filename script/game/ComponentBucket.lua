@@ -61,7 +61,7 @@ end
 --! Remove a Component from this ComponentBucket.
 function ComponentBucket:removecomponent(component)
    -- Find component
-   found = false
+   local found = false
    for k,v in pairs(self._components) do
       if v == component then
          found = true
