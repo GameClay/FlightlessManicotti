@@ -15,6 +15,9 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+--! @addtogroup script_components
+--! @{
+
 --! Add docs here!
 ComponentBucket = {}
 
@@ -79,3 +82,5 @@ function ComponentBucket:removecomponent(component)
       v:reset()
    end
 end
+
+--! @}

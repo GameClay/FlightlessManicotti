@@ -1,5 +1,5 @@
 -- Set up script library location
-package.path = package.path..';./script/?.lua'
+package.path = './script/?.lua;./script/?/init.lua;'..package.path
 
 function dumptable(table)
    print(tostring(table))
@@ -10,14 +10,13 @@ end
 
 -- Bring in script library
 require 'script'
-require 'game.Component'
-require 'game.ComponentBucket'
+require 'game.components'
 
 -- Main is executed only once, it is not a loop. It receives the arguments
 -- that were passed to the 'kl_initialize' function.
 function main(...)
-   --dumptable(Events)
    
+   -- Echo the arguments that the executable received
    for i = 2, arg["n"] do
       print("   "..tostring(arg[i]))
    end

@@ -15,6 +15,8 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+--! @addtogroup script_components
+--! @{
 
 --! Base class for components.
 --!
@@ -114,3 +116,5 @@ end
 --! @see Reset
 function Component:onreset()
 end
+
+--! @}
