@@ -36,6 +36,6 @@ static const struct luaL_reg cast_module [] = {
 
 int luaopen_cast(lua_State* L)
 {
-   luaL_register(L, "cast", cast_module);
+   luaL_register(L, "Cast", cast_module);
    return 1;
 }

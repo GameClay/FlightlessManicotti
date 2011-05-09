@@ -317,20 +317,15 @@ int kl_script_event_pump(kl_script_context_t context)
    if(sctx->event_handler_ref == 0)
    {
       // Push function name onto lua stack, and invoke message handler if it exists
-      lua_getglobal(sctx->lua_state, "script");
-      KL_ASSERT(!lua_isnil(sctx->lua_state, -1), "Could not find 'script' table. This is very bad.");
+      lua_getglobal(sctx->lua_state, "Events");
+      KL_ASSERT(!lua_isnil(sctx->lua_state, -1), "Could not find 'Events' table. This is very bad.");
       if(lua_isnil(sctx->lua_state, -1))
          lua_pop(sctx->lua_state, 1);
       else
       {
-         // Grab the 'events' table
-         lua_pushstring(sctx->lua_state, "events");
-         lua_gettable(sctx->lua_state, -2);
-         KL_ASSERT(!lua_isnil(sctx->lua_state, -1), "Could not find 'script.events' table. This is very bad.");
-
          // Grab the 'handler' value
          lua_getfield(sctx->lua_state, -1, "handler");
-         KL_ASSERT(lua_isfunction(sctx->lua_state, -1), "Value for 'events.script.handler' was not a function.");
+         KL_ASSERT(lua_isfunction(sctx->lua_state, -1), "Value for 'Events.handler' was not a function.");
 
          // Pop/store the handler
          sctx->event_handler_ref = luaL_ref(sctx->lua_state, LUA_REGISTRYINDEX);
@@ -342,12 +337,12 @@ int kl_script_event_pump(kl_script_context_t context)
 
    // Push the function ref back onto the stack
    lua_rawgeti(sctx->lua_state, LUA_REGISTRYINDEX, sctx->event_handler_ref);
-   KL_ASSERT(lua_isfunction(sctx->lua_state, -1), "Stored value for 'events.script.handler' was not a function.");
+   KL_ASSERT(lua_isfunction(sctx->lua_state, -1), "Stored value for 'Events.handler' was not a function.");
 
    // Invoke event handler
    if(!lua_isfunction(sctx->lua_state, -1))
    {
-      KL_ASSERT(KL_FALSE, "Stored value for 'events.script.handler' was not a function.");
+      KL_ASSERT(KL_FALSE, "Stored value for 'Events.handler' was not a function.");
       lua_pop(sctx->lua_state, 1);
    }
    else
@@ -369,7 +364,7 @@ int kl_script_event_pump(kl_script_context_t context)
 
          default:
          {
-            KL_LOGF(KL_LL_ERR, "Unknown error invoking script.events.pump().");
+            KL_LOGF(KL_LL_ERR, "Unknown error invoking kl_script_event_pump().\n");
             break;
          }
       }
