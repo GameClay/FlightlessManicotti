@@ -41,8 +41,9 @@ typedef void (*kl_process_advance_time_ptr)(float dt, void* context);
 //!         Every object in the game should not be an individual process, instead
 //!         the process manager drives systems.
 //!
-//! @param  mgr            Location to store newly allocated process manager.
-//! @param  num_processes  Maximum number of processes for the allocated manager.
+//! @param mgr            Location to store newly allocated process manager.
+//! @param num_processes  Maximum number of processes for the allocated manager.
+//!
 //! @return KL_SUCCESS if successful.
 extern KL_API int kl_alloc_process_manager(kl_process_manager_t* mgr, uint32_t num_processes);
 extern KL_API void kl_free_process_manager(kl_process_manager_t* mgr);
@@ -58,7 +59,8 @@ extern KL_API void kl_release_process_id(kl_process_manager_t mgr, uint32_t id);
 //! That a process could get it's tick function called several times in 
 //! rapid succession if the simulation needs to "catch up".
 //!
-//! @param  mgr   The process manager to tick.
+//! @param mgr    The process manager to tick.
+//!
 //! @return KL_SUCCESS if successful.
 extern KL_API int kl_tick_process_list(const kl_process_manager_t mgr);
 
@@ -67,9 +69,10 @@ extern KL_API int kl_tick_process_list(const kl_process_manager_t mgr);
 //! This invokes the respective advance time function on all registered processes.
 //! A process will receive this call once per frame, every frame.
 //!
-//! @param  mgr   The process object manager on which to advance time.
-//! @param  dt    The amount of time, in milliseconds, which has passed since the last time
+//! @param mgr    The process object manager on which to advance time.
+//! @param dt     The amount of time, in milliseconds, which has passed since the last time
 //!               kl_advance_process_list was called on this manager.
+//!
 //! @return KL_SUCCESS if successful.
 extern KL_API int kl_advance_process_list(const kl_process_manager_t mgr, float dt);
 

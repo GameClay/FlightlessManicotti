@@ -56,14 +56,15 @@ extern KL_API kl_memrcpy_fn_ptr kl_microrcpy_ptr;
 //!
 //! @note The amount of allocated memory may exceed the size specified.
 //!
-//! @param size The size of the allocation.
+//! @param size   The size of the allocation.
+//!
 //! @return Pointer the block of allocated memory, aligned on a 16-byte boundary,
 //!         or NULL if the allocation failed.
 extern KL_API void* kl_heap_alloc(size_t size);
 
 //! Free function.
 //!
-//! @param pointer Pointer to the block of memory to free.
+//! @param pointer   Pointer to the block of memory to free.
 extern KL_API void kl_heap_free(void* pointer);
 
 //! Aligned malloc function.
@@ -74,15 +75,16 @@ extern KL_API void kl_heap_free(void* pointer);
 //!            on a 16-byte boundary use kl_heap_malloc, which returns 16-byte aligned
 //!            memory at all times.
 //!
-//! @param size The size of the allocation.
-//! @param align_size The boundary on which the allocated memory should be aligned.
+//! @param size         The size of the allocation.
+//! @param align_size   The boundary on which the allocated memory should be aligned.
+//!
 //! @return Pointer the block of allocated memory, aligned on the specified boundary,
 //!         or NULL if the allocation failed.
 extern KL_API void* kl_heap_aligned_alloc(size_t size, size_t align_size);
 
 //! Aligned free function.
 //!
-//! @param pointer Pointer to the block of memory to free.
+//! @param pointer   Pointer to the block of memory to free.
 extern KL_API void kl_heap_aligned_free(void* pointer);
 
 //! Micro malloc function.
@@ -96,7 +98,8 @@ extern KL_API void kl_heap_aligned_free(void* pointer);
 //! @attention If the allocation size is greater than 256 bytes, this
 //!            function will assert, and return NULL.
 //!
-//! @param size The size of the allocation.
+//! @param size   The size of the allocation.
+//!
 //! @return Pointer the block of allocated memory or NULL if the allocation failed.     
 extern KL_API void* kl_micro_alloc(size_t size);
 
@@ -105,7 +108,7 @@ extern KL_API void* kl_micro_alloc(size_t size);
 //! Frees memory allocated by kl_micro_alloc.
 //! @see kl_micro_alloc
 //!
-//! @param pointer Pointer to the block of memory to free.
+//! @param pointer   Pointer to the block of memory to free.
 extern KL_API void kl_micro_free(void* pointer);
 
 //! @}
@@ -116,12 +119,17 @@ extern KL_API void kl_micro_free(void* pointer);
 //! The implementation behind this function should cause minimal cache pollution
 //! and not do any kind of large-batch optimization. 
 //!
-//! @param dest Destination address.
-//! @param src Source address.
-//! @param size The size of memory to be copied.
+//! @param dest   Destination address.
+//! @param src    Source address.
+//! @param size   The size of memory to be copied.
+//!
 //! @return The destination address.
 extern KL_API void* kl_microrcpy(void* KL_RESTRICT dest, const void* KL_RESTRICT src, size_t size);
 
+//! Assign zero to a block of memory.
+//!
+//! @param dest   Destination address.
+//! @param size   Size of memory to zero.
 extern KL_API void kl_zero_mem(void* dest, size_t size);
 
 //! @cond

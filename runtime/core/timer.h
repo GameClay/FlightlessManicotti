@@ -32,7 +32,7 @@ extern "C" {
 
 //! Get the current time from the highest-resolution timer available on the platform.
 //!
-//! @param time_ptr Pointer to a high-resolution timer structure.
+//! @param time_ptr  Pointer to a high-resolution timer structure.
 #define kl_high_resolution_timer_query(time_ptr) (*time_ptr = mach_absolute_time())
 
 //! Convert absolute-time to nanoseconds.

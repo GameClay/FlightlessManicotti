@@ -58,9 +58,10 @@ typedef struct _kl_script_context* kl_script_context_t;
 //!
 //! @see kl_script_is_threaded
 //!
-//! @param context This holds the allocated script context.
-//! @param threaded Should this script-context run in a thread.
+//! @param context         This holds the allocated script context.
+//! @param threaded        Should this script-context run in a thread.
 //! @param event_queue_max The maximum number of events that can fit in the event queue for this script context.
+//!
 //! @return KL_SUCCESS if initialization was successful.
 //!         KL_ERROR if initialization failed.
 extern KL_API int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_queue_max);
@@ -76,28 +77,31 @@ extern KL_API int kl_script_run(kl_script_context_t context, const char* file_na
 //! If this script-context is threaded, this function will call
 //! join on the associated thread, and then destroy the context.
 //!
-//! @param context This script-context will be deallocated.
+//! @param context   This script-context will be deallocated.
 extern KL_API void kl_script_destroy(kl_script_context_t* context);
 
 //! Check if the script-context is threaded.
 //!
-//! @param context The script-context to query.
+//! @param context   The script-context to query.
+//!
 //! @return KL_TRUE if the script-context is threaded.
 //!         KL_FALSE if the script-context is not threaded.
 extern KL_API KL_BOOL kl_script_is_threaded(kl_script_context_t context);
 
 //! Enqueue a script event.
 //!
-//! @param context The script-context on which to enqueue an event.
-//! @param event The event to enqueue.
+//! @param context   The script-context on which to enqueue an event.
+//! @param event     The event to enqueue.
+//!
 //! @return KL_SUCCESS if successful.
 //!         KL_ERROR if unsuccessful.
 extern KL_API int kl_script_event_enqueue(kl_script_context_t context, const kl_script_event_t* event);
 
 //! Dequeue a script event.
 //!
-//! @param context The script-context from which to dequeue an event.
-//! @param event Location to store dequeued event.
+//! @param context   The script-context from which to dequeue an event.
+//! @param event     Location to store dequeued event.
+//!
 //! @return KL_SUCCESS if successful.
 //!         KL_ERROR if unsuccessful.
 extern KL_API int kl_script_event_dequeue(kl_script_context_t context, kl_script_event_t* event);
@@ -106,7 +110,8 @@ extern KL_API int kl_script_event_dequeue(kl_script_context_t context, kl_script
 //!
 //! Process a frame worth of events.
 //!
-//! @param context The script-context to pump events through.
+//! @param context   The script-context to pump events through.
+//!
 //! @return KL_SUCCESS if the frame processed successfully.
 //!         KL_ERROR if errors occured during frame processing.
 extern KL_API int kl_script_event_pump(kl_script_context_t context);
@@ -118,9 +123,10 @@ extern KL_API int kl_script_event_pump(kl_script_context_t context);
 //! frame. A fence parameter may be specified in order to allow the
 //! caller to wait on the fence.
 //!
-//! @param context The script-context on which to push an end-of-frame event.
-//! @param fence Optional event-fence on which the caller can wait, or NULL if 
-//!               this functionality is not necesassary.
+//! @param context   The script-context on which to push an end-of-frame event.
+//! @param fence     Optional event-fence on which the caller can wait, or NULL if 
+//!                  this functionality is not necesassary.
+//!
 //! @return KL_SUCCESS if successful.
 //!         KL_ERROR if unsuccessful.
 extern KL_API int kl_script_event_endframe(kl_script_context_t context, kl_script_event_fence_t* fence);
