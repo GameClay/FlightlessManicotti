@@ -15,15 +15,12 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
---! @addtogroup script
---! @{
-
 --! @defgroup script_events Events
 --! Script event handling.
 --!
 --! Details, details...
-
---! @}
+--!
+--! @ingroup script
 
 require 'events.Common'
 require 'events.Handler'

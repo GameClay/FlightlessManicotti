@@ -15,8 +15,6 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
---! @addtogroup script_components
---! @{
 require 'events'
 require 'game.components.Component'
 
@@ -25,27 +23,30 @@ require 'game.components.Component'
 --!
 --! A process component registers itself with the script event loop and
 --! subscribes to Events.advancetime and Events.processtick.
---!
 --! @extends Component
+--! @ingroup script_components
 DeclareComponentType("ProcessComponent")
 
+--! @fn ProcessComponent.new(processtickfn, advancetimefn)
 --! Constructor.
-function ProcessComponent.new(processtick, advancetime)
+--! @memberof ProcessComponent
+function ProcessComponent.new(processtickfn, advancetimefn)
    o = {}
    setmetatable(o, {__index = ProcessComponent})
    
-   assert(not processtick or type(processtick) == "function", "First argument to ProcessCompoenent.new must be a function.")
-   assert(not advancetime or type(advancetime) == "function", "Second argument to ProcessCompoenent.new must be a function.")
+   assert(not processtickfn or type(processtickfn) == "function", "First argument to ProcessCompoenent.new must be a function.")
+   assert(not advancetimefn or type(advancetimefn) == "function", "Second argument to ProcessCompoenent.new must be a function.")
    
-   o._processtick = processtick
-   o._advancetime = advancetime
+   o._processtick = processtickfn
+   o._advancetime = advancetimefn
    
    return o
 end
 
+--! @fn ProcessComponent:onadded()
 --! Subscribes to Events.processtick and Events.advancetime.
+--! @memberof ProcessComponent
 function ProcessComponent:onadded()
-   print("Added!")
    if self._processtick then
       Events.subscribe(self._processtick, Events.processtick)
    end
@@ -55,7 +56,9 @@ function ProcessComponent:onadded()
    end
 end
 
+--! @fn ProcessComponent:onremoved()
 --! Unsubscribes from Events.processtick and Events.advancetime.
+--! @memberof ProcessComponent
 function ProcessComponent:onremoved()
    -- Unsubscribe
    if self._processtick then
@@ -66,5 +69,3 @@ function ProcessComponent:onremoved()
       Events.unsubscribe(self._advancetime, Events.advancetime)
    end
 end
-
---! @}

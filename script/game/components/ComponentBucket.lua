@@ -15,14 +15,13 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
---! @addtogroup script_components
---! @{
-
 --! @class ComponentBucket
 --! Add docs here!
+--! @ingroup script_components
 ComponentBucket = {}
 
 --! Constructor.
+--! @memberof ComponentBucket
 function ComponentBucket.new()
    o = {}
    setmetatable(o, {__index = ComponentBucket})
@@ -33,6 +32,7 @@ function ComponentBucket.new()
 end
 
 --! Get all Components aggrigated into this ComponentBucket.
+--! @memberof ComponentBucket
 function ComponentBucket:components()
    return self._components
 end
@@ -43,6 +43,7 @@ end
 --! @param name The name with which to register the provided component.
 --!
 --! @return True if the component was aggregated, false if not.
+--! @memberof ComponentBucket
 function ComponentBucket:addcomponent(component, name)
    -- If a component is registered with the same name, assert
    assert(self._components[name] == nil, "Component with name '"..name.."' already aggregated into this ComponentBucket. (I already haz that in mah bukkit!)")
@@ -63,6 +64,7 @@ function ComponentBucket:addcomponent(component, name)
 end
 
 --! Remove a Component from this ComponentBucket.
+--! @memberof ComponentBucket
 function ComponentBucket:removecomponent(component)
    -- Find component
    local found = false
@@ -83,5 +85,3 @@ function ComponentBucket:removecomponent(component)
       v:reset()
    end
 end
-
---! @}

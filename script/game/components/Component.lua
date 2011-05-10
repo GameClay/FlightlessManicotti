@@ -15,22 +15,18 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
---! @addtogroup script_components
---! @{
-
 --! @class Component
 --! Base class for components.
 --!
---! A Component encapsulates a specific piece of functionality for
---! a game. To create complex functionality, multiple components
---! are aggregated together, as opposed to creating large inheretable 
---! object structures.
+--! @copydetails script_components
 --!
 --! @see ComponentBucket
 --! @see DeclareComponentType
+--! @ingroup script_components
 Component = {}
 
 --! Constructor.
+--! @memberof Component
 function Component.new()
    o = {}
    setmetatable(o, {__index = Component})
@@ -43,16 +39,19 @@ function Component.new()
 end
 
 --! Get the registered owner of this Component.
+--! @memberof Component
 function Component:owner()
    return self._owner
 end
 
 --! Get the name of this Component assigned during registration.
+--! @memberof Component
 function Component:name()
    return self._name
 end
 
 --! Returns true if this Component has been registered.
+--! @memberof Component
 function Component:isregistered()
    return self._isregistered
 end
@@ -64,6 +63,7 @@ end
 --!
 --! @return True if the ComponentBucket registering this Component should 
 --!         continue with the registration, otherwise registration will fail.
+--! @memberof Component
 function Component:register(owner, name)
    assert(not self:isregistered(), "Trying to register an already-registered component!")
    
@@ -77,6 +77,7 @@ function Component:register(owner, name)
 end
 
 --! Unregisters a Component.
+--! @memberof Component
 function Component:unregister()
    assert(self:isregistered(), "Trying to unregister an unregistered component!")
    
@@ -91,6 +92,7 @@ end
 --!
 --! This function is called by a ComponentBucket on all of its Components
 --! whenever a Component is added or removed.
+--! @memberof Component
 function Component:reset()
    self:onreset()
 end
@@ -101,6 +103,7 @@ end
 --! however the Component is not yet registered.
 --!
 --! @see register
+--! @memberof Component
 function Component:onadded()
 end
 
@@ -110,13 +113,13 @@ end
 --! however the Component is no longer registered.
 --!
 --! @see unregister
+--! @memberof Component
 function Component:onremoved()
 end
 
 --! Called when a Component is reset.
 --!
 --! @see Reset
+--! @memberof Component
 function Component:onreset()
 end
-
---! @}
