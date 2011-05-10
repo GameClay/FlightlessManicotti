@@ -25,7 +25,7 @@ DeclareComponentType("Scene2DComponent")
 
 --! Constructor.
 function Scene2DComponent.new()
-   o = {}
+   local o = {}
    setmetatable(o, {__index = Scene2DComponent})
    return o
 end

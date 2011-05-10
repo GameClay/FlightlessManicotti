@@ -28,7 +28,7 @@ Component = {}
 --! Constructor.
 --! @memberof Component
 function Component.new()
-   o = {}
+   local o = {}
    setmetatable(o, {__index = Component})
    
    o._isregistered = false

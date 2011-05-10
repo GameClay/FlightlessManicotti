@@ -23,7 +23,7 @@ ComponentBucket = {}
 --! Constructor.
 --! @memberof ComponentBucket
 function ComponentBucket.new()
-   o = {}
+   local o = {}
    setmetatable(o, {__index = ComponentBucket})
    
    o._components = {}

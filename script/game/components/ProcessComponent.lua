@@ -31,7 +31,7 @@ DeclareComponentType("ProcessComponent")
 --! Constructor.
 --! @memberof ProcessComponent
 function ProcessComponent.new(processtickfn, advancetimefn)
-   o = {}
+   local o = {}
    setmetatable(o, {__index = ProcessComponent})
    
    assert(not processtickfn or type(processtickfn) == "function", "First argument to ProcessCompoenent.new must be a function.")
