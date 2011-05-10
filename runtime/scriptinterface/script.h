@@ -56,7 +56,7 @@ typedef struct _kl_script_context* kl_script_context_t;
 //! allocated without threading, kl_script_event_pump() must be called
 //! to process a frame of script.
 //!
-//! @seealso kl_script_is_threaded
+//! @see kl_script_is_threaded
 //!
 //! @param context This holds the allocated script context.
 //! @param threaded Should this script-context run in a thread.
