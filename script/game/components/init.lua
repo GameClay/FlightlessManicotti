@@ -15,15 +15,30 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
---! @addtogroup script
---! @{
-
 --! @defgroup script_components Components
 --! Components.
---! @{
+--!
+--! A Component encapsulates a specific piece of functionality for
+--! a game. To create complex functionality, multiple components
+--! are aggregated together, as opposed to creating large inheretable 
+--! object structures.
+--!
+--! @ingroup script
+
+--! @fn DeclareComponentType(name, subtype)
+--! Declare a new component type.
+--!
+--! This helper function sets up the metatable and stuff.
+--!
+--! @relates Component
+--! @ingroup script_components
+function DeclareComponentType(name, subtype)
+   assert(type(name) == "string", "First parameter of DeclareComponentType should be a string.")
+   assert(not subtype or type(subtype) == "table", "Second parameter of DeclareComponentType should be a table.")
    
---! @}
---! @}
+   _G[name] = {}
+   setmetatable(_G[name], {__index = subtype or Component})
+end
 
 require 'game.components.Component'
 require 'game.components.ComponentBucket'
