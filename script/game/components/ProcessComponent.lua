@@ -19,19 +19,18 @@ require 'events'
 require 'game.components.Component'
 
 --! @class ProcessComponent
---! Process Component.
+--! A component which provides advancetime and processtick functionality.
 --!
---! A process component registers itself with the script event loop and
+--! The ProcessComponent registers itself with the script event loop and
 --! subscribes to Events.advancetime and Events.processtick.
 --! @extends Component
 --! @ingroup script_components
-DeclareComponentType("ProcessComponent")
+ProcessComponent = DeclareComponentType()
 
---! @fn ProcessComponent.new(processtickfn, advancetimefn)
 --! Constructor.
 --! @memberof ProcessComponent
 function ProcessComponent.new(processtickfn, advancetimefn)
-   o = {}
+   local o = {}
    setmetatable(o, {__index = ProcessComponent})
    
    assert(not processtickfn or type(processtickfn) == "function", "First argument to ProcessCompoenent.new must be a function.")
@@ -43,8 +42,8 @@ function ProcessComponent.new(processtickfn, advancetimefn)
    return o
 end
 
---! @fn ProcessComponent:onadded()
 --! Subscribes to Events.processtick and Events.advancetime.
+--!
 --! @memberof ProcessComponent
 function ProcessComponent:onadded()
    if self._processtick then
@@ -56,7 +55,6 @@ function ProcessComponent:onadded()
    end
 end
 
---! @fn ProcessComponent:onremoved()
 --! Unsubscribes from Events.processtick and Events.advancetime.
 --! @memberof ProcessComponent
 function ProcessComponent:onremoved()

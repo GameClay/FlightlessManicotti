@@ -3,15 +3,16 @@ package.path = './script/?.lua;./script/?/init.lua;'..package.path
 
 function dumptable(table)
    print(tostring(table))
-   for key,value in pairs(table) do
-      print("\t"..key..": "..tostring(value))
+   if table then
+      for key,value in pairs(table) do
+         print("\t"..key..": "..tostring(value))
+      end
    end
 end
 
--- Bring in script library
 require 'events'
 require 'game.components'
-require 'game.components.ProcessComponent'
+require 'game.scene.Scene2DComponent'
 
 -- Main is executed only once, it is not a loop. It receives the arguments
 -- that were passed to the 'kl_initialize' function.
@@ -37,7 +38,14 @@ function main(...)
      print(row.id, row.content)
    end
    
-   local test = ProcessComponent.new(function() print("Tick!") end)
+   local testscene = Scene2D.new(1024)
+   
+   local test = Scene2DComponent.new(testscene)
+   --test:assignscene(testscene)
+   
    test:register(nil, "facepunch")
-   print("I made a component! Is it registered? "..tostring(test:isregistered()))
+   test:unregister()
+   
+   testscene = nil
+   collectgarbage()
 end
