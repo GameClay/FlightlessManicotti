@@ -12,7 +12,7 @@ end
 
 require 'events'
 require 'game.components'
-require 'game.scene2d.Scene2DComponent'
+require 'game.scene.Scene2DComponent'
 
 -- Main is executed only once, it is not a loop. It receives the arguments
 -- that were passed to the 'kl_initialize' function.
@@ -44,6 +44,7 @@ function main(...)
    test:assignscene(testscene)
    
    test:register(nil, "facepunch")
+   test:unregister()
    
    testscene = nil
    collectgarbage()

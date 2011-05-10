@@ -15,10 +15,13 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+require 'game.components.Component'
 
+--! @class Scene2DComponent
 --! Component which does stuff and things for a 2d scene.
-Scene2DComponent = {}
-setmetatable(Scene2DComponent, {__index = Component})
+--! @extends Component
+--! @ingroup script_components
+DeclareComponentType("Scene2DComponent")
 
 --! Constructor.
 function Scene2DComponent.new()

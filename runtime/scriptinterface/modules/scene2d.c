@@ -62,7 +62,7 @@ static int Scene2D_reserveid(lua_State *L)
    sctr = (kl_scene_container_2d_t*)lua_touserdata(L, 1);
    if(sctr != NULL)  lua_pushinteger(L, kl_reserve_scene_container_2d_id(*sctr));
    else              lua_pushnil(L);
-   KL_LOGF(KL_LL_NRM, "Reserved id: %d\n", (int)lua_tointeger(L,lua_gettop(L)));
+   
    return 1;
 }
 
@@ -76,7 +76,7 @@ static int Scene2D_releaseid(lua_State *L)
    
    sctr = (kl_scene_container_2d_t*)lua_touserdata(L, 1);
    scene_id = lua_tointeger(L, 2);
-   KL_LOGF(KL_LL_NRM, "Released id: %d\n", scene_id);
+   
    if(sctr != NULL) kl_free_scene_container_2d_id(*sctr, scene_id);
    return 0;
 }
