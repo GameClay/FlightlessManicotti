@@ -40,8 +40,8 @@ function main(...)
    
    local testscene = Scene2D.new(1024)
    
-   local test = Scene2DComponent.new()
-   test:assignscene(testscene)
+   local test = Scene2DComponent.new(testscene)
+   --test:assignscene(testscene)
    
    test:register(nil, "facepunch")
    test:unregister()

@@ -25,11 +25,26 @@ require 'game.components.Component'
 Scene2DComponent = DeclareComponentType()
 
 --! Constructor.
+--!
+--! @param  scene Optional scene with which this component should register during onadded.
+--! @memberof Scene2DComponent
+function Scene2DComponent.new(scene)
    local o = {}
    setmetatable(o, {__index = Scene2DComponent})
+   
+   assert(not scene or (type(scene) == "userdata"), "First parameter to Scene2DComponent.new should be nil, or a Scene.")
+   
+   if scene then
+      o._scene = scene
+   end
+   
    return o
 end
 
+--! Registers with the 2D scene provided.
+--!
+--! @see Scene2DComponent_assignscene
+--! @memberof Scene2DComponent
 function Scene2DComponent:onadded()
    -- Register with the C code and reserve an id
    if self._scene then
@@ -39,6 +54,8 @@ function Scene2DComponent:onadded()
    end
 end
 
+--! Removes aggregated object from the 2D scene.
+--! @memberof Scene2DComponent
 function Scene2DComponent:onremoved()
    -- Release our reserved id
    if self._scene_id then
@@ -46,18 +63,13 @@ function Scene2DComponent:onremoved()
    end
 end
 
+--! Assign a scene.
+--!
+--! Assigns a 2D scene to this component.
+--!
+--! @note Unless a scene was provided during construction, this must be called 
+--!       before this component is aggregated, as the value provided is used in onadded().
+--! @memberof Scene2DComponent
 function Scene2DComponent:assignscene(scene)
    self._scene = scene
-end
-
-function Scene2DComponent:position()
-   
-end
-
-function Scene2DComponent:circle()
-   
-end
-
-function Scene2DComponent:aabb()
-   
 end
