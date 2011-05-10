@@ -18,13 +18,13 @@
 require 'game.components.Component'
 
 --! @class Scene2DComponent
---! Component which does stuff and things for a 2d scene.
+--! A Component which allows an aggregated object to exist in a 2D scene.
+--!
 --! @extends Component
 --! @ingroup script_components
-DeclareComponentType("Scene2DComponent")
+Scene2DComponent = DeclareComponentType()
 
 --! Constructor.
-function Scene2DComponent.new()
    local o = {}
    setmetatable(o, {__index = Scene2DComponent})
    return o

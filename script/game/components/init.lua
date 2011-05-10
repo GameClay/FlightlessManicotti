@@ -25,19 +25,22 @@
 --!
 --! @ingroup script
 
---! @fn DeclareComponentType(name, subtype)
+--! @fn DeclareComponentType(parent)
 --! Declare a new component type.
 --!
---! This helper function sets up the metatable and stuff.
+--! This helper function sets up the metatable and provides an
+--! entry point for any other helper code that may be needed.
+--!
+--! @param  parent  Optional Component type to inheret from. If nil, Component is used as the parent type.
 --!
 --! @relates Component
 --! @ingroup script_components
-function DeclareComponentType(name, subtype)
-   assert(type(name) == "string", "First parameter of DeclareComponentType should be a string.")
-   assert(not subtype or type(subtype) == "table", "Second parameter of DeclareComponentType should be a table.")
+function DeclareComponentType(parent)
+   assert(not parent or type(parent) == "table", "First parameter of DeclareComponentType should be nil, or a table.")
    
-   _G[name] = {}
-   setmetatable(_G[name], {__index = subtype or Component})
+   local r = {}
+   setmetatable(r, {__index = parent or Component})
+   return r
 end
 
 require 'game.components.Component'

@@ -19,13 +19,13 @@ require 'events'
 require 'game.components.Component'
 
 --! @class ProcessComponent
---! Process Component.
+--! A component which provides advancetime and processtick functionality.
 --!
---! A process component registers itself with the script event loop and
+--! The ProcessComponent registers itself with the script event loop and
 --! subscribes to Events.advancetime and Events.processtick.
 --! @extends Component
 --! @ingroup script_components
-DeclareComponentType("ProcessComponent")
+ProcessComponent = DeclareComponentType()
 
 --! Constructor.
 --! @memberof ProcessComponent
