@@ -76,7 +76,8 @@ sub parse {
         elsif ($line =~ /^function/) {
             $in_function = 1;
             $line .= q{;};
-            $line =~ s/:/-/;
+            $line =~ s/:/_/;
+            $line =~ s/\./_/;
             $result .= "$line\n";
         }
         # function end

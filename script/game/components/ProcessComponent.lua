@@ -27,7 +27,6 @@ require 'game.components.Component'
 --! @ingroup script_components
 DeclareComponentType("ProcessComponent")
 
---! @fn ProcessComponent.new(processtickfn, advancetimefn)
 --! Constructor.
 --! @memberof ProcessComponent
 function ProcessComponent.new(processtickfn, advancetimefn)
@@ -43,8 +42,8 @@ function ProcessComponent.new(processtickfn, advancetimefn)
    return o
 end
 
---! @fn ProcessComponent:onadded()
 --! Subscribes to Events.processtick and Events.advancetime.
+--!
 --! @memberof ProcessComponent
 function ProcessComponent:onadded()
    if self._processtick then
@@ -56,7 +55,6 @@ function ProcessComponent:onadded()
    end
 end
 
---! @fn ProcessComponent:onremoved()
 --! Unsubscribes from Events.processtick and Events.advancetime.
 --! @memberof ProcessComponent
 function ProcessComponent:onremoved()

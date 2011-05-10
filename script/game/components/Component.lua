@@ -102,7 +102,7 @@ end
 --! The owner, and name of the Component have been assigned at invokation
 --! however the Component is not yet registered.
 --!
---! @see register
+--! @see Component_register
 --! @memberof Component
 function Component:onadded()
 end
@@ -112,14 +112,14 @@ end
 --! The owner, and name of the Component are still valid at invocation
 --! however the Component is no longer registered.
 --!
---! @see unregister
+--! @see Component_unregister
 --! @memberof Component
 function Component:onremoved()
 end
 
 --! Called when a Component is reset.
 --!
---! @see Reset
+--! @see Component_reset
 --! @memberof Component
 function Component:onreset()
 end
