@@ -17,31 +17,10 @@
  */
 
 #include "game/scene2d/scene_container_2d.h"
-#include "core/idxallocator.h"
 
 // Forward declare process manager callbacks
 void _kl_scene_container_2d_process_tick(void* context);
 void _kl_scene_container_2d_advance_time(float dt, void* context);
-
-// Opaque scene container
-struct _kl_scene_container_2d
-{
-   uint32_t pid;
-   kl_process_manager_t process_manager;
-   kl_idx_allocator_t id_allocator;
-   uint32_t max_entries;
-   
-   uint32_t* typemask;
-   
-   float* pos_xyz;
-   
-   float* radius;
-   
-   float* f;
-   
-   float* anchor_xyz;
-   float* rotation;
-};
 
 int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container, 
    kl_process_manager_t process_manager, uint32_t max_entries)
@@ -50,7 +29,7 @@ int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container,
    kl_scene_container_2d_t sctr;
    
    KL_ASSERT(container != NULL, "NULL container pointer.");
-   sctr = kl_heap_alloc(sizeof(struct _kl_scene_container_2d));
+   sctr = kl_heap_alloc(sizeof(_kl_scene_container_2d));
    
    if(sctr != NULL)
    {

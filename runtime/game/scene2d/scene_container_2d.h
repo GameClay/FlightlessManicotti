@@ -25,14 +25,52 @@ extern "C" {
 
 #include "fm.h"
 #include "process/process.h"
+#include "core/idxallocator.h"
 
-typedef struct _kl_scene_container_2d* kl_scene_container_2d_t;
+typedef struct
+{
+   kl_process_manager_t process_manager;  //!< Process manager on which this scene container is registered.
+   uint32_t pid;                          //!< Process index for this scene container in its process_manager.
+   
+   kl_idx_allocator_t id_allocator;       //!< Allocates indices into the scene.
+   uint32_t max_entries;                  //!< Maximum number of entires in the scene.
+   
+   uint32_t* typemask;                    //!< Typemasks for entries in the scene. Indexed by id.
+   
+   float* pos_xyz;                        //!< Positions for entries in the scene. Indexed by id.
+   
+   float* radius;                         //!< Circular bounds radius for entires in the scene. Indexed by id.
+   
+   float* anchor_xyz;                     //!< Anchor point for entires in the scene. Indexed by id.
+   float* rotation;                       //!< Rotation around anchor point, in radians. Indexed by id.
+}*kl_scene_container_2d_t, _kl_scene_container_2d;
 
+//! Allocate a 2d scene container.
+//!
+//! @param container       Location to store allocated scene container.
+//! @param process_manager Proccess manager on which to sign up to advance-time/process-tick.
+//! @param max_entries     Maximum number of objects which can be managed by this container.
+//!
+//! @return KL_SUCCESS if successful.
 extern KL_API int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container, 
    kl_process_manager_t process_manager, uint32_t max_entries);
+
+//! Free a 2d scene container.
+//!
+//! @param container    Scene container to free.
 extern KL_API void kl_free_scene_container_2d(kl_scene_container_2d_t* container);
 
+//! Reserve an index in the scene container.
+//!
+//! @param container    Scene container from which to reserve an id.
+//!
+//! @return Reserved id in the scene container.
 extern KL_API uint32_t kl_reserve_scene_container_2d_id(kl_scene_container_2d_t container);
+
+//! Free a previously reserved scene id.
+//!
+//! @param container    Scene contaioner on which to free the id.
+//! @param id           Id to free.
 extern KL_API void kl_free_scene_container_2d_id(kl_scene_container_2d_t container, uint32_t id);
 
 // kl_raycast_scene_container_2d
