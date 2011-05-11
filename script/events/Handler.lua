@@ -24,7 +24,7 @@ Events.subscriptions = {}
 -- Table of argument/context conditioners for specific events.
 Events.conditioners = {
    [Events.advancetime] = function(arg, context)
-      return Cast.int_to_float(arg),context
+      return Cast.itof(arg),context
    end,
    default = function(arg, context)
       return arg,context

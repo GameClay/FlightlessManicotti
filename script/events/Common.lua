@@ -20,7 +20,7 @@
 --! This event is used as a synchronization point between code
 --! and script. The code expects the script event handler to acknowledge
 --! the processing of the EOF event by calling Events.framedone
---! @ingroup script_events
+--! @memberof Events
 Events.eof = Events.register(SCTX, "EOF")
 
 --! AdvanceTime event.
@@ -29,7 +29,7 @@ Events.eof = Events.register(SCTX, "EOF")
 --!
 --! The amount of time which has past since the previous
 --! AdvanceTime event is provided as an argument to the event handler.
---! @ingroup script_events
+--! @memberof Events
 Events.advancetime = Events.register(SCTX, "AdvanceTime")
 
 --! ProcessTick event.
@@ -39,5 +39,5 @@ Events.advancetime = Events.register(SCTX, "AdvanceTime")
 --! the simulation needs to "catch up".
 --!
 --! There are no arguments passed to this event handler.
---! @ingroup script_events
+--! @memberof Events
 Events.processtick = Events.register(SCTX, "ProcessTick")

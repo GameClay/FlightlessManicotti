@@ -22,6 +22,7 @@ require 'game.components.Component'
 --!
 --! @extends Component
 --! @ingroup script_components
+--! @ingroup script_scene2d
 Scene2DComponent = DeclareComponentType()
 
 --! Constructor.

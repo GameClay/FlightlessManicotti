@@ -30,7 +30,7 @@ static int kl_cast_int_to_number(lua_State* L)
 }
 
 static const struct luaL_reg cast_module [] = {
-    {"int_to_float", kl_cast_int_to_number},
+    {"itof", kl_cast_int_to_number},
     {NULL, NULL}
 };
 
