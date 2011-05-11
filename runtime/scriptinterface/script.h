@@ -26,7 +26,7 @@ extern "C" {
 #include "fm.h"
 #include "scriptinterface/scriptevents.h"
 
-//! Opaque pointer to a script-event fence.
+//! Script-event fence.
 //!
 //! @see kl_script_event_endframe
 typedef struct

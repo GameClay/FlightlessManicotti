@@ -39,7 +39,7 @@ int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container,
       KL_ASSERT(ret == KL_SUCCESS, "Failed to allocate index allocator.");
       
       sctr->process_manager = process_manager;
-      sctr->pid = kl_reserve_process_id(process_manager, 
+      sctr->pid = kl_reserve_process_id(process_manager,
          &_kl_scene_container_2d_process_tick,
          &_kl_scene_container_2d_advance_time, sctr);
       
