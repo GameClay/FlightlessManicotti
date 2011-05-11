@@ -47,14 +47,14 @@ static int Scene2D_new(lua_State* L)
    return 1;
 }
 
-static int Scene2D_gc(lua_State *L)
+static int Scene2D_gc(lua_State* L)
 {
    kl_scene_container_2d_t* sctr = (kl_scene_container_2d_t*)lua_touserdata(L, 1);
    if(sctr != NULL) kl_free_scene_container_2d(sctr);
    return 0;
 }
 
-static int Scene2D_reserveid(lua_State *L)
+static int Scene2D_reserveid(lua_State* L)
 {
    kl_scene_container_2d_t* sctr;
    luaL_checkudata(L, 1, SCENE2D_LIB);
@@ -66,7 +66,7 @@ static int Scene2D_reserveid(lua_State *L)
    return 1;
 }
 
-static int Scene2D_releaseid(lua_State *L)
+static int Scene2D_releaseid(lua_State* L)
 {
    int scene_id;
    kl_scene_container_2d_t* sctr;
@@ -81,9 +81,60 @@ static int Scene2D_releaseid(lua_State *L)
    return 0;
 }
 
+static int Scene2D_getposition(lua_State* L)
+{
+   int scene_id;
+   kl_scene_container_2d_t* sctr;
+   
+   luaL_checkudata(L, 1, SCENE2D_LIB);
+   luaL_argcheck(L, lua_type(L, 2) == LUA_TNUMBER, 2, "Expected scene id as argument");
+   
+   sctr = (kl_scene_container_2d_t*)lua_touserdata(L, 1);
+   scene_id = lua_tointeger(L, 2);
+   
+   if(sctr != NULL)
+   {
+      float* xy = &((*sctr)->pos_xy[scene_id]);
+      lua_pushnumber(L, xy[0]);
+      lua_pushnumber(L, xy[1]);
+   }
+   else
+   {
+      lua_pushnil(L);
+      lua_pushnil(L);
+   }
+   
+   return 2;
+}
+
+static int Scene2D_setposition(lua_State* L)
+{
+   int scene_id;
+   kl_scene_container_2d_t* sctr;
+   
+   luaL_checkudata(L, 1, SCENE2D_LIB);
+   luaL_argcheck(L, lua_type(L, 2) == LUA_TNUMBER, 2, "Expected scene id as argument");
+   luaL_argcheck(L, lua_type(L, 3) == LUA_TNUMBER, 3, "Expected x position as argument");
+   luaL_argcheck(L, lua_type(L, 4) == LUA_TNUMBER, 4, "Expected y position as argument");
+   
+   sctr = (kl_scene_container_2d_t*)lua_touserdata(L, 1);
+   scene_id = lua_tointeger(L, 2);
+   
+   if(sctr != NULL)
+   {
+      float* xy = &((*sctr)->pos_xy[scene_id]);
+      xy[0] = lua_tonumber(L, 3);
+      xy[1] = lua_tonumber(L, 4);
+   }
+   
+   return 0;
+}
+
 static const struct luaL_reg Scene2D_instance_methods [] = {
    {"reserveid", Scene2D_reserveid},
    {"releaseid", Scene2D_releaseid},
+   {"getposition", Scene2D_getposition},
+   {"setposition", Scene2D_setposition},
    {NULL, NULL}
 };
 

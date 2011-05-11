@@ -61,6 +61,7 @@ function Scene2DComponent:onremoved()
    -- Release our reserved id
    if self._scene_id then
       self._scene:releaseid(self._scene_id)
+      self._scene_id = nil
    end
 end
 
@@ -73,4 +74,23 @@ end
 --! @memberof Scene2DComponent
 function Scene2DComponent:assignscene(scene)
    self._scene = scene
+end
+
+--! Get/set the position in the scene.
+--!
+--! @param x   [optional] Assign a new x position.
+--! @param y   [optional] Assign a new y position.
+--!
+--! @return Get: (x,y) position in the scene.
+--!         Set: No return value.
+--! @memberof Scene2DComponent
+function Scene2DComponent:position(x,y)
+   assert(self._scene_id, "Must have an assigned scene id to call position.")
+   assert((not x and not y) or (x and y), "Must specify neither, or both arguments.")
+   
+   if not x then
+      return self._scene:getposition(self._scene_id)
+   else
+      self._scene:setposition(self._scene_id, x, y)
+   end
 end

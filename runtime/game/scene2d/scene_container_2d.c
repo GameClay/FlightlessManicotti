@@ -67,7 +67,12 @@ void kl_free_scene_container_2d(kl_scene_container_2d_t* container)
 
 uint32_t kl_reserve_scene_container_2d_id(kl_scene_container_2d_t container)
 {
-   return kl_idx_allocator_reserve(container->id_allocator);
+   float* xy;
+   uint32_t ret = kl_idx_allocator_reserve(container->id_allocator);
+   xy = &(container->pos_xy[ret]);
+   xy[0] = 0.0f;
+   xy[1] = 0.0f;
+   return ret;
 }
 
 void kl_free_scene_container_2d_id(kl_scene_container_2d_t container, uint32_t id)
