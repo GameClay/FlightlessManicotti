@@ -38,6 +38,9 @@ int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container,
       ret = kl_alloc_idx_allocator(&sctr->id_allocator, max_entries);
       KL_ASSERT(ret == KL_SUCCESS, "Failed to allocate index allocator.");
       
+      sctr->pos_xy = kl_heap_alloc(sizeof(float) * 2 * max_entries);
+      KL_ASSERT(sctr->pos_xy != NULL, "Failed to allocate position stream.");
+      
       sctr->process_manager = process_manager;
       sctr->pid = kl_reserve_process_id(process_manager,
          &_kl_scene_container_2d_process_tick,
@@ -53,9 +56,12 @@ int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container,
 void kl_free_scene_container_2d(kl_scene_container_2d_t* container)
 {
    kl_scene_container_2d_t sctr = *container;
-   kl_free_idx_allocator(&sctr->id_allocator);
+   
    kl_release_process_id(sctr->process_manager, sctr->pid);
+   kl_heap_free(sctr->pos_xy);
+   kl_free_idx_allocator(&sctr->id_allocator);
    kl_heap_free(sctr);
+   
    *container = NULL;
 }
 

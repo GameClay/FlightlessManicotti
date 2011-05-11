@@ -37,11 +37,11 @@ typedef struct
    
    uint32_t* typemask;                    //!< Typemasks for entries in the scene. Indexed by id.
    
-   float* pos_xyz;                        //!< Positions for entries in the scene. Indexed by id.
+   float* pos_xy;                         //!< Positions for entries in the scene. Indexed by id.
    
    float* radius;                         //!< Circular bounds radius for entires in the scene. Indexed by id.
    
-   float* anchor_xyz;                     //!< Anchor point for entires in the scene. Indexed by id.
+   float* anchor_xy;                      //!< Anchor point for entires in the scene. Indexed by id.
    float* rotation;                       //!< Rotation around anchor point, in radians. Indexed by id.
 }*kl_scene_container_2d_t, _kl_scene_container_2d;
 
