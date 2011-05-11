@@ -41,6 +41,9 @@ int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container,
       sctr->pos_xy = kl_heap_alloc(sizeof(float) * 2 * max_entries);
       KL_ASSERT(sctr->pos_xy != NULL, "Failed to allocate position stream.");
       
+      sctr->typemask = kl_heap_alloc(sizeof(uint32_t) * max_entries);
+      KL_ASSERT(sctr->typemask != NULL, "Failed to allocate typemask stream.");
+      
       sctr->process_manager = process_manager;
       sctr->pid = kl_reserve_process_id(process_manager,
          &_kl_scene_container_2d_process_tick,
@@ -58,6 +61,7 @@ void kl_free_scene_container_2d(kl_scene_container_2d_t* container)
    kl_scene_container_2d_t sctr = *container;
    
    kl_release_process_id(sctr->process_manager, sctr->pid);
+   kl_heap_free(sctr->typemask);
    kl_heap_free(sctr->pos_xy);
    kl_free_idx_allocator(&sctr->id_allocator);
    kl_heap_free(sctr);
@@ -72,6 +76,7 @@ uint32_t kl_reserve_scene_container_2d_id(kl_scene_container_2d_t container)
    xy = &(container->pos_xy[ret]);
    xy[0] = 0.0f;
    xy[1] = 0.0f;
+   container->typemask[ret] = 0;
    return ret;
 }
 

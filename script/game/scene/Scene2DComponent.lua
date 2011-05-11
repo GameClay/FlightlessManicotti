@@ -85,7 +85,7 @@ end
 --!         Set: No return value.
 --! @memberof Scene2DComponent
 function Scene2DComponent:position(x,y)
-   assert(self._scene_id, "Must have an assigned scene id to call position.")
+   assert(self._scene_id, "Must have an assigned scene id to call position().")
    assert((not x and not y) or (x and y), "Must specify neither, or both arguments.")
    
    if not x then
@@ -93,4 +93,15 @@ function Scene2DComponent:position(x,y)
    else
       self._scene:setposition(self._scene_id, x, y)
    end
+end
+
+--! Query the typemask of this object.
+--!
+--! @param type   [optional] Type to check against.
+--!
+--! @return True or false, if type is specified. The full typemask if not.
+--! @memberof Scene2DComponent
+function Scene2DComponent:type(typemask)
+   assert(self._scene_id, "Must have an assigned scene id to call type().")
+   return self._scene:type(self._scene_id, typemask)
 end

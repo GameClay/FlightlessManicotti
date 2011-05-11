@@ -130,11 +130,35 @@ static int Scene2D_setposition(lua_State* L)
    return 0;
 }
 
+static int Scene2D_type(lua_State* L)
+{
+   int scene_id;
+   int typemask;
+   kl_scene_container_2d_t* sctr;
+   
+   luaL_checkudata(L, 1, SCENE2D_LIB);
+   luaL_argcheck(L, lua_type(L, 2) == LUA_TNUMBER, 2, "Expected scene id as argument");
+   luaL_argcheck(L, lua_isnil(L, 3) || (lua_type(L, 3) == LUA_TNUMBER), 3, "Expected nil, or type as argument");
+   
+   sctr = (kl_scene_container_2d_t*)lua_touserdata(L, 1);
+   scene_id = lua_tointeger(L, 2);
+   typemask = lua_isnil(L, 3) ? 0 : lua_tointeger(L, 3);
+   
+   if(sctr != NULL)
+   {
+      if(lua_isnil(L, 3))  lua_pushinteger(L, (*sctr)->typemask[scene_id]);
+      else                 lua_pushboolean(L, (*sctr)->typemask[scene_id] & (uint32_t)typemask);
+   }  else                 lua_pushnil(L);
+   
+   return 1;
+}
+
 static const struct luaL_reg Scene2D_instance_methods [] = {
    {"reserveid", Scene2D_reserveid},
    {"releaseid", Scene2D_releaseid},
    {"getposition", Scene2D_getposition},
    {"setposition", Scene2D_setposition},
+   {"type", Scene2D_type},
    {NULL, NULL}
 };
 
