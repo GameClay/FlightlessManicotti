@@ -117,7 +117,6 @@ static int vector2d_tostring(lua_State* L)
 }
 
 static const struct luaL_reg vector2d_instance_methods [] = {
-   {"test", vector2d_tostring},
    {NULL, NULL}
 };
 

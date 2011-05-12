@@ -50,10 +50,6 @@ function Scene2DComponent:onadded()
    -- Register with the C code and reserve an id
    if self._scene then
       self._scene_id = self._scene:reserveid()
-      -- hax
-      print(self:position())
-      self:position().xy = {3.2, 4}
-      print(self:position())
    else
       error("No scene assigned. Call 'assignscene' before registering component.")
    end
