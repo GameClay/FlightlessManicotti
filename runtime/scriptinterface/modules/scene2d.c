@@ -73,7 +73,7 @@ static int Scene2D_releaseid(lua_State* L)
    kl_scene_container_2d_t* sctr;
    
    luaL_checkudata(L, 1, SCENE2D_LIB);
-   luaL_argcheck(L, lua_type(L, 2) == LUA_TNUMBER, 2, "Expected scene id as argument");
+   luaL_argcheck(L, lua_isnumber(L, 2), 2, "Expected scene id as argument");
    
    sctr = (kl_scene_container_2d_t*)lua_touserdata(L, 1);
    scene_id = lua_tointeger(L, 2);
@@ -82,13 +82,13 @@ static int Scene2D_releaseid(lua_State* L)
    return 0;
 }
 
-static int Scene2D_getposition(lua_State* L)
+static int Scene2D_position(lua_State* L)
 {
    int scene_id;
    kl_scene_container_2d_t* sctr;
    
    luaL_checkudata(L, 1, SCENE2D_LIB);
-   luaL_argcheck(L, lua_type(L, 2) == LUA_TNUMBER, 2, "Expected scene id as argument");
+   luaL_argcheck(L, lua_isnumber(L, 2), 2, "Expected scene id as argument");
    
    sctr = (kl_scene_container_2d_t*)lua_touserdata(L, 1);
    scene_id = lua_tointeger(L, 2);
@@ -105,29 +105,6 @@ static int Scene2D_getposition(lua_State* L)
    return 0;
 }
 
-static int Scene2D_setposition(lua_State* L)
-{
-   int scene_id;
-   kl_scene_container_2d_t* sctr;
-   
-   luaL_checkudata(L, 1, SCENE2D_LIB);
-   luaL_argcheck(L, lua_type(L, 2) == LUA_TNUMBER, 2, "Expected scene id as argument");
-   luaL_argcheck(L, lua_type(L, 3) == LUA_TNUMBER, 3, "Expected x position as argument");
-   luaL_argcheck(L, lua_type(L, 4) == LUA_TNUMBER, 4, "Expected y position as argument");
-   
-   sctr = (kl_scene_container_2d_t*)lua_touserdata(L, 1);
-   scene_id = lua_tointeger(L, 2);
-   
-   if(sctr != NULL)
-   {
-      float* xy = &((*sctr)->pos_xy[scene_id]);
-      xy[0] = lua_tonumber(L, 3);
-      xy[1] = lua_tonumber(L, 4);
-   }
-   
-   return 0;
-}
-
 static int Scene2D_type(lua_State* L)
 {
    int scene_id;
@@ -135,8 +112,8 @@ static int Scene2D_type(lua_State* L)
    kl_scene_container_2d_t* sctr;
    
    luaL_checkudata(L, 1, SCENE2D_LIB);
-   luaL_argcheck(L, lua_type(L, 2) == LUA_TNUMBER, 2, "Expected scene id as argument");
-   luaL_argcheck(L, lua_isnil(L, 3) || (lua_type(L, 3) == LUA_TNUMBER), 3, "Expected nil, or type as argument");
+   luaL_argcheck(L, lua_isnumber(L, 2), 2, "Expected scene id as argument");
+   luaL_argcheck(L, lua_isnil(L, 3) || lua_isnumber(L, 3), 3, "Expected nil, or type as argument");
    
    sctr = (kl_scene_container_2d_t*)lua_touserdata(L, 1);
    scene_id = lua_tointeger(L, 2);
@@ -154,8 +131,7 @@ static int Scene2D_type(lua_State* L)
 static const struct luaL_reg Scene2D_instance_methods [] = {
    {"reserveid", Scene2D_reserveid},
    {"releaseid", Scene2D_releaseid},
-   {"getposition", Scene2D_getposition},
-   {"setposition", Scene2D_setposition},
+   {"position", Scene2D_position},
    {"type", Scene2D_type},
    {NULL, NULL}
 };

@@ -72,7 +72,6 @@ static int vector2d_newindex(lua_State* L)
    
    // Check for x or y, else redirect to instance table
    key = lua_tolstring(L, 2, &len);
-   
    if(len == 1)
    {
       switch(*key)

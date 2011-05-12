@@ -50,6 +50,10 @@ function Scene2DComponent:onadded()
    -- Register with the C code and reserve an id
    if self._scene then
       self._scene_id = self._scene:reserveid()
+      -- hax
+      print(self:position())
+      self:position().xy = {3.2, 4}
+      print(self:position())
    else
       error("No scene assigned. Call 'assignscene' before registering component.")
    end
@@ -82,7 +86,7 @@ end
 --! @memberof Scene2DComponent
 function Scene2DComponent:position()
    assert(self._scene_id, "Must have an assigned scene id to call position().")
-   return self._scene:getposition(self._scene_id)
+   return self._scene:position(self._scene_id)
 end
 
 --! Query the typemask of this object.
