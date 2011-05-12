@@ -22,6 +22,7 @@
 #include "game/scene2d/scene_container_2d.h"
 
 #define SCENE2D_LIB "Scene2D"
+extern const char* VECTOR2D_LUA_LIB;
 
 static int Scene2D_new(lua_State* L)
 {
@@ -95,16 +96,13 @@ static int Scene2D_getposition(lua_State* L)
    if(sctr != NULL)
    {
       float* xy = &((*sctr)->pos_xy[scene_id]);
-      lua_pushnumber(L, xy[0]);
-      lua_pushnumber(L, xy[1]);
-   }
-   else
-   {
-      lua_pushnil(L);
-      lua_pushnil(L);
+      lua_pushlightuserdata(L, xy);
+      luaL_getmetatable(L, VECTOR2D_LUA_LIB);
+      lua_setmetatable(L, -2);
+      return 1;
    }
    
-   return 2;
+   return 0;
 }
 
 static int Scene2D_setposition(lua_State* L)
