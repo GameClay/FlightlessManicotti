@@ -50,7 +50,7 @@ static int vector2d_index(lua_State* L)
          }
       }
    }
-   else if(len == 2 && (strncmp(key, "xy", 2) == 0))
+   else if(len == 2 && key[0] == 'x' && key[1] == 'y')
    {
       lua_pushnumber(L, xy[0]);
       lua_pushnumber(L, xy[1]);
@@ -90,7 +90,7 @@ static int vector2d_newindex(lua_State* L)
          }
       }
    }
-   else if(len == 2 && (strncmp(key, "xy", 2) == 0))
+   else if(len == 2 && key[0] == 'x' && key[1] == 'y')
    {
       luaL_argcheck(L, lua_istable(L, 3), 3, "expected numerical array");
       lua_pushinteger(L, 1);
