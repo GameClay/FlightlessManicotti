@@ -41,9 +41,19 @@ function main(...)
    local testscene = Scene2D.new(1024)
    
    local test = Scene2DComponent.new(testscene)
-   --test:assignscene(testscene)
    
    test:register(nil, "facepunch")
+   print("Oh look it's "..tostring(test))
+   print("Position: "..tostring(test.entity.position))
+   print("Typemask: "..tostring(test.entity.typemask))
+   print("Radius: "..tostring(test.entity.radius))
+   print("Changing stuff...")
+   test.entity.position = {4,2}
+   test.entity.radius = 3.5
+   test.entity.typemask = 8
+   print("Position: "..tostring(test.entity.position))
+   print("Typemask: "..tostring(test.entity.typemask))
+   print("Radius: "..tostring(test.entity.radius))
    test:unregister()
    
    testscene = nil

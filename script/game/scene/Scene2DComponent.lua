@@ -34,10 +34,7 @@ function Scene2DComponent.new(scene)
    setmetatable(o, {__index = Scene2DComponent})
    
    assert(scene and (type(scene) == "userdata"), "First parameter to Scene2DComponent.new should be a Scene.")
-   
-   if scene then
-      o._scene = scene
-   end
+   o.scene = scene
    
    return o
 end
@@ -47,8 +44,8 @@ end
 --! @memberof Scene2DComponent
 function Scene2DComponent:onadded()
    -- Register with the C code and reserve an entity
-   if self._scene then
-      self._scene_entity = self._scene:reserve()
+   if self.scene then
+      self.entity = self.scene:reserve()
    else
       error("No scene assigned.")
    end
@@ -58,25 +55,5 @@ end
 --! @memberof Scene2DComponent
 function Scene2DComponent:onremoved()
    -- Release our reserved entity (the __gc metamethod will do this)
-   self._scene_entity = nil
-end
-
---! Get the position in the scene.
---!
---! @return vector2d position in the scene.
---! @memberof Scene2DComponent
-function Scene2DComponent:position()
-   assert(self._scene_entity, "Must have called register() to call position().")
-   return self._scene_entity.position
-end
-
---! Query the typemask of this object.
---!
---! @param type   [optional] Type to check against.
---!
---! @return True or false, if type is specified. The full typemask if not.
---! @memberof Scene2DComponent
-function Scene2DComponent:type(typemask)
-   assert(self._scene_entity, "Must have called register() to call type().")
-   return self._scene_entity.type
+   self.entity = nil
 end
