@@ -27,13 +27,13 @@ Scene2DComponent = DeclareComponentType()
 
 --! Constructor.
 --!
---! @param  scene Optional scene with which this component should register during onadded.
+--! @param  scene Scene with which this component should register during onadded.
 --! @memberof Scene2DComponent
 function Scene2DComponent.new(scene)
    local o = {}
    setmetatable(o, {__index = Scene2DComponent})
    
-   assert(not scene or (type(scene) == "userdata"), "First parameter to Scene2DComponent.new should be nil, or a Scene.")
+   assert(scene and (type(scene) == "userdata"), "First parameter to Scene2DComponent.new should be a Scene.")
    
    if scene then
       o._scene = scene
@@ -42,35 +42,23 @@ function Scene2DComponent.new(scene)
    return o
 end
 
---! Registers with the 2D scene provided.
+--! Registers with the 2D scene provided upon construction.
 --!
---! @see Scene2DComponent_assignscene
 --! @memberof Scene2DComponent
 function Scene2DComponent:onadded()
    -- Register with the C code and reserve an entity
    if self._scene then
       self._scene_entity = self._scene:reserve()
    else
-      error("No scene assigned. Call 'assignscene' before registering component.")
+      error("No scene assigned.")
    end
 end
 
 --! Removes aggregated object from the 2D scene.
 --! @memberof Scene2DComponent
 function Scene2DComponent:onremoved()
-   -- Release our reserved entity
+   -- Release our reserved entity (the __gc metamethod will do this)
    self._scene_entity = nil
-end
-
---! Assign a scene.
---!
---! Assigns a 2D scene to this component.
---!
---! @note Unless a scene was provided during construction, this must be called 
---!       before this component is aggregated, as the value provided is used in onadded().
---! @memberof Scene2DComponent
-function Scene2DComponent:assignscene(scene)
-   self._scene = scene
 end
 
 --! Get the position in the scene.
@@ -78,7 +66,7 @@ end
 --! @return vector2d position in the scene.
 --! @memberof Scene2DComponent
 function Scene2DComponent:position()
-   assert(self._scene_entity, "Must have an assigned scene id to call position().")
+   assert(self._scene_entity, "Must have called register() to call position().")
    return self._scene_entity.position
 end
 
@@ -89,6 +77,6 @@ end
 --! @return True or false, if type is specified. The full typemask if not.
 --! @memberof Scene2DComponent
 function Scene2DComponent:type(typemask)
-   assert(self._scene_entity, "Must have an assigned scene id to call type().")
+   assert(self._scene_entity, "Must have called register() to call type().")
    return self._scene_entity.type
 end
