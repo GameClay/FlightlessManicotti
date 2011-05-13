@@ -1,5 +1,5 @@
--- -*- Mode: C; tab-width: 3; c-basic-offset: 3; indent-tabs-mode: nil -*-
--- vim: set filetype=C tabstop=3 softtabstop=3 shiftwidth=3 expandtab:
+-- -*- Mode: lua; tab-width: 3; c-basic-offset: 3; indent-tabs-mode: nil -*-
+-- vim: set filetype=lua tabstop=3 softtabstop=3 shiftwidth=3 expandtab:
 
 -- FlightlessManicotti -- Copyright (C) 2010-2011 GameClay LLC
 --
