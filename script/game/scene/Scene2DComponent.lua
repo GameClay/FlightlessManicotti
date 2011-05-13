@@ -47,9 +47,21 @@ end
 --! @see Scene2DComponent_assignscene
 --! @memberof Scene2DComponent
 function Scene2DComponent:onadded()
-   -- Register with the C code and reserve an id
+   -- Register with the C code and reserve an entity
    if self._scene then
-      self._scene_id = self._scene:reserveid()
+      self._scene_entity = self._scene:reserve()
+      -- hax
+      print(self._scene_entity.position)
+      print(self._scene_entity.type)
+      self._scene_entity.type = 42
+      self._scene_entity.position.x = 3
+      self._scene_entity.position.y = 5
+      print(self._scene_entity.position)
+      self._scene_entity.position.xy = {4,2}
+      print(self._scene_entity.position)
+      self._scene_entity.position = {6,8}
+      print(self._scene_entity.position)
+      print(self._scene_entity.type)
    else
       error("No scene assigned. Call 'assignscene' before registering component.")
    end
@@ -58,11 +70,8 @@ end
 --! Removes aggregated object from the 2D scene.
 --! @memberof Scene2DComponent
 function Scene2DComponent:onremoved()
-   -- Release our reserved id
-   if self._scene_id then
-      self._scene:releaseid(self._scene_id)
-      self._scene_id = nil
-   end
+   -- Release our reserved entity
+   self._scene_entity = nil
 end
 
 --! Assign a scene.
@@ -81,8 +90,8 @@ end
 --! @return vector2d position in the scene.
 --! @memberof Scene2DComponent
 function Scene2DComponent:position()
-   assert(self._scene_id, "Must have an assigned scene id to call position().")
-   return self._scene:position(self._scene_id)
+   assert(self._scene_entity, "Must have an assigned scene id to call position().")
+   return self._scene_entity.position
 end
 
 --! Query the typemask of this object.
@@ -92,6 +101,6 @@ end
 --! @return True or false, if type is specified. The full typemask if not.
 --! @memberof Scene2DComponent
 function Scene2DComponent:type(typemask)
-   assert(self._scene_id, "Must have an assigned scene id to call type().")
-   return self._scene:type(self._scene_id, typemask)
+   assert(self._scene_entity, "Must have an assigned scene id to call type().")
+   return self._scene_entity.type
 end
