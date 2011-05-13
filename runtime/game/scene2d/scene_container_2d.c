@@ -69,15 +69,20 @@ void kl_free_scene_container_2d(kl_scene_container_2d_t* container)
    *container = NULL;
 }
 
-uint32_t kl_reserve_scene_container_2d_id(kl_scene_container_2d_t container)
+int kl_reserve_scene_container_2d_id(kl_scene_container_2d_t container, uint32_t* out_id)
 {
    float* xy;
-   uint32_t ret = kl_idx_allocator_reserve(container->id_allocator);
-   xy = &(container->pos_xy[ret]);
+   uint32_t id = kl_idx_allocator_reserve(container->id_allocator);
+   
+   // If there are no more free indices in the idx allocator, return error.
+   if(id == UINT32_MAX) return KL_ERROR;
+   
+   *out_id = id;
+   xy = &(container->pos_xy[id]);
    xy[0] = 0.0f;
    xy[1] = 0.0f;
-   container->typemask[ret] = 0;
-   return ret;
+   container->typemask[id] = 0;
+   return KL_SUCCESS;
 }
 
 void kl_free_scene_container_2d_id(kl_scene_container_2d_t container, uint32_t id)

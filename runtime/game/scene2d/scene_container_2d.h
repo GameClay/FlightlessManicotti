@@ -63,9 +63,10 @@ extern KL_API void kl_free_scene_container_2d(kl_scene_container_2d_t* container
 //! Reserve an index in the scene container.
 //!
 //! @param container    Scene container from which to reserve an id.
+//! @param out_id       Storage location for id, if reservation is successful.
 //!
-//! @return Reserved id in the scene container.
-extern KL_API uint32_t kl_reserve_scene_container_2d_id(kl_scene_container_2d_t container);
+//! @return KL_SUCCESS if successful.
+extern KL_API int kl_reserve_scene_container_2d_id(kl_scene_container_2d_t container, uint32_t* out_id);
 
 //! Free a previously reserved scene id.
 //!
