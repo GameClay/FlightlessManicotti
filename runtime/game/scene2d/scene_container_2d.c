@@ -44,6 +44,9 @@ int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container,
       sctr->typemask = kl_heap_alloc(sizeof(uint32_t) * max_entries);
       KL_ASSERT(sctr->typemask != NULL, "Failed to allocate typemask stream.");
       
+      sctr->radius = kl_heap_alloc(sizeof(float) * max_entries);
+      KL_ASSERT(sctr->typemask != NULL, "Failed to allocate radius stream.");
+      
       sctr->process_manager = process_manager;
       sctr->pid = kl_reserve_process_id(process_manager,
          &_kl_scene_container_2d_process_tick,
@@ -61,6 +64,7 @@ void kl_free_scene_container_2d(kl_scene_container_2d_t* container)
    kl_scene_container_2d_t sctr = *container;
    
    kl_release_process_id(sctr->process_manager, sctr->pid);
+   kl_heap_free(sctr->radius);
    kl_heap_free(sctr->typemask);
    kl_heap_free(sctr->pos_xy);
    kl_free_idx_allocator(&sctr->id_allocator);
@@ -82,6 +86,7 @@ int kl_reserve_scene_container_2d_id(kl_scene_container_2d_t container, uint32_t
    xy[0] = 0.0f;
    xy[1] = 0.0f;
    container->typemask[id] = 0;
+   container->radius[id] = 1.0f;
    return KL_SUCCESS;
 }
 

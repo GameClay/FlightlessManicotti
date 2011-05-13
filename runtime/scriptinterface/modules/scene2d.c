@@ -106,19 +106,24 @@ static int SceneEntity2D_index(lua_State* L)
       //KL_LOGF(KL_LL_NRM, "Indexing key: %s, hash: 0x%08X\n", key, hash);
       switch(hash)
       {
-         // 'position'
-         case 0xA4731157:
+         case 0xA4731157: // 'position'
          {
             lua_pushlightuserdata(L, &entity->scene->pos_xy[entity->id * 2]);
             luaL_getmetatable(L, VECTOR2D_LUA_LIB);
             lua_setmetatable(L, -2);
             return 1;
          }
-      
-         // 'type'
-         case 0x2F6488D6:
+         
+         case 0x2F6488D6: // 'type'
+         case 0xFC45D41D: // 'typemask'
          {
             lua_pushinteger(L, entity->scene->typemask[entity->id]);
+            return 1;
+         }
+         
+         case 0xC8EB1006: // 'radius'
+         {
+            lua_pushnumber(L, entity->scene->radius[entity->id]);
             return 1;
          }
       }
@@ -147,8 +152,7 @@ static int SceneEntity2D_newindex(lua_State* L)
       
       switch(hash)
       {
-         // 'position'
-         case 0xA4731157:
+         case 0xA4731157: // 'position'
          {
             if(lua_istable(L, 3))
             {
@@ -174,12 +178,18 @@ static int SceneEntity2D_newindex(lua_State* L)
             }
             return 0;
          }
-      
-         // 'type'
-         case 0x2F6488D6:
+         
+         case 0x2F6488D6: // 'type'
+         case 0xFC45D41D: // 'typemask'
          {
             entity->scene->typemask[entity->id] = lua_tointeger(L, 3);
             return 0;
+         }
+         
+         case 0xC8EB1006: // 'radius'
+         {
+            entity->scene->radius[entity->id] = lua_tonumber(L, 3);
+            return 1;
          }
       }
    }
