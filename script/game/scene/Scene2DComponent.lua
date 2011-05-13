@@ -50,18 +50,6 @@ function Scene2DComponent:onadded()
    -- Register with the C code and reserve an entity
    if self._scene then
       self._scene_entity = self._scene:reserve()
-      -- hax
-      print(self._scene_entity.position)
-      print(self._scene_entity.type)
-      self._scene_entity.type = 42
-      self._scene_entity.position.x = 3
-      self._scene_entity.position.y = 5
-      print(self._scene_entity.position)
-      self._scene_entity.position.xy = {4,2}
-      print(self._scene_entity.position)
-      self._scene_entity.position = {6,8}
-      print(self._scene_entity.position)
-      print(self._scene_entity.type)
    else
       error("No scene assigned. Call 'assignscene' before registering component.")
    end
