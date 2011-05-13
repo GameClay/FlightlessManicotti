@@ -78,7 +78,7 @@ int kl_reserve_scene_container_2d_id(kl_scene_container_2d_t container, uint32_t
    if(id == UINT32_MAX) return KL_ERROR;
    
    *out_id = id;
-   xy = &(container->pos_xy[id]);
+   xy = &(container->pos_xy[id * 2]);
    xy[0] = 0.0f;
    xy[1] = 0.0f;
    container->typemask[id] = 0;
