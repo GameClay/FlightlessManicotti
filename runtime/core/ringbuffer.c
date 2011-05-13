@@ -18,8 +18,8 @@
  
 #include "core/ringbuffer.h"
 
-KL_IMPLEMENT_RINGBUFFER_TYPE(float);
-KL_IMPLEMENT_RINGBUFFER_TYPE(int);
+KL_IMPLEMENT_RINGBUFFER_TYPE(float)
+KL_IMPLEMENT_RINGBUFFER_TYPE(int)
 
 // Custom implementation of kl_int32x4_t type
 _KL_INIT_RINGBUFFER_FN_(kl_int32x4_t)
