@@ -48,6 +48,11 @@ typedef struct
    float* rotation;                       //!< Rotation around anchor point, in radians. Indexed by id.
 }*kl_scene_container_2d_t, _kl_scene_container_2d;
 
+enum
+{
+   SceneType_Reserved         = 1 << 0,   //!< This entry has been reserved.
+};
+
 //! Allocate a 2d scene container.
 //!
 //! @param container       Location to store allocated scene container.

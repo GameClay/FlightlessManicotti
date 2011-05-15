@@ -91,13 +91,14 @@ int kl_reserve_scene_container_2d_id(kl_scene_container_2d_t container, uint32_t
    xy = &(container->pos_xy[id * 2]);
    xy[0] = 0.0f;
    xy[1] = 0.0f;
-   container->typemask[id] = 0;
+   container->typemask[id] = SceneType_Reserved;
    container->radius[id] = 1.0f;
    return KL_SUCCESS;
 }
 
 void kl_free_scene_container_2d_id(kl_scene_container_2d_t container, uint32_t id)
 {
+   container->typemask[id] = 0;
    kl_idx_allocator_release(container->id_allocator, id);
 }
 

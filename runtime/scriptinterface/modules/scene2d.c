@@ -182,7 +182,8 @@ static int SceneEntity2D_newindex(lua_State* L)
          case 0x2F6488D6: // 'type'
          case 0xFC45D41D: // 'typemask'
          {
-            entity->scene->typemask[entity->id] = lua_tointeger(L, 3);
+            // Must maintain reserved bit, otherwise bad things will happen
+            entity->scene->typemask[entity->id] = (lua_tointeger(L, 3) | SceneType_Reserved);
             return 0;
          }
          
