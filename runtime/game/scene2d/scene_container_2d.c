@@ -47,6 +47,9 @@ int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container,
       sctr->radius = kl_heap_alloc(sizeof(float) * max_entries);
       KL_ASSERT(sctr->typemask != NULL, "Failed to allocate radius stream.");
       
+      sctr->min_id = UINT32_MAX;
+      sctr->max_id = 0;
+      
       sctr->process_manager = process_manager;
       sctr->pid = kl_reserve_process_id(process_manager,
          &_kl_scene_container_2d_process_tick,
@@ -80,6 +83,9 @@ int kl_reserve_scene_container_2d_id(kl_scene_container_2d_t container, uint32_t
    
    // If there are no more free indices in the idx allocator, return error.
    if(id == UINT32_MAX) return KL_ERROR;
+   
+   container->min_id = (id < container->min_id) ? id : container->min_id;
+   container->max_id = (id > container->max_id) ? id : container->max_id;
    
    *out_id = id;
    xy = &(container->pos_xy[id * 2]);

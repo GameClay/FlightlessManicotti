@@ -35,6 +35,9 @@ typedef struct
    kl_idx_allocator_t id_allocator;       //!< Allocates indices into the scene.
    uint32_t max_entries;                  //!< Maximum number of entires in the scene.
    
+   uint32_t min_id;                       //!< Minimum id value which is currently reserved
+   uint32_t max_id;                       //!< Maximum id value which is currently reserved;
+   
    uint32_t* typemask;                    //!< Typemasks for entries in the scene. Indexed by id.
    
    float* pos_xy;                         //!< Positions for entries in the scene. Indexed by id.
