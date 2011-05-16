@@ -46,7 +46,8 @@ function main(...)
    test.entity.position.xy = {0,0}
    test.entity.radius = 3.5
    test.entity.typemask = 8
-   print(tostring(testscene:raycast({-5, 0}, {5, 0})).." == "..tostring(test))
+   hit,pos = testscene:raycast({-5, 0}, {5, 0})
+   print(tostring(hit).." at "..tostring(pos))
    
    test:unregister()
    

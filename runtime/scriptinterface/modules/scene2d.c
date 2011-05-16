@@ -98,6 +98,7 @@ static int Scene2D_raycast(lua_State* L)
    kl_raycast_hit_t hit;
    float from[2];
    float to[2];
+   float* out_pos;
    uint32_t type;
    
    sctr = (kl_scene_container_2d_t*)lua_touserdata(L, 1);
@@ -114,8 +115,17 @@ static int Scene2D_raycast(lua_State* L)
       if(kl_raycast_scene_container_2d(*sctr, from, to, type, &hit) > 0)
       {
          lua_rawgeti(L, LUA_REGISTRYINDEX, (*sctr)->reference[hit.id]);
+         
          // TODO: hit position as a vector2d
-         //lua_newuserdata(L, sizeof(scene_entity_2d));
+         out_pos = (float*)lua_newuserdata(L, sizeof(float) * 2);
+         if(out_pos != NULL)
+         {
+            out_pos[0] = hit.position[0];
+            out_pos[1] = hit.position[1];
+            luaL_getmetatable(L, VECTOR2D_LUA_LIB);
+            lua_setmetatable(L, -2);
+            return 2;
+         }
          return 1;
       }
    }
