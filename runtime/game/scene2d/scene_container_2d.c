@@ -163,9 +163,9 @@ int kl_raycast_scene_container_2d(kl_scene_container_2d_t container, float* from
    // Assign return information
    if(ret > 0)
    {
-      out_hit->hit_id = hit_id;
-      out_hit->hit_position[0] = from_xy[0] + dx * mu_final;
-      out_hit->hit_position[1] = from_xy[1] + dy * mu_final;
+      out_hit->id = hit_id;
+      out_hit->position[0] = from_xy[0] + dx * mu_final;
+      out_hit->position[1] = from_xy[1] + dy * mu_final;
    }
    
    return ret;

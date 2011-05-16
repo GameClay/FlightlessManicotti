@@ -113,7 +113,7 @@ static int Scene2D_raycast(lua_State* L)
       
       if(kl_raycast_scene_container_2d(*sctr, from, to, type, &hit) > 0)
       {
-         lua_rawgeti(L, LUA_REGISTRYINDEX, (*sctr)->reference[hit.hit_id]);
+         lua_rawgeti(L, LUA_REGISTRYINDEX, (*sctr)->reference[hit.id]);
          // TODO: hit position as a vector2d
          //lua_newuserdata(L, sizeof(scene_entity_2d));
          return 1;

@@ -86,8 +86,8 @@ extern KL_API void kl_free_scene_container_2d_id(kl_scene_container_2d_t contain
 
 typedef struct // TODO: Move this somewhere else
 {
-   uint32_t hit_id;
-   float hit_position[3];
+   uint32_t id;
+   float position[3];
 } kl_raycast_hit_t;
 
 //! Raycast.
