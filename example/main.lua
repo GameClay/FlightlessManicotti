@@ -41,11 +41,15 @@ function main(...)
    local testscene = Scene2D.new(1024)
    
    local test = Scene2DComponent.new(testscene)
-   --test:assignscene(testscene)
-   
    test:register(nil, "facepunch")
+   
+   test.entity.position.xy = {0,3}
+   test.entity.radius = 3.5
+   test.entity.typemask = 8
+   hit,pos = testscene:raycast({-5, 0}, {5, 0}, 8)
+   print(tostring(hit).." at "..tostring(pos))
+   
    test:unregister()
    
    testscene = nil
-   collectgarbage()
 end

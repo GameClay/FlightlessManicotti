@@ -27,50 +27,33 @@ Scene2DComponent = DeclareComponentType()
 
 --! Constructor.
 --!
---! @param  scene Optional scene with which this component should register during onadded.
+--! @param  scene Scene with which this component should register during onadded.
 --! @memberof Scene2DComponent
 function Scene2DComponent.new(scene)
    local o = {}
    setmetatable(o, {__index = Scene2DComponent})
    
-   assert(not scene or (type(scene) == "userdata"), "First parameter to Scene2DComponent.new should be nil, or a Scene.")
-   
-   if scene then
-      o._scene = scene
-   end
+   assert(scene and (type(scene) == "userdata"), "First parameter to Scene2DComponent.new should be a Scene2D.")
+   o.scene = scene
    
    return o
 end
 
---! Registers with the 2D scene provided.
+--! Registers with the 2D scene provided upon construction.
 --!
---! @see Scene2DComponent_assignscene
 --! @memberof Scene2DComponent
 function Scene2DComponent:onadded()
-   -- Register with the C code and reserve an id
-   if self._scene then
-      self._scene_id = self._scene:reserveid()
+   -- Register with the C code and reserve an entity
+   if self.scene then
+      self.entity = self.scene:reserve(self)
    else
-      error("No scene assigned. Call 'assignscene' before registering component.")
+      error("No scene assigned.")
    end
 end
 
 --! Removes aggregated object from the 2D scene.
 --! @memberof Scene2DComponent
 function Scene2DComponent:onremoved()
-   -- Release our reserved id
-   if self._scene_id then
-      self._scene:releaseid(self._scene_id)
-   end
-end
-
---! Assign a scene.
---!
---! Assigns a 2D scene to this component.
---!
---! @note Unless a scene was provided during construction, this must be called 
---!       before this component is aggregated, as the value provided is used in onadded().
---! @memberof Scene2DComponent
-function Scene2DComponent:assignscene(scene)
-   self._scene = scene
+   -- Release our reserved entity (the __gc metamethod will do this)
+   self.entity = nil
 end

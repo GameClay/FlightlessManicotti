@@ -28,5 +28,5 @@ Cast = {}
 --! 
 --! @return Integer casted to a float, as a number.
 --! @memberof Cast
-function Cast:itof(int)
+function Cast.itof(int)
 end
