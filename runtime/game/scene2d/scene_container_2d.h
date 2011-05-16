@@ -104,8 +104,8 @@ typedef struct // TODO: Move this somewhere else
 //! @return -1 if input ray is invalid.
 //!         0 if no intersections found.
 //!         Number of intersections otherwise.
-extern KL_API int kl_raycast_scene_container_2d(kl_scene_container_2d_t container, float* from_xy,
-   float* to_xy, uint32_t typemask, kl_raycast_hit_t* out_hit);
+extern KL_API int kl_raycast_scene_container_2d(kl_scene_container_2d_t container, float* KL_RESTRICT from_xy,
+   float* KL_RESTRICT to_xy, uint32_t typemask, kl_raycast_hit_t* KL_RESTRICT out_hit);
 
 #ifdef __cplusplus
 }

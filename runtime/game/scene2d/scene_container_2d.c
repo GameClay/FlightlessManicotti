@@ -110,8 +110,8 @@ void kl_free_scene_container_2d_id(kl_scene_container_2d_t container, uint32_t i
 }
 
 // http://paulbourke.net/geometry/sphereline/
-int kl_raycast_scene_container_2d(kl_scene_container_2d_t container, float* from_xy,
-   float* to_xy, uint32_t typemask, kl_raycast_hit_t* out_hit)
+int kl_raycast_scene_container_2d(kl_scene_container_2d_t container, float* KL_RESTRICT from_xy,
+   float* KL_RESTRICT to_xy, uint32_t typemask, kl_raycast_hit_t* KL_RESTRICT out_hit)
 {
    uint32_t i, hit_id;
    float dx, dy, a, b, c, bb4ac, fdf, mu1, mu2, mu_final;
