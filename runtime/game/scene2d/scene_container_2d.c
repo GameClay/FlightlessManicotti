@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+#include <math.h>
 #include "game/scene2d/scene_container_2d.h"
 
 // Forward declare process manager callbacks
@@ -105,6 +106,69 @@ void kl_free_scene_container_2d_id(kl_scene_container_2d_t container, uint32_t i
 {
    container->typemask[id] = 0;
    kl_idx_allocator_release(container->id_allocator, id);
+}
+
+// http://paulbourke.net/geometry/sphereline/
+int kl_raycast_scene_container_2d(kl_scene_container_2d_t container, float* from_xy,
+   float* to_xy, uint32_t typemask, kl_raycast_hit_t* out_hit)
+{
+   uint32_t i, hit_id;
+   float dx, dy, a, b, c, bb4ac, fdf, mu1, mu2, mu_final;
+   float cx, cy, r;
+   int ret = 0;
+   
+   // Make sure that we are masking-out unreserved entries
+   typemask |= SceneType_Reserved;
+   
+   dx = to_xy[0] - from_xy[0];
+   dy = to_xy[1] - from_xy[1];
+   fdf = from_xy[0] * from_xy[0] + from_xy[1] * from_xy[1];
+   a = dx * dx + dy * dy;
+   mu_final = a;
+   
+   // Line has length zero, no intersections possible.
+   if(fabs(a) < 1e-6) return -1;
+   
+   for(i = container->min_id; i <= container->max_id; i++)
+   {
+      // Filter by typemask
+      if(!(container->typemask[i] & typemask)) continue;
+      
+      cx = container->pos_xy[i * 2 + 0];
+      cy = container->pos_xy[i * 2 + 1];
+      r = container->radius[i];
+      
+      b = 2 * (dx * (from_xy[0] - cx) + dy * (from_xy[1] - cy));
+      c = cx * cx + cy * cy;
+      c += fdf;
+      c -= 2 * (cx * from_xy[0] + cy * from_xy[1]);
+      c -= r * r;
+      bb4ac = b * b - 4 * a * c;
+      
+      if(bb4ac > 0)
+      {
+         ret++;
+         mu1 = (-b + sqrt(bb4ac)) / (2 * a);
+         mu2 = (-b - sqrt(bb4ac)) / (2 * a);
+         
+         mu1 = (mu1 > 0 && mu1 < mu2) ? mu1 : mu2;
+         if(mu1 > 0 && mu1 < mu_final)
+         {
+            mu_final = mu1;
+            hit_id = i;
+         }
+      }
+   }
+   
+   // Assign return information
+   if(ret > 0)
+   {
+      out_hit->hit_id = hit_id;
+      out_hit->hit_position[0] = from_xy[0] + dx * mu_final;
+      out_hit->hit_position[1] = from_xy[1] + dy * mu_final;
+   }
+   
+   return ret;
 }
 
 // Internal callbacks for process manager

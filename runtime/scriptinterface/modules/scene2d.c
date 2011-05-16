@@ -91,6 +91,31 @@ static int Scene2D_reserve(lua_State* L)
    
    return 0;
 }
+
+static int Scene2D_raycast(lua_State* L)
+{
+   kl_scene_container_2d_t* sctr;
+   kl_raycast_hit_t hit;
+   float from[2];
+   float to[2];
+   uint32_t type;
+   
+   sctr = (kl_scene_container_2d_t*)lua_touserdata(L, 1);
+   if(sctr != NULL)
+   {
+      // From {x,y}
+      lua_readvector2d(L, 2, from);
+      
+      // To {x,y}
+      lua_readvector2d(L, 3, to);
+      
+      // Type
+      
+      if(kl_raycast_scene_container_2d(*sctr, from, to, type, &hit) > 0)
+      {
+         lua_rawgeti(L, LUA_REGISTRYINDEX, (*sctr)->reference[hit.hit_id]);
+         // TODO: hit position as a vector2d
+         //lua_newuserdata(L, sizeof(scene_entity_2d));
          return 1;
       }
    }
@@ -204,6 +229,7 @@ static int SceneEntity2D_gc(lua_State* L)
 
 static const struct luaL_reg Scene2D_instance_methods [] = {
    {"reserve", Scene2D_reserve},
+   {"raycast", Scene2D_raycast},
    {NULL, NULL}
 };
 

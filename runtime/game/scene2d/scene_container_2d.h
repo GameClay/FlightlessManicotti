@@ -84,7 +84,16 @@ extern KL_API int kl_reserve_scene_container_2d_id(kl_scene_container_2d_t conta
 //! @param id           Id to free.
 extern KL_API void kl_free_scene_container_2d_id(kl_scene_container_2d_t container, uint32_t id);
 
-// kl_raycast_scene_container_2d
+typedef struct // TODO: Move this somewhere else
+{
+   uint32_t hit_id;
+   float hit_position[3];
+} kl_raycast_hit_t;
+
+//! Raycast.
+//! @return Number of intersections in the scene, 0 if no intersections found.
+extern KL_API int kl_raycast_scene_container_2d(kl_scene_container_2d_t container, float* from_xy,
+   float* to_xy, uint32_t typemask, kl_raycast_hit_t* out_hit);
 
 #ifdef __cplusplus
 }
