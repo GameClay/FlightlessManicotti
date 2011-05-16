@@ -33,7 +33,7 @@ function Scene2DComponent.new(scene)
    local o = {}
    setmetatable(o, {__index = Scene2DComponent})
    
-   assert(scene and (type(scene) == "userdata"), "First parameter to Scene2DComponent.new should be a Scene.")
+   assert(scene and (type(scene) == "userdata"), "First parameter to Scene2DComponent.new should be a Scene2D.")
    o.scene = scene
    
    return o
@@ -45,7 +45,7 @@ end
 function Scene2DComponent:onadded()
    -- Register with the C code and reserve an entity
    if self.scene then
-      self.entity = self.scene:reserve()
+      self.entity = self.scene:reserve(self)
    else
       error("No scene assigned.")
    end

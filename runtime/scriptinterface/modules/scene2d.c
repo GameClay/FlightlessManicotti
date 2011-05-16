@@ -81,6 +81,16 @@ static int Scene2D_reserve(lua_State* L)
          entity->scene = *sctr;
          luaL_getmetatable(L, SCENEENTITY2D);
          lua_setmetatable(L, -2);
+         
+         lua_pushvalue(L, 2);
+         (*sctr)->reference[entity->id] = luaL_ref(L, LUA_REGISTRYINDEX);
+         
+         return 1;
+      }
+   }
+   
+   return 0;
+}
          return 1;
       }
    }
@@ -184,6 +194,7 @@ static int SceneEntity2D_gc(lua_State* L)
    
    if(entity != NULL && entity->scene != NULL) 
    {
+      luaL_unref(L, LUA_REGISTRYINDEX, entity->scene->reference[entity->id]);
       kl_free_scene_container_2d_id(entity->scene, entity->id);
       entity->scene = NULL;
    }

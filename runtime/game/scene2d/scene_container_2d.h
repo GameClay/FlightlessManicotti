@@ -38,13 +38,15 @@ typedef struct
    uint32_t min_id;                       //!< Minimum id value which is currently reserved
    uint32_t max_id;                       //!< Maximum id value which is currently reserved;
    
+   int* reference;                        //!< Lua reference associated with each entry. Indexed by id.
+   
    uint32_t* typemask;                    //!< Typemasks for entries in the scene. Indexed by id.
    
-   float* pos_xy;                         //!< Positions for entries in the scene. Indexed by id.
+   float* pos_xy;                         //!< Positions for entries in the scene. Indexed by id * 2.
    
    float* radius;                         //!< Circular bounds radius for entires in the scene. Indexed by id.
    
-   float* anchor_xy;                      //!< Anchor point for entires in the scene. Indexed by id.
+   float* anchor_xy;                      //!< Anchor point for entires in the scene. Indexed by id * 2.
    float* rotation;                       //!< Rotation around anchor point, in radians. Indexed by id.
 }*kl_scene_container_2d_t, _kl_scene_container_2d;
 

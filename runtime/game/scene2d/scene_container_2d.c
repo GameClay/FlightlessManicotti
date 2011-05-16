@@ -47,6 +47,9 @@ int kl_alloc_scene_container_2d(kl_scene_container_2d_t* container,
       sctr->radius = kl_heap_alloc(sizeof(float) * max_entries);
       KL_ASSERT(sctr->typemask != NULL, "Failed to allocate radius stream.");
       
+      sctr->reference = kl_heap_alloc(sizeof(int) * max_entries);
+      KL_ASSERT(sctr->reference != NULL, "Failed to allocate Lua reference stream.");
+      
       sctr->min_id = UINT32_MAX;
       sctr->max_id = 0;
       
@@ -67,6 +70,7 @@ void kl_free_scene_container_2d(kl_scene_container_2d_t* container)
    kl_scene_container_2d_t sctr = *container;
    
    kl_release_process_id(sctr->process_manager, sctr->pid);
+   kl_heap_free(sctr->reference);
    kl_heap_free(sctr->radius);
    kl_heap_free(sctr->typemask);
    kl_heap_free(sctr->pos_xy);
@@ -91,6 +95,7 @@ int kl_reserve_scene_container_2d_id(kl_scene_container_2d_t container, uint32_t
    xy = &(container->pos_xy[id * 2]);
    xy[0] = 0.0f;
    xy[1] = 0.0f;
+   container->reference[id] = 0;
    container->typemask[id] = SceneType_Reserved;
    container->radius[id] = 1.0f;
    return KL_SUCCESS;

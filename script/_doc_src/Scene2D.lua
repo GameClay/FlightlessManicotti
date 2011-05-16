@@ -26,15 +26,21 @@ assert(false, "This file is used to generate documentation only, and should not 
 --! @ingroup script_scene2d
 Scene2D = {}
 
---! Reserve an id in the scene.
---! @return Reserved scene id.
+--! Reserve an entity in the scene.
+--!
+--! @param reference The reference that will be stored and returned by raycasts, queries, etc.
+--!
+--! @return Reserved entity.
 --! @memberof Scene2D
-function Scene2D:reserveid()
+function Scene2D:reserve(reference)
 end
 
---! Release a held id.
+--! Perform a raycast.
 --!
---! @param id  Id to release.
+--! @param from   A vector2d indicating the start of the ray.
+--! @param to     A vector2d indicating the end of the ray.
+--! @param type   A typemask to filter the allowed hits.
+--!
 --! @memberof Scene2D
-function Scene2D:releaseid(id)
+function Scene2D:raycast(from, to, type)
 end
