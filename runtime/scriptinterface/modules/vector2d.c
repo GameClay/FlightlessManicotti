@@ -21,6 +21,7 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #include "fm.h"
+#include "scriptinterface/helpers/vector2d.h"
 
 #define VECTOR2D_INSTANCE_TABLE "vector2d_instance_method_table"
 const char* VECTOR2D_LUA_LIB = "vector2d";
@@ -92,14 +93,7 @@ static int vector2d_newindex(lua_State* L)
    }
    else if(len == 2 && key[0] == 'x' && key[1] == 'y')
    {
-      luaL_argcheck(L, lua_istable(L, 3), 3, "expected numerical array");
-      lua_pushinteger(L, 1);
-      lua_gettable(L, 3);
-      lua_pushinteger(L, 2);
-      lua_gettable(L, 3);
-      luaL_argcheck(L, lua_isnumber(L, 4) && lua_isnumber(L, 5), 3, "expected numerical array");
-      xy[0] = lua_tonumber(L, 4);
-      xy[1] = lua_tonumber(L, 5);
+      lua_readvector2d(L, 3, xy);
       return 0;
    }
    

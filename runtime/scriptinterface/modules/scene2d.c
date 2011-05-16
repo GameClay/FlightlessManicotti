@@ -22,6 +22,7 @@
 #include <lualib.h>
 #include "game/scene2d/scene_container_2d.h"
 #include "core/hash.h"
+#include "scriptinterface/helpers/vector2d.h"
 
 #define SCENE2D_LIB "Scene2D"
 #define SCENEENTITY2D "SceneEntity2D"
@@ -138,7 +139,6 @@ static int SceneEntity2D_newindex(lua_State* L)
    size_t key_len;
    uint32_t hash;
    scene_entity_2d* entity;
-   float* newxy;
    
    key = lua_tolstring(L, 2, &key_len);
    
@@ -154,28 +154,7 @@ static int SceneEntity2D_newindex(lua_State* L)
       {
          case 0xA4731157: // 'position'
          {
-            if(lua_istable(L, 3))
-            {
-               lua_pushinteger(L, 1);
-               lua_gettable(L, 3);
-               lua_pushinteger(L, 2);
-               lua_gettable(L, 3);
-               luaL_argcheck(L, lua_isnumber(L, 4) && lua_isnumber(L, 5), 3, "expected numerical array");
-               newxy = &entity->scene->pos_xy[entity->id * 2];
-               newxy[0] = lua_tonumber(L, 4);
-               newxy[1] = lua_tonumber(L, 5);
-            }
-            else if(lua_isuserdata(L,3))
-            {
-               // Won't return if error
-               newxy = (float*)luaL_checkudata(L, 1, VECTOR2D_LUA_LIB);
-               entity->scene->pos_xy[entity->id + 0] = newxy[0];
-               entity->scene->pos_xy[entity->id + 1] = newxy[1];
-            }
-            else
-            {
-               luaL_argcheck(L, 0, 3, "expected numerical array, or vector2d");
-            }
+            lua_readvector2d(L, 3, &entity->scene->pos_xy[entity->id * 2]);
             return 0;
          }
          
