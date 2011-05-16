@@ -104,14 +104,9 @@ static int Scene2D_raycast(lua_State* L)
    sctr = (kl_scene_container_2d_t*)lua_touserdata(L, 1);
    if(sctr != NULL)
    {
-      // From {x,y}
-      lua_readvector2d(L, 2, from);
-      
-      // To {x,y}
-      lua_readvector2d(L, 3, to);
-      
-      // Type
-      type = lua_tointeger(L, 4);
+      lua_readvector2d(L, 2, from); // From {x,y}
+      lua_readvector2d(L, 3, to);   // To {x,y}
+      type = lua_tointeger(L, 4);   // Type
       
       if(kl_raycast_scene_container_2d(*sctr, from, to, type, &hit) > 0)
       {

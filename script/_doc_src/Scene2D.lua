@@ -26,6 +26,15 @@ assert(false, "This file is used to generate documentation only, and should not 
 --! @ingroup script_scene2d
 Scene2D = {}
 
+--! Allocate a new Scene2D.
+--!
+--! @param max_entities Maximum number of entities which can be stored in the scene.
+--!
+--! @return Newly allocated scene.
+--! @memberof Scene2D
+function Scene2D.new(max_entities)
+end
+
 --! Reserve an entity in the scene.
 --!
 --! @param reference The reference that will be stored and returned by raycasts, queries, etc.
