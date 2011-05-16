@@ -50,6 +50,8 @@ end
 --! @param to     A vector2d indicating the end of the ray.
 --! @param type   A typemask to filter the allowed hits.
 --!
+--! @return nil or the entity reference of the closest hit (Scene2DComponent).
+--!         nil or the position of the raycast hit as a vector2d.
 --! @memberof Scene2D
 function Scene2D:raycast(from, to, type)
 end
