@@ -80,7 +80,7 @@ extern KL_API int kl_reserve_scene_container_2d_id(kl_scene_container_2d_t conta
 
 //! Free a previously reserved scene id.
 //!
-//! @param container    Scene contaioner on which to free the id.
+//! @param container    Scene container on which to free the id.
 //! @param id           Id to free.
 extern KL_API void kl_free_scene_container_2d_id(kl_scene_container_2d_t container, uint32_t id);
 
@@ -91,7 +91,19 @@ typedef struct // TODO: Move this somewhere else
 } kl_raycast_hit_t;
 
 //! Raycast.
-//! @return Number of intersections in the scene, 0 if no intersections found.
+//!
+//! Cast a ray into the scene container and return the hit closest to the start
+//! of the ray.
+//!
+//! @param  container   Scene container into which the ray should be cast.
+//! @param  from_xy     Start point of ray.
+//! @param  to_xy       End point of ray.
+//! @param  typemask    Typemask against which valid hits should be tested.
+//! @param  out_hit     kl_raycast_hit_t structure to hold result.
+//!
+//! @return -1 if input ray is invalid.
+//!         0 if no intersections found.
+//!         Number of intersections otherwise.
 extern KL_API int kl_raycast_scene_container_2d(kl_scene_container_2d_t container, float* from_xy,
    float* to_xy, uint32_t typemask, kl_raycast_hit_t* out_hit);
 
