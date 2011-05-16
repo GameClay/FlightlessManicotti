@@ -17,6 +17,7 @@
  */
 
 #include <math.h>
+#include <float.h>
 #include "game/scene2d/scene_container_2d.h"
 
 // Forward declare process manager callbacks
@@ -127,7 +128,7 @@ int kl_raycast_scene_container_2d(kl_scene_container_2d_t container, float* from
    mu_final = a;
    
    // Line has length zero, no intersections possible.
-   if(fabs(a) < 1e-6) return -1;
+   if(fabs(a) < FLT_EPSILON) return -1;
    
    for(i = container->min_id; i <= container->max_id; i++)
    {
