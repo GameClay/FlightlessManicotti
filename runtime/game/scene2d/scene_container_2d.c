@@ -133,7 +133,7 @@ int kl_raycast_scene_container_2d(kl_scene_container_2d_t container, float* from
    for(i = container->min_id; i <= container->max_id; i++)
    {
       // Filter by typemask
-      if(!(container->typemask[i] & typemask)) continue;
+      if((container->typemask[i] & typemask) != typemask) continue;
       
       cx = container->pos_xy[i * 2 + 0];
       cy = container->pos_xy[i * 2 + 1];

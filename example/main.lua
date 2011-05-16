@@ -43,10 +43,10 @@ function main(...)
    local test = Scene2DComponent.new(testscene)
    test:register(nil, "facepunch")
    
-   test.entity.position.xy = {0,0}
+   test.entity.position.xy = {0,3}
    test.entity.radius = 3.5
    test.entity.typemask = 8
-   hit,pos = testscene:raycast({-5, 0}, {5, 0})
+   hit,pos = testscene:raycast({-5, 0}, {5, 0}, 8)
    print(tostring(hit).." at "..tostring(pos))
    
    test:unregister()
