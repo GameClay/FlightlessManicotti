@@ -27,7 +27,11 @@ runtime_ccflags = []
 if sys.platform =="win32":
    runtime_ccflags += []
 else:
-   runtime_ccflags += ['-std=c99','-Werror','-pedantic']
+   runtime_ccflags += ['-std=c99','-Werror']
+   
+   # No -pedantic on cross compiles, causes #include_next errors
+   if not env['KL_CROSS_TARGET']:
+      runtime_ccflags += ['-pedantic']
 
 # Determine additional libraries
 runtime_libs = []
