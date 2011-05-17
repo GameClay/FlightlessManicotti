@@ -78,7 +78,7 @@ function ComponentBucket:removecomponent(component)
    end
    
    -- Component not found, bail
-   assert(found, "Component has not been aggregated into this ComponentBucket. (Nooo! They be takin mah bukkit!)")
+   assert(found, "Component has not been aggregated into this ComponentBucket. (Nooo! That been takin from mah bukkit!)")
    
    -- Tell all the components to reset
    for k,v in pairs(self._components) do

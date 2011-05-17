@@ -12,7 +12,7 @@ end
 
 require 'events'
 require 'game.components'
-require 'game.scene.Scene2DComponent'
+require 'game.components.scene.Scene2DComponent'
 
 -- Main is executed only once, it is not a loop. It receives the arguments
 -- that were passed to the 'kl_initialize' function.
@@ -27,15 +27,15 @@ function main(...)
    local db = sqlite3.open_memory()
 
    db:exec[[
-     CREATE TABLE test (id INTEGER PRIMARY KEY, content);
+      CREATE TABLE test (id INTEGER PRIMARY KEY, content);
 
-     INSERT INTO test VALUES (NULL, 'Hello World');
-     INSERT INTO test VALUES (NULL, 'Hello Lua');
-     INSERT INTO test VALUES (NULL, 'Hello Sqlite3')
+      INSERT INTO test VALUES (NULL, 'Hello World');
+      INSERT INTO test VALUES (NULL, 'Hello Lua');
+      INSERT INTO test VALUES (NULL, 'Hello Sqlite3')
    ]]
 
    for row in db:nrows("SELECT * FROM test") do
-     print(row.id, row.content)
+      print(row.id, row.content)
    end
    
    local testscene = Scene2D.new(1024)
