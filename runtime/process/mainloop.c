@@ -114,18 +114,28 @@ int kl_mainloop_iteration()
    
    while(last_tick_time + tick_frequency < frame_timestamp)
    {
+      // Tell default process manager to tick
       kl_tick_process_list(KL_DEFAULT_PROCESS_MANAGER);
+      
+      // Send script tick event      
       kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &g_tick_script_event);
       last_tick_time += tick_frequency;
    }
    
+   // Tell default process manager to advance-time
    kl_advance_process_list(KL_DEFAULT_PROCESS_MANAGER, dt);
    
+   // Send script advance-time event
    g_advance_time_script_event.event.arg = *((uint32_t*)&dt);
    kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &g_advance_time_script_event);
    
+   /////////////////////////
+   // End script event frame
+   /////////////////////////
+   kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT, &scriptfence);
+   
    ////////////
-   // Do output
+   // Render
    ////////////
    
    // ...
@@ -133,9 +143,6 @@ int kl_mainloop_iteration()
    ////////////////////////////
    // Runtime frame is complete
    ////////////////////////////
-   
-   // Send endframe to script-event queue.
-   kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT, &scriptfence);
    
    // Record end time of this frame
    kl_high_resolution_timer_query(&last_frame_time);
