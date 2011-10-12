@@ -186,7 +186,7 @@ env['KL_DEP_LIBPATH'] = []
 env['KL_DEP_INCPATH'] = []
 env['KL_DEPS'] = []
 
-env['KL_DEP_ROOT'] = 'thirdparty/'
+env['KL_DEP_ROOT'] = 'runtime/src/thirdparty/'
 dependencies = [
     ['amp','src/c'],
     ['lua','src'],
