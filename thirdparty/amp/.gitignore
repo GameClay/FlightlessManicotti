@@ -45,8 +45,4 @@ Thumbs.db
 doc/html/
 
 #Ignore scons build files
-x86/
-x64/
-i386/
-armv6/
-armv7/
+lib/

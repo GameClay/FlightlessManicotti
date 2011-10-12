@@ -204,11 +204,11 @@ for lib,src_path in dependencies:
     lib_toplevel = env['KL_DEP_ROOT'] + lib
     env['KL_DEPS'] += [lib]
     env['KL_DEP_INCPATH'] += [os.path.abspath(lib_toplevel + '/' + src_path)]
-    env['KL_DEP_LIBPATH'] += [os.path.abspath(lib_toplevel + '/' + variant)]
+    env['KL_DEP_LIBPATH'] += [os.path.abspath(lib_toplevel + '/lib/' + variant)]
     
     dep_build_objects += SConscript(
        lib_toplevel + '/SConscript', 
-       variant_dir=lib_toplevel+'/'+variant, 
+       variant_dir=lib_toplevel+'/lib/'+variant, 
        duplicate=False, 
        exports='env'
     )
@@ -216,8 +216,8 @@ for lib,src_path in dependencies:
 ## Now build the runtime and example
     
 # Where are the libs and includes located for the runtime?
-env['KL_LIBPATH'] = [os.path.abspath('runtime/' + variant)]
+env['KL_LIBPATH'] = [os.path.abspath('runtime/lib/' + variant)]
 env['KL_INCPATH'] = [os.path.abspath('runtime/')]
 
-runtime_library = SConscript('runtime/SConscript', variant_dir='runtime/'+variant, duplicate=False, exports='env')
-example = SConscript('example/SConscript', variant_dir='example/'+variant, duplicate=False, exports='env')
+runtime_library = SConscript('runtime/SConscript', variant_dir='runtime/lib/'+variant, duplicate=False, exports='env')
+example = SConscript('example/SConscript', variant_dir='example/bin/'+variant, duplicate=False, exports='env')
