@@ -16,4 +16,4 @@
  * limitations under the License.
  */
 
-extern KL_API void lua_readvector2d(lua_State* L, int param_idx, float* out_xy);
+void lua_readvector2d(lua_State* L, int param_idx, float* out_xy);

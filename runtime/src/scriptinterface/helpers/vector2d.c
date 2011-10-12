@@ -20,6 +20,7 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #include <FlightlessManicotti/fm.h>
+#include "scriptinterface/helpers/vector2d.h"
 
 extern const char* VECTOR2D_LUA_LIB;
 
