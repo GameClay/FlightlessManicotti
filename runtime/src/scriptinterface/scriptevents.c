@@ -15,33 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-#include <stdio.h>
-#include <stdlib.h>
-#include <FlightlessManicotti/fm.h>
-#include <FlightlessManicotti/scriptinterface/script.h>
 
-int main(int argc, const char* argv[])
+#include <FlightlessManicotti/scriptinterface/scriptevents.h>
+#include <FlightlessManicotti/core/hash.h>
+#include <string.h>
+
+uint32_t kl_register_script_event(const char* name)
 {
-   if(kl_initialize(KL_FALSE, "example/main.lua", argc, argv) == KL_SUCCESS)
-   {
-      // Send the script a test event
-      kl_script_event_t fooevt;
-      fooevt.event.id = kl_register_script_event("TestEvent");
-      fooevt.event.context.as_ptr = NULL;
-      fooevt.event.arg = 42;
-      
-      kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &fooevt);
-      
-      while(kl_mainloop_iteration() == KL_SUCCESS)
-         ;
-      
-      kl_destroy();
-   }
-#ifdef WIN32
-   printf("Press any key to continue...");
-   getchar();
-#endif
-   
-   return 0;
+   uint32_t ret = kl_hash(name, strlen(name), 0);
+   KL_LOGF(KL_LL_NRM, "-Registering event: %s as %u\n", name, ret);
+   // TODO: track allocated ids in debug?
+   return ret;
 }

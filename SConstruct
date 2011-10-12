@@ -217,7 +217,7 @@ for lib,src_path in dependencies:
     
 # Where are the libs and includes located for the runtime?
 env['KL_LIBPATH'] = [os.path.abspath('runtime/lib/' + variant)]
-env['KL_INCPATH'] = [os.path.abspath('runtime/')]
+env['KL_INCPATH'] = [os.path.abspath('runtime/include/')]
 
 runtime_library = SConscript('runtime/SConscript', variant_dir='runtime/lib/'+variant, duplicate=False, exports='env')
 example = SConscript('example/SConscript', variant_dir='example/bin/'+variant, duplicate=False, exports='env')

@@ -16,32 +16,23 @@
  * limitations under the License.
  */
  
-#include <stdio.h>
-#include <stdlib.h>
-#include <FlightlessManicotti/fm.h>
-#include <FlightlessManicotti/scriptinterface/script.h>
+#ifndef _KL_LOGGER_H_
+#define _KL_LOGGER_H_
 
-int main(int argc, const char* argv[])
-{
-   if(kl_initialize(KL_FALSE, "example/main.lua", argc, argv) == KL_SUCCESS)
-   {
-      // Send the script a test event
-      kl_script_event_t fooevt;
-      fooevt.event.id = kl_register_script_event("TestEvent");
-      fooevt.event.context.as_ptr = NULL;
-      fooevt.event.arg = 42;
-      
-      kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &fooevt);
-      
-      while(kl_mainloop_iteration() == KL_SUCCESS)
-         ;
-      
-      kl_destroy();
-   }
-#ifdef WIN32
-   printf("Press any key to continue...");
-   getchar();
+#ifdef __cplusplus
+extern "C" {
 #endif
-   
-   return 0;
+
+#include <FlightlessManicotti/fm.h>
+#include <stdio.h>
+
+#define KL_LL_NRM 0
+#define KL_LL_ERR 1
+
+#define KL_LOGF(ll, ...) do { switch(ll) { case KL_LL_ERR: fprintf(stderr, __VA_ARGS__); break; default: fprintf(stdout, __VA_ARGS__); } } while(0)
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif
