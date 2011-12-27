@@ -18,6 +18,7 @@
  
 #include <string.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <FlightlessManicotti/fm.h>
 #include <FlightlessManicotti/core/memory.h>
 
@@ -94,25 +95,41 @@ void* kl_microrcpy(void* KL_RESTRICT dest, const void* KL_RESTRICT src, size_t s
 // Default aligned malloc/free using nedmalloc
 void* default_malloc(size_t size)
 {
+#if defined(KL_VALGRIND)
+   void* ret = malloc(size);
+#else
    void* ret = nedmalloc2(size, 16, 0);
    KL_ASSERT((((uintptr_t)ret) & 0xF) == 0, "Return was not aligned!");
+#endif
    return ret;
 }
 
 void default_free(void* p)
 {
+#if defined(KL_VALGRIND)
+   free(p);
+#else
    nedfree2(p, 0);
+#endif
 }
 
 void* aligned_nedmalloc(size_t size, size_t align_size)
 {
    KL_ASSERT(align_size != 16, "Use kl_malloc for 16-byte aligned allocations."); 
+#if defined(KL_VALGRIND)
+   return malloc(size);
+#else
    return nedmalloc2(size, align_size, 0); // No flags
+#endif
 }
 
 void aligned_nedfree(void* pointer)
 {
+#if defined(KL_VALGRIND)
+   free(pointer);
+#else
    nedfree2(pointer, 0); // No flags
+#endif
 }
 
 void kl_zero_mem(void* dest, size_t size)
