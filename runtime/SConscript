@@ -33,8 +33,18 @@ runtime_env.Append(CPPDEFINES=['KL_BUILD_LIBRARY'])
 if not (env['OS'] == 'ios' or env['OS'] == 'android'):
    runtime_env.Append(CCFLAGS =['-ansi', '-std=c89', '-pedantic'])
 
+#if env['OS'] == 'android':
+   #runtime_env.Append(CPPDEFINES = ['__ARM_NEON__'])
+   #runtime_env.Append(CCFLAGS = ['-mfloat-abi=softfp', '-mfpu=neon'])
+
+if env['OS'] == 'ios':
+   runtime_env.Append(CPPDEFINES = ['KL_ARCH_NEON'])
+
 # Determine additional libraries
-runtime_env.Append(LIBS = ['libstdc++','pthread'])
+runtime_env.Append(LIBS = ['libstdc++'])
+
+if not(env['OS'] == 'android' or env['OS'] == 'windows'):
+   runtime_env.Append(LIBS = ['pthread'])
 
 if (env['OS'] == 'ios' or env['OS'] == 'darwin'):
    runtime_env.Append(LINKFLAGS = ['-framework CoreServices']);
