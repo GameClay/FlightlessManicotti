@@ -1,4 +1,8 @@
 Import('env')
+
+# Add sqlite3 includes to the path
+env.Append(CPPPATH = [env.Dir('.').abspath])
+
 coreEnv = env.Clone()
 
 sqlite = coreEnv.StaticLibrary('sqlite3', ['sqlite3.c'])
