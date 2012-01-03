@@ -17,6 +17,6 @@ Import('env')
 import os
 
 # Common Darwin build settings
-env.Append(CPPDEFINES=['ZIG_OS_DARWIN'])
+env.Append(CPPDEFINES=[env['ZIG_OS_DARWIN']])
 
 env.Append(CPPFLAGS=['-pipe'])

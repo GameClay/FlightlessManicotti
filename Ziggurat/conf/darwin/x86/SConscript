@@ -19,7 +19,7 @@ Import('env')
 env.SConscript(['../SConscript'])
 
 # Darwin x86 specific build settings
-env.Append(CPPDEFINES=['ZIG_CPU_X86'])
+env.Append(CPPDEFINES=[env['ZIG_CPU_X86']])
 
 ccld = ['-mmacosx-version-min=10.5.4']
 env.Append(CXXFLAGS=ccld)

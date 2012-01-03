@@ -27,11 +27,12 @@ if env['MSVC_VERSION'] >= '8.0':
    env.Append(SHLINKCOM=[env['SHLINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;2'])
 
 # Windows specific compiler flags
-env.Append(CPPDEFINES=['ZIG_OS_WINDOWS',
-                       'ZIG_CPU_X86',
-                       'UNICODE',
+env.Append(CPPDEFINES=['UNICODE',
                        '_UNICODE',
                        'WIN32_LEAN_AND_MEAN'])
+
+env.Append(CPPDEFINES=[env['ZIG_OS_WINDOWS'],
+                       env['ZIG_CPU_X86']])
 
 env.Append(CFLAGS=['/nologo'])
 env.Append(CXXFLAGS=['/nologo'])

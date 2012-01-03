@@ -19,4 +19,4 @@ Import('env')
 env.SConscript(['../SConscript'])
 
 # iOS x86 specific build settings
-env.Append(CPPDEFINES=['ZIG_CPU_X86'])
+env.Append(CPPDEFINES=[env['ZIG_CPU_X86']])

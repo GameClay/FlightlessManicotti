@@ -71,13 +71,14 @@ else:
 # These flags are copied from the Android NDK version r4. 
 # CHANGING THESE COULD AFFECT COMPATIBILITY WITH THE NDK. 
 
-env.Append(CPPDEFINES=['ZIG_OS_ANDROID',
-                       'ZIG_CPU_ARM',
-                       'ANDROID',
+env.Append(CPPDEFINES=['ANDROID',
                        '__ARM_ARCH_5__',
                        '__ARM_ARCH_5T__',
                        '__ARM_ARCH_5E__',
                        '__ARM_ARCH_5TE__'])
+
+env.Append(CPPDEFINES=[env['ZIG_OS_ANDROID'],
+                       env['ZIG_CPU_ARM']])
 
 env.Append(CPPFLAGS=['-fpic',
                      '-ffunction-sections',
@@ -115,12 +116,14 @@ if ndkVersion >= 5:
    env['CC'] = '$ANDROID_TOOLS/arm-linux-androideabi-gcc'
    env['CXX'] = '$ANDROID_TOOLS/arm-linux-androideabi-g++'
    env['LINK'] = '$ANDROID_TOOLS/arm-linux-androideabi-gcc'
+   env['RANLIB'] = '$ANDROID_TOOLS/arm-linux-androideabi-ranlib'
 else:
    env['ANDROID_TOOLS'] = '$ANDROID_NDK/build/prebuilt/$PREBUILT_HOST_OS/arm-eabi-4.4.0/bin'
    env['AR'] = '$ANDROID_TOOLS/arm-eabi-ar'
    env['CC'] = '$ANDROID_TOOLS/arm-eabi-gcc'
    env['CXX'] = '$ANDROID_TOOLS/arm-eabi-g++'
    env['LINK'] = '$ANDROID_TOOLS/arm-eabi-gcc'
+   env['RANLIB'] = '$ANDROID_TOOLS/arm-eabi-ranlib'
 
 # Android include paths
 if ndkVersion >= 5:

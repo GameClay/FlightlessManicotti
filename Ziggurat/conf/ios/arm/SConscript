@@ -19,4 +19,4 @@ Import('env')
 env.SConscript(['../SConscript'])
 
 # iOS ARM specific build settings
-env.Append(CPPDEFINES=['ZIG_CPU_ARM'])
+env.Append(CPPDEFINES=[env['ZIG_CPU_ARM']])

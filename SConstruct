@@ -1,7 +1,17 @@
 import os, sys, platform
 
+# Set up an environment to specify our own OS/CPU defines
+platform_defines = Environment()
+platform_defines.SetDefault(ZIG_OS_ANDROID = 'KL_OS_ANDROID')
+platform_defines.SetDefault(ZIG_OS_DARWIN = 'KL_OS_DARWIN')
+platform_defines.SetDefault(ZIG_OS_IOS = 'KL_OS_IOS')
+platform_defines.SetDefault(ZIG_OS_WINDOWS = 'KL_OS_WINDOWS')
+
+platform_defines.SetDefault(ZIG_CPU_ARM = 'KL_ARCH_ARM')
+platform_defines.SetDefault(ZIG_CPU_X86 = 'KL_ARCH_X86')
+
 # Include the core
-env = SConscript(['Ziggurat/SConscript'])
+env = SConscript(['Ziggurat/SConscript'], exports = 'platform_defines')
 
 # Compile options
 AddOption('--sse', dest='sse', nargs=1, type='int', default=1, help='set SSE used (0-4) on 32 bit x86. Defaults to 1 (SSE1).')
@@ -91,6 +101,7 @@ if env.GetOption('microalloc'):
    dependencies += 'MicroAllocator'
    env['CPPDEFINES']+=['KL_USE_MICROALLOCATOR']
 
+prev_lib = None
 for lib in dependencies:
    lib_toplevel = 'runtime/src/thirdparty/' + lib
 
@@ -100,6 +111,9 @@ for lib in dependencies:
       duplicate = False)
    env.Prepend(LIBS = built_lib)
    env.Install('$DISTDIR/lib', built_lib)
+   if not (prev_lib == None):
+      env.Depends(built_lib, prev_lib)
+   prev_lib = built_lib
 
 ## Now build the runtime and example
 runtime_library = env.SConscript('runtime/SConscript', variant_dir='$OBJDIR/runtime', duplicate = False)

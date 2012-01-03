@@ -43,7 +43,7 @@ env['IOS_PLATFORM_BIN'] = '$IOS_PLATFORM/usr/bin'
 env.PrependENVPath('PATH', '$IOS_PLATFORM_BIN')
 
 # Add needed defines and flags
-env.Append(CPPDEFINES=['ZIG_OS_IOS',
+env.Append(CPPDEFINES=[env['ZIG_OS_IOS'],
                        '__IPHONE_OS_VERSION_MIN_REQUIRED=40300']) # TODO: Base this off $IOS_SDK_VERSION
 
 env.Append(CPPFLAGS=['-arch', env['IOS_ARCH'],
