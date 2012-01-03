@@ -1,12 +1,8 @@
 # SCons build files
 .sconsign.dblite
-runtime/lib
-example/bin
+build/
 
 # Visual Studio specific files
 *.pdb
 *.suo
 *.ncb
-
-# e project file
-.eprj

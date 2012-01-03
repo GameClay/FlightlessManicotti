@@ -1,10 +1,6 @@
 Import('env')
 coreEnv = env.Clone()
 
-sqlite = coreEnv.StaticLibrary('sqlite3', 
-	['sqlite3.c'],
-	CPPDEFINES = env['CPPDEFINES'],
-	CPPPATH = env['KL_PLATFORM_INC_PATH'],
-	CCFLAGS = env['CCFLAGS'],
-)
+sqlite = coreEnv.StaticLibrary('sqlite3', ['sqlite3.c'])
+
 Return('sqlite')

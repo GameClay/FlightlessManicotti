@@ -1,6 +1,10 @@
 import sys
 
 Import('env')
+
+# Add AMP includes to the path
+env.Append(CPPPATH = [env.Dir('src/c').abspath])
+
 coreEnv = env.Clone()
 
 # Files used for all platforms/configurations
@@ -26,7 +30,7 @@ else:
     lib_files += ['src/c/amp/amp_barrier_generic_signal.c']
 
 # Platform specific files
-if (sys.platform == 'win32' or sys.platform == 'cygwin'):
+if (env['OS_GROUP'] == 'windows'):
     coreEnv.Append(CPPDEFINES=['AMP_USE_WINTHREADS'])
     lib_files += [
         'src/c/amp/amp_condition_variable_winthreads.c',
@@ -45,13 +49,13 @@ else:
         'src/c/amp/amp_thread_local_slot_pthreads.c',
         'src/c/amp/amp_thread_pthreads.c'
     ]
-    if sys.platform == 'darwin' and not coreEnv['KL_CROSS_TARGET']:
+    if (env['OS'] == 'darwin'):
         coreEnv.Append(CPPDEFINES=['AMP_USE_LIBDISPATCH_SEMAPHORES'])
         lib_files += [
             'src/c/amp/amp_semaphore_libdispatch.c',
             'src/c/amp/amp_platform_sysctl.c'
         ]
-    elif sys.platform == 'linux2':
+    elif (env['OS'] == 'linux'):
         coreEnv.Append(CPPDEFINES=['AMP_USE_POSIX_1003_1B_SEMAPHORES', 'SEM_VALUE_MAX=2147483647'])
         lib_files += [
             'src/c/amp/amp_semaphore_posix_1003_1b.c',
@@ -63,18 +67,10 @@ else:
             'src/c/amp/amp_semaphore_pthreads.c'
         ]
 
-# Additional compile flags
-amp_ccflags = []
-if sys.platform =="win32":
-   amp_ccflags += []
-else:
-   amp_ccflags += ['-std=c99']
-   
+coreEnv.Append(CCFLAGS = ['-std=c99'])
+coreEnv.Append(CPPPATH = ['src'])
+
 # lib target
-amp_lib = coreEnv.StaticLibrary('amp', 
-	lib_files,
-	CPPPATH = ['src/c'] + env['KL_PLATFORM_INC_PATH'],
-	CCFLAGS = amp_ccflags + env['CCFLAGS'],
-)
+amp_lib = coreEnv.StaticLibrary('amp',lib_files)
 
 Return(['amp_lib'])

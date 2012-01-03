@@ -1,0 +1,80 @@
+# Ziggurat -- Copyright 2011 GameClay LLC
+# Portions Copyright 2010 - 2011, Qualcomm Innovation Center, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+Import('env')
+import os
+
+# iOS specific vars
+vars = Variables()
+vars.Add(EnumVariable('IOS_SDK_VERSION', ' iOS SDK Version (4.3)',
+                      os.environ.get('IOS_SDK_VERSION'), allowed_values=('4.3', '5.0', ''), map={}, ignorecase=0))
+vars.Update(env)
+Help(vars.GenerateHelpText(env))
+
+# Verify dependencies
+if '' == env.subst('$IOS_SDK_VERSION'):
+   env['IOS_SDK_VERSION'] = '5.0'
+
+# x86 build means iPhone Simulator
+if env['CPU'].startswith('arm'):
+   env.AppendENVPath('IPHONEOS_DEPLOYMENT_TARGET', env['IOS_SDK_VERSION'])
+   env['IOS_ARCH'] = env['CPU']
+   env['IOS_PLATFORM'] = '/Developer/Platforms/iPhoneOS.platform/Developer'
+   env['IOS_PLATFORM_SDK'] = '$IOS_PLATFORM/SDKs/iPhoneOS' + env['IOS_SDK_VERSION'] + '.sdk'
+else:
+   env['IOS_ARCH'] = 'i386'
+   env.AppendENVPath('MACOSX_DEPLOYMENT_TARGET', '10.6')
+   env['IOS_PLATFORM'] = '/Developer/Platforms/iPhoneSimulator.platform/Developer'
+   env['IOS_PLATFORM_SDK'] = '$IOS_PLATFORM/SDKs/iPhoneSimulator' + env['IOS_SDK_VERSION'] + '.sdk'
+
+env['IOS_PLATFORM_BIN'] = '$IOS_PLATFORM/usr/bin'
+env.PrependENVPath('PATH', '$IOS_PLATFORM_BIN')
+
+# Add needed defines and flags
+env.Append(CPPDEFINES=['ZIG_OS_IOS',
+                       '__IPHONE_OS_VERSION_MIN_REQUIRED=40300']) # TODO: Base this off $IOS_SDK_VERSION
+
+env.Append(CPPFLAGS=['-arch', env['IOS_ARCH'],
+                     '-isysroot', env['IOS_PLATFORM_SDK'],
+                     '-miphoneos-version-min=' + env['IOS_SDK_VERSION'],
+                     '-Wno-trigraphs',
+                     '-Wno-tautological-compare',
+                     '-fpascal-strings',
+                     '-fmessage-length=0',
+                     '-pipe',
+                     '-std=gnu99',
+                     '-gdwarf-2'])
+
+env.Append(CPPFLAGS=['-x', 'objective-c',
+                     '-fobjc-abi-version=2',
+                     '-fobjc-legacy-dispatch'])
+
+env.Append(LINKFLAGS=['-arch', env['IOS_ARCH'],
+                      '-isysroot', env['IOS_PLATFORM_SDK'],
+                      '-miphoneos-version-min=' + env['IOS_SDK_VERSION']])
+
+# iOS include paths
+env.Append(CPPPATH=['$IOS_PLATFORM_SDK/usr/include',
+                    '$IOS_PLATFORM/usr/lib/clang/3.0/include'])
+
+# iOS library locations
+env.Append(LIBPATH=['$IOS_PLATFORM_SDK/usr/lib',
+                    '$IOS_PLATFORM/usr/lib/clang/3.0/lib/darwin'])
+
+# iOS tools
+env['AR'] = '$IOS_PLATFORM_BIN/ar'
+env['CC'] = '$IOS_PLATFORM_BIN/clang'
+env['CXX'] = '$IOS_PLATFORM_BIN/clang++'
+env['LINK'] = '$IOS_PLATFORM_BIN/clang'

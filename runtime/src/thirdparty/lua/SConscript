@@ -1,6 +1,10 @@
 import sys
 
 Import('env')
+
+# Add lua includes to the path
+env.Append(CPPPATH = [env.Dir('src').abspath])
+
 coreEnv = env.Clone()
 
 lua_src = [
@@ -38,9 +42,6 @@ lua_src = [
    "src/lua.c"
 ]
 
-lua_lib = coreEnv.StaticLibrary('lua', 
-   lua_src,
-   CPPPATH = ['src'] + env['KL_PLATFORM_INC_PATH'],
-   CCFLAGS = env['CCFLAGS'],
-)
+lua_lib = coreEnv.StaticLibrary('lua', lua_src)
+
 Return('lua_lib')

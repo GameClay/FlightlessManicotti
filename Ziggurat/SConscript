@@ -1,0 +1,108 @@
+# Ziggurat -- Copyright 2011 GameClay LLC
+# Portions Copyright 2010 - 2011, Qualcomm Innovation Center, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import os, sys
+
+vars = Variables()
+
+# Figure out the default OS based on Python's sys.platform
+default_os = ''
+host_os = ''
+if sys.platform.startswith('darwin'):
+   default_os = 'darwin'
+   host_os = 'darwin'
+elif sys.platform.startswith('linux'):
+   default_os = 'linux'
+   host_os = 'linux'
+elif sys.platform.startswith('win32'):
+   default_os = 'win7' # TODO: Use sys.winver?
+   host_os = 'windows'
+elif sys.platform.startswith('cygwin'):
+   default_os = 'winxp'
+   host_os = 'windows'
+
+# Common build variables
+vars.Add(EnumVariable('OS', 'Target OS', default_os, allowed_values=('linux', 'win7', 'winxp', 'android', 'darwin', 'ios')))
+vars.Add(EnumVariable('CPU', 'Target CPU', 'x86', allowed_values=('x86', 'x86-64', 'IA64', 'arm', 'armv7', 'armv6')))
+vars.Add(EnumVariable('VARIANT', 'Build variant', 'debug', allowed_values=('debug', 'release')))
+vars.Add(EnumVariable('MSVC_VERSION', 'MSVC compiler version - Windows', '9.0', allowed_values=('9.0', '10.0')))
+
+# Standard variant directories
+build_dir = 'build/${OS}/${CPU}/${VARIANT}'
+vars.AddVariables(('OBJDIR', '', build_dir + '/obj'),
+                  ('DISTDIR', '', '#' + build_dir + '/dist'))
+
+env = Environment(variables = vars)
+path = env['ENV']['PATH']
+
+# Recreate the environment with the correct path
+if env['OS'] == 'win7' or env['OS'] == 'winxp':
+   if env['CPU'] == 'x86':
+      env = Environment(variables = vars, TARGET_ARCH='x86', MSVC_VERSION='${MSVC_VERSION}', ENV={'PATH': path})
+      print 'Building for 32 bit Windows'
+   elif env['CPU'] == 'IA64':
+      print 'Building for 64 bit Windows'
+      env = Environment(variables = vars, TARGET_ARCH='x86_64', MSVC_VERSION='${MSVC_VERSION}', ENV={'PATH': path})
+   else:
+      print 'Windows CPU must be x86 or IA64'
+      Exit()
+elif env['OS'] == 'android':
+   env = Environment(variables = vars, tools = ['gnulink', 'gcc', 'g++', 'ar', 'as'], ENV={'PATH': path})
+elif env['OS'] == 'darwin':
+   if (env['CPU'].startswith('arm') or env['CPU'] == 'IA64'):
+      print 'Darwin CPU msut be x86 or x86-64'
+      Exit()
+elif env['OS'] == 'ios':
+   if (env['CPU'] == 'arm' or env['CPU'] == 'x86-64' or env['CPU'] == 'IA64'):
+      print 'iOS CPU msut be armv6 or armv7'
+      Exit()
+else:
+   env = Environment(variables = vars, ENV={'PATH': path})
+
+Help(vars.GenerateHelpText(env))
+
+# Validate build vars
+if env['OS'] == 'linux':
+   env['OS_GROUP'] = 'posix'
+   env['OS_CONF'] = 'linux'
+elif env['OS'] == 'win7' or env['OS'] == 'winxp':
+   env['OS_GROUP'] = 'windows'
+   env['OS_CONF'] = 'windows'
+elif env['OS'] == 'android':
+   env['OS_GROUP'] = 'posix'
+   env['OS_CONF'] = 'android'
+elif env['OS'] == 'darwin':
+   env['OS_GROUP'] = 'posix'
+   env['OS_CONF'] = 'darwin'
+elif env['OS'] == 'ios':
+   env['OS_GROUP'] = 'posix'
+   env['OS_CONF'] = 'ios'
+else:
+   print 'Unsupported OS/CPU combination'
+   Exit()
+
+# Host OS is the build platform
+env['HOST_OS'] = host_os
+
+if env['VARIANT'] == 'release':
+   env.Append(CPPDEFINES = 'NDEBUG')
+else:
+   env.Append(CPPDEFINES = ['DEBUG', '_DEBUG'])
+
+# Read OS and CPU specific SConscript file
+Export('env')
+env.SConscript('conf/${OS_CONF}/${CPU}/SConscript')
+
+Return('env')

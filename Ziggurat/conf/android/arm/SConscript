@@ -1,0 +1,205 @@
+# Ziggurat -- Copyright 2011 GameClay LLC
+# Portions Copyright 2010 - 2011, Qualcomm Innovation Center, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import os
+Import('env')
+
+# android specific vars
+vars = Variables()
+vars.Add(PathVariable('ANDROID_NDK', ' Base directory of Android NDK', os.environ.get('ANDROID_NDK')))
+vars.Add('ANDROID_TARGET', ' Target to be used for the build', os.environ.get('ANDROID_TARGET'))
+vars.Add(EnumVariable('ANDROID_API_LEVEL', ' Android API level (5 through 9)',
+                      os.environ.get('ANDROID_API_LEVEL'), allowed_values=('5', '8', '9', ''), map={}, ignorecase=0))
+vars.Update(env)
+Help(vars.GenerateHelpText(env))
+
+# Verify dependencies
+if '' == env.subst('$ANDROID_NDK'):
+   print 'ANDROID_NDK variable is required'
+   Exit()
+
+if '' == env.subst('$ANDROID_TARGET'):
+   env['ANDROID_TARGET'] = 'generic'
+
+if '' == env.subst('$ANDROID_API_LEVEL'):
+   env['ANDROID_API_LEVEL'] = '8'
+
+# Override MSVC build settings when building on windows.
+if (env['HOST_OS'] == 'windows'):
+   env['OBJPREFIX']      = ''
+   env['OBJSUFFIX']      = '.o'
+   env['SHOBJPREFIX']    = '$OBJPREFIX'
+   env['SHOBJSUFFIX']    = '$OBJSUFFIX'
+   env['PROGPREFIX']     = ''
+   env['PROGSUFFIX']     = ''
+   env['LIBPREFIX']      = 'lib'
+   env['LIBSUFFIX']      = '.a'
+   env['SHLIBPREFIX']    = '$LIBPREFIX'
+   env['SHLIBSUFFIX']    = '.so'
+   env['LIBPREFIXES']    = [ '$LIBPREFIX' ]
+   env['LIBSUFFIXES']    = [ '$LIBSUFFIX', '$SHLIBSUFFIX' ]
+   env['PREBUILT_HOST_OS'] = 'windows'
+elif (env['HOST_OS'] == 'darwin'):
+   env['PREBUILT_HOST_OS'] = 'darwin-x86'
+   env['SHLIBSUFFIX']      = '.so'
+   env['LIBSUFFIXES']      = [ '$LIBSUFFIX', '$SHLIBSUFFIX' ]
+else:
+   env['PREBUILT_HOST_OS'] = 'linux-x86'
+
+# Determine Android NDK version
+if os.path.exists(env.subst('$ANDROID_NDK/build/prebuilt/$PREBUILT_HOST_OS/arm-eabi-4.4.0/bin')):
+   ndkVersion = 4
+elif os.path.exists(env.subst('$ANDROID_NDK/toolchains')):
+   ndkVersion = 5
+else:
+   print 'Cannot determine Android NDK version'
+   Exit()
+
+# Android specific compiler flags
+# These flags are copied from the Android NDK version r4. 
+# CHANGING THESE COULD AFFECT COMPATIBILITY WITH THE NDK. 
+
+env.Append(CPPDEFINES=['ZIG_OS_ANDROID',
+                       'ZIG_CPU_ARM',
+                       'ANDROID',
+                       '__ARM_ARCH_5__',
+                       '__ARM_ARCH_5T__',
+                       '__ARM_ARCH_5E__',
+                       '__ARM_ARCH_5TE__'])
+
+env.Append(CPPFLAGS=['-fpic',
+                     '-ffunction-sections',
+                     '-funwind-tables',
+                     '-fstack-protector',
+                     '-Wno-psabi',
+                     '-march=armv5te',
+                     '-mtune=xscale',
+                     '-msoft-float',
+                     '-mthumb',
+                     '-Os',
+                     '-fomit-frame-pointer',
+                     '-Wno-unused',
+                     '-Wa,--noexecstack',
+                     '-pipe'])
+
+env.Append(CXXFLAGS=['-fno-exceptions',
+                     '-fno-rtti'])
+
+# NDK version specific flags
+if ndkVersion >= 5:
+   env.Append(CPPFLAGS=['-fno-strict-aliasing',
+                        '-funswitch-loops',
+                        '-finline-limit=300'])
+else:
+   env.Append(CPPFLAGS=['-mthumb-interwork',
+                        '-fno-short-enums',
+                        '-fno-strict-aliasing',
+                        '-finline-limit=64'])
+
+# Use Android provided tools
+if ndkVersion >= 5:
+   env['ANDROID_TOOLS'] = '$ANDROID_NDK/toolchains/arm-linux-androideabi-4.4.3/prebuilt/$PREBUILT_HOST_OS/bin'
+   env['AR'] = '$ANDROID_TOOLS/arm-linux-androideabi-ar'
+   env['CC'] = '$ANDROID_TOOLS/arm-linux-androideabi-gcc'
+   env['CXX'] = '$ANDROID_TOOLS/arm-linux-androideabi-g++'
+   env['LINK'] = '$ANDROID_TOOLS/arm-linux-androideabi-gcc'
+else:
+   env['ANDROID_TOOLS'] = '$ANDROID_NDK/build/prebuilt/$PREBUILT_HOST_OS/arm-eabi-4.4.0/bin'
+   env['AR'] = '$ANDROID_TOOLS/arm-eabi-ar'
+   env['CC'] = '$ANDROID_TOOLS/arm-eabi-gcc'
+   env['CXX'] = '$ANDROID_TOOLS/arm-eabi-g++'
+   env['LINK'] = '$ANDROID_TOOLS/arm-eabi-gcc'
+
+# Android include paths
+if ndkVersion >= 5:
+   env.Append(CPPPATH=['$ANDROID_NDK/platforms/android-$ANDROID_API_LEVEL/arch-arm/usr/include'])
+else:
+    env.Append(CPPPATH=['$ANDROID_NDK/build/platforms/android-$ANDROID_API_LEVEL/arch-arm/usr/include'])
+
+# Android library locations
+if ndkVersion >= 5:
+   env.Append(LIBPATH=['$ANDROID_NDK/platforms/android-$ANDROID_API_LEVEL/arch-arm/usr/lib'])
+   #append the location of the gcc library
+   env.Append(LIBPATH=['$ANDROID_NDK/toolchains/arm-linux-androideabi-4.4.3/prebuilt/$PREBUILT_HOST_OS/lib/gcc/arm-linux-androideabi/4.4.3/'])
+else:
+   env.Append(LIBPATH=['$ANDROID_NDK/build/platforms/android-$ANDROID_API_LEVEL/arch-arm/usr/lib'])
+   #append the location of the gcc library
+   env.Append(LIBPATH=['$ANDROID_NDK/build/prebuilt/$PREBUILT_HOST_OS/arm-eabi-4.4.0/lib/gcc/arm-eabi/4.4.0/'])
+
+env.Append(LIBPATH=['$ANDROID_SRC/out/target/product/$ANDROID_TARGET/system/lib'])
+
+# Android link flags\
+if ndkVersion >= 5:
+   env.Append(LINKFLAGS=['-Wl,--gc-sections',
+                         '-Wl,-z,nocopyreloc',
+                         '-Wl,--entry=main',
+                         '--sysroot=$ANDROID_NDK/platforms/android-$ANDROID_API_LEVEL/arch-arm',
+                         '-Wl,--no-undefined',
+                         '-Wl,-z,noexecstack',
+                         '-Wl,-rpath-link=$ANDROID_NDK/platforms/android-$ANDROID_API_LEVEL/arch-arm/usr/lib'])
+
+   # SCons default SHLINKFLAGS is '$LINKFLAGS -shared'.  Since we don't
+   # want to pull in $LINKFLAGS, reset it here instead of Append().
+
+   if env['VARIANT'] == 'debug':
+      stripsymbols = ''
+   else:
+      stripsymbols = '-s'
+
+   env['SHLINKFLAGS'] = ' '.join(['-Wl,-soname,${TARGET.file} '
+                                  '-shared',
+                                  '--sysroot=$ANDROID_NDK/platforms/android-$ANDROID_API_LEVEL/arch-arm',
+                                  '$ANDROID_NDK/platforms/android-$ANDROID_API_LEVEL/arch-arm/usr/lib/libc.so',
+                                  '$ANDROID_NDK/platforms/android-$ANDROID_API_LEVEL/arch-arm/usr/lib/libstdc++.so',
+                                  '$ANDROID_NDK/platforms/android-$ANDROID_API_LEVEL/arch-arm/usr/lib/libm.so',
+                                  '-Wl,--fix-cortex-a8',
+                                  '-Wl,--no-undefined',
+                                  '-Wl,-z,noexecstack',
+                                  '-Wl,-rpath-link=$ANDROID_NDK/platforms/android-$ANDROID_API_LEVEL/arch-arm/usr/lib',
+                                  stripsymbols])
+else:
+   env.Append(LINKFLAGS=['-nostdlib',
+                         '-Bdynamic',
+                         '-Wl,--entry=main',
+                         '-Wl,--no-undefined',
+                         '-Wl,-T,$ANDROID_NDK/build/prebuilt/$PREBUILT_HOST_OS/arm-eabi-4.4.0/arm-eabi/lib/ldscripts/armelf.x',
+                         '-Wl,-dynamic-linker,/system/bin/linker',
+                         '-Wl,--gc-sections',
+                         '-Wl,-z,nocopyreloc',
+                         '-Wl,-rpath-link=$ANDROID_NDK/build/platforms/android-$ANDROID_API_LEVEL/arch-arm/usr/lib',
+                         '$ANDROID_NDK/build/platforms/android-$ANDROID_API_LEVEL/arch-arm/usr/lib/crtbegin_dynamic.o'])
+
+   # Android linking requires a postfix set of objects
+   env.Append(LINKCOM=' $LINKFLAGS_POST')
+   env.Append(LINKFLAGS_POST=['$ANDROID_NDK/build/platforms/android-$ANDROID_API_LEVEL/arch-arm/usr/lib/crtend_android.o'])
+
+   # SCons default SHLINKFLAGS is '$LINKFLAGS -shared'.  Since we don't
+   # want to pull in $LINKFLAGS, reset it here instead of Append().
+
+   if env['VARIANT'] == 'debug':
+      stripsymbols = ''
+   else:
+      stripsymbols = '-s'
+
+   env['SHLINKFLAGS'] = ' '.join(['-nostdlib',
+                                  '-march=armv5te',
+                                  '-mtune=xscale',
+                                  '-Wl,-soname,${TARGET.file}',
+                                  '-Wl,-shared,-Bsymbolic',
+                                  '-Wl,--fix-cortex-a8',
+                                  '-Wl,--no-undefined',
+                                  '-Wl,-z,noexecstack',
+                                  '-Wl,-rpath-link=$ANDROID_NDK/build/platforms/android-$ANDROID_API_LEVEL/arch-arm/usr/lib',
+                                  stripsymbols])
