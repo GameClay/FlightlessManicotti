@@ -150,11 +150,6 @@ If you are implementing a feature in the runtime, and saying to yourself, "Gosh,
 #### Comments
 Comments must use C style comments `/* ... */`
 
-Doxygen comments, however, must follow the specified convention.
-
-#### Doxygen Comment Style
-Doxygen comments will use C style comments followed by a bang.
-
 ##### Doxygen tags
 All Doxygen tags should use the `@` character to denote a tag, for example `@tag` 
 
