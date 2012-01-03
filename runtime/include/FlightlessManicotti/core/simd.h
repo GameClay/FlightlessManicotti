@@ -32,7 +32,7 @@ typedef __m128i kl_int32x4_t;
 #define kl_load_int32x4(const_kl_int32x4_t_ptr) _mm_load_si128(const_kl_int32x4_t_ptr)
 #define kl_store_int32x4(dest_int32_t_ptr, src_kl_int32x4_t) _mm_store_si128(dest_int32_t_ptr, src_kl_int32x4_t)
 
-#elif defined(KL_ARCH_ARM)
+#elif defined(KL_ARCH_NEON)
 
 #include <arm_neon.h>
 
