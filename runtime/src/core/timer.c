@@ -17,6 +17,7 @@
  */
 #include <FlightlessManicotti/core/timer.h>
 
+#if defined(KL_OS_DARWIN) || defined(KL_OS_IOS)
 static mach_timebase_info_data_t s_timebase_info;
 
 void kl_absolute_time_to_ns(const kl_absolute_time_t* time, uint64_t* out_ns)
@@ -32,3 +33,13 @@ void kl_ns_to_absolute_time(const uint64_t* ns, kl_absolute_time_t* out_absolute
    
    *out_absolute_time = ((*ns) * s_timebase_info.denom) / s_timebase_info.numer;
 }
+#elif defined(KL_OS_WINDOWS)
+
+#else
+void kl_high_resolution_timer_query(kl_absolute_time_t* time_ptr)
+{
+   struct timespec clocktime;
+   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &clocktime);
+   *time_ptr = clocktime.tv_sec * 1000000000 + clocktime.tv_nsec;
+}
+#endif
