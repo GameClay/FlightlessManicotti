@@ -28,7 +28,7 @@ extern "C" {
 extern KL_API uint32_t kl_hash(const void* key, size_t length, uint32_t initval);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
 
 #endif

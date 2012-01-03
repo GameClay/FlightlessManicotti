@@ -26,7 +26,7 @@
 #include <FlightlessManicotti/core/simd.h>
 #include "swig_autogen.h"
 
-// Extern the lua module loaders
+/* Extern the lua module loaders */
 extern int luaopen_scriptevents(lua_State* L);
 extern int luaopen_lsqlite3(lua_State* L);
 extern int luaopen_cast(lua_State* L);
@@ -40,7 +40,7 @@ struct _kl_script_context
    KL_BOOL threaded;
    KL_BOOL keep_running;
    amp_thread_t thread;
-   
+
    int argc;
    const char** argv;
    const char* file_name;
@@ -48,63 +48,63 @@ struct _kl_script_context
    int event_handler_ref;
 };
 
-// KL_DEFAULT_SCRIPT_CONTEXT
+/* KL_DEFAULT_SCRIPT_CONTEXT */
 kl_script_context_t g_script_context = NULL;
 
-// script.events.EOF
+/* script.events.EOF */
 kl_script_event_t g_event_EOF;
 
 int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_queue_max)
 {
    struct _kl_script_context* sctx = NULL;
-   
+
    KL_ASSERT(context != NULL, "Cannot use KL_DEFAULT_SCRIPT_CONTEXT during allocation.");
    if(context == NULL)
       return KL_ERROR;
-      
-   // Allocate script context
+
+   /* Allocate script context */
    sctx = (struct _kl_script_context*)kl_heap_alloc(sizeof(struct _kl_script_context));
 
    if(sctx == NULL)
       return KL_ERROR;
-      
-   // Allocate event buffer
+
+   /* Allocate event buffer */
    if(kl_alloc_ringbuffer(kl_int32x4_t, &sctx->event_buffer, event_queue_max * sizeof(kl_int32x4_t)) != KL_SUCCESS)
    {
       kl_heap_free(sctx);
       return KL_ERROR;
    }
-   
-   // Set threaded or not
+
+   /* Set threaded or not */
    sctx->threaded = threaded;
    sctx->thread = NULL;
    sctx->keep_running = KL_TRUE;
-   
-   // No event handler ref yet
+
+   /* No event handler ref yet */
    sctx->event_handler_ref = 0;
-   
-   // Set up EOF event
+
+   /* Set up EOF event */
    g_event_EOF.event.id = kl_register_script_event("EOF");
    g_event_EOF.event.context.as_64 = 0;
    g_event_EOF.event.arg = 0;
-   
-   // Start up lua
+
+   /* Start up lua */
    sctx->lua_state = lua_open();
    luaL_openlibs(sctx->lua_state);
-   
+
    luaopen_scriptevents(sctx->lua_state);
    luaopen_lsqlite3(sctx->lua_state);
    luaopen_cast(sctx->lua_state);
    luaopen_scene2d(sctx->lua_state);
    luaopen_vector2d(sctx->lua_state);
-   
+
    LOAD_SWIG_LIBS(sctx->lua_state);
-   
-   // Assign a global for the script context assigned to this lua state
+
+   /* Assign a global for the script context assigned to this lua state */
    lua_pushlightuserdata(sctx->lua_state, sctx);
    lua_setglobal(sctx->lua_state, "SCTX");
-   
-   // Return
+
+   /* Return */
    (*context) = sctx;
    return KL_SUCCESS;
 }
@@ -114,53 +114,53 @@ void _on_lua_err(lua_State* state)
    size_t str_sz;
    int top_idx = lua_gettop(state);
    const char* syntax_err = lua_tolstring(state, top_idx, &str_sz);
-   KL_LOGF(KL_LL_ERR, "%s\n", syntax_err);
+   /*KL_LOGF(KL_LL_ERR, "%s\n", syntax_err); */
    lua_pop(state, 1);
 }
 
 void _kl_script_run_internal(void* arg)
 {
    kl_script_context_t sctx = (kl_script_context_t)arg;
-   
-   // Execute the script file
+
+   /* Execute the script file */
    switch(lua_pcall(sctx->lua_state, 0, 0, 0))
    {
       case 0: break;
-      
-      // Runtime error
+
+      /* Runtime error */
       case LUA_ERRRUN:
       {
          _on_lua_err(sctx->lua_state);
          break;
       }
-      
+
       default:
       {
-         KL_LOGF(KL_LL_ERR, "Unknown error loading file '%s'", sctx->file_name);
+         /*KL_LOGF(KL_LL_ERR, "Unknown error loading file '%s'", sctx->file_name);*/
       }
    }
-   
-   // Push function name onto lua stack
+
+   /* Push function name onto lua stack */
    lua_getglobal(sctx->lua_state, "main");
    
-   // If there is no 'main' function, we are done.
+   /* If there is no 'main' function, we are done. */
    if(lua_isnil(sctx->lua_state, -1))
       lua_pop(sctx->lua_state, 1);
    else
    {
-      // Load argv onto the lua stack
+      /* Load argv onto the lua stack */
       int i;
       for(i = 0; i < sctx->argc; i++)
       {
          lua_pushstring(sctx->lua_state, sctx->argv[i]);
       }
-      
-      // Invoke the main function
+
+      /* Invoke the main function */
       switch(lua_pcall(sctx->lua_state, sctx->argc, 0, 0))
       {
          case 0:
          {
-            // Threaded execution, so run the message pump.
+            /* Threaded execution, so run the message pump. */
             if(sctx->threaded)
             {
                while(sctx->keep_running == KL_TRUE)
@@ -171,7 +171,7 @@ void _kl_script_run_internal(void* arg)
             break;
          }
 
-         // Runtime error
+         /* Runtime error */
          case LUA_ERRRUN:
          {
             _on_lua_err(sctx->lua_state);
@@ -180,7 +180,7 @@ void _kl_script_run_internal(void* arg)
 
          default:
          {
-            KL_LOGF(KL_LL_ERR, "Unknown error calling main function.");
+            /*KL_LOGF(KL_LL_ERR, "Unknown error calling main function.");*/
             break;
          }
       }
@@ -188,15 +188,15 @@ void _kl_script_run_internal(void* arg)
 }
 
 int kl_script_run(kl_script_context_t context, const char* file_name, int argc, const char** argv)
-{  
+{
    kl_script_context_t sctx = (context == KL_DEFAULT_SCRIPT_CONTEXT ? g_script_context : context);
    KL_ASSERT(sctx, "NULL context.");
 
    sctx->argc = argc;
    sctx->argv = argv;
    sctx->file_name = file_name;
-   
-   // Load the file, and if successful, execute
+
+   /* Load the file, and if successful, execute */
    switch(luaL_loadfile(sctx->lua_state, file_name))
    {
       case 0:
@@ -205,7 +205,7 @@ int kl_script_run(kl_script_context_t context, const char* file_name, int argc, 
          {
             int create_res = amp_thread_create_and_launch(&sctx->thread, AMP_DEFAULT_ALLOCATOR, 
                sctx, _kl_script_run_internal);
-            
+
             if(create_res != 0)
                return KL_ERROR;
          }
@@ -213,11 +213,11 @@ int kl_script_run(kl_script_context_t context, const char* file_name, int argc, 
             _kl_script_run_internal(sctx);
          return KL_SUCCESS;
       }
-      
-      // Possible errors
+
+      /* Possible errors */
       case LUA_ERRFILE:
       {
-         KL_LOGF(KL_LL_ERR, "File '%s' not found.\n", file_name);
+         /*KL_LOGF(KL_LL_ERR, "File '%s' not found.\n", file_name);*/
          return KL_ERROR;
       }
       case LUA_ERRSYNTAX:
@@ -227,7 +227,7 @@ int kl_script_run(kl_script_context_t context, const char* file_name, int argc, 
       }
       case LUA_ERRMEM: 
       {
-         KL_LOGF(KL_LL_ERR, "lua ran out of memory opening file %s.\n", file_name);
+         /*KL_LOGF(KL_LL_ERR, "lua ran out of memory opening file %s.\n", file_name);*/
          return KL_ERROR;
       }
       default:
@@ -245,8 +245,8 @@ void kl_script_destroy(kl_script_context_t* context)
    if(context != NULL)
    {  
       sctx = *context;
-      
-      // Stop threading
+
+      /* Stop threading */
       if(sctx->threaded)
       {
          KL_ASSERT(sctx->thread != NULL, "Contex marked as threaded, but no thread found.");
@@ -254,10 +254,10 @@ void kl_script_destroy(kl_script_context_t* context)
          amp_thread_join_and_destroy(&sctx->thread, AMP_DEFAULT_ALLOCATOR);
          sctx->thread = NULL;
       }
-      
+
       lua_close(sctx->lua_state);
       kl_free_ringbuffer(kl_int32x4_t, &sctx->event_buffer);
-   
+
       kl_heap_free(sctx);
    }
 }
@@ -288,7 +288,7 @@ int kl_script_event_endframe(kl_script_context_t context, kl_script_event_fence_
    kl_script_event_t eof_evt;
    kl_int32x4_t xmm0 = kl_load_int32x4(&g_event_EOF.as_int32x4);
    kl_store_int32x4(&eof_evt.as_int32x4, xmm0);
-   
+
    if(fence != NULL)
    {
       eof_evt.event.context.as_ptr = fence;
@@ -316,34 +316,34 @@ int kl_script_event_pump(kl_script_context_t context)
    kl_script_context_t sctx = (context == KL_DEFAULT_SCRIPT_CONTEXT ? g_script_context : context);
    KL_ASSERT(sctx, "NULL context.");
    
-   // Skip this if we already have a ref to the handler function
-   // TODO: Currently no way to change handler. Should this stay the case?
+   /* Skip this if we already have a ref to the handler function */
+   /* TODO: Currently no way to change handler. Should this stay the case? */
    if(sctx->event_handler_ref == 0)
    {
-      // Push function name onto lua stack, and invoke message handler if it exists
+      /* Push function name onto lua stack, and invoke message handler if it exists */
       lua_getglobal(sctx->lua_state, "Events");
       KL_ASSERT(!lua_isnil(sctx->lua_state, -1), "Could not find 'Events' table. This is very bad.");
       if(lua_isnil(sctx->lua_state, -1))
          lua_pop(sctx->lua_state, 1);
       else
       {
-         // Grab the 'handler' value
+         /* Grab the 'handler' value */
          lua_getfield(sctx->lua_state, -1, "handler");
          KL_ASSERT(lua_isfunction(sctx->lua_state, -1), "Value for 'Events.handler' was not a function.");
 
-         // Pop/store the handler
+         /* Pop/store the handler */
          sctx->event_handler_ref = luaL_ref(sctx->lua_state, LUA_REGISTRYINDEX);
-         
-         // Clean up the stack
+
+         /* Clean up the stack */
          lua_pop(sctx->lua_state, 2);
       }
    }
 
-   // Push the function ref back onto the stack
+   /* Push the function ref back onto the stack */
    lua_rawgeti(sctx->lua_state, LUA_REGISTRYINDEX, sctx->event_handler_ref);
    KL_ASSERT(lua_isfunction(sctx->lua_state, -1), "Stored value for 'Events.handler' was not a function.");
 
-   // Invoke event handler
+   /* Invoke event handler */
    if(!lua_isfunction(sctx->lua_state, -1))
    {
       KL_ASSERT(KL_FALSE, "Stored value for 'Events.handler' was not a function.");
@@ -359,7 +359,7 @@ int kl_script_event_pump(kl_script_context_t context)
             break;
          }
 
-         // Runtime error
+         /* Runtime error */
          case LUA_ERRRUN:
          {
             _on_lua_err(sctx->lua_state);
@@ -368,7 +368,7 @@ int kl_script_event_pump(kl_script_context_t context)
 
          default:
          {
-            KL_LOGF(KL_LL_ERR, "Unknown error invoking kl_script_event_pump().\n");
+            /*KL_LOGF(KL_LL_ERR, "Unknown error invoking kl_script_event_pump().\n");*/
             break;
          }
       }

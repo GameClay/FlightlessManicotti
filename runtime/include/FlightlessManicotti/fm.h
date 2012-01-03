@@ -23,9 +23,9 @@
 extern "C" {
 #endif
 
-////////////////////////////////////
-// Do dllimport/dllexport if needed
-////////////////////////////////////
+/*
+ * Do dllimport/dllexport if needed
+ */
 #if _MSC_VER
 #  ifdef KL_BUILD_LIBRARY
 #     define KL_API __declspec(dllexport)
@@ -36,14 +36,14 @@ extern "C" {
 #  define KL_API 
 #endif
 
-/////////////////////////////
-// Define KL_INLINE as static
-/////////////////////////////
+/*
+ * Define KL_INLINE as static
+ */
 #define KL_INLINE static
 
-/////////////////////
-// Define KL_RESTRICT
-/////////////////////
+/*
+ * Define KL_RESTRICT
+ */
 #if __STDC_VERSION__ >= 199901L
 #  define KL_RESTRICT restrict
 #elif _MSC_VER
@@ -52,11 +52,11 @@ extern "C" {
 #  define KL_RESTRICT 
 #endif
 
-//////////////////
-// Define KL_DEBUG
-//////////////////
+/*
+ * Define KL_DEBUG
+ */
 
-// Sanity check what is defined
+/* Sanity check what is defined */
 #if defined(DEBUG) || defined(_DEBUG)
 #  if defined(NDEBUG)
 #     error "Mismatch in debug flags."
@@ -73,46 +73,52 @@ extern "C" {
 #  undef KL_DEBUG
 #endif
 
-/////////////////
-// Define KL_BOOL
-/////////////////
+/*
+ * Define KL_BOOL
+ */
 #define KL_BOOL int
 #define KL_TRUE 1
 #define KL_FALSE 0
 
-///////////////////
-// Define KL_ASSERT
-///////////////////
+/*
+ * Define KL_ASSERT
+ */
 #if defined(KL_DEBUG) || defined(KL_ENABLE_ASSERTS)
 #  define KL_ENABLE_ASSERTS
 #  include <assert.h>
 #endif
 #define KL_ASSERT(x, msg) assert(x && msg)
 
-///////////////////
-// Define KL_UNUSED
-///////////////////
+/*
+ * Define KL_UNUSED
+ */
 #define KL_UNUSED(x) (void)x
 
-// TODO: Include all the things?
+/* TODO: Include all the things? */
 #include <FlightlessManicotti/core/memory.h>
 #include <FlightlessManicotti/core/error_codes.h>
 #include <FlightlessManicotti/core/logger.h>
 
-//! Initialize the runtime.
-//!
-//! @param use_threads  Run scripting on its own thread.
-//! @param main_script  The startup script.
-//! @param argc         Number of arguments.
-//! @param argv         Array of arguments.
-//! @return KL_SUCCESS if successful.
-//!         KL_ERROR if unsuccessful.
+/**
+ * Initialize the runtime.
+ *
+ * @param use_threads  Run scripting on its own thread.
+ * @param main_script  The startup script.
+ * @param argc         Number of arguments.
+ * @param argv         Array of arguments.
+ * @return KL_SUCCESS if successful.
+ *         KL_ERROR if unsuccessful.
+ */
 extern KL_API int kl_initialize(KL_BOOL use_threads, const char* main_script, int argc, const char* argv[]);
 
-//! Execute a single iteration of the "main loop"
+/**
+ * Execute a single iteration of the "main loop"
+ */
 extern KL_API int kl_mainloop_iteration();
 
-//! Destroy the runtime.
+/**
+ * Destroy the runtime.
+ */
 extern KL_API void kl_destroy();
 
 #ifdef __cplusplus

@@ -28,7 +28,7 @@ extern "C" {
 #define KL_RETRY           2
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
 
 #endif

@@ -31,10 +31,10 @@ static int vector2d_index(lua_State* L)
    size_t len;
    const char* key;
    float* xy = (float*)lua_topointer(L, 1);
-   
-   // Check for x or y, else redirect to instance table
+
+   /* Check for x or y, else redirect to instance table */
    key = lua_tolstring(L, 2, &len);
-   
+
    if(len == 1)
    {
       switch(*key)
@@ -57,8 +57,8 @@ static int vector2d_index(lua_State* L)
       lua_pushnumber(L, xy[1]);
       return 2;
    }
-   
-   // Wasn't x or y, so check the instance table
+
+   /* Wasn't x or y, so check the instance table */
    lua_getglobal(L, VECTOR2D_INSTANCE_TABLE);
    lua_pushvalue(L, 2);
    lua_gettable(L, -2);
@@ -70,8 +70,8 @@ static int vector2d_newindex(lua_State* L)
    size_t len;
    const char* key;
    float* xy = (float*)lua_topointer(L, 1);
-   
-   // Check for x or y, else redirect to instance table
+
+   /* Check for x or y, else redirect to instance table */
    key = lua_tolstring(L, 2, &len);
    if(len == 1)
    {
@@ -96,10 +96,10 @@ static int vector2d_newindex(lua_State* L)
       lua_readvector2d(L, 3, xy);
       return 0;
    }
-   
-   // Wasn't x or y, invalid
+
+   /* Wasn't x or y, invalid */
    lua_pushfstring(L, "Invalid field: '%s'.", key);
-   lua_error(L); // Never returns
+   lua_error(L); /* Never returns */
    return 0;
 }
 
@@ -121,7 +121,7 @@ static const struct luaL_reg vector2d_class_methods [] = {
 int luaopen_vector2d(lua_State* L)
 {
    luaL_register(L, VECTOR2D_INSTANCE_TABLE, vector2d_instance_methods);
-   
+
    luaL_newmetatable(L, VECTOR2D_LUA_LIB);
    lua_pushcfunction(L, vector2d_index);
    lua_setfield(L, -2, "__index");
@@ -129,7 +129,7 @@ int luaopen_vector2d(lua_State* L)
    lua_setfield(L, -2, "__newindex");
    lua_pushcfunction(L, vector2d_tostring);
    lua_setfield(L, -2, "__tostring");
-   
+
    luaL_register(L, VECTOR2D_LUA_LIB, vector2d_class_methods);
    
    return 1;

@@ -19,6 +19,10 @@
 #ifndef _KL_SIMD_H_
 #define _KL_SIMD_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if defined(KL_ARCH_X86) || defined(KL_ARCH_X64)
 
 #include <emmintrin.h>
@@ -55,4 +59,8 @@ KL_ALIGNED_STRUCT_PRE(16)
 
 #endif
 
-#endif // _KL_SIMD_H_
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
+
+#endif /* _KL_SIMD_H_ */

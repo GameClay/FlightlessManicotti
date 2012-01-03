@@ -19,7 +19,7 @@
 #ifndef _KL_TIMER_H_
 #define _KL_TIMER_H_
 
-// TODO: Proper platform stuff
+/* TODO: Proper platform stuff */
 #include <mach/mach_time.h>
 
 #ifdef __cplusplus
@@ -30,24 +30,30 @@ extern "C" {
 
 #define kl_absolute_time_t uint64_t
 
-//! Get the current time from the highest-resolution timer available on the platform.
-//!
-//! @param time_ptr  Pointer to a high-resolution timer structure.
+/**
+ * Get the current time from the highest-resolution timer available on the platform.
+ *
+ * @param time_ptr  Pointer to a high-resolution timer structure.
+ */
 #define kl_high_resolution_timer_query(time_ptr) (*time_ptr = mach_absolute_time())
 
-//! Convert absolute-time to nanoseconds.
-//!
-//! @param time   Pointer to absolute-time to convert to nanoseconds.
-//! @param out_ns The resulting time in nanoseconds.
+/**
+ * Convert absolute-time to nanoseconds.
+ *
+ * @param time   Pointer to absolute-time to convert to nanoseconds.
+ * @param out_ns The resulting time in nanoseconds.
+ */
 extern KL_API void kl_absolute_time_to_ns(const kl_absolute_time_t* time, uint64_t* out_ns);
 
-//! Convert nanoseconds to absolute-time.
-//! @param  ns                Pointer to nanoseconds to convert to absolute-time.
-//! @param  out_absolute_time The resulting absolute time.
+/**
+ * Convert nanoseconds to absolute-time.
+ * @param  ns                Pointer to nanoseconds to convert to absolute-time.
+ * @param  out_absolute_time The resulting absolute time.
+ */
 extern KL_API void kl_ns_to_absolute_time(const uint64_t* ns, kl_absolute_time_t* out_absolute_time);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
 
 #endif

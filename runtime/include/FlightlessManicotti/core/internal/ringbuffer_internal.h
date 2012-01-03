@@ -44,7 +44,7 @@ extern "C" {
 #define _KL_RESERVE_RINGBUFFER_FN_(t) int kl_reserve_ringbuffer_##t(kl_ringbuffer_##t##_t* ringbuffer, const t* item)
 #define _KL_RETRIEVE_RINGBUFFER_FN_(t) int kl_retrieve_ringbuffer_##t(kl_ringbuffer_##t##_t* ringbuffer, t* item)
 
-// Declare a ringbuffer type
+/* Declare a ringbuffer type */
 #define KL_DECLARE_RINGBUFFER_TYPE(t)           \
    _KL_DECLARE_RINGBUFFER_STRUCT_(t);           \
    extern KL_API _KL_INIT_RINGBUFFER_FN_(t);    \
@@ -53,7 +53,7 @@ extern "C" {
    extern KL_API _KL_RESERVE_RINGBUFFER_FN_(t); \
    extern KL_API _KL_RETRIEVE_RINGBUFFER_FN_(t)
 
-// Implement a ringbuffer type
+/* Implement a ringbuffer type */
 #define KL_IMPLEMENT_RINGBUFFER_TYPE(t)                        \
    _KL_INIT_RINGBUFFER_FN_(t)                                  \
    {                                                           \
@@ -120,7 +120,7 @@ extern "C" {
    }
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
 
 #endif

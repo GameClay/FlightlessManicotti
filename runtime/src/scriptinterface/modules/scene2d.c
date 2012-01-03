@@ -33,7 +33,7 @@ static int Scene2D_new(lua_State* L)
    uint32_t max_entries;
    kl_scene_container_2d_t* sctr;
    luaL_argcheck(L, lua_isnumber(L, 1), 1, "expected max scene entities");
-   
+
    sctr = (kl_scene_container_2d_t*)lua_newuserdata(L, sizeof(kl_scene_container_2d_t));
    max_entries = lua_tointeger(L, 1);
    
@@ -47,8 +47,8 @@ static int Scene2D_new(lua_State* L)
       lua_pushnil(L);
       luaL_error(L, "Creation of Scene2D failed: kl_alloc_scene_container_2d was not successful.");
    }
-   
-   // The userdata (kl_scene_container_2d) was put on the stack by the 'lua_newuserdata' call
+
+   /* The userdata (kl_scene_container_2d) was put on the stack by the 'lua_newuserdata' call */
    return 1;
 }
 
@@ -59,7 +59,7 @@ static int Scene2D_gc(lua_State* L)
    return 0;
 }
 
-// TODO: Should probably pool these at some point?
+/* TODO: Should probably pool these at some point? */
 typedef struct
 {
    uint32_t id;
@@ -70,7 +70,7 @@ static int Scene2D_reserve(lua_State* L)
 {
    kl_scene_container_2d_t* sctr;
    scene_entity_2d* entity;
-   
+
    sctr = (kl_scene_container_2d_t*)lua_touserdata(L, 1);
    if(sctr != NULL)
    {
@@ -81,14 +81,14 @@ static int Scene2D_reserve(lua_State* L)
          entity->scene = *sctr;
          luaL_getmetatable(L, SCENEENTITY2D);
          lua_setmetatable(L, -2);
-         
+
          lua_pushvalue(L, 2);
          (*sctr)->reference[entity->id] = luaL_ref(L, LUA_REGISTRYINDEX);
-         
+
          return 1;
       }
    }
-   
+
    return 0;
 }
 
@@ -100,18 +100,18 @@ static int Scene2D_raycast(lua_State* L)
    float to[2];
    float* out_pos;
    uint32_t type;
-   
+
    sctr = (kl_scene_container_2d_t*)lua_touserdata(L, 1);
    if(sctr != NULL)
    {
-      lua_readvector2d(L, 2, from); // From {x,y}
-      lua_readvector2d(L, 3, to);   // To {x,y}
-      type = lua_tointeger(L, 4);   // Type
-      
+      lua_readvector2d(L, 2, from); /* From {x,y} */
+      lua_readvector2d(L, 3, to);   /* To {x,y} */
+      type = lua_tointeger(L, 4);   /* Type */
+
       if(kl_raycast_scene_container_2d(*sctr, from, to, type, &hit) > 0)
       {
          lua_rawgeti(L, LUA_REGISTRYINDEX, (*sctr)->reference[hit.id]);
-         
+
          out_pos = (float*)lua_newuserdata(L, sizeof(float) * 2);
          if(out_pos != NULL)
          {
@@ -124,7 +124,7 @@ static int Scene2D_raycast(lua_State* L)
          return 1;
       }
    }
-   
+
    return 0;
 }
 
@@ -134,42 +134,42 @@ static int SceneEntity2D_index(lua_State* L)
    size_t key_len;
    uint32_t hash;
    scene_entity_2d* entity;
-   
+
    key = lua_tolstring(L, 2, &key_len);
-   
-   // No valid keys have len > 12, and this avoids the loops inside the hash
-   // function. See 'core/lookup3.c' for hash implementation.
+
+   /* No valid keys have len > 12, and this avoids the loops inside the hash
+      function. See 'core/lookup3.c' for hash implementation. */
    if(key_len <= 12)
    {
       entity = (scene_entity_2d*)lua_touserdata(L, 1);
-      
+
       hash = kl_hash(key, key_len, 0);
-      //KL_LOGF(KL_LL_NRM, "Indexing key: %s, hash: 0x%08X\n", key, hash);
+      /* KL_LOGF(KL_LL_NRM, "Indexing key: %s, hash: 0x%08X\n", key, hash); */
       switch(hash)
       {
-         case 0xA4731157: // 'position'
+         case 0xA4731157: /* 'position' */
          {
             lua_pushlightuserdata(L, &entity->scene->pos_xy[entity->id * 2]);
             luaL_getmetatable(L, VECTOR2D_LUA_LIB);
             lua_setmetatable(L, -2);
             return 1;
          }
-         
-         case 0x2F6488D6: // 'type'
-         case 0xFC45D41D: // 'typemask'
+
+         case 0x2F6488D6: /* 'type' */
+         case 0xFC45D41D: /* 'typemask' */
          {
             lua_pushinteger(L, entity->scene->typemask[entity->id]);
             return 1;
          }
-         
-         case 0xC8EB1006: // 'radius'
+
+         case 0xC8EB1006: /* 'radius' */
          {
             lua_pushnumber(L, entity->scene->radius[entity->id]);
             return 1;
          }
       }
    }
-   
+
    return 0;
 }
 
@@ -181,39 +181,39 @@ static int SceneEntity2D_newindex(lua_State* L)
    scene_entity_2d* entity;
    
    key = lua_tolstring(L, 2, &key_len);
-   
-   // No valid keys have len > 12, and this avoids the loops inside the hash
-   // function. See 'core/lookup3.c' for hash implementation.
+
+   /* No valid keys have len > 12, and this avoids the loops inside the hash
+      function. See 'core/lookup3.c' for hash implementation. */
    if(key_len <= 12)
    {
       entity = (scene_entity_2d*)lua_touserdata(L, 1);
-      
+
       hash = kl_hash(key, key_len, 0);
-      
+
       switch(hash)
       {
-         case 0xA4731157: // 'position'
+         case 0xA4731157: /* 'position' */
          {
             lua_readvector2d(L, 3, &entity->scene->pos_xy[entity->id * 2]);
             return 0;
          }
-         
-         case 0x2F6488D6: // 'type'
-         case 0xFC45D41D: // 'typemask'
+
+         case 0x2F6488D6: /* 'type' */
+         case 0xFC45D41D: /* 'typemask' */
          {
-            // Must maintain reserved bit, otherwise bad things will happen
+            /* Must maintain reserved bit, otherwise bad things will happen */
             entity->scene->typemask[entity->id] = (lua_tointeger(L, 3) | SceneType_Reserved);
             return 0;
          }
-         
-         case 0xC8EB1006: // 'radius'
+
+         case 0xC8EB1006: /* 'radius' */
          {
             entity->scene->radius[entity->id] = lua_tonumber(L, 3);
             return 1;
          }
       }
    }
-   
+
    return 0;
 }
 
@@ -221,14 +221,14 @@ static int SceneEntity2D_gc(lua_State* L)
 {
    scene_entity_2d* entity;
    entity = (scene_entity_2d*)lua_touserdata(L, 1);
-   
+
    if(entity != NULL && entity->scene != NULL) 
    {
       luaL_unref(L, LUA_REGISTRYINDEX, entity->scene->reference[entity->id]);
       kl_free_scene_container_2d_id(entity->scene, entity->id);
       entity->scene = NULL;
    }
-   
+
    return 0;
 }
 
@@ -245,17 +245,17 @@ static const struct luaL_reg Scene2D_class_methods [] = {
 
 int luaopen_scene2d(lua_State* L)
 {
-   // Scene2D
+   /* Scene2D */
    luaL_newmetatable(L, SCENE2D_LIB);
    luaL_register(L, 0, Scene2D_instance_methods);
    lua_pushvalue(L, -1);
    lua_setfield(L, -2, "__index");
    lua_pushcfunction(L, Scene2D_gc);
    lua_setfield(L, -2, "__gc");
-   
+
    luaL_register(L, SCENE2D_LIB, Scene2D_class_methods);
-   
-   // SceneEntity2D
+
+   /* SceneEntity2D */
    luaL_newmetatable(L, SCENEENTITY2D);
    lua_pushcfunction(L, SceneEntity2D_index);
    lua_setfield(L, -2, "__index");
@@ -263,6 +263,6 @@ int luaopen_scene2d(lua_State* L)
    lua_setfield(L, -2, "__newindex");
    lua_pushcfunction(L, SceneEntity2D_gc);
    lua_setfield(L, -2, "__gc");
-   
+
    return 1;
 }

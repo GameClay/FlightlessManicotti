@@ -22,7 +22,7 @@
 #include <FlightlessManicotti/fm.h>
 #include <FlightlessManicotti/core/memory.h>
 
-// Extern the memory functions used by default
+/* Extern the memory functions used by default */
 extern void* nedmalloc(size_t size);
 extern void nedfree(void *mem);
 extern void* nedmalloc2(size_t size, size_t alignment, unsigned flags);
@@ -32,13 +32,13 @@ extern void nedfree2(void *mem, unsigned flags);
 #  include "MicroAllocator.h"
 #endif
 
-// Forward declare
+/* Forward declare */
 void* aligned_nedmalloc(size_t size, size_t alignment);
 void aligned_nedfree(void* pointer);
 void* default_malloc(size_t size);
 void default_free(void* pointer);
 
-// Assign default memory operatons
+/* Assign default memory operatons */
 kl_malloc_fn_ptr kl_heap_alloc_ptr = &default_malloc;
 kl_free_fn_ptr kl_heap_free_ptr = &default_free;
 
@@ -55,7 +55,7 @@ kl_free_fn_ptr kl_micro_free_ptr = &default_free;
 
 kl_memrcpy_fn_ptr kl_microrcpy_ptr = &memcpy;
 
-// Implementations
+/* Implementations */
 void* kl_heap_alloc(size_t size)
 {
    return kl_heap_alloc_ptr(size);
@@ -92,7 +92,7 @@ void* kl_microrcpy(void* KL_RESTRICT dest, const void* KL_RESTRICT src, size_t s
    return kl_microrcpy_ptr(dest, src, size);
 }
 
-// Default aligned malloc/free using nedmalloc
+/* Default aligned malloc/free using nedmalloc */
 void* default_malloc(size_t size)
 {
 #if defined(KL_VALGRIND)
@@ -119,7 +119,7 @@ void* aligned_nedmalloc(size_t size, size_t align_size)
 #if defined(KL_VALGRIND)
    return malloc(size);
 #else
-   return nedmalloc2(size, align_size, 0); // No flags
+   return nedmalloc2(size, align_size, 0); /* No flags */
 #endif
 }
 
@@ -128,7 +128,7 @@ void aligned_nedfree(void* pointer)
 #if defined(KL_VALGRIND)
    free(pointer);
 #else
-   nedfree2(pointer, 0); // No flags
+   nedfree2(pointer, 0); /* No flags */
 #endif
 }
 

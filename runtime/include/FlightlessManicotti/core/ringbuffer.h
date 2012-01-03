@@ -26,71 +26,81 @@ extern "C" {
 #include <FlightlessManicotti/core/internal/ringbuffer_internal.h>
 #include <FlightlessManicotti/core/simd.h>
 
-// Default ring buffer types
+/* Default ring buffer types */
 KL_DECLARE_RINGBUFFER_TYPE(float);
 KL_DECLARE_RINGBUFFER_TYPE(int);
 KL_DECLARE_RINGBUFFER_TYPE(kl_int32x4_t);
 
-// Macros
+/* Macros */
 #define kl_ringbuffer_t(T) kl_ringbuffer_##T##_t
 
-//! Initializes a ring-buffer using a provided buffer.
-//!
-//! This function does not allocate any memory. A ring-buffer initialized using
-//! this function should not call kl_free_ringbuffer.
-//!
-//! @param T            The type of the ring-buffer 
-//! @param ringbuffer   ring-buffer to initialize.
-//! @param size         The size of the buffer parameter.
-//! @param buffer       The buffer of memory used to back the ring-buffer.
-//! @param mtx          The mutex to use for this ring-buffer.
+/**
+ * Initializes a ring-buffer using a provided buffer.
+ *
+ * This function does not allocate any memory. A ring-buffer initialized using
+ * this function should not call kl_free_ringbuffer.
+ *
+ * @param T            The type of the ring-buffer 
+ * @param ringbuffer   ring-buffer to initialize.
+ * @param size         The size of the buffer parameter.
+ * @param buffer       The buffer of memory used to back the ring-buffer.
+ * @param mtx          The mutex to use for this ring-buffer.
+ */
 #define kl_init_ringbuffer(T, ringbuffer, size, buffer, mtx) kl_init_ringbuffer_##T(ringbuffer, size, buffer, mtx)
 
 
-//! Initializes a ring-buffer using memory allocated by the function.
-//!
-//! Ring-buffer initialized using this function must call kl_free_ringbuffer
-//! to free the associated memory.
-//!
-//! @param T            The type of the ring-buffer 
-//! @param ringbuffer   The ring-buffer to initialize.
-//! @param size         The size of the memory to allocate.
-//!
-//! @return KL_SUCCESS if the allocation was successful.
-//!         KL_ERROR if the allocation failed.
+/**
+ * Initializes a ring-buffer using memory allocated by the function.
+ *
+ * Ring-buffer initialized using this function must call kl_free_ringbuffer
+ * to free the associated memory.
+ *
+ * @param T            The type of the ring-buffer 
+ * @param ringbuffer   The ring-buffer to initialize.
+ * @param size         The size of the memory to allocate.
+ *
+ * @return KL_SUCCESS if the allocation was successful.
+ *         KL_ERROR if the allocation failed.
+ */
 #define kl_alloc_ringbuffer(T, ringbuffer, size) kl_alloc_ringbuffer_##T(ringbuffer, size)
 
-//! Frees the memory associated with a ring-buffer initialized using kl_alloc_ringbuffer.
-//!
-//! @attention You should only call this funtion on ring-buffer initialized 
-//! using kl_alloc_ringbuffer.
-//!
-//! @param T            The type of the ring-buffer 
-//! @param ringbuffer   The ring-buffer to free.
+/**
+ * Frees the memory associated with a ring-buffer initialized using kl_alloc_ringbuffer.
+ *
+ * @attention You should only call this funtion on ring-buffer initialized 
+ * using kl_alloc_ringbuffer.
+ *
+ * @param T            The type of the ring-buffer 
+ * @param ringbuffer   The ring-buffer to free.
+ */
 #define kl_free_ringbuffer(T, ringbuffer) kl_free_ringbuffer_##T(ringbuffer)
 
-//! Reserve a chunk of memory in a ring-buffer.
-//!
-//! @param T            The type of the ring-buffer 
-//! @param ringbuffer   The ring-buffer from which to reserve the memory.
-//! @param item         The item to enqueue.
-//!
-//! @return KL_SUCCESS if successful.
-//!         KL_ERROR if the memory reservation failed.
+/**
+ * Reserve a chunk of memory in a ring-buffer.
+ *
+ * @param T            The type of the ring-buffer 
+ * @param ringbuffer   The ring-buffer from which to reserve the memory.
+ * @param item         The item to enqueue.
+ *
+ * @return KL_SUCCESS if successful.
+ *         KL_ERROR if the memory reservation failed.
+ */
 #define kl_reserve_ringbuffer(T, ringbuffer, item) kl_reserve_ringbuffer_##T(ringbuffer, item)
 
-//! Retrieve a chunk of memory from a ring-buffer.
-//!
-//! @param T            The type of the ring-buffer 
-//! @param ringbuffer   The ring-buffer from which to retrieve the memory.
-//! @param item         The location to store the recovered memory.
-//!
-//! @return KL_SUCCESS if the memory was recovered successfully.
-//!         KL_ERROR if the ring-buffer was empty.
+/**
+ * Retrieve a chunk of memory from a ring-buffer.
+ *
+ * @param T            The type of the ring-buffer 
+ * @param ringbuffer   The ring-buffer from which to retrieve the memory.
+ * @param item         The location to store the recovered memory.
+ *
+ * @return KL_SUCCESS if the memory was recovered successfully.
+ *         KL_ERROR if the ring-buffer was empty.
+ */
 #define kl_retrieve_ringbuffer(T, ringbuffer, item) kl_retrieve_ringbuffer_##T(ringbuffer, item)
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
 
 #endif

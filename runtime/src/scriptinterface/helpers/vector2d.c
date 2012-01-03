@@ -43,7 +43,7 @@ void lua_readvector2d(lua_State* L, int param_idx, float* out_xy)
    }
    else if(lua_isuserdata(L, 3))
    {
-      // Won't return if error
+      /* Won't return if error */
       tempxy = (float*)luaL_checkudata(L, param_idx, VECTOR2D_LUA_LIB);
       out_xy[0] = tempxy[0];
       out_xy[1] = tempxy[1];

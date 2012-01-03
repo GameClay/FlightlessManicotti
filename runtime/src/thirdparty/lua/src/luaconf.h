@@ -501,7 +501,7 @@
 ** ===================================================================
 */
 
-//#define LUA_NUMBER_DOUBLE
+/* #define LUA_NUMBER_DOUBLE */
 #define LUA_NUMBER	float
 
 /*

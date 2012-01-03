@@ -23,5 +23,5 @@ def build(target, source, env):
       swig_hdr.write("luaopen_" + fileBaseName +"(L);\\\n") 
 
    swig_hdr.write("}\n\n")
-   swig_hdr.write("#endif // _SWIG_AUTOGEN_\n")
+   swig_hdr.write("#endif /* _SWIG_AUTOGEN_ */\n")
    swig_hdr.close()

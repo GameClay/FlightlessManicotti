@@ -27,34 +27,42 @@ extern "C" {
 
 typedef struct _kl_idx_allocator* kl_idx_allocator_t;
 
-//! Allocate an index-allocator.
-//!
-//! @param idx_allocator   Destination for newly allocated index-allocator.
-//! @param num_indices     Number of indices that can be allocated by this allocator.
+/**
+ * Allocate an index-allocator.
+ *
+ * @param idx_allocator   Destination for newly allocated index-allocator.
+ * @param num_indices     Number of indices that can be allocated by this allocator.
+ */
 extern KL_API int kl_alloc_idx_allocator(kl_idx_allocator_t* idx_allocator, uint32_t num_indices);
 
-//! Free an index-allocator
-//!
-//! @param idx_allocator   Index-allocator to be destroyed.
+/**
+ * Free an index-allocator
+ *
+ * @param idx_allocator   Index-allocator to be destroyed.
+ */
 extern KL_API void kl_free_idx_allocator(kl_idx_allocator_t* idx_allocator);
 
-//! Reserve an index.
-//!
-//! This reserves a unique index fron an index-allocator.
-//!
-//! @param idx_allocator   The index-allocator from which to reserve an index.
-//!
-//! @return A unique index value.
+/**
+ * Reserve an index.
+ *
+ * This reserves a unique index fron an index-allocator.
+ *
+ * @param idx_allocator   The index-allocator from which to reserve an index.
+ *
+ * @return A unique index value.
+ */
 extern KL_API uint32_t kl_idx_allocator_reserve(kl_idx_allocator_t idx_allocator);
 
-//! Release an index from use.
-//!
-//! @param idx_allocator   The index-allocator from which to release an index.
-//! @param idx             The index to return to the free list.
+/**
+ * Release an index from use.
+ *
+ * @param idx_allocator   The index-allocator from which to release an index.
+ * @param idx             The index to return to the free list.
+ */
 extern KL_API void kl_idx_allocator_release(kl_idx_allocator_t idx_allocator, uint32_t idx);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
 
 #endif

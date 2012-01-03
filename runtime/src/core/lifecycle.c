@@ -26,13 +26,13 @@ typedef struct
 
 kl_runtime_state_t g_runtime_state = { KL_FALSE };
 
-// KL_DEFAULT_SCRIPT_CONTEXT from scriptinterface/script.c
+/* KL_DEFAULT_SCRIPT_CONTEXT from scriptinterface/script.c */
 extern kl_script_context_t g_script_context;
 
-// KL_DEFAULT_PROCESS_MANAGER from process/process.c
+/* KL_DEFAULT_PROCESS_MANAGER from process/process.c */
 extern kl_process_manager_t g_process_manager;
 
-// kl_init_mainloop from process/mainloop.c
+/* kl_init_mainloop from process/mainloop.c */
 extern int kl_init_mainloop(const char* main_script, int argc, const char* argv[]);
 
 int kl_initialize(KL_BOOL use_threads, const char* main_script, int argc, const char* argv[])
@@ -43,13 +43,13 @@ int kl_initialize(KL_BOOL use_threads, const char* main_script, int argc, const 
    KL_ASSERT(g_script_context == NULL, "KL_DEFAULT_SCRIPT_CONTEXT already initialized.");
    KL_ASSERT(g_process_manager == NULL, "KL_DEFAULT_PROCESS_MANAGER already initialized.");
    
-   // TODO: Don't hard code ring-buffer size
+   /* TODO: Don't hard code ring-buffer size */
    ret = kl_script_init(&g_script_context, use_threads, 1 << 10);
    
-   // TODO: Growable process list size
+   /* TODO: Growable process list size */
    ret |= kl_alloc_process_manager(&g_process_manager, 128);
    
-   // Let the "main loop" do initialization
+   /* Let the "main loop" do initialization */
    if(ret == KL_SUCCESS)
       ret = kl_init_mainloop(main_script, argc, argv);
    

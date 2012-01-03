@@ -148,35 +148,37 @@ If you are implementing a feature in the runtime, and saying to yourself, "Gosh,
 * Blocks of code following case and default statements inside a switch statement should either be inline, or begin a new curley-bracket block, with the break inside the scope block.
 
 #### Comments
-Comments can use both C `/* ... */` and C++ `// ...` styles. I prefer the C++ style unless I am hacking out a block of code, but it is just my preference. Any C compiler worth talking about allows usage of both styles, so do whatever you like for code comments.
+Comments must use C style comments `/* ... */`
 
 Doxygen comments, however, must follow the specified convention.
 
 #### Doxygen Comment Style
-Doxygen comments will use C++ style comments followed by a bang `//!`.
+Doxygen comments will use C style comments followed by a bang.
 
 ##### Doxygen tags
 All Doxygen tags should use the `@` character to denote a tag, for example `@tag` 
 
 ##### Inline documentation.
-    //!< Inline doccumentation will use this notation.
+    /**< Inline doccumentation will use this notation. */
     
 ##### Documentation blocks.
-    //! Autobrief is a single line that ends with a peroid.
-    //! 
-    //! Detailed description may be many lines, but in between
-    //! section there should be a blank line.
-    //! 
-    //! @note Note blocks come after details.
-    //! 
-    //! @attention Attention blocks come after note blocks.
-    //!            If you need more than one line for any tag,
-    //!            it should be indented past that tag.
-    //! 
-    //! @param name Parameters should be doccumented as such, and if
-    //!        they require multiple lines, only indent past the 'param'. 
-    //! @return Return value should be specified in the same section as 
-    //!         the parameters.
+    /**
+     * Autobrief is a single line that ends with a peroid.
+     *
+     * Detailed description may be many lines, but in between
+     * section there should be a blank line.
+     *
+     * @note Note blocks come after details.
+     *
+     * @attention Attention blocks come after note blocks.
+     *            If you need more than one line for any tag,
+     *            it should be indented past that tag.
+     *
+     * @param name Parameters should be doccumented as such, and if
+     *        they require multiple lines, only indent past the 'param'. 
+     * @return Return value should be specified in the same section as 
+     *         the parameters.
+     */
 
 #### Types
 Use standard types unless not possible. This is a short table of types and the header needed to use them.

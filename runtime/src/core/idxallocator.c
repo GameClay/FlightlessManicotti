@@ -44,7 +44,7 @@ int kl_alloc_idx_allocator(kl_idx_allocator_t* idx_allocator, uint32_t num_indic
       idxalloc->free_tail_idx = num_indices;
       idxalloc->free_list = (uint32_t*)(((char*)idxalloc) + sizeof(struct _kl_idx_allocator));
       
-      // Prep free-list
+      /* Prep free-list */
       for(i = 0; i < num_indices; i++)
       {
          idxalloc->free_list[i] = i;
@@ -73,7 +73,7 @@ uint32_t kl_idx_allocator_reserve(kl_idx_allocator_t idx_allocator)
    
    if(idxalloc->free_tail_idx > 0)
    {
-      // TODO: Use compxchng.
+      /* TODO: Use compxchng. */
       idxalloc->free_tail_idx--;
       ret = idxalloc->free_list[idxalloc->free_tail_idx];
    }

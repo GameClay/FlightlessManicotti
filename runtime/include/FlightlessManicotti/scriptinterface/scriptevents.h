@@ -27,15 +27,15 @@ extern "C" {
 #include <FlightlessManicotti/core/simd.h>
 #include <stdint.h>
 
-//! Script-event.
-//!
-//! 
+/**
+ * Script-event.
+ */
 typedef union
 {
    struct
    {
-      uint32_t id;            //!< Event id.
-      uint32_t arg;           //!< Event-defined argument.
+      uint32_t id;            /**< Event id. */
+      uint32_t arg;           /**< Event-defined argument. */
    
       union
       {
@@ -43,15 +43,14 @@ typedef union
          void* as_ptr;
       } context;
    } event;
-            
-   //! Representation of the script-event as an 4-component integer vector.
-   kl_int32x4_t as_int32x4;
+
+   kl_int32x4_t as_int32x4; /**< Representation of the script-event as an 4-component integer vector. */
 } kl_script_event_t;
 
 extern KL_API uint32_t kl_register_script_event(const char* name);
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
 
 #endif
