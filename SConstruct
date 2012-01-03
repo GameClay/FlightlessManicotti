@@ -92,14 +92,17 @@ else:
 dependencies = [
    'amp',
    'lua',
-   'nedmalloc',
    'sqlite3',
    'lsqlite3',
 ]
 
 if env.GetOption('microalloc'):
    dependencies += 'MicroAllocator'
-   env['CPPDEFINES']+=['KL_USE_MICROALLOCATOR']
+   env['CPPDEFINES'] += ['KL_USE_MICROALLOCATOR']
+
+#if not (env['OS'] == 'android'):
+#   dependencies += 'nedmalloc'
+#   env['CPPDEFINES'] += ['KL_USE_NEDMALLOC']
 
 prev_lib = None
 for lib in dependencies:

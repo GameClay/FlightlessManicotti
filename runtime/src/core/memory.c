@@ -23,10 +23,12 @@
 #include <FlightlessManicotti/core/memory.h>
 
 /* Extern the memory functions used by default */
+#if defined(KL_USE_NEDMALLOC)
 extern void* nedmalloc(size_t size);
 extern void nedfree(void *mem);
 extern void* nedmalloc2(size_t size, size_t alignment, unsigned flags);
 extern void nedfree2(void *mem, unsigned flags);
+#endif
 
 #if defined(KL_USE_MICROALLOCATOR)
 #  include "MicroAllocator.h"
@@ -95,18 +97,21 @@ void* kl_microrcpy(void* KL_RESTRICT dest, const void* KL_RESTRICT src, size_t s
 /* Default aligned malloc/free using nedmalloc */
 void* default_malloc(size_t size)
 {
-#if defined(KL_VALGRIND)
-   void* ret = malloc(size);
+#if defined(KL_OS_ANDROID)
+   void* ret = memalign(16, size);
+#elif defined(KL_VALGRIND) || !defined(KL_USE_NEDMALLOC)
+   void* ret = NULL;
+   posix_memalign(&ret, 16, size);
 #else
    void* ret = nedmalloc2(size, 16, 0);
-   KL_ASSERT((((uintptr_t)ret) & 0xF) == 0, "Return was not aligned!");
 #endif
+   KL_ASSERT((((uintptr_t)ret) & 0xF) == 0, "Return was not aligned!");
    return ret;
 }
 
 void default_free(void* p)
 {
-#if defined(KL_VALGRIND)
+#if defined(KL_OS_ANDROID) || defined(KL_VALGRIND) || !defined(KL_USE_NEDMALLOC)
    free(p);
 #else
    nedfree2(p, 0);
@@ -115,17 +120,23 @@ void default_free(void* p)
 
 void* aligned_nedmalloc(size_t size, size_t align_size)
 {
-   KL_ASSERT(align_size != 16, "Use kl_malloc for 16-byte aligned allocations."); 
-#if defined(KL_VALGRIND)
-   return malloc(size);
+#if defined(KL_OS_ANDROID)
+   KL_ASSERT(align_size != 16, "Use kl_malloc for 16-byte aligned allocations.");
+   return memalign(align_size, size);
+#elif defined(KL_VALGRIND) || !defined(KL_USE_NEDMALLOC)
+   void* ret = NULL;
+   KL_ASSERT(align_size != 16, "Use kl_malloc for 16-byte aligned allocations.");
+   posix_memalign(&ret, align_size, size);
+   return ret;
 #else
+   KL_ASSERT(align_size != 16, "Use kl_malloc for 16-byte aligned allocations.");
    return nedmalloc2(size, align_size, 0); /* No flags */
 #endif
 }
 
 void aligned_nedfree(void* pointer)
 {
-#if defined(KL_VALGRIND)
+#if defined(KL_OS_ANDROID) || defined(KL_VALGRIND) || !defined(KL_USE_NEDMALLOC)
    free(pointer);
 #else
    nedfree2(pointer, 0); /* No flags */
