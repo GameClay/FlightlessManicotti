@@ -9,6 +9,7 @@ platform_defines.SetDefault(ZIG_OS_WINDOWS = 'KL_OS_WINDOWS')
 
 platform_defines.SetDefault(ZIG_CPU_ARM = 'KL_ARCH_ARM')
 platform_defines.SetDefault(ZIG_CPU_X86 = 'KL_ARCH_X86')
+platform_defines.SetDefault(ZIG_CPU_X64 = 'KL_ARCH_X64')
 
 # Include the core
 env = SConscript(['Ziggurat/SConscript'], exports = 'platform_defines')
@@ -74,10 +75,6 @@ if (env['OS_GROUP'] == 'windows'):
 else:
    # Common GCC flags
    env.Append(CPPFLAGS = ['-fno-exceptions'])
-
-   if not (env['OS'] == 'android' or env['OS'] == 'ios'):
-      env.Append(LINKFLAGS = ['-m32'])
-      env.Append(CPPFLAGS = ['-m32'])
 
    if env['OS'] == 'ios':
       env.Append(CPPFLAGS=['-Wno-constant-conversion',

@@ -90,6 +90,8 @@ try:
       env['ZIG_CPU_ARM'] = platform_defines['ZIG_CPU_ARM']
    if not ('' == platform_defines.subst('$ZIG_CPU_X86')):
       env['ZIG_CPU_X86'] = platform_defines['ZIG_CPU_X86']
+   if not ('' == platform_defines.subst('$ZIG_CPU_X64')):
+      env['ZIG_CPU_X64'] = platform_defines['ZIG_CPU_X64']
 except:
    print ''
 
@@ -101,6 +103,7 @@ env.SetDefault(ZIG_OS_WINDOWS = 'ZIG_OS_WINDOWS')
 
 env.SetDefault(ZIG_CPU_ARM = 'ZIG_CPU_ARM')
 env.SetDefault(ZIG_CPU_X86 = 'ZIG_CPU_X86')
+env.SetDefault(ZIG_CPU_X64 = 'ZIG_CPU_X64')
 
 # Validate build vars
 if env['OS'] == 'linux':

@@ -19,8 +19,8 @@ Import('env')
 env.SConscript(['../SConscript'])
 
 # Darwin x86 specific build settings
-env.Append(CPPDEFINES=[env['ZIG_CPU_X86']])
+env.Append(CPPDEFINES=[env['ZIG_CPU_X64']])
 
-# 32-bit build
-env.Append(LINKFLAGS = ['-m32'])
-env.Append(CPPFLAGS = ['-m32'])
+# 64-bit build
+env.Append(LINKFLAGS = ['-m64'])
+env.Append(CPPFLAGS = ['-m64'])
