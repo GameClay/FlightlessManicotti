@@ -1,0 +1,382 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		434EB0761513DB27005112AE /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 434EB0751513DB27005112AE /* Cocoa.framework */; };
+		434EB0801513DB27005112AE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 434EB07E1513DB27005112AE /* InfoPlist.strings */; };
+		434EB0821513DB27005112AE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 434EB0811513DB27005112AE /* main.m */; };
+		434EB0861513DB27005112AE /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 434EB0841513DB27005112AE /* Credits.rtf */; };
+		434EB0891513DB27005112AE /* KLAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 434EB0881513DB27005112AE /* KLAppDelegate.m */; };
+		434EB08C1513DB28005112AE /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 434EB08A1513DB28005112AE /* MainMenu.xib */; };
+		434EB0961513DC46005112AE /* KLOpenGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 434EB0951513DC46005112AE /* KLOpenGLView.m */; };
+		434EB09C1513ECC7005112AE /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 434EB09B1513ECC6005112AE /* OpenGL.framework */; };
+		434EB0A21513F81D005112AE /* libFlightlessManicotti.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 434EB0A11513F81D005112AE /* libFlightlessManicotti.dylib */; settings = {ATTRIBUTES = (Required, ); }; };
+		434EB0A41513F86A005112AE /* libFlightlessManicotti.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 434EB0A11513F81D005112AE /* libFlightlessManicotti.dylib */; };
+		434EB0A915140A5D005112AE /* main.lua in CopyFiles */ = {isa = PBXBuildFile; fileRef = 434EB0A615140A32005112AE /* main.lua */; };
+		434EB0AF15140B11005112AE /* script in CopyFiles */ = {isa = PBXBuildFile; fileRef = 434EB0AE15140B11005112AE /* script */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		434EB0A31513F854005112AE /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				434EB0AF15140B11005112AE /* script in CopyFiles */,
+				434EB0A915140A5D005112AE /* main.lua in CopyFiles */,
+				434EB0A41513F86A005112AE /* libFlightlessManicotti.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		434EB0711513DB27005112AE /* FlightlessManicotti.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlightlessManicotti.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		434EB0751513DB27005112AE /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		434EB0781513DB27005112AE /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		434EB0791513DB27005112AE /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		434EB07A1513DB27005112AE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		434EB07D1513DB27005112AE /* FlightlessManicotti-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "FlightlessManicotti-Info.plist"; sourceTree = "<group>"; };
+		434EB07F1513DB27005112AE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		434EB0811513DB27005112AE /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		434EB0831513DB27005112AE /* FlightlessManicotti-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FlightlessManicotti-Prefix.pch"; sourceTree = "<group>"; };
+		434EB0851513DB27005112AE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		434EB0871513DB27005112AE /* KLAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KLAppDelegate.h; sourceTree = "<group>"; };
+		434EB0881513DB27005112AE /* KLAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KLAppDelegate.m; sourceTree = "<group>"; };
+		434EB08B1513DB28005112AE /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		434EB0941513DC46005112AE /* KLOpenGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLOpenGLView.h; sourceTree = "<group>"; };
+		434EB0951513DC46005112AE /* KLOpenGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KLOpenGLView.m; sourceTree = "<group>"; };
+		434EB09B1513ECC6005112AE /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		434EB0A11513F81D005112AE /* libFlightlessManicotti.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libFlightlessManicotti.dylib; path = "../../build/darwin/x86-64/debug/dist/lib/libFlightlessManicotti.dylib"; sourceTree = "<group>"; };
+		434EB0A615140A32005112AE /* main.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = main.lua; path = ../main.lua; sourceTree = "<group>"; };
+		434EB0AE15140B11005112AE /* script */ = {isa = PBXFileReference; lastKnownFileType = folder; name = script; path = ../../script; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		434EB06E1513DB27005112AE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				434EB0A21513F81D005112AE /* libFlightlessManicotti.dylib in Frameworks */,
+				434EB0761513DB27005112AE /* Cocoa.framework in Frameworks */,
+				434EB09C1513ECC7005112AE /* OpenGL.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		434EB0661513DB27005112AE = {
+			isa = PBXGroup;
+			children = (
+				434EB0AE15140B11005112AE /* script */,
+				434EB0A11513F81D005112AE /* libFlightlessManicotti.dylib */,
+				434EB07B1513DB27005112AE /* FlightlessManicotti */,
+				434EB0741513DB27005112AE /* Frameworks */,
+				434EB0721513DB27005112AE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		434EB0721513DB27005112AE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				434EB0711513DB27005112AE /* FlightlessManicotti.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		434EB0741513DB27005112AE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				434EB09B1513ECC6005112AE /* OpenGL.framework */,
+				434EB0751513DB27005112AE /* Cocoa.framework */,
+				434EB0771513DB27005112AE /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		434EB0771513DB27005112AE /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				434EB0781513DB27005112AE /* AppKit.framework */,
+				434EB0791513DB27005112AE /* CoreData.framework */,
+				434EB07A1513DB27005112AE /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		434EB07B1513DB27005112AE /* FlightlessManicotti */ = {
+			isa = PBXGroup;
+			children = (
+				434EB0871513DB27005112AE /* KLAppDelegate.h */,
+				434EB0881513DB27005112AE /* KLAppDelegate.m */,
+				434EB08A1513DB28005112AE /* MainMenu.xib */,
+				434EB07C1513DB27005112AE /* Supporting Files */,
+				434EB0941513DC46005112AE /* KLOpenGLView.h */,
+				434EB0951513DC46005112AE /* KLOpenGLView.m */,
+			);
+			path = FlightlessManicotti;
+			sourceTree = "<group>";
+		};
+		434EB07C1513DB27005112AE /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				434EB0A615140A32005112AE /* main.lua */,
+				434EB07D1513DB27005112AE /* FlightlessManicotti-Info.plist */,
+				434EB07E1513DB27005112AE /* InfoPlist.strings */,
+				434EB0811513DB27005112AE /* main.m */,
+				434EB0831513DB27005112AE /* FlightlessManicotti-Prefix.pch */,
+				434EB0841513DB27005112AE /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		434EB0701513DB27005112AE /* FlightlessManicotti */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 434EB08F1513DB28005112AE /* Build configuration list for PBXNativeTarget "FlightlessManicotti" */;
+			buildPhases = (
+				434EB06D1513DB27005112AE /* Sources */,
+				434EB06E1513DB27005112AE /* Frameworks */,
+				434EB06F1513DB27005112AE /* Resources */,
+				434EB0A31513F854005112AE /* CopyFiles */,
+				434EB0A51513F8CD005112AE /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FlightlessManicotti;
+			productName = FlightlessManicotti;
+			productReference = 434EB0711513DB27005112AE /* FlightlessManicotti.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		434EB0681513DB27005112AE /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+				ORGANIZATIONNAME = GameClay;
+			};
+			buildConfigurationList = 434EB06B1513DB27005112AE /* Build configuration list for PBXProject "FlightlessManicotti" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 434EB0661513DB27005112AE;
+			productRefGroup = 434EB0721513DB27005112AE /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				434EB0701513DB27005112AE /* FlightlessManicotti */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		434EB06F1513DB27005112AE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				434EB0801513DB27005112AE /* InfoPlist.strings in Resources */,
+				434EB0861513DB27005112AE /* Credits.rtf in Resources */,
+				434EB08C1513DB28005112AE /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		434EB0A51513F8CD005112AE /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "install_name_tool -change build/darwin/x86-64/debug/obj/runtime/libFlightlessManicotti.dylib @rpath/libFlightlessManicotti.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/$PRODUCT_NAME\"";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		434EB06D1513DB27005112AE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				434EB0821513DB27005112AE /* main.m in Sources */,
+				434EB0891513DB27005112AE /* KLAppDelegate.m in Sources */,
+				434EB0961513DC46005112AE /* KLOpenGLView.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		434EB07E1513DB27005112AE /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				434EB07F1513DB27005112AE /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		434EB0841513DB27005112AE /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				434EB0851513DB27005112AE /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		434EB08A1513DB28005112AE /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				434EB08B1513DB28005112AE /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		434EB08D1513DB28005112AE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "../../runtime/include/**";
+				LIBRARY_SEARCH_PATHS = "../../build/darwin/x86-64/debug/dist/lib/**";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		434EB08E1513DB28005112AE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "../../runtime/include/**";
+				LIBRARY_SEARCH_PATHS = "../../build/darwin/x86-64/release/dist/lib/**";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		434EB0901513DB28005112AE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "FlightlessManicotti/FlightlessManicotti-Prefix.pch";
+				IBC_OTHER_FLAGS = "";
+				INFOPLIST_FILE = "FlightlessManicotti/FlightlessManicotti-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../build/darwin/x86-64/debug/dist/lib\"",
+				);
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		434EB0911513DB28005112AE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "FlightlessManicotti/FlightlessManicotti-Prefix.pch";
+				IBC_OTHER_FLAGS = "";
+				INFOPLIST_FILE = "FlightlessManicotti/FlightlessManicotti-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../build/darwin/x86-64/debug/dist/lib\"",
+				);
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		434EB06B1513DB27005112AE /* Build configuration list for PBXProject "FlightlessManicotti" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				434EB08D1513DB28005112AE /* Debug */,
+				434EB08E1513DB28005112AE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		434EB08F1513DB28005112AE /* Build configuration list for PBXNativeTarget "FlightlessManicotti" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				434EB0901513DB28005112AE /* Debug */,
+				434EB0911513DB28005112AE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 434EB0681513DB27005112AE /* Project object */;
+}
