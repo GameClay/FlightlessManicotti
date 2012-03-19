@@ -205,7 +205,7 @@ int kl_script_run(kl_script_context_t context, const char* file_name, int argc, 
       {
          if(sctx->threaded)
          {
-            int create_res = amp_thread_create_and_launch(&sctx->thread, AMP_DEFAULT_ALLOCATOR, 
+            int create_res = amp_thread_create_and_launch(&sctx->thread, AMP_DEFAULT_ALLOCATOR,
                sctx, _kl_script_run_internal);
 
             if(create_res != 0)

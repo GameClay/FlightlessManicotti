@@ -62,7 +62,7 @@ function Events.unsubscribe(fn, eventid)
    else
       error("First argument to Events.unsubscribe should be a function.")
    end
-   
+
    return false
 end
 
@@ -74,13 +74,13 @@ function Events.handler()
       -- Do any event-specific argument/context conditioning
       local conditioner = Events.conditioners[id] or Events.conditioners.default
       arg,context = conditioner(arg, context)
-      
+
       -- Execute handlers
       local handlers = Events.subscriptions[id] or {}
       for _,v in ipairs(handlers) do
          v(arg, context)
       end
-      
+
       -- Next event
       id,context,arg = Events.dequeue(SCTX)
    end
