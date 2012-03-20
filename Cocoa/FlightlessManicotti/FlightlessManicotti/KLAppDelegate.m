@@ -30,10 +30,29 @@
     }
 }
 
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
+{
+    kl_predestroy();
+    [[NSRunLoop currentRunLoop] addTimer:
+     [NSTimer timerWithTimeInterval:0.5
+                             target:self
+                           selector:@selector(doTerminate:)
+                           userInfo:nil
+                            repeats:NO]
+                            forMode:NSModalPanelRunLoopMode];
+
+    return NSTerminateLater;
+}
+
 - (void)applicationWillTerminate:(NSNotification *)aNotification
 {
     kl_destroy_rendering();
     kl_destroy();
+}
+
+-(void)doTerminate:(NSTimer *)theTimer
+{
+    [NSApp replyToApplicationShouldTerminate:YES];
 }
 
 -(void)update:(NSTimer *)theTimer
