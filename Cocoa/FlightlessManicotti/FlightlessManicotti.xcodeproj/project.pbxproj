@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		43221BEC15190075000BC238 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43221BEB15190075000BC238 /* CoreVideo.framework */; };
 		434EB0761513DB27005112AE /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 434EB0751513DB27005112AE /* Cocoa.framework */; };
 		434EB0801513DB27005112AE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 434EB07E1513DB27005112AE /* InfoPlist.strings */; };
 		434EB0821513DB27005112AE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 434EB0811513DB27005112AE /* main.m */; };
@@ -37,6 +38,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		43221BEB15190075000BC238 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		434EB0711513DB27005112AE /* FlightlessManicotti.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlightlessManicotti.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		434EB0751513DB27005112AE /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		434EB0781513DB27005112AE /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -66,6 +68,7 @@
 				434EB0A21513F81D005112AE /* libFlightlessManicotti.dylib in Frameworks */,
 				434EB0761513DB27005112AE /* Cocoa.framework in Frameworks */,
 				434EB09C1513ECC7005112AE /* OpenGL.framework in Frameworks */,
+				43221BEC15190075000BC238 /* CoreVideo.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -94,6 +97,7 @@
 		434EB0741513DB27005112AE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				43221BEB15190075000BC238 /* CoreVideo.framework */,
 				434EB09B1513ECC6005112AE /* OpenGL.framework */,
 				434EB0751513DB27005112AE /* Cocoa.framework */,
 				434EB0771513DB27005112AE /* Other Frameworks */,
@@ -314,6 +318,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
@@ -337,6 +342,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
@@ -375,6 +381,7 @@
 				434EB0911513DB28005112AE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

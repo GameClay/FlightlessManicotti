@@ -11,9 +11,9 @@
 
 @interface KLOpenGLView : NSOpenGLView
 {
-
+    CVDisplayLinkRef displayLink;
+    float displayWidth;
+    float displayHeight;
 }
-
--(void) drawRect: (NSRect) bounds;
 
 @end

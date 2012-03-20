@@ -12,9 +12,83 @@
 
 @implementation KLOpenGLView
 
--(void) drawRect: (NSRect) bounds
+// This is the renderer output callback function
+static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp* now, const CVTimeStamp* outputTime,
+                                      CVOptionFlags flagsIn, CVOptionFlags* flagsOut, void* displayLinkContext)
 {
+    CVReturn result = [(KLOpenGLView*)displayLinkContext getFrameForTime:outputTime];
+    return result;
+}
+
+- (void)reshape
+{
+    NSRect bounds = [self bounds];
+    displayWidth = NSWidth(bounds);
+    displayHeight = NSHeight(bounds);
+}
+
+- (void)prepareOpenGL
+{
+#if 0
+    // Synchronize buffer swaps with vertical refresh rate
+    GLint swapInt = 1;
+    [[self openGLContext] setValues:&swapInt forParameter:NSOpenGLCPSwapInterval];
+#endif
+    
+    // Create a display link capable of being used with all active displays
+    CVDisplayLinkCreateWithActiveCGDisplays(&displayLink);
+    
+    // Set the renderer output callback function
+    CVDisplayLinkSetOutputCallback(displayLink, &MyDisplayLinkCallback, self);
+    
+    // Set the display link for the current renderer
+    CGLContextObj cglContext = [[self openGLContext] CGLContextObj];
+    
+    NSOpenGLPixelFormatAttribute attrs[] =
+    {
+        NSOpenGLPFADoubleBuffer,
+        NSOpenGLPFADepthSize, 32,
+        0
+    };
+    
+    NSOpenGLPixelFormat* pixFmt = [[NSOpenGLPixelFormat alloc] initWithAttributes:attrs];
+    [self setPixelFormat:pixFmt];
+    CGLPixelFormatObj cglPixelFormat = [[self pixelFormat] CGLPixelFormatObj];
+    CVDisplayLinkSetCurrentCGDisplayFromOpenGLContext(displayLink, cglContext, cglPixelFormat);
+    
+    // Activate the display link
+    CVDisplayLinkStart(displayLink);
+}
+
+- (CVReturn)getFrameForTime:(const CVTimeStamp*)outputTime
+{
+    NSOpenGLContext    *currentContext = [self openGLContext];
+    [currentContext makeCurrentContext];
+    
+    // must lock GL context because display link is threaded
+    CGLLockContext([currentContext CGLContextObj]);
+    
+    glViewport(0, 0, displayWidth, displayHeight);
+    
+    glClearColor(0.9f, 0.9f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    // draw here
     kl_render_frame();
+    
+    [currentContext flushBuffer];
+    
+    CGLUnlockContext([currentContext CGLContextObj]);
+    
+    return kCVReturnSuccess;
+}
+
+- (void)dealloc
+{
+    // Release the display link
+    CVDisplayLinkRelease(displayLink);
+    
+    [super dealloc];
 }
 
 @end
