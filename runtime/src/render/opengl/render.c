@@ -19,14 +19,19 @@
 #include <FlightlessManicotti/render/render.h>
 #include <OpenGL/gl.h>
 
+/* hax */
+#include <FlightlessManicotti/game/scene3d/particles/scene_3d_particle_system.h>
+kl_scene_3d_particle_system haxparticles = NULL;
+
 int kl_init_rendering(void* handle)
 {
-   return KL_SUCCESS;
+   return kl_alloc_scene_3d_particle_system(&haxparticles, 2048);
 }
 
 void kl_destroy_rendering()
 {
-   
+   kl_free_scene_3d_particle_system(&haxparticles);
+   haxparticles = NULL;
 }
 
 void kl_render_frame()
@@ -43,5 +48,5 @@ void kl_render_frame()
    }
    glEnd();
 
-   glFlush();
+   if(haxparticles != NULL) kl_render_scene_3d_particle_system(haxparticles);
 }
