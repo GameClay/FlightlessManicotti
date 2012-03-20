@@ -41,3 +41,19 @@ Events.advancetime = Events.register(SCTX, "AdvanceTime")
 --! There are no arguments passed to this event handler.
 --! @memberof Events
 Events.processtick = Events.register(SCTX, "ProcessTick")
+
+--! Init event.
+--!
+--! This event occurs once, after the main script has been executed.
+--!
+--! There are no arguments passed to this event handler.
+--! @memberof Events
+Events.init = Events.register(SCTX, "Init")
+
+--! Destroy event.
+--!
+--! This event occurs once, right before the engine is shut down.
+--!
+--! There are no arguments passed to this event handler.
+--! @memberof Events
+Events.destroy = Events.register(SCTX, "Destroy")

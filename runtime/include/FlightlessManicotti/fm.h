@@ -117,6 +117,14 @@ extern KL_API int kl_initialize(KL_BOOL use_threads, const char* main_script, in
 extern KL_API int kl_mainloop_iteration();
 
 /**
+ * Do cleanup before the runtime destruction occurs.
+ *
+ * @note The scripts should be given at least one more iteration before
+ *       kl_destroy is called.
+ */
+extern KL_API void kl_predestroy();
+
+/**
  * Destroy the runtime.
  */
 extern KL_API void kl_destroy();

@@ -35,26 +35,58 @@ extern kl_process_manager_t g_process_manager;
 /* kl_init_mainloop from process/mainloop.c */
 extern int kl_init_mainloop(const char* main_script, int argc, const char* argv[]);
 
+/* script.events.Init */
+kl_script_event_t g_event_Init;
+
+/* script.events.Destroy */
+kl_script_event_t g_event_Destroy;
+
 int kl_initialize(KL_BOOL use_threads, const char* main_script, int argc, const char* argv[])
 {
    int ret = KL_ERROR;
-   
+
    KL_ASSERT(!g_runtime_state.initialized, "Runtime already initialized.");
    KL_ASSERT(g_script_context == NULL, "KL_DEFAULT_SCRIPT_CONTEXT already initialized.");
    KL_ASSERT(g_process_manager == NULL, "KL_DEFAULT_PROCESS_MANAGER already initialized.");
-   
+
    /* TODO: Don't hard code ring-buffer size */
    ret = kl_script_init(&g_script_context, use_threads, 1 << 10);
-   
+
+   /* Create Init/Destroy script events */
+   if(ret == KL_SUCCESS)
+   {
+      /* Set up Init event */
+      g_event_Init.event.id = kl_register_script_event("Init");
+      g_event_Init.event.context.as_64 = 0;
+      g_event_Init.event.arg = 0;
+
+      /* Set up Destroy event */
+      g_event_Destroy.event.id = kl_register_script_event("Destroy");
+      g_event_Destroy.event.context.as_64 = 0;
+      g_event_Destroy.event.arg = 0;
+   }
+
    /* TODO: Growable process list size */
    ret |= kl_alloc_process_manager(&g_process_manager, 128);
-   
+
    /* Let the "main loop" do initialization */
    if(ret == KL_SUCCESS)
       ret = kl_init_mainloop(main_script, argc, argv);
-   
+
+   /* Send the script init event */
+   if(ret == KL_SUCCESS)
+   {
+      kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &g_event_Init);
+   }
+
    g_runtime_state.initialized = (ret == KL_SUCCESS ? KL_TRUE : KL_FALSE);
    return ret;
+}
+
+void kl_predestroy()
+{
+   KL_ASSERT(g_runtime_state.initialized, "Runtime not initialized.");
+   kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &g_event_Destroy);
 }
 
 void kl_destroy()
