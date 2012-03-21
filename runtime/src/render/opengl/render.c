@@ -23,8 +23,10 @@
 /* hax */
 #include <FlightlessManicotti/game/particles/particle_system.h>
 #include <FlightlessManicotti/render/particles/particle_quads.h>
+#include <FlightlessManicotti/game/particles/particle_simulation.h>
 kl_particle_system_t haxparticles = NULL;
 kl_particle_render_quads_t haxquads = NULL;
+kl_particle_simulation_t haxsim = NULL;
 
 int kl_init_rendering(kl_render_context_t* context, void* handle)
 {
@@ -45,6 +47,8 @@ int kl_init_rendering(kl_render_context_t* context, void* handle)
       kl_particle_system_alloc(&haxparticles, 2048);
       kl_particle_render_quads_alloc(&haxquads, ctx);
       kl_particle_render_quads_assign_system(haxquads, haxparticles);
+      kl_particle_simulation_alloc(&haxsim);
+      kl_particle_simulation_set_system(haxsim, haxparticles);
 
       *context = ctx;
       ret = KL_SUCCESS;
@@ -60,6 +64,8 @@ void kl_destroy_rendering(kl_render_context_t* context)
    haxquads = NULL;
    kl_particle_system_free(&haxparticles);
    haxparticles = NULL;
+   kl_particle_simulation_free(&haxsim);
+   haxsim = NULL;
 
    if(context != NULL && *context != NULL)
    {
