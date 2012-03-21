@@ -8,7 +8,6 @@
 
 #import "KLOpenGLView.h"
 #include <OpenGL/gl.h>
-#include <FlightlessManicotti/render/render.h>
 
 @implementation KLOpenGLView
 
@@ -56,29 +55,18 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTime
     CGLPixelFormatObj cglPixelFormat = [[self pixelFormat] CGLPixelFormatObj];
     CVDisplayLinkSetCurrentCGDisplayFromOpenGLContext(displayLink, cglContext, cglPixelFormat);
     
+    // Init the rendering
+    kl_init_rendering(&renderContext, (void*)cglContext);
+    
     // Activate the display link
     CVDisplayLinkStart(displayLink);
 }
 
 - (CVReturn)getFrameForTime:(const CVTimeStamp*)outputTime
-{
-    NSOpenGLContext    *currentContext = [self openGLContext];
-    [currentContext makeCurrentContext];
-    
-    // must lock GL context because display link is threaded
-    CGLLockContext([currentContext CGLContextObj]);
-    
-    glViewport(0, 0, displayWidth, displayHeight);
-    
-    glClearColor(0.9f, 0.9f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    
+{    
     // draw here
-    kl_render_frame();
-    
-    [currentContext flushBuffer];
-    
-    CGLUnlockContext([currentContext CGLContextObj]);
+    if(renderContext != NULL)
+        kl_render_frame(renderContext, displayWidth, displayHeight);
     
     return kCVReturnSuccess;
 }
@@ -87,6 +75,9 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTime
 {
     // Release the display link
     CVDisplayLinkRelease(displayLink);
+    
+    // Destroy KL rendering
+    kl_destroy_rendering(&renderContext);
     
     [super dealloc];
 }

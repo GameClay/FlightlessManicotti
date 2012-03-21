@@ -8,12 +8,15 @@
 
 #import <AppKit/AppKit.h>
 #import <CoreVideo/CoreVideo.h>
+#include <FlightlessManicotti/render/render.h>
 
 @interface KLOpenGLView : NSOpenGLView
 {
     CVDisplayLinkRef displayLink;
     float displayWidth;
     float displayHeight;
+    kl_render_context renderContext;
 }
 
+- (void)dealloc;
 @end

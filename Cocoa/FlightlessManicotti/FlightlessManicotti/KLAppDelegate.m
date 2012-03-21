@@ -8,26 +8,29 @@
 
 #import "KLAppDelegate.h"
 #include <FlightlessManicotti/fm.h>
-#include <FlightlessManicotti/render/render.h>
 
 @implementation KLAppDelegate
 
 @synthesize window = _window;
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+- (id)init 
 {
-    NSArray *args = [[NSProcessInfo processInfo] arguments]; // TODO
-    if(kl_initialize(KL_FALSE, "main.lua", 0, NULL) == KL_SUCCESS)
+    self = [super init];
+    if (self)
     {
-        kl_init_rendering(NULL);
-        [[NSRunLoop currentRunLoop] addTimer:
-         [NSTimer timerWithTimeInterval:0.0
-                                 target:self
-                               selector:@selector(update:)
-                               userInfo:nil
-                                repeats:YES]
-                                forMode:NSDefaultRunLoopMode];
+        NSArray *args = [[NSProcessInfo processInfo] arguments]; // TODO
+        if(kl_initialize(KL_FALSE, "main.lua", 0, NULL) == KL_SUCCESS)
+        {
+            [[NSRunLoop currentRunLoop] addTimer:
+             [NSTimer timerWithTimeInterval:0.0
+                                     target:self
+                                   selector:@selector(update:)
+                                   userInfo:nil
+                                    repeats:YES]
+                                         forMode:NSDefaultRunLoopMode];
+        }
     }
+    return self;
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
@@ -46,7 +49,6 @@
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification
 {
-    kl_destroy_rendering();
     kl_destroy();
 }
 
