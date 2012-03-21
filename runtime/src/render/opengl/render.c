@@ -18,24 +18,65 @@
 
 #include <FlightlessManicotti/render/render.h>
 #include <OpenGL/gl.h>
+#include "gl_render.h"
 
 /* hax */
-#include <FlightlessManicotti/game/scene3d/particles/scene_3d_particle_system.h>
-kl_scene_3d_particle_system haxparticles = NULL;
+#include <FlightlessManicotti/game/particles/particle_system.h>
+#include <FlightlessManicotti/render/particles/particle_quads.h>
+kl_particle_system haxparticles = NULL;
+kl_particle_render_quads haxquads = NULL;
 
-int kl_init_rendering(void* handle)
+int kl_init_rendering(kl_render_context* context, void* handle)
 {
-   return kl_alloc_scene_3d_particle_system(&haxparticles, 2048);
+   int ret = KL_ERROR;
+
+   if(context != NULL)
+   {
+      kl_render_context ctx = kl_heap_alloc(sizeof(struct _kl_render_context));
+      CGLPixelFormatObj pixelFormat = NULL;
+
+      ctx->drawableCGLContext = (CGLContextObj)handle;
+      pixelFormat = CGLGetPixelFormat(ctx->drawableCGLContext); /* Not retained, don't need to release */
+
+      CGLRetainContext(ctx->drawableCGLContext);
+      CGLCreateContext(pixelFormat, ctx->drawableCGLContext, &ctx->resourceCGLContext);
+
+      /* hax */
+      kl_particle_system_alloc(&haxparticles, 2048);
+      kl_particle_render_quads_alloc(&haxquads, ctx);
+      kl_particle_render_quads_assign_system(haxquads, haxparticles);
+
+      *context = ctx;
+      ret = KL_SUCCESS;
+   }
+
+   return ret;
 }
 
-void kl_destroy_rendering()
+void kl_destroy_rendering(kl_render_context* context)
 {
-   kl_free_scene_3d_particle_system(&haxparticles);
+   /* hax */
+   kl_particle_render_quads_free(&haxquads);
+   haxquads = NULL;
+   kl_particle_system_free(&haxparticles);
    haxparticles = NULL;
+
+   if(context != NULL && *context != NULL)
+   {
+      kl_render_context ctx = *context;
+      CGLReleaseContext(ctx->resourceCGLContext);
+      CGLReleaseContext(ctx->drawableCGLContext);
+      kl_heap_free(ctx);
+   }
 }
 
-void kl_render_frame()
+void kl_render_frame(kl_render_context context, float display_width, float display_height)
 {
+   CGLSetCurrentContext(context->drawableCGLContext);
+   CGLLockContext(context->drawableCGLContext);
+
+   glViewport(0, 0, display_width, display_height);
+
    glClearColor(0, 0, 0, 0);
    glClear(GL_COLOR_BUFFER_BIT);
 
@@ -44,9 +85,13 @@ void kl_render_frame()
    {
       glVertex3f(  0.0,  0.6, 0.0);
       glVertex3f( -0.2, -0.3, 0.0);
-      glVertex3f(  0.2, -0.3 ,0.0);
+      glVertex3f(  0.2, -0.3, 0.0);
    }
    glEnd();
 
-   if(haxparticles != NULL) kl_render_scene_3d_particle_system(haxparticles);
+   if(haxquads != NULL && haxparticles != NULL) kl_particle_render_quads_draw(haxquads);
+
+   glFinish();
+
+   CGLUnlockContext(context->drawableCGLContext);
 }

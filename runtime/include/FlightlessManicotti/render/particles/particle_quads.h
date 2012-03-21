@@ -16,48 +16,42 @@
  * limitations under the License.
  */
 
-#ifndef _KL_SCENE_3D_PARTICLE_SYSTEM_3D_H_
-#define _KL_SCENE_3D_PARTICLE_SYSTEM_3D_H_
+#ifndef _KL_PARTICLE_RENDER_QUADS_H_
+#define _KL_PARTICLE_RENDER_QUADS_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <FlightlessManicotti/fm.h>
-#include <stdint.h>
+#include <FlightlessManicotti/game/particles/particle_system.h>
+#include <FlightlessManicotti/render/render.h>
 
-typedef struct {
-   float* px_stream;
-   float* py_stream;
-   float* pz_stream;
-
-   float* vx_stream;
-   float* vy_stream;
-   float* vz_stream;
-
-   float* lifespan_stream;
-   float* time_stream;
-
-   uint32_t num_particles;
-   uint32_t max_particles;
-} *kl_scene_3d_particle_system, _kl_scene_3d_particle_system;
+typedef struct _kl_particle_render_quads* kl_particle_render_quads;
 
 /**
- * Allocate a 3d particle system.
+ * Allocate a quad particle renderer.
  *
- * @param system          Location to store allocated particle system.
- * @param max_particles   Maximum number of particles in this system.
+ * @param renderer   Location to store allocated particle renderer.
  *
  * @return KL_SUCCESS if successful.
  */
-extern KL_API int kl_alloc_scene_3d_particle_system(kl_scene_3d_particle_system* system, uint32_t max_particles);
+extern KL_API int kl_particle_render_quads_alloc(kl_particle_render_quads* renderer, kl_render_context context);
 
 /**
- * Free a 3d particle system.
+ * Free a quad particle renderer.
  *
- * @param system    Particle system to free.
+ * @param renderer   Particle renderer to free.
  */
-extern KL_API void kl_free_scene_3d_particle_system(kl_scene_3d_particle_system* system);
+extern KL_API void kl_particle_render_quads_free(kl_particle_render_quads* renderer);
+
+/**
+ * Assign a particle system to the quad renderer.
+ *
+ * @param renderer   Particle renderer to which the system should be assigned.
+ * @param system     Particle system to render using this renderer.
+ */
+extern KL_API void kl_particle_render_quads_assign_system(kl_particle_render_quads renderer, kl_particle_system system);
 
 #ifdef __cplusplus
 } /* extern "C" */

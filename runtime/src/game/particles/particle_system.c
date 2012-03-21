@@ -18,12 +18,12 @@
 
 #include <math.h>
 #include <float.h>
-#include <FlightlessManicotti/game/scene3d/particles/scene_3d_particle_system.h>
+#include <FlightlessManicotti/game/particles/particle_system.h>
 
-int kl_alloc_scene_3d_particle_system(kl_scene_3d_particle_system* system, uint32_t max_particles)
+int kl_particle_system_alloc(kl_particle_system* system, uint32_t max_particles)
 {
    int ret = KL_SUCCESS;
-   kl_scene_3d_particle_system sys = kl_heap_alloc(sizeof(_kl_scene_3d_particle_system));
+   kl_particle_system sys = kl_heap_alloc(sizeof(_kl_particle_system));
    sys->px_stream = kl_heap_alloc(sizeof(float) * max_particles);
    sys->py_stream = kl_heap_alloc(sizeof(float) * max_particles);
    sys->pz_stream = kl_heap_alloc(sizeof(float) * max_particles);
@@ -55,11 +55,11 @@ int kl_alloc_scene_3d_particle_system(kl_scene_3d_particle_system* system, uint3
    return ret;
 }
 
-void kl_free_scene_3d_particle_system(kl_scene_3d_particle_system* system)
+void kl_particle_system_free(kl_particle_system* system)
 {
    if(system && *system)
    {
-      kl_scene_3d_particle_system sys = *system;
+      kl_particle_system sys = *system;
       kl_heap_free(sys->px_stream);
       kl_heap_free(sys->py_stream);
       kl_heap_free(sys->pz_stream);
@@ -79,7 +79,7 @@ void kl_free_scene_3d_particle_system(kl_scene_3d_particle_system* system)
 
 /* Hax */
 
-void kl_render_scene_3d_particle_system(kl_scene_3d_particle_system system)
+void kl_particle_system_render(kl_particle_system system)
 {
    int i = 0;
    glPointSize(5.0f);
