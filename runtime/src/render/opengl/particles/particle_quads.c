@@ -33,21 +33,21 @@ struct _kl_particle_render_quads {
    GLuint idx_buffer;
    int buffer_idx;
    int last_used_idx;
-   kl_particle_system system;
+   kl_particle_system_t system;
    particle_vertex* verts;
    size_t verts_sz;
    uint32_t pid;
-   kl_render_context context;
+   kl_render_context_t context;
 };
 
 void _kl_particle_render_quads_advance_time(float dt, void* context);
 
-int kl_particle_render_quads_alloc(kl_particle_render_quads* renderer, kl_render_context context)
+int kl_particle_render_quads_alloc(kl_particle_render_quads_t* renderer, kl_render_context_t context)
 {
    int ret = KL_ERROR;
    if(renderer != NULL)
    {
-      kl_particle_render_quads rdr = kl_heap_alloc(sizeof(struct _kl_particle_render_quads));
+      kl_particle_render_quads_t rdr = kl_heap_alloc(sizeof(struct _kl_particle_render_quads));
       KL_ASSERT(rdr != NULL, "Allocation of quad particle renderer failed.");
       if(rdr != NULL)
       {
@@ -72,11 +72,11 @@ int kl_particle_render_quads_alloc(kl_particle_render_quads* renderer, kl_render
    return ret;
 }
 
-void kl_particle_render_quads_free(kl_particle_render_quads* renderer)
+void kl_particle_render_quads_free(kl_particle_render_quads_t* renderer)
 {
    if(renderer != NULL && *renderer != NULL)
    {
-      kl_particle_render_quads rdr = *renderer;
+      kl_particle_render_quads_t rdr = *renderer;
       glDeleteBuffers(2, rdr->vert_buffer);
       glDeleteBuffers(1, &rdr->idx_buffer);
       kl_heap_free(rdr->verts);
@@ -85,7 +85,7 @@ void kl_particle_render_quads_free(kl_particle_render_quads* renderer)
    }
 }
 
-void kl_particle_render_quads_assign_system(kl_particle_render_quads renderer, kl_particle_system system)
+void kl_particle_render_quads_assign_system(kl_particle_render_quads_t renderer, kl_particle_system_t system)
 {
    if(renderer != NULL)
    {
@@ -179,10 +179,10 @@ static const int sNumBillboardPointSets = 8;
 
 void _kl_particle_render_quads_advance_time(float dt, void* context)
 {
-   kl_particle_render_quads renderer = (kl_particle_render_quads)context;
+   kl_particle_render_quads_t renderer = (kl_particle_render_quads_t)context;
    int next_buffer_idx = !renderer->buffer_idx;
    int last_used_idx = renderer->last_used_idx;
-   kl_particle_system system = renderer->system;
+   kl_particle_system_t system = renderer->system;
    if(system != NULL && last_used_idx != next_buffer_idx)
    {
       uint32_t i = 0;
@@ -210,7 +210,7 @@ void _kl_particle_render_quads_advance_time(float dt, void* context)
    }
 }
 
-void kl_particle_render_quads_draw(kl_particle_render_quads renderer)
+void kl_particle_render_quads_draw(kl_particle_render_quads_t renderer)
 {
    GLuint buffer_idx = renderer->buffer_idx;
 

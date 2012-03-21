@@ -25,7 +25,7 @@ extern "C" {
 
 #include <FlightlessManicotti/fm.h>
 
-typedef struct _kl_render_context* kl_render_context;
+typedef struct _kl_render_context* kl_render_context_t;
 
 /**
  * Initialize rendering subsystem.
@@ -35,14 +35,14 @@ typedef struct _kl_render_context* kl_render_context;
  *
  * @return KL_SUCCESS or appropriate error code.
  */
-extern KL_API int kl_init_rendering(kl_render_context* context, void* handle);
+extern KL_API int kl_init_rendering(kl_render_context_t* context, void* handle);
 
 /**
  * Destroy the rendering subsystem.
  *
  * @param context Rendering context to destroy.
  */
-extern KL_API void kl_destroy_rendering(kl_render_context* context);
+extern KL_API void kl_destroy_rendering(kl_render_context_t* context);
 
 /**
  * Indicate that a frame should be rendered.
@@ -51,7 +51,7 @@ extern KL_API void kl_destroy_rendering(kl_render_context* context);
  * @param display_width    Width of the frame to render.
  * @param display_height   Height of the frame to render.
  */
-extern KL_API void kl_render_frame(kl_render_context context, float display_width, float display_height);
+extern KL_API void kl_render_frame(kl_render_context_t context, float display_width, float display_height);
 
 #ifdef __cplusplus
 }

@@ -40,7 +40,7 @@ typedef struct {
 
    uint32_t num_particles;
    uint32_t max_particles;
-} *kl_particle_system, _kl_particle_system;
+} *kl_particle_system_t, _kl_particle_system;
 
 /**
  * Allocate a particle system.
@@ -50,14 +50,14 @@ typedef struct {
  *
  * @return KL_SUCCESS if successful.
  */
-extern KL_API int kl_particle_system_alloc(kl_particle_system* system, uint32_t max_particles);
+extern KL_API int kl_particle_system_alloc(kl_particle_system_t* system, uint32_t max_particles);
 
 /**
  * Free a particle system.
  *
  * @param system    Particle system to free.
  */
-extern KL_API void kl_particle_system_free(kl_particle_system* system);
+extern KL_API void kl_particle_system_free(kl_particle_system_t* system);
 
 #ifdef __cplusplus
 } /* extern "C" */

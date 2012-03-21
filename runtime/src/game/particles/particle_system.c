@@ -20,10 +20,10 @@
 #include <float.h>
 #include <FlightlessManicotti/game/particles/particle_system.h>
 
-int kl_particle_system_alloc(kl_particle_system* system, uint32_t max_particles)
+int kl_particle_system_alloc(kl_particle_system_t* system, uint32_t max_particles)
 {
    int ret = KL_SUCCESS;
-   kl_particle_system sys = kl_heap_alloc(sizeof(_kl_particle_system));
+   kl_particle_system_t sys = kl_heap_alloc(sizeof(_kl_particle_system));
    sys->px_stream = kl_heap_alloc(sizeof(float) * max_particles);
    sys->py_stream = kl_heap_alloc(sizeof(float) * max_particles);
    sys->pz_stream = kl_heap_alloc(sizeof(float) * max_particles);
@@ -47,6 +47,9 @@ int kl_particle_system_alloc(kl_particle_system* system, uint32_t max_particles)
          sys->px_stream[i] = cos(angle);
          sys->py_stream[i] = sin(angle);
          sys->pz_stream[i] = 0.0f;
+
+         sys->lifespan_stream[i] = 30.0f * 1000.0f;
+         sys->time_stream[i] = (25.0f + 5.0f * angle) * 1000.0f;
       }
       sys->num_particles = i;
    }
@@ -55,11 +58,11 @@ int kl_particle_system_alloc(kl_particle_system* system, uint32_t max_particles)
    return ret;
 }
 
-void kl_particle_system_free(kl_particle_system* system)
+void kl_particle_system_free(kl_particle_system_t* system)
 {
    if(system && *system)
    {
-      kl_particle_system sys = *system;
+      kl_particle_system_t sys = *system;
       kl_heap_free(sys->px_stream);
       kl_heap_free(sys->py_stream);
       kl_heap_free(sys->pz_stream);

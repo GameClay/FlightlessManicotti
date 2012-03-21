@@ -15,7 +15,7 @@
     CVDisplayLinkRef displayLink;
     float displayWidth;
     float displayHeight;
-    kl_render_context renderContext;
+    kl_render_context_t renderContext;
 }
 
 - (void)dealloc;

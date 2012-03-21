@@ -27,7 +27,7 @@ extern "C" {
 #include <FlightlessManicotti/game/particles/particle_system.h>
 #include <FlightlessManicotti/render/render.h>
 
-typedef struct _kl_particle_render_quads* kl_particle_render_quads;
+typedef struct _kl_particle_render_quads* kl_particle_render_quads_t;
 
 /**
  * Allocate a quad particle renderer.
@@ -36,14 +36,14 @@ typedef struct _kl_particle_render_quads* kl_particle_render_quads;
  *
  * @return KL_SUCCESS if successful.
  */
-extern KL_API int kl_particle_render_quads_alloc(kl_particle_render_quads* renderer, kl_render_context context);
+extern KL_API int kl_particle_render_quads_alloc(kl_particle_render_quads_t* renderer, kl_render_context_t context);
 
 /**
  * Free a quad particle renderer.
  *
  * @param renderer   Particle renderer to free.
  */
-extern KL_API void kl_particle_render_quads_free(kl_particle_render_quads* renderer);
+extern KL_API void kl_particle_render_quads_free(kl_particle_render_quads_t* renderer);
 
 /**
  * Assign a particle system to the quad renderer.
@@ -51,7 +51,8 @@ extern KL_API void kl_particle_render_quads_free(kl_particle_render_quads* rende
  * @param renderer   Particle renderer to which the system should be assigned.
  * @param system     Particle system to render using this renderer.
  */
-extern KL_API void kl_particle_render_quads_assign_system(kl_particle_render_quads renderer, kl_particle_system system);
+extern KL_API void kl_particle_render_quads_assign_system(kl_particle_render_quads_t renderer,
+   kl_particle_system_t system);
 
 #ifdef __cplusplus
 } /* extern "C" */

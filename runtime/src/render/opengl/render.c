@@ -23,16 +23,16 @@
 /* hax */
 #include <FlightlessManicotti/game/particles/particle_system.h>
 #include <FlightlessManicotti/render/particles/particle_quads.h>
-kl_particle_system haxparticles = NULL;
-kl_particle_render_quads haxquads = NULL;
+kl_particle_system_t haxparticles = NULL;
+kl_particle_render_quads_t haxquads = NULL;
 
-int kl_init_rendering(kl_render_context* context, void* handle)
+int kl_init_rendering(kl_render_context_t* context, void* handle)
 {
    int ret = KL_ERROR;
 
    if(context != NULL)
    {
-      kl_render_context ctx = kl_heap_alloc(sizeof(struct _kl_render_context));
+      kl_render_context_t ctx = kl_heap_alloc(sizeof(struct _kl_render_context));
       CGLPixelFormatObj pixelFormat = NULL;
 
       ctx->drawableCGLContext = (CGLContextObj)handle;
@@ -53,7 +53,7 @@ int kl_init_rendering(kl_render_context* context, void* handle)
    return ret;
 }
 
-void kl_destroy_rendering(kl_render_context* context)
+void kl_destroy_rendering(kl_render_context_t* context)
 {
    /* hax */
    kl_particle_render_quads_free(&haxquads);
@@ -63,14 +63,14 @@ void kl_destroy_rendering(kl_render_context* context)
 
    if(context != NULL && *context != NULL)
    {
-      kl_render_context ctx = *context;
+      kl_render_context_t ctx = *context;
       CGLReleaseContext(ctx->resourceCGLContext);
       CGLReleaseContext(ctx->drawableCGLContext);
       kl_heap_free(ctx);
    }
 }
 
-void kl_render_frame(kl_render_context context, float display_width, float display_height)
+void kl_render_frame(kl_render_context_t context, float display_width, float display_height)
 {
    CGLSetCurrentContext(context->drawableCGLContext);
    CGLLockContext(context->drawableCGLContext);
