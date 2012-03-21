@@ -74,19 +74,3 @@ void kl_particle_system_free(kl_particle_system* system)
       kl_heap_free(sys);
    }
 }
-
-#include <OpenGL/gl.h>
-
-/* Hax */
-
-void kl_particle_system_render(kl_particle_system system)
-{
-   int i = 0;
-   glPointSize(5.0f);
-   glBegin(GL_POINTS);
-      for(i = 0; i < system->num_particles; i++)
-      {
-         glVertex3f(system->px_stream[i], system->py_stream[i], system->pz_stream[i]);
-      }
-   glEnd();
-}
