@@ -259,3 +259,86 @@ void kl_particle_render_quads_draw(kl_particle_render_quads_t renderer)
 
    renderer->last_used_idx = buffer_idx;
 }
+
+/* SSE attempt */
+#if 0
+void _kl_particle_render_quads_advance_time(float dt, void* context)
+{
+   kl_particle_render_quads_t renderer = (kl_particle_render_quads_t)context;
+   int next_buffer_idx = !renderer->buffer_idx;
+   int last_used_idx = renderer->last_used_idx;
+   kl_particle_system_t system = renderer->system;
+   if(system != NULL && last_used_idx != next_buffer_idx)
+   {
+      uint32_t i = 0;
+      uint32_t num_particles = system->num_particles;
+      particle_vertex* verts = renderer->verts;
+
+      const float* px_stream = system->px_stream;
+      const float* py_stream = system->py_stream;
+      const float* pz_stream = system->pz_stream;
+      const float* vx_stream = system->vx_stream;
+      const float* vy_stream = system->vy_stream;
+      const float* vz_stream = system->vz_stream;
+      const float* lifespan_stream = system->lifespan_stream;
+      const float* time_stream = system->time_stream;
+
+      kl_float32x4_t px_reg, py_reg, pz_reg, size_reg, half_reg, o1_reg, o2_reg, o3_reg, o4_reg;
+
+      half_reg = _mm_set1_ps(0.5f);
+
+      for(i = 0; i < num_particles; i++)
+      {
+         const float t = time_stream[i] / lifespan_stream[i];
+         const float size = 0.03f;
+
+         _point3f_simple *base_pt = &sBaseBillboardPoints[i % sNumBillboardPointSets * 4];
+
+         size_reg = _mm_set1_ps(size);
+         size_reg = _mm_mul_ps(size_reg, half_reg);
+
+         /* swap y/z on base points since z is not "up", y is "up" by default */
+         px_reg = _mm_mul_ps(base_billboard_reg_x, size_reg);
+         py_reg = _mm_mul_ps(base_billboard_reg_z, size_reg);
+         pz_reg = _mm_mul_ps(base_billboard_reg_y, size_reg);
+
+         px_reg = _mm_add_ps(px_reg, kl_load_float32x4(px_stream));
+         py_reg = _mm_add_ps(py_reg, kl_load_float32x4(py_stream));
+         pz_reg = _mm_add_ps(pz_reg, kl_load_float32x4(pz_stream));
+
+         o1_reg = _mm_shuffle_ps(px_reg, py_reg, _MM_SHUFFLE(0, 0, 0, 0)); /* x0, x0, y0, y0 */
+         o1_reg = _mm_shuffle_ps(o1_reg, pz_reg, _MM_SHUFFLE(0, 0, 2, 0)); /* x0, y0, z0, z0 */
+         kl_store_float32x4((float*)(verts + 0), o1_reg);
+
+         o2_reg = _mm_shuffle_ps(px_reg, py_reg, _MM_SHUFFLE(1, 1, 1, 1));
+         o2_reg = _mm_shuffle_ps(o2_reg, pz_reg, _MM_SHUFFLE(1, 1, 2, 0));
+         kl_store_float32x4((float*)(verts + 1), o2_reg);
+
+         o3_reg = _mm_shuffle_ps(px_reg, py_reg, _MM_SHUFFLE(2, 2, 2, 2));
+         o3_reg = _mm_shuffle_ps(o3_reg, pz_reg, _MM_SHUFFLE(2, 2, 2, 0));
+         kl_store_float32x4((float*)(verts + 2), o3_reg);
+
+         o4_reg = _mm_shuffle_ps(px_reg, py_reg, _MM_SHUFFLE(3, 3, 3, 3));
+         o4_reg = _mm_shuffle_ps(o3_reg, pz_reg, _MM_SHUFFLE(3, 3, 2, 0));
+         kl_store_float32x4((float*)(verts + 3), o4_reg);
+
+         px_stream += 4;
+         py_stream += 4;
+         pz_stream += 4;
+         verts += 4;
+      }
+
+      CGLSetCurrentContext(renderer->context->resourceCGLContext);
+      CGLLockContext(renderer->context->resourceCGLContext);
+
+      glBindBuffer(GL_ARRAY_BUFFER, renderer->vert_buffer[next_buffer_idx]);
+      glBufferData(GL_ARRAY_BUFFER, renderer->verts_sz, renderer->verts, GL_STREAM_DRAW);
+
+      CGLUnlockContext(renderer->context->resourceCGLContext);
+
+      renderer->vert_buffer_elements[next_buffer_idx] = num_particles * 2;
+
+      renderer->buffer_idx = next_buffer_idx;
+   }
+}
+#endif
