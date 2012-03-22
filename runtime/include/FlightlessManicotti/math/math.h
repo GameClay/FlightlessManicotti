@@ -24,6 +24,8 @@ extern "C" {
 #endif
 
 #include <FlightlessManicotti/fm.h>
+#include <math.h>
+#include <float.h>
 
 #define kl_fsel(a, x, y) (a >= 0.0f ? x : y)
 

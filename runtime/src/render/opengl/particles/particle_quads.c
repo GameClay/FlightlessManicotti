@@ -20,7 +20,6 @@
 #include <FlightlessManicotti/process/process.h>
 #include "render/opengl/gl_render.h"
 #include <OpenGL/gl.h>
-#include <math.h>
 
 typedef struct {
    GLfloat xyz[3];

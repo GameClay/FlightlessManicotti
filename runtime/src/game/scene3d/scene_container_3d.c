@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-#include <math.h>
-#include <float.h>
 #include <FlightlessManicotti/game/scene3d/scene_container_3d.h>
 
 /* Forward declare process manager callbacks */
