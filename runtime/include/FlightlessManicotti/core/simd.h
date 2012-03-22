@@ -28,9 +28,13 @@ extern "C" {
 #include <emmintrin.h>
 
 typedef __m128i kl_int32x4_t;
+typedef __m128 kl_float32x4_t;
 
 #define kl_load_int32x4(const_kl_int32x4_t_ptr) _mm_load_si128(const_kl_int32x4_t_ptr)
 #define kl_store_int32x4(dest_int32_t_ptr, src_kl_int32x4_t) _mm_store_si128(dest_int32_t_ptr, src_kl_int32x4_t)
+
+#define kl_load_float32x4(const_kl_float32x4_t) _mm_load_ps(const_kl_float32x4_t)
+#define kl_store_float32x4(dest_float32_ptr, src_kl_float32x4_t) _mm_store_ps(dest_float32_ptr, src_kl_float32x4_t)
 
 #elif defined(KL_ARCH_NEON)
 
