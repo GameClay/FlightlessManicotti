@@ -27,7 +27,12 @@ extern "C" {
 #include <math.h>
 #include <float.h>
 
+#define KL_PI  3.14159265f
+#define KL_2PI 6.28318531f
+
 #define kl_fsel(a, x, y) (a >= 0.0f ? x : y)
+#define kl_sin sinf
+#define kl_cos cosf
 
 #ifdef __cplusplus
 } /* extern "C" */
