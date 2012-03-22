@@ -20,6 +20,7 @@
 #include <FlightlessManicotti/process/process.h>
 #include "render/opengl/gl_render.h"
 #include <OpenGL/gl.h>
+#include <math.h>
 
 typedef struct {
    GLfloat xyz[3];
@@ -189,12 +190,47 @@ void _kl_particle_render_quads_advance_time(float dt, void* context)
       uint32_t num_particles = system->num_particles;
       particle_vertex* verts = renderer->verts;
 
+      const float* px_stream = system->px_stream;
+      const float* py_stream = system->py_stream;
+      const float* pz_stream = system->pz_stream;
+      const float* vx_stream = system->vx_stream;
+      const float* vy_stream = system->vy_stream;
+      const float* vz_stream = system->vz_stream;
+      const float* lifespan_stream = system->lifespan_stream;
+      const float* time_stream = system->time_stream;
+
+      /* swap y/z on base points since z is not "up", y is "up" by default */
+#define fillVert() { \
+      vert->xyz[0] = base_pt->x * size * 0.5f + px_stream[i]; \
+      vert->xyz[1] = base_pt->z * size * 0.5f + py_stream[i]; \
+      vert->xyz[2] = base_pt->y * size * 0.5f + pz_stream[i]; \
+   }
+
       for(i = 0; i < num_particles; i++)
       {
-         verts[i].xyz[0] = system->px_stream[i];
-         verts[i].xyz[1] = system->py_stream[i];
-         verts[i].xyz[2] = system->pz_stream[i];
+         const float t = time_stream[i] / lifespan_stream[i];
+         const float size = 0.01f;
+         particle_vertex* vert = &verts[i * 4];
+         _point3f_simple *base_pt = &sBaseBillboardPoints[i % sNumBillboardPointSets * 4];
+
+         fillVert();
+         base_pt++;
+         vert++;
+
+         fillVert();
+         base_pt++;
+         vert++;
+
+         fillVert();
+         base_pt++;
+         vert++;
+
+         fillVert();
+         base_pt++;
+         vert++;
       }
+
+#undef fillVert
 
       CGLSetCurrentContext(renderer->context->resourceCGLContext);
       CGLLockContext(renderer->context->resourceCGLContext);
@@ -204,7 +240,7 @@ void _kl_particle_render_quads_advance_time(float dt, void* context)
 
       CGLUnlockContext(renderer->context->resourceCGLContext);
 
-      renderer->vert_buffer_elements[next_buffer_idx] = num_particles;
+      renderer->vert_buffer_elements[next_buffer_idx] = num_particles * 2;
 
       renderer->buffer_idx = next_buffer_idx;
    }
@@ -218,7 +254,9 @@ void kl_particle_render_quads_draw(kl_particle_render_quads_t renderer)
    glEnableClientState(GL_VERTEX_ARRAY);
    glVertexPointer(3, GL_FLOAT, sizeof(particle_vertex), (void*)offsetof(particle_vertex, xyz));
 
-   glDrawArrays(GL_POINTS, 0, renderer->vert_buffer_elements[buffer_idx]);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer->idx_buffer);
+   glDrawRangeElements(GL_TRIANGLES, 0, renderer->vert_buffer_elements[buffer_idx] * 2,
+      renderer->vert_buffer_elements[buffer_idx], GL_UNSIGNED_SHORT, NULL);
 
    renderer->last_used_idx = buffer_idx;
 }
