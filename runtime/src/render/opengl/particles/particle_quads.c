@@ -17,9 +17,12 @@
  */
 
 #include <FlightlessManicotti/render/particles/particle_quads.h>
+#include <FlightlessManicotti/math/math.h>
 #include <FlightlessManicotti/process/process.h>
 #include "render/opengl/gl_render.h"
 #include <OpenGL/gl.h>
+
+#include <FlightlessManicotti/beat/beat.h> /* hax */
 
 typedef struct {
    GLfloat xyz[3];
@@ -38,6 +41,9 @@ struct _kl_particle_render_quads {
    size_t verts_sz;
    uint32_t pid;
    kl_render_context_t context;
+
+   /* hax */
+   kl_beat_manager_t beats;
 };
 
 void _kl_particle_render_quads_advance_time(float dt, void* context);
@@ -64,6 +70,9 @@ int kl_particle_render_quads_alloc(kl_particle_render_quads_t* renderer, kl_rend
          rdr->pid = kl_reserve_process_id(KL_DEFAULT_PROCESS_MANAGER,
             NULL, &_kl_particle_render_quads_advance_time, rdr);
 
+         /* hax */
+         kl_beat_manager_alloc(&rdr->beats);
+
          *renderer = rdr;
          ret = KL_SUCCESS;
       }
@@ -79,6 +88,7 @@ void kl_particle_render_quads_free(kl_particle_render_quads_t* renderer)
       kl_particle_render_quads_t rdr = *renderer;
       glDeleteBuffers(2, rdr->vert_buffer);
       glDeleteBuffers(1, &rdr->idx_buffer);
+      kl_beat_manager_free(&rdr->beats); /* hax */
       kl_heap_free(rdr->verts);
       kl_release_process_id(KL_DEFAULT_PROCESS_MANAGER, rdr->pid);
       kl_heap_free(rdr);
@@ -183,6 +193,8 @@ void _kl_particle_render_quads_advance_time(float dt, void* context)
    int next_buffer_idx = !renderer->buffer_idx;
    int last_used_idx = renderer->last_used_idx;
    kl_particle_system_t system = renderer->system;
+   kl_beat_manager_t beats = renderer->beats;
+
    if(system != NULL && last_used_idx != next_buffer_idx)
    {
       uint32_t i = 0;
@@ -202,13 +214,12 @@ void _kl_particle_render_quads_advance_time(float dt, void* context)
 #define fillVert() { \
       vert->xyz[0] = base_pt->x * size * 0.5f + px_stream[i]; \
       vert->xyz[1] = base_pt->z * size * 0.5f + py_stream[i]; \
-      vert->xyz[2] = base_pt->y * size * 0.5f + pz_stream[i]; \
-   }
+      vert->xyz[2] = base_pt->y * size * 0.5f + pz_stream[i]; }
 
       for(i = 0; i < num_particles; i++)
       {
          const float t = time_stream[i] / lifespan_stream[i];
-         const float size = 0.01f;
+         const float size = 0.03f * (kl_cos(beats->beat_interp * KL_PI) + 1.0f) * 0.5f;
          particle_vertex* vert = &verts[i * 4];
          _point3f_simple *base_pt = &sBaseBillboardPoints[i % sNumBillboardPointSets * 4];
 

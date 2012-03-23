@@ -11,6 +11,7 @@ script_files = Glob('src/scriptinterface/*.c', strings=True) + Glob('src/scripti
 game_files = Glob('src/game/*.c', strings=True) + Glob('src/game/scene2d/*.c', strings=True) + \
    Glob('src/game/scene3d/*.c', strings=True) + Glob('src/game/particles/*.c', strings=True)
 render_files = Glob('src/render/*.c', strings=True)
+beat_files = Glob('src/beat/*.c', strings=True);
 
 # Platform specific render implementation
 render_files += Glob('src/render/opengl/*.c', strings=True) + Glob('src/render/opengl/particles/*.c', strings=True)
@@ -22,7 +23,7 @@ swig_files = Glob('src/scriptinterface/swig/*.i', strings=True)
 runtime_env.Command("src/swig_autogen.h", swig_files, build_swig_header.build)
 
 # Assemble the runtime lib source files
-lib_files = core_files + script_files + swig_files + game_files + render_files
+lib_files = core_files + script_files + swig_files + game_files + render_files + beat_files
 
 # Prune out excluded files
 excluded_files = []
