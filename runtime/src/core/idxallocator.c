@@ -47,7 +47,7 @@ int kl_alloc_idx_allocator(kl_idx_allocator_t* idx_allocator, uint32_t num_indic
       /* Prep free-list */
       for(i = 0; i < num_indices; i++)
       {
-         idxalloc->free_list[i] = i;
+         idxalloc->free_list[i] = num_indices - i - 1; /* Reverse order */
       }
       
       *idx_allocator = idxalloc;
