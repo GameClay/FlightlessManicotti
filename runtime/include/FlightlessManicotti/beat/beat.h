@@ -35,6 +35,7 @@ typedef struct {
 
    uint64_t beat_frequency_ns;
    uint64_t last_beat_time_ns;
+   uint64_t last_measure_time_ns;
    uint64_t measure_idx; /* Assuming 4/4 time right now */
 } _kl_beat_manager, *kl_beat_manager_t;
 

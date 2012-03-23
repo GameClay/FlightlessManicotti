@@ -57,21 +57,24 @@ void _kl_beat_manager_advance_time(float dt, void* context)
 {
    kl_beat_manager_t mgr = (kl_beat_manager_t)context;
    kl_absolute_time_t current_time;
-   uint64_t current_time_ns, beat_delta_ns;
+   uint64_t current_time_ns, beat_delta_ns, measure_delta_ns;
    uint64_t measure_idx = mgr->measure_idx;
 
    kl_high_resolution_timer_query(&current_time);
    kl_absolute_time_to_ns(&current_time, &current_time_ns);
    beat_delta_ns = current_time_ns - mgr->last_beat_time_ns;
+   measure_delta_ns = current_time_ns - mgr->last_measure_time_ns;
 
    if(beat_delta_ns >= mgr->beat_frequency_ns)
    {
       mgr->last_beat_time_ns += mgr->beat_frequency_ns;
       beat_delta_ns = current_time_ns - mgr->last_beat_time_ns;
       measure_idx = (measure_idx + 1 == 4 ? 0 : measure_idx + 1);
+      if(measure_idx == 0) mgr->last_measure_time_ns = mgr->last_beat_time_ns;
+      measure_delta_ns = current_time_ns - mgr->last_measure_time_ns;
       mgr->measure_idx = measure_idx;
    }
 
    mgr->beat_interp = (float)beat_delta_ns / mgr->beat_frequency_ns;
-   mgr->measure_interp = mgr->measure_idx / 4.0f;
+   mgr->measure_interp = (float)measure_delta_ns / (mgr->beat_frequency_ns * 4);
 }
