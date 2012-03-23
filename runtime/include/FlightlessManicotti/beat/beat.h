@@ -36,8 +36,11 @@ typedef struct {
    uint64_t beat_frequency_ns;
    uint64_t last_beat_time_ns;
    uint64_t last_measure_time_ns;
-   uint64_t measure_idx; /* Assuming 4/4 time right now */
+   uint64_t measure_count;
+   uint64_t beat_count;
 } _kl_beat_manager, *kl_beat_manager_t;
+
+#define KL_DEFAULT_BEAT_MANAGER NULL
 
 /**
  * Allocate a beat manager.
@@ -54,6 +57,13 @@ extern KL_API int kl_beat_manager_alloc(kl_beat_manager_t* manager);
  * @param manager    Beat manager to free.
  */
 extern KL_API void kl_beat_manager_free(kl_beat_manager_t* manager);
+
+/**
+ * Get the default beat manager.
+ *
+ * @return Default beat manager.
+ */
+extern KL_API kl_beat_manager_t kl_beat_manager_default();
 
 #ifdef __cplusplus
 }

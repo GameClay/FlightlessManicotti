@@ -18,6 +18,7 @@
 #include <FlightlessManicotti/fm.h>
 #include <FlightlessManicotti/scriptinterface/script.h>
 #include <FlightlessManicotti/process/process.h>
+#include <FlightlessManicotti/beat/beat.h>
 
 typedef struct
 {
@@ -31,6 +32,9 @@ extern kl_script_context_t g_script_context;
 
 /* KL_DEFAULT_PROCESS_MANAGER from process/process.c */
 extern kl_process_manager_t g_process_manager;
+
+/* KL_DEFAULT_BEAT_MANAGER from beat/beat.c */
+extern kl_beat_manager_t g_beat_manager;
 
 /* kl_init_mainloop from process/mainloop.c */
 extern int kl_init_mainloop(const char* main_script, int argc, const char* argv[]);
@@ -73,6 +77,9 @@ int kl_initialize(KL_BOOL use_threads, const char* main_script, int argc, const 
    if(ret == KL_SUCCESS)
       ret = kl_init_mainloop(main_script, argc, argv);
 
+   /* Allocate beat manager */
+   ret |= kl_beat_manager_alloc(&g_beat_manager);
+
    /* Send the script init event */
    if(ret == KL_SUCCESS)
    {
@@ -93,6 +100,7 @@ void kl_destroy()
 {
    KL_ASSERT(g_runtime_state.initialized, "Runtime not initialized.");
    kl_script_destroy(&g_script_context);
+   kl_beat_manager_free(&g_beat_manager);
    kl_free_process_manager(&g_process_manager);
    g_script_context = NULL;
 }

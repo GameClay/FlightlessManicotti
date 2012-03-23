@@ -19,6 +19,8 @@
 #include <FlightlessManicotti/beat/beat.h>
 #include <FlightlessManicotti/core/timer.h>
 
+kl_beat_manager_t g_beat_manager = NULL;
+
 void _kl_beat_manager_advance_time(float dt, void* context);
 
 int kl_beat_manager_alloc(kl_beat_manager_t* manager)
@@ -33,12 +35,14 @@ int kl_beat_manager_alloc(kl_beat_manager_t* manager)
          mgr->beat_frequency_ns = 500 * 1e6; /* 120 bpm */
          kl_high_resolution_timer_query(&current_time);
          kl_absolute_time_to_ns(&current_time, &mgr->last_beat_time_ns);
-         mgr->measure_idx = 0;
+         mgr->measure_count = 0;
+         mgr->beat_count = 0;
 
          mgr->pid = kl_reserve_process_id(KL_DEFAULT_PROCESS_MANAGER,
             NULL, &_kl_beat_manager_advance_time, mgr);
 
          *manager = mgr;
+         ret = KL_SUCCESS;
       }
    }
    return ret;
@@ -53,12 +57,17 @@ void kl_beat_manager_free(kl_beat_manager_t* manager)
    }
 }
 
+kl_beat_manager_t kl_beat_manager_default()
+{
+   return g_beat_manager;
+}
+
 void _kl_beat_manager_advance_time(float dt, void* context)
 {
    kl_beat_manager_t mgr = (kl_beat_manager_t)context;
    kl_absolute_time_t current_time;
    uint64_t current_time_ns, beat_delta_ns, measure_delta_ns;
-   uint64_t measure_idx = mgr->measure_idx;
+   uint64_t beat_count = mgr->beat_count;
 
    kl_high_resolution_timer_query(&current_time);
    kl_absolute_time_to_ns(&current_time, &current_time_ns);
@@ -69,10 +78,13 @@ void _kl_beat_manager_advance_time(float dt, void* context)
    {
       mgr->last_beat_time_ns += mgr->beat_frequency_ns;
       beat_delta_ns = current_time_ns - mgr->last_beat_time_ns;
-      measure_idx = (measure_idx + 1 == 4 ? 0 : measure_idx + 1);
-      if(measure_idx == 0) mgr->last_measure_time_ns = mgr->last_beat_time_ns;
+      if(beat_count % 4 == 0)
+      {
+         mgr->last_measure_time_ns = mgr->last_beat_time_ns;
+         mgr->measure_count++;
+      }
       measure_delta_ns = current_time_ns - mgr->last_measure_time_ns;
-      mgr->measure_idx = measure_idx;
+      mgr->beat_count = ++beat_count;
    }
 
    mgr->beat_interp = (float)beat_delta_ns / mgr->beat_frequency_ns;
