@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 #include <FlightlessManicotti/process/process.h>
 #include <FlightlessManicotti/core/memory.h>
 #include <FlightlessManicotti/core/idxallocator.h>
