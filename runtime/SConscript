@@ -33,11 +33,11 @@ lib_files = [f for f in lib_files if f not in excluded_files]
 runtime_env.Append(CPPPATH = ['src', 'include'])
 
 # Determine additional compiler flags
-runtime_env.Append(CCFLAGS =['-Werror'])
-runtime_env.Append(CPPDEFINES=['KL_BUILD_LIBRARY'])
+runtime_env.Append(CCFLAGS = ['-Werror'])
+runtime_env.Append(CPPDEFINES = ['KL_BUILD_LIBRARY'])
 
 if not (env['OS'] == 'ios' or env['OS'] == 'android'):
-   runtime_env.Append(CCFLAGS =['-ansi', '-std=c89', '-pedantic'])
+   runtime_env.Append(CCFLAGS = ['-ansi', '-std=c89', '-pedantic'])
 
 #if env['OS'] == 'android':
    #runtime_env.Append(CPPDEFINES = ['__ARM_NEON__'])
@@ -54,7 +54,10 @@ if not(env['OS'] == 'android' or env['OS'] == 'windows'):
 
 if (env['OS'] == 'ios' or env['OS'] == 'darwin'):
    runtime_env.Append(LINKFLAGS = ['-framework', 'CoreServices',
-                                   '-framework', 'OpenGL']);
+                                   '-framework', 'OpenGL',
+                                   '-framework', 'CoreMIDI'])
+
+   runtime_env.Append(CCFLAGS = ['-fconstant-cfstrings']) # For CFSTR macro
 
 # Build lib
 return_libs = []
