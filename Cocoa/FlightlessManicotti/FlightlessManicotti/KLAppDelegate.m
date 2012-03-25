@@ -33,6 +33,11 @@
     return self;
 }
 
+- (void)dealloc
+{
+    [super dealloc];
+}
+
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
     kl_predestroy();
