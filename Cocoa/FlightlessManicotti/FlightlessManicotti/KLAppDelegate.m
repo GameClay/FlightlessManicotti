@@ -27,7 +27,7 @@
                                    selector:@selector(update:)
                                    userInfo:nil
                                     repeats:YES]
-                                    forMode:NSDefaultRunLoopMode];
+                                    forMode:NSRunLoopCommonModes];
         }
     }
     return self;
