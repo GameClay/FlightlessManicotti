@@ -24,8 +24,7 @@ extern "C" {
 #endif
 
 #include <FlightlessManicotti/math/math.h>
-#include <FlightlessManicotti/core/simd.h>
-#include <stdint.h>
+#include <FlightlessManicotti/math/vector.h>
 
 /* TODO: Row vs Column major functions? Or just assume SSE3+ at this point. */
 
@@ -40,19 +39,39 @@ KL_ALIGNED_STRUCT_PRE(16) {
    float m[16];
 } KL_ALIGNED_STRUCT_POST(kl_matrix_t, 16);
 
-KL_ALIGNED_STRUCT_PRE(16) {
-   float xyzw[4];
-} KL_ALIGNED_STRUCT_POST(kl_vector4_t, 16);
-
-typedef void (*kl_math_abc_restrict_fn)(const float* KL_RESTRICT a, const float* KL_RESTRICT b, float* KL_RESTRICT c);
-typedef void (*kl_math_abcn_restrict_fn)(const float* KL_RESTRICT a, const float* KL_RESTRICT b, float* KL_RESTRICT c, uint32_t n);
-
+/**
+ * Matrix * Matrix
+ *
+ * @param a Matrix A.
+ * @param b Matrix B.
+ * @param c Output matrix.
+ */
 extern kl_math_abc_restrict_fn kl_matrix_mul_matrix;
 
+/**
+ * Matrix * Vector
+ *
+ * @param a Matrix.
+ * @param b Vector.
+ * @param c Output vector.
+ */
 extern kl_math_abc_restrict_fn kl_matrix_mul_vector;
 
+/**
+ * Matrix * Vector batch
+ *
+ * @param a Matrix.
+ * @param b Vector array.
+ * @param c Output vector array.
+ * @param n Number of vector elements in b and c.
+ */
 extern kl_math_abcn_restrict_fn kl_matrix_mul_vector_batch;
 
+/**
+ * Test SIMD vs C implementations of matrix math functions.
+ *
+ * Asserts if a failure occurs.
+ */
 extern KL_API void kl_matrix_math_self_test();
 
 #ifdef __cplusplus

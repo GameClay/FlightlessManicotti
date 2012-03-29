@@ -16,28 +16,18 @@
  * limitations under the License.
  */
 
-#ifndef _KL_MATH_H_
-#define _KL_MATH_H_
+#ifndef _KL_VECTOR_H_
+#define _KL_VECTOR_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <FlightlessManicotti/fm.h>
-#include <FlightlessManicotti/core/simd.h>
-#include <math.h>
-#include <float.h>
-#include <stdint.h>
+#include <FlightlessManicotti/math/math.h>
 
-#define KL_PI  3.14159265f
-#define KL_2PI 6.28318531f
-
-#define kl_fsel(a, x, y) (a >= 0.0f ? x : y)
-#define kl_sin sinf
-#define kl_cos cosf
-
-typedef void (*kl_math_abc_restrict_fn)(const float* KL_RESTRICT a, const float* KL_RESTRICT b, float* KL_RESTRICT c);
-typedef void (*kl_math_abcn_restrict_fn)(const float* KL_RESTRICT a, const float* KL_RESTRICT b, float* KL_RESTRICT c, uint32_t n);
+KL_ALIGNED_STRUCT_PRE(16) {
+   float xyzw[4];
+} KL_ALIGNED_STRUCT_POST(kl_vector4_t, 16);
 
 #ifdef __cplusplus
 } /* extern "C" */
