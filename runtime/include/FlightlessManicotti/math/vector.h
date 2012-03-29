@@ -29,6 +29,10 @@ KL_ALIGNED_STRUCT_PRE(16) {
    float xyzw[4];
 } KL_ALIGNED_STRUCT_POST(kl_vector4_t, 16);
 
+extern kl_math_f_ab_restrict_fn kl_vector_dot;
+
+extern KL_API void kl_vector_math_self_test();
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

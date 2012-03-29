@@ -31,6 +31,7 @@ extern "C" {
 
 #define KL_PI  3.14159265f
 #define KL_2PI 6.28318531f
+#define KL_EPSILON_F 0.00001f
 
 #define kl_fsel(a, x, y) (a >= 0.0f ? x : y)
 #define kl_sin sinf
@@ -38,6 +39,7 @@ extern "C" {
 
 typedef void (*kl_math_abc_restrict_fn)(const float* KL_RESTRICT a, const float* KL_RESTRICT b, float* KL_RESTRICT c);
 typedef void (*kl_math_abcn_restrict_fn)(const float* KL_RESTRICT a, const float* KL_RESTRICT b, float* KL_RESTRICT c, uint32_t n);
+typedef float (*kl_math_f_ab_restrict_fn)(const float* KL_RESTRICT a, const float* KL_RESTRICT b);
 
 #ifdef __cplusplus
 } /* extern "C" */

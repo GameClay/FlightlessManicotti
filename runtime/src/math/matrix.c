@@ -170,7 +170,7 @@ void kl_matrix_math_self_test()
    kl_matrix_mul_matrix_c(a.m, b.m, c2.m);
    for(i = 0; i < 16; i++)
    {
-      KL_ASSERT(fabs(c1.m[i] - c2.m[i]) < 0.00001f, "Mismatch in matrix-matrix multiply");
+      KL_ASSERT(fabs(c1.m[i] - c2.m[i]) < KL_EPSILON_F, "Mismatch in matrix-matrix multiply");
    }
 
    kl_matrix_mul_vector(a.m, v.xyzw, d1.xyzw);
@@ -178,7 +178,7 @@ void kl_matrix_math_self_test()
 
    for(i = 0; i < 4; i++)
    {
-      KL_ASSERT(fabs(d1.xyzw[i] - d2.xyzw[i]) < 0.00001f, "Mismatch in matrix-vector multiply");
+      KL_ASSERT(fabs(d1.xyzw[i] - d2.xyzw[i]) < KL_EPSILON_F, "Mismatch in matrix-vector multiply");
    }
 }
 
