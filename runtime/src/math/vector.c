@@ -17,6 +17,7 @@
  */
 
 #include <FlightlessManicotti/math/vector.h>
+#include <sanskrit/sklog.h>
 #include <pmmintrin.h>
 
 float kl_vector_dot_sse3(const float* KL_RESTRICT a, const float* KL_RESTRICT b)
@@ -56,6 +57,8 @@ void kl_vector_math_self_test()
 
    KL_ASSERT(fabs(kl_vector_dot(v1.xyzw, v2.xyzw) - kl_vector_dot_c(v1.xyzw, v2.xyzw)) < KL_EPSILON_F,
       "Mismatch in vector dot product");
+
+   sklog("Vector self tests passed.");
 }
 
 kl_math_f_ab_restrict_fn kl_vector_dot = kl_vector_dot_sse3;

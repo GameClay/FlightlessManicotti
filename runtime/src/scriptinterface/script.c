@@ -21,9 +21,9 @@
 #include <lualib.h>
 #include <amp/amp.h>
 #include <FlightlessManicotti/scriptinterface/script.h>
-#include <FlightlessManicotti/core/logger.h>
 #include <FlightlessManicotti/core/ringbuffer.h>
 #include <FlightlessManicotti/core/simd.h>
+#include <sanskrit/sklog.h>
 #include "swig_autogen.h"
 
 /* Extern the lua module loaders */
@@ -116,7 +116,7 @@ void _on_lua_err(lua_State* state)
    size_t str_sz;
    int top_idx = lua_gettop(state);
    const char* syntax_err = lua_tolstring(state, top_idx, &str_sz);
-   /*KL_LOGF(KL_LL_ERR, "%s\n", syntax_err); */
+   skerr("%s\n", syntax_err);
    lua_pop(state, 1);
 }
 
@@ -138,7 +138,7 @@ void _kl_script_run_internal(void* arg)
 
       default:
       {
-         /*KL_LOGF(KL_LL_ERR, "Unknown error loading file '%s'", sctx->file_name);*/
+         skerr("Unknown error loading file '%s'", sctx->file_name);
       }
    }
 
@@ -182,7 +182,7 @@ void _kl_script_run_internal(void* arg)
 
          default:
          {
-            /*KL_LOGF(KL_LL_ERR, "Unknown error calling main function.");*/
+            skerr("Unknown error calling main function.");
             break;
          }
       }
@@ -219,7 +219,7 @@ int kl_script_run(kl_script_context_t context, const char* file_name, int argc, 
       /* Possible errors */
       case LUA_ERRFILE:
       {
-         /*KL_LOGF(KL_LL_ERR, "File '%s' not found.\n", file_name);*/
+         skerr("File '%s' not found.\n", file_name);
          return KL_ERROR;
       }
       case LUA_ERRSYNTAX:
@@ -229,7 +229,7 @@ int kl_script_run(kl_script_context_t context, const char* file_name, int argc, 
       }
       case LUA_ERRMEM: 
       {
-         /*KL_LOGF(KL_LL_ERR, "lua ran out of memory opening file %s.\n", file_name);*/
+         skerr("lua ran out of memory opening file %s.\n", file_name);
          return KL_ERROR;
       }
       default:
@@ -370,7 +370,7 @@ int kl_script_event_pump(kl_script_context_t context)
 
          default:
          {
-            /*KL_LOGF(KL_LL_ERR, "Unknown error invoking kl_script_event_pump().\n");*/
+            skerr("Unknown error invoking kl_script_event_pump().\n");
             break;
          }
       }

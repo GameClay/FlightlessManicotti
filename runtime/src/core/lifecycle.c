@@ -20,6 +20,7 @@
 #include <FlightlessManicotti/process/process.h>
 #include <FlightlessManicotti/beat/beat.h>
 #include <FlightlessManicotti/beat/midi.h>
+#include <sanskrit/sklog.h>
 
 typedef struct
 {
@@ -52,6 +53,9 @@ kl_script_event_t g_event_Destroy;
 int kl_initialize(KL_BOOL use_threads, const char* main_script, int argc, const char* argv[])
 {
    int ret = KL_ERROR;
+
+   /* Init logging */
+   sklog_init();
 
    KL_ASSERT(!g_runtime_state.initialized, "Runtime already initialized.");
    KL_ASSERT(g_script_context == NULL, "KL_DEFAULT_SCRIPT_CONTEXT already initialized.");
@@ -111,4 +115,7 @@ void kl_destroy()
    kl_midi_manager_free(&g_midi_manager);
    kl_free_process_manager(&g_process_manager);
    g_script_context = NULL;
+
+   /* Destroy logging */
+   sklog_destroy();
 }

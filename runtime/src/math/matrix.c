@@ -17,6 +17,7 @@
  */
 
 #include <FlightlessManicotti/math/matrix.h>
+#include <sanskrit/sklog.h>
 #include <pmmintrin.h>
 
 void kl_matrix_mul_matrix_sse(const float* KL_RESTRICT a, const float* KL_RESTRICT b, float* KL_RESTRICT c)
@@ -180,6 +181,8 @@ void kl_matrix_math_self_test()
    {
       KL_ASSERT(fabs(d1.xyzw[i] - d2.xyzw[i]) < KL_EPSILON_F, "Mismatch in matrix-vector multiply");
    }
+
+   sklog("Matrix self tests passed.");
 }
 
 /* Assign function pointers dynamically later */
