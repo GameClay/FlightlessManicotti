@@ -17,6 +17,7 @@
  */
 
 #include <FlightlessManicotti/math/matrix.h>
+#include <FlightlessManicotti/core/timer.h>
 #include <sanskrit/sklog.h>
 #include <pmmintrin.h>
 
@@ -151,38 +152,94 @@ void kl_matrix_mul_vector_batch_c(const float* KL_RESTRICT m, const float* KL_RE
    }
 }
 
+#define NUM_TEST_RUNS 50000
 void kl_matrix_math_self_test()
 {
-   int i;
-   kl_matrix_t a;
-   kl_matrix_t b;
+   int i, j;
+   kl_absolute_time_t start_time, end_time, delta_time;
+   uint64_t time_ns;
+   float c_mul_ms, sse_mul_ms, c_xfm_ms, sse_xfm_ms, c_batch_xfm_ms, sse_batch_xfm_ms;
+
+   kl_matrix_t a[NUM_TEST_RUNS];
+   kl_matrix_t b[NUM_TEST_RUNS];
    kl_matrix_t c1;
    kl_matrix_t c2;
-   kl_vector4_t v;
+   kl_vector4_t v[NUM_TEST_RUNS];
    kl_vector4_t d1;
    kl_vector4_t d2;
+   kl_vector4_t d[NUM_TEST_RUNS];
 #define RFl ((float)random() / RAND_MAX)
-   for(i = 0; i < 16; i++) a.m[i] = RFl;
-   for(i = 0; i < 16; i++) b.m[i] = RFl;
-   for(i = 0; i < 4; i++) v.xyzw[i] = RFl;
+   for(j = 0; j < NUM_TEST_RUNS; j++) for(i = 0; i < 16; i++) a[j].m[i] = RFl;
+   for(j = 0; j < NUM_TEST_RUNS; j++) for(i = 0; i < 16; i++) b[j].m[i] = RFl;
+   for(j = 0; j < NUM_TEST_RUNS; j++) for(i = 0; i < 4; i++) v[j].xyzw[i] = RFl;
 #undef RFl
 
-   kl_matrix_mul_matrix(a.m, b.m, c1.m);
-   kl_matrix_mul_matrix_c(a.m, b.m, c2.m);
+   kl_matrix_mul_matrix_sse(a[0].m, b[0].m, c1.m);
+   kl_matrix_mul_matrix_c(a[0].m, b[0].m, c2.m);
    for(i = 0; i < 16; i++)
    {
       KL_ASSERT(fabs(c1.m[i] - c2.m[i]) < KL_EPSILON_F, "Mismatch in matrix-matrix multiply");
    }
 
-   kl_matrix_mul_vector(a.m, v.xyzw, d1.xyzw);
-   kl_matrix_mul_vector_c(a.m, v.xyzw, d2.xyzw);
+   kl_high_resolution_timer_query(&start_time);
+   for(i = 0; i < NUM_TEST_RUNS; i++)
+      kl_matrix_mul_matrix_c(a[i].m, b[i].m, c2.m);
+   kl_high_resolution_timer_query(&end_time);
+   delta_time = end_time - start_time;
+   kl_absolute_time_to_ns(&delta_time, &time_ns);
+   c_mul_ms = (float)time_ns * 1e-6;
+
+   kl_high_resolution_timer_query(&start_time);
+   for(i = 0; i < NUM_TEST_RUNS; i++)
+      kl_matrix_mul_matrix_sse(a[i].m, b[i].m, c2.m);
+   kl_high_resolution_timer_query(&end_time);
+   delta_time = end_time - start_time;
+   kl_absolute_time_to_ns(&delta_time, &time_ns);
+   sse_mul_ms = (float)time_ns * 1e-6;
+
+   kl_matrix_mul_vector_sse3(a[0].m, v[0].xyzw, d1.xyzw);
+   kl_matrix_mul_vector_c(a[0].m, v[0].xyzw, d2.xyzw);
 
    for(i = 0; i < 4; i++)
    {
-      KL_ASSERT(fabs(d1.xyzw[i] - d2.xyzw[i]) < KL_EPSILON_F, "Mismatch in matrix-vector multiply");
+      KL_ASSERT(fabs(d1.xyzw[i] - d2.xyzw[i]) < KL_EPSILON_F, "Mismatch in matrix-vector transform");
    }
 
-   sklog("Matrix self tests passed.");
+   kl_high_resolution_timer_query(&start_time);
+   for(i = 0; i < NUM_TEST_RUNS; i++)
+      kl_matrix_mul_vector_c(a[i].m, v[i].xyzw, d1.xyzw);
+   kl_high_resolution_timer_query(&end_time);
+   delta_time = end_time - start_time;
+   kl_absolute_time_to_ns(&delta_time, &time_ns);
+   c_xfm_ms = (float)time_ns * 1e-6;
+
+   kl_high_resolution_timer_query(&start_time);
+   for(i = 0; i < NUM_TEST_RUNS; i++)
+      kl_matrix_mul_vector_sse3(a[i].m, v[i].xyzw, d1.xyzw);
+   kl_high_resolution_timer_query(&end_time);
+   delta_time = end_time - start_time;
+   kl_absolute_time_to_ns(&delta_time, &time_ns);
+   sse_xfm_ms = (float)time_ns * 1e-6;
+
+   kl_high_resolution_timer_query(&start_time);
+   kl_matrix_mul_vector_batch_c(a[0].m, (float*)v, (float*)d, NUM_TEST_RUNS);
+   kl_high_resolution_timer_query(&end_time);
+   delta_time = end_time - start_time;
+   kl_absolute_time_to_ns(&delta_time, &time_ns);
+   c_batch_xfm_ms = (float)time_ns * 1e-6;
+
+   kl_high_resolution_timer_query(&start_time);
+   kl_matrix_mul_vector_batch_sse3(a[0].m, (float*)v, (float*)d, NUM_TEST_RUNS);
+   kl_high_resolution_timer_query(&end_time);
+   delta_time = end_time - start_time;
+   kl_absolute_time_to_ns(&delta_time, &time_ns);
+   sse_batch_xfm_ms = (float)time_ns * 1e-6;
+
+   sklog("Matrix self tests passed. (%d iterations)\n" \
+      "\tMatrix * Matrix: SSE %fms, C %fms\n" \
+      "\tMatrix * Vector: SSE %fms, C %fms" \
+      "\tMatrix * Vector Batch: SSE %fms, C %fms",
+      NUM_TEST_RUNS, sse_mul_ms, c_mul_ms, sse_xfm_ms, c_xfm_ms, sse_batch_xfm_ms, c_batch_xfm_ms);
 }
 
 /* Assign function pointers dynamically later */

@@ -17,6 +17,7 @@
  */
 
 #include <FlightlessManicotti/math/vector.h>
+#include <FlightlessManicotti/core/timer.h>
 #include <sanskrit/sklog.h>
 #include <pmmintrin.h>
 
@@ -45,20 +46,41 @@ float kl_vector_dot_c(const float* KL_RESTRICT a, const float* KL_RESTRICT b)
    return (a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3]);
 }
 
+#define NUM_TEST_RUNS 50000
 void kl_vector_math_self_test()
 {
-   int i;
-   kl_vector4_t v1, v2;
+   int i, j;
+   kl_absolute_time_t start_time, end_time, delta_time;
+   uint64_t time_ns;
+   float c_dot_ms, sse_dot_ms;
+   kl_vector4_t v1[NUM_TEST_RUNS], v2[NUM_TEST_RUNS];
 
 #define RFl ((float)random() / RAND_MAX)
-   for(i = 0; i < 4; i++) v1.xyzw[i] = RFl;
-   for(i = 0; i < 4; i++) v2.xyzw[i] = RFl;
+   for(j = 0; j < NUM_TEST_RUNS; j++) for(i = 0; i < 4; i++) v1[j].xyzw[i] = RFl;
+   for(j = 0; j < NUM_TEST_RUNS; j++) for(i = 0; i < 4; i++) v2[j].xyzw[i] = RFl;
 #undef RFl
 
-   KL_ASSERT(fabs(kl_vector_dot(v1.xyzw, v2.xyzw) - kl_vector_dot_c(v1.xyzw, v2.xyzw)) < KL_EPSILON_F,
+   KL_ASSERT(fabs(kl_vector_dot(v1[0].xyzw, v2[0].xyzw) - kl_vector_dot_c(v1[0].xyzw, v2[0].xyzw)) < KL_EPSILON_F,
       "Mismatch in vector dot product");
 
-   sklog("Vector self tests passed.");
+   kl_high_resolution_timer_query(&start_time);
+   for(i = 0; i < NUM_TEST_RUNS; i++)
+      kl_vector_dot_c(v1[i].xyzw, v2[i].xyzw);
+   kl_high_resolution_timer_query(&end_time);
+   delta_time = end_time - start_time;
+   kl_absolute_time_to_ns(&delta_time, &time_ns);
+   c_dot_ms = (float)time_ns * 1e-6;
+
+   kl_high_resolution_timer_query(&start_time);
+   for(i = 0; i < NUM_TEST_RUNS; i++)
+      kl_vector_dot_sse3(v1[i].xyzw, v2[i].xyzw);
+   kl_high_resolution_timer_query(&end_time);
+   delta_time = end_time - start_time;
+   kl_absolute_time_to_ns(&delta_time, &time_ns);
+   sse_dot_ms = (float)time_ns * 1e-6;
+
+   sklog("Vector self tests passed.\n\tDot product %d iterations: SSE %fms, C %fms",
+      NUM_TEST_RUNS, sse_dot_ms, c_dot_ms);
 }
 
 kl_math_f_ab_restrict_fn kl_vector_dot = kl_vector_dot_sse3;
