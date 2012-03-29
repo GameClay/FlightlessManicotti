@@ -86,8 +86,10 @@ extern "C" {
 #if defined(KL_DEBUG) || defined(KL_ENABLE_ASSERTS)
 #  define KL_ENABLE_ASSERTS
 #  include <assert.h>
+#  define KL_ASSERT(x, msg) assert(x && msg)
+#else
+#  define KL_ASSERT(x, msg)
 #endif
-#define KL_ASSERT(x, msg) assert(x && msg)
 
 /*
  * Define KL_UNUSED
