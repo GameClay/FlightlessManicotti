@@ -5,7 +5,7 @@ env.Append(CPPPATH = [env.Dir('include').abspath])
 runtime_env = env.Clone()
 
 # Files used for runtime library
-core_files = Glob('src/core/*.c', strings=True) + Glob('src/process/*.c', strings=True)
+core_files = Glob('src/core/*.c', strings=True) + Glob('src/process/*.c', strings=True) + Glob('src/math/*.c', strings=True)
 script_files = Glob('src/scriptinterface/*.c', strings=True) + Glob('src/scriptinterface/modules/*.c', strings=True) + \
    Glob('src/scriptinterface/helpers/*.c', strings=True)
 game_files = Glob('src/game/*.c', strings=True) + Glob('src/game/scene2d/*.c', strings=True) + \
