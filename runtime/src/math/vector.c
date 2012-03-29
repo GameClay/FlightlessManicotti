@@ -63,14 +63,7 @@ void kl_vector_math_self_test()
    KL_ASSERT(fabs(kl_vector_dot(v1[0].xyzw, v2[0].xyzw) - kl_vector_dot_c(v1[0].xyzw, v2[0].xyzw)) < KL_EPSILON_F,
       "Mismatch in vector dot product");
 
-   kl_high_resolution_timer_query(&start_time);
-   for(i = 0; i < NUM_TEST_RUNS; i++)
-      kl_vector_dot_c(v1[i].xyzw, v2[i].xyzw);
-   kl_high_resolution_timer_query(&end_time);
-   delta_time = end_time - start_time;
-   kl_absolute_time_to_ns(&delta_time, &time_ns);
-   c_dot_ms = (float)time_ns * 1e-6;
-
+   /* Dot product benchmarking */
    kl_high_resolution_timer_query(&start_time);
    for(i = 0; i < NUM_TEST_RUNS; i++)
       kl_vector_dot_sse3(v1[i].xyzw, v2[i].xyzw);
@@ -78,6 +71,14 @@ void kl_vector_math_self_test()
    delta_time = end_time - start_time;
    kl_absolute_time_to_ns(&delta_time, &time_ns);
    sse_dot_ms = (float)time_ns * 1e-6;
+
+   kl_high_resolution_timer_query(&start_time);
+   for(i = 0; i < NUM_TEST_RUNS; i++)
+      kl_vector_dot_c(v1[i].xyzw, v2[i].xyzw);
+   kl_high_resolution_timer_query(&end_time);
+   delta_time = end_time - start_time;
+   kl_absolute_time_to_ns(&delta_time, &time_ns);
+   c_dot_ms = (float)time_ns * 1e-6;
 
    sklog("Vector self tests passed.\n\tDot product %d iterations: SSE %fms, C %fms",
       NUM_TEST_RUNS, sse_dot_ms, c_dot_ms);

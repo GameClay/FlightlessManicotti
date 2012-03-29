@@ -181,14 +181,7 @@ void kl_matrix_math_self_test()
       KL_ASSERT(fabs(c1.m[i] - c2.m[i]) < KL_EPSILON_F, "Mismatch in matrix-matrix multiply");
    }
 
-   kl_high_resolution_timer_query(&start_time);
-   for(i = 0; i < NUM_TEST_RUNS; i++)
-      kl_matrix_mul_matrix_c(a[i].m, b[i].m, c2.m);
-   kl_high_resolution_timer_query(&end_time);
-   delta_time = end_time - start_time;
-   kl_absolute_time_to_ns(&delta_time, &time_ns);
-   c_mul_ms = (float)time_ns * 1e-6;
-
+   /* Matrix * Matrix benchmarking */
    kl_high_resolution_timer_query(&start_time);
    for(i = 0; i < NUM_TEST_RUNS; i++)
       kl_matrix_mul_matrix_sse(a[i].m, b[i].m, c2.m);
@@ -196,6 +189,14 @@ void kl_matrix_math_self_test()
    delta_time = end_time - start_time;
    kl_absolute_time_to_ns(&delta_time, &time_ns);
    sse_mul_ms = (float)time_ns * 1e-6;
+
+   kl_high_resolution_timer_query(&start_time);
+   for(i = 0; i < NUM_TEST_RUNS; i++)
+      kl_matrix_mul_matrix_c(a[i].m, b[i].m, c2.m);
+   kl_high_resolution_timer_query(&end_time);
+   delta_time = end_time - start_time;
+   kl_absolute_time_to_ns(&delta_time, &time_ns);
+   c_mul_ms = (float)time_ns * 1e-6;
 
    kl_matrix_mul_vector_sse3(a[0].m, v[0].xyzw, d1.xyzw);
    kl_matrix_mul_vector_c(a[0].m, v[0].xyzw, d2.xyzw);
@@ -205,14 +206,7 @@ void kl_matrix_math_self_test()
       KL_ASSERT(fabs(d1.xyzw[i] - d2.xyzw[i]) < KL_EPSILON_F, "Mismatch in matrix-vector transform");
    }
 
-   kl_high_resolution_timer_query(&start_time);
-   for(i = 0; i < NUM_TEST_RUNS; i++)
-      kl_matrix_mul_vector_c(a[i].m, v[i].xyzw, d1.xyzw);
-   kl_high_resolution_timer_query(&end_time);
-   delta_time = end_time - start_time;
-   kl_absolute_time_to_ns(&delta_time, &time_ns);
-   c_xfm_ms = (float)time_ns * 1e-6;
-
+   /* Matrix * Vector benchmarking */
    kl_high_resolution_timer_query(&start_time);
    for(i = 0; i < NUM_TEST_RUNS; i++)
       kl_matrix_mul_vector_sse3(a[i].m, v[i].xyzw, d1.xyzw);
@@ -222,18 +216,27 @@ void kl_matrix_math_self_test()
    sse_xfm_ms = (float)time_ns * 1e-6;
 
    kl_high_resolution_timer_query(&start_time);
-   kl_matrix_mul_vector_batch_c(a[0].m, (float*)v, (float*)d, NUM_TEST_RUNS);
+   for(i = 0; i < NUM_TEST_RUNS; i++)
+      kl_matrix_mul_vector_c(a[i].m, v[i].xyzw, d1.xyzw);
    kl_high_resolution_timer_query(&end_time);
    delta_time = end_time - start_time;
    kl_absolute_time_to_ns(&delta_time, &time_ns);
-   c_batch_xfm_ms = (float)time_ns * 1e-6;
+   c_xfm_ms = (float)time_ns * 1e-6;
 
+   /* Matrix * Vector batch benchmarking */
    kl_high_resolution_timer_query(&start_time);
    kl_matrix_mul_vector_batch_sse3(a[0].m, (float*)v, (float*)d, NUM_TEST_RUNS);
    kl_high_resolution_timer_query(&end_time);
    delta_time = end_time - start_time;
    kl_absolute_time_to_ns(&delta_time, &time_ns);
    sse_batch_xfm_ms = (float)time_ns * 1e-6;
+
+   kl_high_resolution_timer_query(&start_time);
+   kl_matrix_mul_vector_batch_c(a[0].m, (float*)v, (float*)d, NUM_TEST_RUNS);
+   kl_high_resolution_timer_query(&end_time);
+   delta_time = end_time - start_time;
+   kl_absolute_time_to_ns(&delta_time, &time_ns);
+   c_batch_xfm_ms = (float)time_ns * 1e-6;
 
    sklog("Matrix self tests passed. (%d iterations)\n" \
       "\tMatrix * Matrix: SSE %fms, C %fms\n" \
