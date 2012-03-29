@@ -25,14 +25,35 @@ extern "C" {
 
 #include <FlightlessManicotti/math/math.h>
 #include <FlightlessManicotti/core/simd.h>
+#include <stdint.h>
 
-/* x0 x1 x2 x3
+/* TODO: Row vs Column major functions? Or just assume SSE3+ at this point. */
+
+/* Row Major
+ * x0 x1 x2 x3
  * y0 y1 y2 y3
  * z0 z1 z2 z3
  * w0 w1 w2 w3
  */
 
-extern KL_API void kl_matrix_mul_matrix(const float* KL_RESTRICT a, const float* KL_RESTRICT b, float* KL_RESTRICT c);
+KL_ALIGNED_STRUCT_PRE(16) {
+   float m[16];
+} KL_ALIGNED_STRUCT_POST(kl_matrix_t, 16);
+
+KL_ALIGNED_STRUCT_PRE(16) {
+   float xyzw[4];
+} KL_ALIGNED_STRUCT_POST(kl_vector4_t, 16);
+
+typedef void (*kl_math_abc_restrict_fn)(const float* KL_RESTRICT a, const float* KL_RESTRICT b, float* KL_RESTRICT c);
+typedef void (*kl_math_abcn_restrict_fn)(const float* KL_RESTRICT a, const float* KL_RESTRICT b, float* KL_RESTRICT c, uint32_t n);
+
+extern kl_math_abc_restrict_fn kl_matrix_mul_matrix;
+
+extern kl_math_abc_restrict_fn kl_matrix_mul_vector;
+
+extern kl_math_abcn_restrict_fn kl_matrix_mul_vector_batch;
+
+extern KL_API void kl_matrix_math_self_test();
 
 #ifdef __cplusplus
 } /* extern "C" */
