@@ -56,7 +56,7 @@ KL_ALIGNED_STRUCT_PRE(16)
    int32_t b;
    int32_t c;
    int32_t d;
-}KL_ALIGNED_STRUCT_POST(kl_int32x4_t, 16);
+} KL_ALIGNED_STRUCT_POST(kl_int32x4_t, 16);
 
 #define kl_load_int32x4(const_kl_int32x4_t_ptr) (*(const_kl_int32x4_t_ptr))
 #define kl_store_int32x4(dest_int32_t_ptr, src_kl_int32x4_t) kl_microrcpy(dest_int32_t_ptr, &(src_kl_int32x4_t), sizeof(kl_int32x4_t))

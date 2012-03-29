@@ -155,9 +155,9 @@ extern KL_API void kl_zero_mem(void* dest, size_t size);
 /* Alignment pre/post-fix for VC/GCC */
 #if _MSC_VER
 #  define KL_ALIGNPRE(x) __declspec(align(x))
-#  define KL_ALIGNPOST(x) 
+#  define KL_ALIGNPOST(x)
 #else
-#  define KL_ALIGNPRE(x) 
+#  define KL_ALIGNPRE(x)
 #  define KL_ALIGNPOST(x) __attribute__ ((aligned (x)))
 #endif
 
