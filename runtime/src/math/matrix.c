@@ -95,11 +95,12 @@ void kl_matrix_mul_vector_sse3(const float* KL_RESTRICT a, const float* KL_RESTR
 
    kl_float32x4_t m0 = _mm_mul_ps(a0, v);
    kl_float32x4_t m1 = _mm_mul_ps(a1, v);
+   kl_float32x4_t sum_01 = _mm_hadd_ps(m0, m1);
+
    kl_float32x4_t m2 = _mm_mul_ps(a2, v);
    kl_float32x4_t m3 = _mm_mul_ps(a3, v);
-
-   kl_float32x4_t sum_01 = _mm_hadd_ps(m0, m1);
    kl_float32x4_t sum_23 = _mm_hadd_ps(m2, m3);
+
    kl_float32x4_t result = _mm_hadd_ps(sum_01, sum_23);
 
    kl_store_float32x4(o, result);
@@ -121,20 +122,24 @@ void kl_matrix_mul_vector_batch_sse3(const float* KL_RESTRICT a, const float* KL
    kl_float32x4_t a2 = kl_load_float32x4(a +  8);
    kl_float32x4_t a3 = kl_load_float32x4(a + 12);
 
+   kl_float32x4_t v, m0, m1, m2, m3, sum_01, sum_23, result;
    for(i = 0; i < n; i++)
    {
-      kl_float32x4_t v =  kl_load_float32x4(vec + 4 * i);
+      v =  kl_load_float32x4(vec);
+      vec += 4;
 
-      kl_float32x4_t m0 = _mm_mul_ps(a0, v);
-      kl_float32x4_t m1 = _mm_mul_ps(a1, v);
-      kl_float32x4_t m2 = _mm_mul_ps(a2, v);
-      kl_float32x4_t m3 = _mm_mul_ps(a3, v);
+      m0 = _mm_mul_ps(a0, v);
+      m1 = _mm_mul_ps(a1, v);
+      sum_01 = _mm_hadd_ps(m0, m1);
 
-      kl_float32x4_t sum_01 = _mm_hadd_ps(m0, m1);
-      kl_float32x4_t sum_23 = _mm_hadd_ps(m2, m3);
-      kl_float32x4_t result = _mm_hadd_ps(sum_01, sum_23);
+      m2 = _mm_mul_ps(a2, v);
+      m3 = _mm_mul_ps(a3, v);
+      sum_23 = _mm_hadd_ps(m2, m3);
 
-      kl_store_float32x4(o + 4 * i, result);
+      result = _mm_hadd_ps(sum_01, sum_23);
+
+      kl_store_float32x4(o, result);
+      o += 4;
    }
 }
 
