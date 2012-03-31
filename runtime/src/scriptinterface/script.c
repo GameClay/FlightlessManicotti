@@ -15,13 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-#include <lua.h>
+
 #include <lauxlib.h>
 #include <lualib.h>
-#include <amp/amp.h>
-#include <FlightlessManicotti/scriptinterface/script.h>
-#include <FlightlessManicotti/core/ringbuffer.h>
+#include "scriptinterface.h"
 #include <FlightlessManicotti/core/simd.h>
 #include <sanskrit/sklog.h>
 #include "swig_autogen.h"
@@ -33,21 +30,6 @@ extern int luaopen_cast(lua_State* L);
 extern int luaopen_scene2d(lua_State* L);
 extern int luaopen_vector2d(lua_State* L);
 extern int luaopen_scene3d(lua_State* L);
-
-struct _kl_script_context
-{
-   lua_State* lua_state;
-   kl_ringbuffer_t(kl_int32x4_t) event_buffer;
-   KL_BOOL threaded;
-   KL_BOOL keep_running;
-   amp_thread_t thread;
-
-   int argc;
-   const char** argv;
-   const char* file_name;
-
-   int event_handler_ref;
-};
 
 /* KL_DEFAULT_SCRIPT_CONTEXT */
 kl_script_context_t g_script_context = NULL;
