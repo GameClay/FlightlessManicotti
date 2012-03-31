@@ -16,15 +16,18 @@
  * limitations under the License.
  */
 
-#include "scriptinterface/scriptinterface.h"
+#include "getshader.h"
 #include <string.h>
 #include <stdio.h>
 #include <lauxlib.h>
 
+/* KL_DEFAULT_SCRIPT_CONTEXT */
+extern kl_script_context_t g_script_context;
+
 /* From: http://prideout.net/blog/?p=1 */
 const char* GetShaderSource(kl_script_context_t context, const char* effectKey)
 {
-   lua_State* L = context->lua_state;
+   lua_State* L;
    char effectName[32] = {0};
    const char* closestMatch = 0;
    int closestMatchLength = 0;
@@ -33,9 +36,14 @@ const char* GetShaderSource(kl_script_context_t context, const char* effectKey)
    /* Extract the effect name: */
    const char* targetKey = strchr(effectKey, '.');
    if (!targetKey++)
-   return NULL;
+      return NULL;
 
    strncpy(effectName, effectKey, targetKey - effectKey - 1);
+
+   if(context == KL_DEFAULT_SCRIPT_CONTEXT)
+      context = g_script_context;
+
+   L = context->lua_state;
 
    /* Fetch the table from the Lua context and make sure it exists: */
    lua_getglobal(L, effectName);
