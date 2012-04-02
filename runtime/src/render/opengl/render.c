@@ -43,6 +43,8 @@ int kl_init_rendering(kl_render_context_t* context, void* handle)
       CGLRetainContext(ctx->drawableCGLContext);
       CGLCreateContext(pixelFormat, ctx->drawableCGLContext, &ctx->resourceCGLContext);
 
+      kl_shader_manager_create(&ctx->shader_mgr, 256, ctx);
+
       /* hax */
       kl_particle_system_alloc(&haxparticles, 2048);
       kl_particle_render_quads_alloc(&haxquads, ctx);
@@ -70,6 +72,8 @@ void kl_destroy_rendering(kl_render_context_t* context)
    if(context != NULL && *context != NULL)
    {
       kl_render_context_t ctx = *context;
+      kl_shader_manager_destroy(&ctx->shader_mgr);
+
       CGLReleaseContext(ctx->resourceCGLContext);
       CGLReleaseContext(ctx->drawableCGLContext);
       kl_heap_free(ctx);

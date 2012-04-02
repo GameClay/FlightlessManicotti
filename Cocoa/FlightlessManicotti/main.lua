@@ -12,44 +12,30 @@ end
 
 require 'events'
 require 'game.components'
-require 'game.components.scene.Scene2DComponent'
+require 'game.components.scene.Scene3DComponent'
 
 -- Main is executed only once, it is not a loop. It receives the arguments
 -- that were passed to the 'kl_initialize' function.
 function main(...)
-   
+
    -- Echo the arguments that the executable received
    for i = 2, arg["n"] do
       print("   "..tostring(arg[i]))
    end
 
-   -- simple lsqlite3 test
-   local db = sqlite3.open_memory()
+   -- Sign up for the Init/Destroy events
+   Events.subscribe(testinit, Events.init)
+   Events.subscribe(testdestroy, Events.destroy)
 
-   db:exec[[
-      CREATE TABLE test (id INTEGER PRIMARY KEY, content);
+   local testscene = Scene3D.new(1024)
 
-      INSERT INTO test VALUES (NULL, 'Hello World');
-      INSERT INTO test VALUES (NULL, 'Hello Lua');
-      INSERT INTO test VALUES (NULL, 'Hello Sqlite3')
-   ]]
-
-   for row in db:nrows("SELECT * FROM test") do
-      print(row.id, row.content)
-   end
-   
-   local testscene = Scene2D.new(1024)
-   
-   local test = Scene2DComponent.new(testscene)
-   test:register(nil, "facepunch")
-   
-   test.entity.position.xy = {0,3}
-   test.entity.radius = 3.5
-   test.entity.typemask = 8
-   hit,pos = testscene:raycast({-5, 0}, {5, 0}, 8)
-   print(tostring(hit).." at "..tostring(pos))
-   
-   test:unregister()
-   
    testscene = nil
+end
+
+function testinit()
+   print("Init called!")
+end
+
+function testdestroy()
+   print("Destroy called!")
 end

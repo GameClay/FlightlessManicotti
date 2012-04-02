@@ -15,42 +15,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-#ifndef _KL_MIDI_H_
-#define _KL_MIDI_H_
+
+#ifndef _KL_SHADER_MANAGER_H_
+#define _KL_SHADER_MANAGER_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <FlightlessManicotti/fm.h>
+#include <FlightlessManicotti/render/render.h>
 #include <stdint.h>
 
-typedef struct _kl_midi_manager* kl_midi_manager_t;
+typedef struct _kl_shader* kl_shader_t;
 
 typedef struct {
-   int8_t value[256];
-   int8_t last_value[256];
-   uint64_t sample_time[256];
-   uint64_t last_sample_time[256];
-   int16_t delta[256];
-} kl_midi_device_t;
+   struct _kl_shader* shader;
+   uint32_t num_shaders;
+   kl_render_context_t render_ctx;
+} _kl_shader_manager, *kl_shader_manager_t;
 
-/**
- * Allocate a midi manager.
- *
- * @param manager    Location to store allocated midi manager.
- *
- * @return KL_SUCCESS if successful.
- */
-extern KL_API int kl_midi_manager_alloc(kl_midi_manager_t* manager);
+int kl_shader_manager_create(kl_shader_manager_t* manager, uint32_t num_shaders, kl_render_context_t render_ctx);
 
-/**
- * Free a midi manager.
- *
- * @param manager    Midi manager to free.
- */
-extern KL_API void kl_midi_manager_free(kl_midi_manager_t* manager);
+void kl_shader_manager_destroy(kl_shader_manager_t* manager);
+
+int kl_shader_manager_get_vertex_shader(kl_render_context_t render_ctx, const char* effect_key,
+   kl_shader_t* shader);
+
+int kl_shader_manager_get_pixel_shader(kl_render_context_t render_ctx, const char* effect_key,
+   kl_shader_t* shader);
+
+void kl_shader_manager_destroy_shader(kl_shader_t* shader);
 
 #ifdef __cplusplus
 }

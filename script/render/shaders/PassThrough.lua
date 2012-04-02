@@ -1,4 +1,4 @@
-require 'render.opengl.ShaderFactory'
+require 'render.ShaderFactory'
 
 DeclareShader('Vertex.GL2', [[
    void main()

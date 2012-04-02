@@ -17,9 +17,16 @@
  */
 
 #include <OpenGL/OpenGL.h> /* Mac */
+#include <FlightlessManicotti/render/shader/shader_manager.h>
 
 struct _kl_render_context
 {
    CGLContextObj drawableCGLContext;
    CGLContextObj resourceCGLContext;
+
+   kl_shader_manager_t shader_mgr;
+};
+
+struct _kl_shader {
+   GLuint shader;
 };

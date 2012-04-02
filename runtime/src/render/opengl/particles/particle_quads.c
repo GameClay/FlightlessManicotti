@@ -23,7 +23,7 @@
 #include <OpenGL/gl.h>
 
 #include <FlightlessManicotti/beat/beat.h> /* hax */
-#include "render/script/getshader.h"
+#include <FlightlessManicotti/render/shader/shader_manager.h>
 #include <sanskrit/sklog.h>
 
 typedef struct {
@@ -45,7 +45,8 @@ struct _kl_particle_render_quads {
    kl_render_context_t context;
 
    /* hax */
-   GLuint program, vert_shader, pix_shader;
+   GLuint program;
+   kl_shader_t vert_shader, pix_shader;
 };
 
 void _kl_particle_render_quads_advance_time(float dt, void* context);
@@ -73,52 +74,13 @@ int kl_particle_render_quads_alloc(kl_particle_render_quads_t* renderer, kl_rend
             NULL, &_kl_particle_render_quads_advance_time, rdr);
 
          /* Hax */
-         rdr->vert_shader = glCreateShader(GL_VERTEX_SHADER);
-         rdr->pix_shader = glCreateShader(GL_FRAGMENT_SHADER);
-         rdr->program = glCreateProgram();
-
          {
-            const char* shader_src;
+            kl_shader_manager_get_vertex_shader(context, "PassThrough.Vertex.GL2", &rdr->vert_shader);
+            kl_shader_manager_get_pixel_shader(context, "PassThrough.Fragment.GL2", &rdr->pix_shader);
+            rdr->program = glCreateProgram();
 
-            shader_src = GetShaderSource(KL_DEFAULT_SCRIPT_CONTEXT, "PassThrough.Vertex.GL2");
-            if(shader_src != NULL)
-            {
-               int compile_success;
-               glShaderSource(rdr->vert_shader, 1, (const GLchar**)&shader_src, 0);
-               glCompileShader(rdr->vert_shader);
-               glGetShaderiv(rdr->vert_shader, GL_COMPILE_STATUS, &compile_success);
-               if(compile_success == GL_FALSE)
-               {
-                  char* vertexInfoLog;
-                  int maxLength;
-                  glGetShaderiv(rdr->vert_shader, GL_INFO_LOG_LENGTH, &maxLength);
-
-                   /* The maxLength includes the NULL character */
-                   vertexInfoLog = (char *)kl_heap_alloc(maxLength);
-
-                   glGetShaderInfoLog(rdr->vert_shader, maxLength, &maxLength, vertexInfoLog);
-
-                   skerr(vertexInfoLog);
-
-                   kl_heap_free(vertexInfoLog);
-               }
-            }
-
-            shader_src = GetShaderSource(KL_DEFAULT_SCRIPT_CONTEXT, "PassThrough.Fragment.GL2");
-            if(shader_src != NULL)
-            {
-               int compile_success;
-               glShaderSource(rdr->pix_shader, 1, (const GLchar**)&shader_src, 0);
-               glCompileShader(rdr->pix_shader);
-               glGetShaderiv(rdr->pix_shader, GL_COMPILE_STATUS, &compile_success);
-               if(compile_success == 0)
-               {
-                  /* crap */
-               }
-            }
-
-            glAttachShader(rdr->program, rdr->vert_shader);
-            glAttachShader(rdr->program, rdr->pix_shader);
+            glAttachShader(rdr->program, rdr->vert_shader->shader);
+            glAttachShader(rdr->program, rdr->pix_shader->shader);
 
             /* Bind attribute index 0 (coordinates) to in_Position and attribute index 1 (color) to in_Color */
             /* Attribute locations must be setup before calling glLinkProgram. */
@@ -147,11 +109,12 @@ void kl_particle_render_quads_free(kl_particle_render_quads_t* renderer)
       kl_release_process_id(KL_DEFAULT_PROCESS_MANAGER, rdr->pid);
 
       /* Hax */
-      glDetachShader(rdr->program, rdr->vert_shader);
-      glDetachShader(rdr->program, rdr->pix_shader);
+      glDetachShader(rdr->program, rdr->vert_shader->shader);
+      glDetachShader(rdr->program, rdr->pix_shader->shader);
       glDeleteProgram(rdr->program);
-      glDeleteShader(rdr->vert_shader);
-      glDeleteShader(rdr->pix_shader);
+
+      kl_shader_manager_destroy_shader(&rdr->vert_shader);
+      kl_shader_manager_destroy_shader(&rdr->pix_shader);
 
       kl_heap_free(rdr);
    }

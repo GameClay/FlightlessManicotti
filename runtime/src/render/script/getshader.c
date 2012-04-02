@@ -54,7 +54,7 @@ const char* GetShaderSource(kl_script_context_t context, const char* effectKey)
       lua_pop(L, 1);
 
       /* Delay-load the Lua file: */
-      sprintf(effectPath, "%s.lua", effectName);
+      sprintf(effectPath, "script/render/shaders/%s.lua", effectName);
       if (luaL_dofile(L, effectPath))
          return NULL;
 
