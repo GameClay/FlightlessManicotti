@@ -1,0 +1,38 @@
+import sys
+
+Import('env')
+
+# Add openctm includes to the path
+env.Append(CPPPATH = [env.Dir('.').abspath])
+
+coreEnv = env.Clone()
+
+openctm_src = [
+   "compressMG1.c",
+   "compressMG2.c",
+   "compressRAW.c",
+   "openctm.c",
+   "stream.c",
+   "liblzma/Alloc.c",
+   "liblzma/LzFind.c",
+   "liblzma/LzmaDec.c",
+   "liblzma/LzmaEnc.c",
+   "liblzma/LzmaLib.c"
+]
+
+coreEnv.Append(CPPPATH = [env.Dir('liblzma').abspath])
+
+coreEnv.Append(CPPDEFINES=['OPENCTM_BUILD',
+                           'LZMA_PREFIX_CTM',
+                           'OPENCTM_STATIC'])
+coreEnv.Append(CCFLAGS = ['-O3',
+                           '-W',
+                           '-Wall',
+                           '-c',
+                           '-fvisibility=hidden',
+                           '-std=c99',
+                           '-pedantic'])
+
+openctm_lib = coreEnv.StaticLibrary('openctm', openctm_src)
+
+Return('openctm_lib')

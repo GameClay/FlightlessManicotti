@@ -91,6 +91,7 @@ dependencies = [
    'lua',
    'sqlite3',
    'lsqlite3',
+   'openctm'
 ]
 
 if env.GetOption('microalloc'):
