@@ -116,17 +116,23 @@ void kl_matrix_mul_vector_c(const float* KL_RESTRICT m, const float* KL_RESTRICT
 
 void kl_matrix_mul_vector_batch_sse3(const float* KL_RESTRICT a, const float* KL_RESTRICT vec, float* KL_RESTRICT o, uint32_t n)
 {
+   const size_t prefetch_dist = 512;
    uint32_t i;
    kl_float32x4_t a0 = kl_load_float32x4(a +  0);
    kl_float32x4_t a1 = kl_load_float32x4(a +  4);
    kl_float32x4_t a2 = kl_load_float32x4(a +  8);
    kl_float32x4_t a3 = kl_load_float32x4(a + 12);
-
    kl_float32x4_t v, m0, m1, m2, m3, sum_01, sum_23, result;
+
+   _mm_prefetch(vec + prefetch_dist, _MM_HINT_T0);
+   _mm_prefetch(vec + prefetch_dist, _MM_HINT_T0);
+
    for(i = 0; i < n; i++)
    {
       v =  kl_load_float32x4(vec);
       vec += 4;
+
+      _mm_prefetch(vec + prefetch_dist, _MM_HINT_T0);
 
       m0 = _mm_mul_ps(a0, v);
       m1 = _mm_mul_ps(a1, v);
@@ -140,6 +146,8 @@ void kl_matrix_mul_vector_batch_sse3(const float* KL_RESTRICT a, const float* KL
 
       kl_store_float32x4(o, result);
       o += 4;
+
+      _mm_prefetch(vec + prefetch_dist, _MM_HINT_T0);
    }
 }
 
