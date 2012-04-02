@@ -53,11 +53,13 @@ void kl_vector_math_self_test()
    kl_absolute_time_t start_time, end_time, delta_time;
    uint64_t time_ns;
    float c_dot_ms, sse_dot_ms;
-   kl_vector4_t v1[NUM_TEST_RUNS], v2[NUM_TEST_RUNS];
+   kl_vector4_t v1[NUM_TEST_RUNS], v2[NUM_TEST_RUNS], v3[NUM_TEST_RUNS], v4[NUM_TEST_RUNS];
 
 #define RFl ((float)random() / RAND_MAX)
    for(j = 0; j < NUM_TEST_RUNS; j++) for(i = 0; i < 4; i++) v1[j].xyzw[i] = RFl;
    for(j = 0; j < NUM_TEST_RUNS; j++) for(i = 0; i < 4; i++) v2[j].xyzw[i] = RFl;
+   for(j = 0; j < NUM_TEST_RUNS; j++) for(i = 0; i < 4; i++) v3[j].xyzw[i] = RFl;
+   for(j = 0; j < NUM_TEST_RUNS; j++) for(i = 0; i < 4; i++) v4[j].xyzw[i] = RFl;
 #undef RFl
 
    KL_ASSERT(fabs(kl_vector_dot(v1[0].xyzw, v2[0].xyzw) - kl_vector_dot_c(v1[0].xyzw, v2[0].xyzw)) < KL_EPSILON_F,
@@ -74,7 +76,7 @@ void kl_vector_math_self_test()
 
    kl_high_resolution_timer_query(&start_time);
    for(i = 0; i < NUM_TEST_RUNS; i++)
-      kl_vector_dot_c(v1[i].xyzw, v2[i].xyzw);
+      kl_vector_dot_c(v3[i].xyzw, v4[i].xyzw);
    kl_high_resolution_timer_query(&end_time);
    delta_time = end_time - start_time;
    kl_absolute_time_to_ns(&delta_time, &time_ns);
