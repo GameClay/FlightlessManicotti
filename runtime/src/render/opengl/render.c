@@ -23,9 +23,11 @@
 /* hax */
 #include <FlightlessManicotti/game/particles/particle_system.h>
 #include <FlightlessManicotti/render/particles/particle_quads.h>
+ #include <FlightlessManicotti/render/particles/particle_geom_shdr.h>
 #include <FlightlessManicotti/game/particles/particle_simulation.h>
 kl_particle_system_t haxparticles = NULL;
 kl_particle_render_quads_t haxquads = NULL;
+kl_particle_render_geom_shdr_t haxgs = NULL;
 kl_particle_simulation_t haxsim = NULL;
 
 /* moar hax */
@@ -40,6 +42,7 @@ CTMuint hax_bunny_vertCount, hax_bunny_triCount;
 GLuint hax_lsystem_vert_buffer, hax_lsystem_idx_buffer;
 extern kl_script_context_t g_script_context;
 int hax_lsystem_line_count;
+int hax_lsystem_prim_count = 0;
 
 int kl_init_rendering(kl_render_context_t* context, void* handle)
 {
@@ -62,6 +65,8 @@ int kl_init_rendering(kl_render_context_t* context, void* handle)
       kl_particle_system_alloc(&haxparticles, 2048);
       kl_particle_render_quads_alloc(&haxquads, ctx);
       kl_particle_render_quads_assign_system(haxquads, haxparticles);
+      kl_particle_render_geom_shdr_alloc(&haxgs, ctx);
+      kl_particle_render_geom_shdr_assign_system(haxgs, haxparticles);
       kl_particle_simulation_alloc(&haxsim);
       kl_particle_simulation_set_system(haxsim, haxparticles);
 
@@ -152,6 +157,8 @@ void kl_destroy_rendering(kl_render_context_t* context)
    /* hax */
    kl_particle_render_quads_free(&haxquads);
    haxquads = NULL;
+   kl_particle_render_geom_shdr_free(&haxgs);
+   haxgs = NULL;
    kl_particle_system_free(&haxparticles);
    haxparticles = NULL;
    kl_particle_simulation_free(&haxsim);
@@ -190,6 +197,8 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
    if(haxquads != NULL && haxparticles != NULL) kl_particle_render_quads_draw(haxquads);
    */
 
+   if(haxgs != NULL && haxparticles != NULL) kl_particle_render_geom_shdr_draw(haxgs);
+
    /* moar hax */
    glColor3f(1.0f, 0.85f, 0.35f);
    glMatrixMode(GL_MODELVIEW);
@@ -203,12 +212,17 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hax_bunny_idx_buffer);
    glDrawElements(GL_TRIANGLES, hax_bunny_triCount, GL_UNSIGNED_INT, NULL);
    */
+   glColor3f(1.0f, 0.85f, 0.35f);
+
    glBindBuffer(GL_ARRAY_BUFFER, hax_lsystem_vert_buffer);
    glEnableClientState(GL_VERTEX_ARRAY);
    glVertexPointer(2, GL_FLOAT, sizeof(float) * 2, NULL);
 
    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hax_lsystem_idx_buffer);
-   glDrawElements(GL_LINE_STRIP, hax_lsystem_line_count, GL_UNSIGNED_SHORT, NULL);
+   glDrawElements(GL_LINE_STRIP, hax_lsystem_prim_count, GL_UNSIGNED_SHORT, NULL);
+   hax_lsystem_prim_count += 20;
+   hax_lsystem_prim_count = (hax_lsystem_prim_count < hax_lsystem_line_count ?
+      hax_lsystem_prim_count : hax_lsystem_line_count);
 
    glPopMatrix();
    glDisableClientState(GL_VERTEX_ARRAY);
