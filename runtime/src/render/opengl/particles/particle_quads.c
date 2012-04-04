@@ -296,13 +296,15 @@ void kl_particle_render_quads_draw(kl_particle_render_quads_t renderer)
    glVertexPointer(3, GL_FLOAT, sizeof(particle_vertex), (void*)offsetof(particle_vertex, xyz));
 
    glEnableClientState(GL_COLOR_ARRAY);
-    glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(particle_vertex), (void*)offsetof(particle_vertex,color));
+   glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(particle_vertex), (void*)offsetof(particle_vertex,color));
 
    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer->idx_buffer);
    glDrawRangeElements(GL_TRIANGLES, 0, renderer->vert_buffer_elements[buffer_idx] * 2,
       renderer->vert_buffer_elements[buffer_idx], GL_UNSIGNED_SHORT, NULL);
 
    glUseProgram(0);
+   glDisableClientState(GL_VERTEX_ARRAY);
+   glDisableClientState(GL_COLOR_ARRAY);
 
    renderer->last_used_idx = buffer_idx;
 }
