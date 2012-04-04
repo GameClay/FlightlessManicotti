@@ -28,6 +28,19 @@ kl_particle_system_t haxparticles = NULL;
 kl_particle_render_quads_t haxquads = NULL;
 kl_particle_simulation_t haxsim = NULL;
 
+/* moar hax */
+#include <openctm.h>
+GLuint hax_bunny_vert_buffer, hax_bunny_idx_buffer;
+CTMuint hax_bunny_vertCount, hax_bunny_triCount;
+#include <stdio.h>
+
+/* even moar hax */
+#include "scriptinterface/scriptinterface.h"
+#include <lauxlib.h>
+GLuint hax_lsystem_vert_buffer, hax_lsystem_idx_buffer;
+extern kl_script_context_t g_script_context;
+int hax_lsystem_line_count;
+
 int kl_init_rendering(kl_render_context_t* context, void* handle)
 {
    int ret = KL_ERROR;
@@ -52,6 +65,81 @@ int kl_init_rendering(kl_render_context_t* context, void* handle)
       kl_particle_simulation_alloc(&haxsim);
       kl_particle_simulation_set_system(haxsim, haxparticles);
 
+      /* moar hax */
+      {
+         CTMcontext context;
+         const CTMuint * indices;
+         const CTMfloat* vertices;
+
+         context = ctmNewContext(CTM_IMPORT);
+         ctmLoad(context, "./bunny.ctm");
+         if(ctmGetError(context) == CTM_NONE)
+         {
+            hax_bunny_vertCount = ctmGetInteger(context, CTM_VERTEX_COUNT);
+            vertices = ctmGetFloatArray(context, CTM_VERTICES);
+            hax_bunny_triCount = ctmGetInteger(context, CTM_TRIANGLE_COUNT);
+            indices = ctmGetIntegerArray(context, CTM_INDICES);
+
+            glGenBuffers(1, &hax_bunny_idx_buffer);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hax_bunny_idx_buffer);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, hax_bunny_triCount * 3 * sizeof(CTMuint),
+               indices, GL_STATIC_DRAW);
+
+            glGenBuffers(1, &hax_bunny_vert_buffer);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hax_bunny_vert_buffer);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, hax_bunny_vertCount * sizeof(CTMfloat) * 3,
+               vertices, GL_STATIC_DRAW);
+         }
+
+         ctmFreeContext(context);
+      }
+
+      /* even moar hax */
+      {
+         lua_State* L = g_script_context->lua_state;
+         lua_getglobal(L, "lsys_verts");
+         if(lua_istable(L, -1))
+         {
+            int i = 0;
+            int table_sz = luaL_getn(L, -1);
+            float* verts = kl_heap_alloc(sizeof(float) * table_sz);
+            float *cvert = verts;
+            GLushort* idx;
+            lua_pushnil(L);
+
+            while(lua_next(L, -2))
+            {
+               if(lua_isnumber(L, -1))
+               {
+                  *cvert = lua_tonumber(L, -1);
+                  cvert++;
+               }
+               lua_pop(L, 1);
+            }
+            lua_pop(L, 1);
+
+            glGenBuffers(1, &hax_lsystem_vert_buffer);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hax_lsystem_vert_buffer);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, table_sz * sizeof(float),
+               verts, GL_STATIC_DRAW);
+
+            hax_lsystem_line_count = (table_sz / 2) - (table_sz % 2 ? 1 : 0);
+            idx = kl_heap_alloc(sizeof(GLushort) * hax_lsystem_line_count);
+            for(i = 0; i < hax_lsystem_line_count; i++)
+            {
+               idx[i] = i;
+            }
+
+            glGenBuffers(1, &hax_lsystem_idx_buffer);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hax_lsystem_idx_buffer);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, hax_lsystem_line_count * sizeof(GLushort),
+               idx, GL_STATIC_DRAW);
+
+            kl_heap_free(verts);
+            kl_heap_free(idx);
+         }
+      }
+
       *context = ctx;
       ret = KL_SUCCESS;
    }
@@ -68,6 +156,14 @@ void kl_destroy_rendering(kl_render_context_t* context)
    haxparticles = NULL;
    kl_particle_simulation_free(&haxsim);
    haxsim = NULL;
+
+   /* moar hax */
+   glDeleteBuffers(1, &hax_bunny_vert_buffer);
+   glDeleteBuffers(1, &hax_bunny_idx_buffer);
+
+   /* even moar hax */
+   glDeleteBuffers(1, &hax_lsystem_vert_buffer);
+   glDeleteBuffers(1, &hax_lsystem_idx_buffer);
 
    if(context != NULL && *context != NULL)
    {
@@ -90,16 +186,32 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
    glClearColor(0, 0, 0, 0);
    glClear(GL_COLOR_BUFFER_BIT);
 
-   glColor3f(1.0f, 0.85f, 0.35f);
-   glBegin(GL_TRIANGLES);
-   {
-      glVertex3f(  0.0,  0.6, 0.0);
-      glVertex3f( -0.2, -0.3, 0.0);
-      glVertex3f(  0.2, -0.3, 0.0);
-   }
-   glEnd();
-
+/*
    if(haxquads != NULL && haxparticles != NULL) kl_particle_render_quads_draw(haxquads);
+   */
+
+   /* moar hax */
+   glColor3f(1.0f, 0.85f, 0.35f);
+   glMatrixMode(GL_MODELVIEW);
+   glPushMatrix();
+   /*glScalef(3.01f, 3.01f, 3.01f);
+   
+   glBindBuffer(GL_ARRAY_BUFFER, hax_bunny_vert_buffer);
+   glEnableClientState(GL_VERTEX_ARRAY);
+   glVertexPointer(3, GL_FLOAT, sizeof(float) * 3, NULL);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hax_bunny_idx_buffer);
+   glDrawElements(GL_TRIANGLES, hax_bunny_triCount, GL_UNSIGNED_INT, NULL);
+   */
+   glBindBuffer(GL_ARRAY_BUFFER, hax_lsystem_vert_buffer);
+   glEnableClientState(GL_VERTEX_ARRAY);
+   glVertexPointer(2, GL_FLOAT, sizeof(float) * 2, NULL);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hax_lsystem_idx_buffer);
+   glDrawElements(GL_LINE_STRIP, hax_lsystem_line_count, GL_UNSIGNED_SHORT, NULL);
+
+   glPopMatrix();
+   glDisableClientState(GL_VERTEX_ARRAY);
 
    glFinish();
 
