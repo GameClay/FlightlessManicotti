@@ -15,14 +15,15 @@ Each code file has its license located at the top of the file. If any file is mi
 FlightlessManicotti is intended for use across many architectures and operating systems. While all attempts will be made to keep compatibility with the widest range of platforms, the project does have priorities.
 
 ### Architecture Priorities
-* ARM
 * x86/x64
+* ARM
 * PPC
 
 ### Operating System Priorities
-* iOS/Android
-* Windows
 * MacOS
+* iOS
+* Android
+* Windows
 * Linux
 
 # Dependencies
