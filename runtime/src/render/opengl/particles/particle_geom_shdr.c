@@ -71,29 +71,8 @@ int kl_particle_render_geom_shdr_alloc(kl_particle_render_geom_shdr_t* renderer,
          rdr->pid = kl_reserve_process_id(KL_DEFAULT_PROCESS_MANAGER,
             NULL, &_kl_particle_render_geom_shdr_advance_time, rdr);
 
+         /* Hax */
          kl_particle_render_geom_shdr_assign_effect(rdr, "ParticleSoA");
-         /* Hax 
-         {
-            kl_shader_manager_get_vertex_shader(context, "ParticleSoA.Vertex.GL2", &rdr->vert_shader);
-            kl_shader_manager_get_geometry_shader(context, "ParticleSoA.Geometry.GL2", &rdr->geom_shader);
-            kl_shader_manager_get_pixel_shader(context, "ParticleSoA.Fragment.GL2", &rdr->pix_shader);
-            rdr->program = glCreateProgram();
-
-            glAttachShader(rdr->program, rdr->vert_shader->shader);
-            glAttachShader(rdr->program, rdr->geom_shader->shader);
-            glAttachShader(rdr->program, rdr->pix_shader->shader);
-
-            glBindAttribLocation(rdr->program, 0, "in_X");
-            glBindAttribLocation(rdr->program, 1, "in_Y");
-            glBindAttribLocation(rdr->program, 2, "in_Z");
-
-            glProgramParameteriEXT(rdr->program, GL_GEOMETRY_INPUT_TYPE_EXT, GL_POINTS);
-            glProgramParameteriEXT(rdr->program, GL_GEOMETRY_OUTPUT_TYPE_EXT,
-               GL_TRIANGLE_STRIP);
-            glProgramParameteriEXT(rdr->program, GL_GEOMETRY_VERTICES_OUT_EXT, 4);
-
-            glLinkProgram(rdr->program);
-         }*/
 
          *renderer = rdr;
          ret = KL_SUCCESS;
