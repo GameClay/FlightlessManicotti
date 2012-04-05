@@ -36,6 +36,7 @@ All dependencies are included within the repository, and are built as part of th
 * [MicroAllocator](http://codesuppository.blogspot.com/2009/09/free-open-source-micro-allocator-in-c.html) version [5](http://code.google.com/p/microallocator/source/browse/?r=5)
 * [sqlite3](http://www.sqlite.org/) version [3.7.2](http://www.sqlite.org/sqlite-amalgamation-3_7_2.zip)
 * [lsqlite3](http://luaforge.net/projects/lua-sqlite3/) version [0.4.1](http://luaforge.net/frs/?group_id=76&release_id=442)
+* [OpenCTM](http://openctm.sourceforge.net/) version [1.0.3](https://sourceforge.net/projects/openctm/files/OpenCTM-1.0.3/OpenCTM-1.0.3-src.tar.bz2/download)
 
 # Philosophy
 At its core, FlightlessManicotti is an implementation of several ideas and architectural-philosophies that my colleagues, and I have talked about over beer for several years. 
