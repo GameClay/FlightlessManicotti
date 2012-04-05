@@ -55,6 +55,15 @@ extern KL_API void kl_particle_render_geom_shdr_free(kl_particle_render_geom_shd
 extern KL_API void kl_particle_render_geom_shdr_assign_system(kl_particle_render_geom_shdr_t renderer,
    kl_particle_system_t system);
 
+/**
+ * Assign an effect to the geometry shader renderer.
+ *
+ * @param renderer   Particle renderer to which the system should be assigned.
+ * @param effect     Effect family for the shader to use while rendering.
+ */
+extern KL_API void kl_particle_render_geom_shdr_assign_effect(kl_particle_render_geom_shdr_t renderer,
+   const char* effect_key);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

@@ -114,7 +114,7 @@ int kl_shader_manager_get_geometry_shader(kl_render_context_t render_ctx, const 
 
 void kl_shader_manager_destroy_shader(kl_shader_t* shader)
 {
-   if(shader != NULL)
+   if(shader != NULL && *shader != NULL)
    {
       kl_shader_t shdr = *shader;
       glDeleteShader(shdr->shader);
