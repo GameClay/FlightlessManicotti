@@ -40,7 +40,7 @@ struct _kl_particle_render_geom_shdr {
 
    /* hax */
    GLuint program;
-   kl_shader_t vert_shader, pix_shader;
+   kl_shader_t vert_shader, pix_shader, geom_shader;
 };
 
 void _kl_particle_render_geom_shdr_advance_time(float dt, void* context);
@@ -72,15 +72,22 @@ int kl_particle_render_geom_shdr_alloc(kl_particle_render_geom_shdr_t* renderer,
          /* Hax */
          {
             kl_shader_manager_get_vertex_shader(context, "ParticleSoA.Vertex.GL2", &rdr->vert_shader);
+            kl_shader_manager_get_geometry_shader(context, "ParticleSoA.Geometry.GL2", &rdr->geom_shader);
             kl_shader_manager_get_pixel_shader(context, "ParticleSoA.Fragment.GL2", &rdr->pix_shader);
             rdr->program = glCreateProgram();
 
             glAttachShader(rdr->program, rdr->vert_shader->shader);
+            glAttachShader(rdr->program, rdr->geom_shader->shader);
             glAttachShader(rdr->program, rdr->pix_shader->shader);
 
             glBindAttribLocation(rdr->program, 0, "in_X");
             glBindAttribLocation(rdr->program, 1, "in_Y");
             glBindAttribLocation(rdr->program, 2, "in_Z");
+
+            glProgramParameteriEXT(rdr->program, GL_GEOMETRY_INPUT_TYPE_EXT, GL_POINTS);
+            glProgramParameteriEXT(rdr->program, GL_GEOMETRY_OUTPUT_TYPE_EXT,
+               GL_POINTS);
+            glProgramParameteriEXT(rdr->program, GL_GEOMETRY_VERTICES_OUT_EXT, 1);
 
             glLinkProgram(rdr->program);
          }
@@ -108,6 +115,7 @@ void kl_particle_render_geom_shdr_free(kl_particle_render_geom_shdr_t* renderer)
 
       /* Hax */
       glDetachShader(rdr->program, rdr->vert_shader->shader);
+      glDetachShader(rdr->program, rdr->geom_shader->shader);
       glDetachShader(rdr->program, rdr->pix_shader->shader);
       glDeleteProgram(rdr->program);
 

@@ -44,6 +44,9 @@ int kl_shader_manager_get_vertex_shader(kl_render_context_t render_ctx, const ch
 int kl_shader_manager_get_pixel_shader(kl_render_context_t render_ctx, const char* effect_key,
    kl_shader_t* shader);
 
+int kl_shader_manager_get_geometry_shader(kl_render_context_t render_ctx, const char* effect_key,
+   kl_shader_t* shader);
+
 void kl_shader_manager_destroy_shader(kl_shader_t* shader);
 
 #ifdef __cplusplus

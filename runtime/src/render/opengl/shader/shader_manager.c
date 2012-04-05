@@ -106,6 +106,12 @@ int kl_shader_manager_get_pixel_shader(kl_render_context_t render_ctx, const cha
    return _get_shader(render_ctx, effect_key, shader, GL_FRAGMENT_SHADER);
 }
 
+int kl_shader_manager_get_geometry_shader(kl_render_context_t render_ctx, const char* effect_key,
+   kl_shader_t* shader)
+{
+   return _get_shader(render_ctx, effect_key, shader, GL_GEOMETRY_SHADER_EXT);
+}
+
 void kl_shader_manager_destroy_shader(kl_shader_t* shader)
 {
    if(shader != NULL)

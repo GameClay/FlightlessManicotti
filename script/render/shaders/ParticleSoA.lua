@@ -16,3 +16,18 @@ DeclareShader('Fragment.GL2', [[
       gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
    }
 ]])
+
+DeclareShader('Geometry.GL2', [[
+   #extension GL_EXT_geometry_shader4 : enable
+
+   void main()
+   {
+      int i;
+      for(i = 0; i < gl_VerticesIn; i++)
+      {
+         gl_Position = gl_PositionIn[i];
+         EmitVertex();
+      }
+      EndPrimitive();
+   }
+]])
