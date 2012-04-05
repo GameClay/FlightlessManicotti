@@ -86,8 +86,8 @@ int kl_particle_render_geom_shdr_alloc(kl_particle_render_geom_shdr_t* renderer,
 
             glProgramParameteriEXT(rdr->program, GL_GEOMETRY_INPUT_TYPE_EXT, GL_POINTS);
             glProgramParameteriEXT(rdr->program, GL_GEOMETRY_OUTPUT_TYPE_EXT,
-               GL_POINTS);
-            glProgramParameteriEXT(rdr->program, GL_GEOMETRY_VERTICES_OUT_EXT, 1);
+               GL_TRIANGLES);
+            glProgramParameteriEXT(rdr->program, GL_GEOMETRY_VERTICES_OUT_EXT, 6);
 
             glLinkProgram(rdr->program);
          }
