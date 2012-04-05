@@ -23,7 +23,6 @@
 #include <OpenGL/gl.h>
 
 #include <FlightlessManicotti/beat/beat.h> /* hax */
-#include <FlightlessManicotti/render/shader/shader_manager.h>
 #include <sanskrit/sklog.h>
 
 typedef struct {
@@ -43,10 +42,6 @@ struct _kl_particle_render_quads {
    size_t verts_sz;
    uint32_t pid;
    kl_render_context_t context;
-
-   /* hax */
-   GLuint program;
-   kl_shader_t vert_shader, pix_shader;
 };
 
 void _kl_particle_render_quads_advance_time(float dt, void* context);
@@ -73,23 +68,6 @@ int kl_particle_render_quads_alloc(kl_particle_render_quads_t* renderer, kl_rend
          rdr->pid = kl_reserve_process_id(KL_DEFAULT_PROCESS_MANAGER,
             NULL, &_kl_particle_render_quads_advance_time, rdr);
 
-         /* Hax */
-         {
-            kl_shader_manager_get_vertex_shader(context, "PassThrough.Vertex.GL2", &rdr->vert_shader);
-            kl_shader_manager_get_pixel_shader(context, "PassThrough.Fragment.GL2", &rdr->pix_shader);
-            rdr->program = glCreateProgram();
-
-            glAttachShader(rdr->program, rdr->vert_shader->shader);
-            glAttachShader(rdr->program, rdr->pix_shader->shader);
-
-            /* Bind attribute index 0 (coordinates) to in_Position and attribute index 1 (color) to in_Color */
-            /* Attribute locations must be setup before calling glLinkProgram. */
-            glBindAttribLocation(rdr->program, 0, "in_Position");
-            glBindAttribLocation(rdr->program, 1, "in_Color");
-
-            glLinkProgram(rdr->program);
-         }
-
          *renderer = rdr;
          ret = KL_SUCCESS;
       }
@@ -107,14 +85,6 @@ void kl_particle_render_quads_free(kl_particle_render_quads_t* renderer)
       glDeleteBuffers(1, &rdr->idx_buffer);
       kl_heap_free(rdr->verts);
       kl_release_process_id(KL_DEFAULT_PROCESS_MANAGER, rdr->pid);
-
-      /* Hax */
-      glDetachShader(rdr->program, rdr->vert_shader->shader);
-      glDetachShader(rdr->program, rdr->pix_shader->shader);
-      glDeleteProgram(rdr->program);
-
-      kl_shader_manager_destroy_shader(&rdr->vert_shader);
-      kl_shader_manager_destroy_shader(&rdr->pix_shader);
 
       kl_heap_free(rdr);
    }
@@ -289,8 +259,6 @@ void kl_particle_render_quads_draw(kl_particle_render_quads_t renderer)
 {
    GLuint buffer_idx = renderer->buffer_idx;
 
-   glUseProgram(renderer->program);
-
    glBindBuffer(GL_ARRAY_BUFFER, renderer->vert_buffer[buffer_idx]);
    glEnableClientState(GL_VERTEX_ARRAY);
    glVertexPointer(3, GL_FLOAT, sizeof(particle_vertex), (void*)offsetof(particle_vertex, xyz));
@@ -302,7 +270,6 @@ void kl_particle_render_quads_draw(kl_particle_render_quads_t renderer)
    glDrawRangeElements(GL_TRIANGLES, 0, renderer->vert_buffer_elements[buffer_idx] * 2,
       renderer->vert_buffer_elements[buffer_idx], GL_UNSIGNED_SHORT, NULL);
 
-   glUseProgram(0);
    glDisableClientState(GL_VERTEX_ARRAY);
    glDisableClientState(GL_COLOR_ARRAY);
 
