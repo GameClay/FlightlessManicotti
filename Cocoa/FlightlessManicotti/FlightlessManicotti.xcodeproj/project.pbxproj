@@ -17,9 +17,10 @@
 		434EB0961513DC46005112AE /* KLOpenGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 434EB0951513DC46005112AE /* KLOpenGLView.m */; };
 		434EB09C1513ECC7005112AE /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 434EB09B1513ECC6005112AE /* OpenGL.framework */; };
 		434EB0A21513F81D005112AE /* libFlightlessManicotti.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 434EB0A11513F81D005112AE /* libFlightlessManicotti.dylib */; settings = {ATTRIBUTES = (Required, ); }; };
-		434EB0A41513F86A005112AE /* libFlightlessManicotti.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 434EB0A11513F81D005112AE /* libFlightlessManicotti.dylib */; };
 		434EB0A915140A5D005112AE /* main.lua in CopyFiles */ = {isa = PBXBuildFile; fileRef = 434EB0A615140A32005112AE /* main.lua */; };
 		434EB0AF15140B11005112AE /* script in CopyFiles */ = {isa = PBXBuildFile; fileRef = 434EB0AE15140B11005112AE /* script */; };
+		4397426F15278DB4007244C1 /* libFlightlessManicotti.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4397426E15278DB4007244C1 /* libFlightlessManicotti.dylib */; };
+		43974271152A5B5D007244C1 /* bunny.ctm in CopyFiles */ = {isa = PBXBuildFile; fileRef = 43974270152A5B5D007244C1 /* bunny.ctm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -29,9 +30,10 @@
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
+				43974271152A5B5D007244C1 /* bunny.ctm in CopyFiles */,
+				4397426F15278DB4007244C1 /* libFlightlessManicotti.dylib in CopyFiles */,
 				434EB0AF15140B11005112AE /* script in CopyFiles */,
 				434EB0A915140A5D005112AE /* main.lua in CopyFiles */,
-				434EB0A41513F86A005112AE /* libFlightlessManicotti.dylib in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -58,6 +60,9 @@
 		434EB0A11513F81D005112AE /* libFlightlessManicotti.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libFlightlessManicotti.dylib; path = "../../build/darwin/x86-64/debug/dist/lib/libFlightlessManicotti.dylib"; sourceTree = "<group>"; };
 		434EB0A615140A32005112AE /* main.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = main.lua; path = ../main.lua; sourceTree = "<group>"; };
 		434EB0AE15140B11005112AE /* script */ = {isa = PBXFileReference; lastKnownFileType = folder; name = script; path = ../../script; sourceTree = "<group>"; };
+		4397426C15251AE9007244C1 /* libFlightlessManicotti.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libFlightlessManicotti.dylib; path = "../../build/darwin/x86-64/release/obj/runtime/libFlightlessManicotti.dylib"; sourceTree = "<group>"; };
+		4397426E15278DB4007244C1 /* libFlightlessManicotti.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libFlightlessManicotti.dylib; path = "../../build/darwin/x86-64/debug/dist/lib/libFlightlessManicotti.dylib"; sourceTree = "<group>"; };
+		43974270152A5B5D007244C1 /* bunny.ctm */ = {isa = PBXFileReference; lastKnownFileType = file; path = bunny.ctm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +83,9 @@
 		434EB0661513DB27005112AE = {
 			isa = PBXGroup;
 			children = (
+				43974270152A5B5D007244C1 /* bunny.ctm */,
+				4397426E15278DB4007244C1 /* libFlightlessManicotti.dylib */,
+				4397426C15251AE9007244C1 /* libFlightlessManicotti.dylib */,
 				434EB0AE15140B11005112AE /* script */,
 				434EB0A11513F81D005112AE /* libFlightlessManicotti.dylib */,
 				434EB07B1513DB27005112AE /* FlightlessManicotti */,
@@ -325,6 +333,7 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FlightlessManicotti/FlightlessManicotti-Prefix.pch";
+				HEADER_SEARCH_PATHS = ../../runtime/include;
 				IBC_OTHER_FLAGS = "";
 				INFOPLIST_FILE = "FlightlessManicotti/FlightlessManicotti-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
@@ -349,6 +358,7 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FlightlessManicotti/FlightlessManicotti-Prefix.pch";
+				HEADER_SEARCH_PATHS = ../../runtime/include;
 				IBC_OTHER_FLAGS = "";
 				INFOPLIST_FILE = "FlightlessManicotti/FlightlessManicotti-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
