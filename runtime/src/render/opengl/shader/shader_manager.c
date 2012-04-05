@@ -20,6 +20,7 @@
 #include <sanskrit/sklog.h>
 #include "render/script/getshader.h"
 #include <stdio.h>
+#include <string.h>
 
 /* hax */
 #include "render/opengl/gl_render.h"
@@ -34,7 +35,8 @@ int kl_shader_manager_create(kl_shader_manager_t* manager, uint32_t num_shaders,
       kl_shader_manager_t mgr = kl_heap_alloc(sizeof(_kl_shader_manager));
       if(mgr != NULL)
       {
-         mgr->shader = kl_heap_alloc(sizeof(struct _kl_shader) * num_shaders);
+         mgr->shader = kl_heap_alloc(sizeof(struct _kl_shader*) * num_shaders);
+         memset(mgr->shader, 0, sizeof(struct _kl_shader*) * num_shaders);
          mgr->num_shaders = num_shaders;
          mgr->render_ctx = render_ctx;
 
@@ -60,34 +62,61 @@ int _get_shader(kl_render_context_t render_ctx, const char* effect_key,
    kl_shader_t* shader, GLenum shader_type)
 {
    int ret = KL_ERROR;
-   const char* shader_src = GetShaderSource(KL_DEFAULT_SCRIPT_CONTEXT, effect_key);
+   uint32_t hash = kl_hash(effect_key, strlen(effect_key), 0);
+   kl_shader_manager_t mgr = render_ctx->shader_mgr;
 
-   if(shader_src != NULL)
+   /* Check to see if the shader already exists */
+   if(mgr->shader[hash % mgr->num_shaders] != NULL)
    {
-      int compile_success;
-      GLuint gl_shader;
-
-      gl_shader = glCreateShader(shader_type);
-      glShaderSource(gl_shader, 1, (const GLchar**)&shader_src, 0);
-      glCompileShader(gl_shader);
-      glGetShaderiv(gl_shader, GL_COMPILE_STATUS, &compile_success);
-      if(compile_success == GL_FALSE)
+      kl_shader_t shdr = mgr->shader[hash % mgr->num_shaders];
+      if(strcmp(shdr->effect_key, effect_key) == 0)
       {
-         char* vertexInfoLog;
-         int maxLength;
-         glGetShaderiv(gl_shader, GL_INFO_LOG_LENGTH, &maxLength);
-         vertexInfoLog = kl_heap_alloc(maxLength);
-
-         glGetShaderInfoLog(gl_shader, maxLength, &maxLength, vertexInfoLog);
-         skerr(vertexInfoLog);
-         kl_heap_free(vertexInfoLog);
+         *shader = shdr;
+         shdr->ref_count++;
+         ret = KL_SUCCESS;
       }
       else
       {
-         kl_shader_t shdr = kl_heap_alloc(sizeof(struct _kl_shader));
-         shdr->shader = gl_shader;
-         *shader = shdr;
-         ret = KL_SUCCESS;
+         skerr("Shader key collision, unhandled.");
+      }
+   }
+   else
+   {
+      const char* shader_src = GetShaderSource(KL_DEFAULT_SCRIPT_CONTEXT, effect_key);
+
+      if(shader_src != NULL)
+      {
+         int compile_success;
+         GLuint gl_shader;
+
+         gl_shader = glCreateShader(shader_type);
+         glShaderSource(gl_shader, 1, (const GLchar**)&shader_src, 0);
+         glCompileShader(gl_shader);
+         glGetShaderiv(gl_shader, GL_COMPILE_STATUS, &compile_success);
+         if(compile_success == GL_FALSE)
+         {
+            char* vertexInfoLog;
+            int maxLength;
+            glGetShaderiv(gl_shader, GL_INFO_LOG_LENGTH, &maxLength);
+            vertexInfoLog = kl_heap_alloc(maxLength);
+
+            glGetShaderInfoLog(gl_shader, maxLength, &maxLength, vertexInfoLog);
+            skerr(vertexInfoLog);
+            kl_heap_free(vertexInfoLog);
+         }
+         else
+         {
+            kl_shader_t shdr = NULL;
+
+            shdr = kl_heap_alloc(sizeof(struct _kl_shader));
+            shdr->shader = gl_shader;
+            shdr->ref_count = 1;
+            strncpy(shdr->effect_key, effect_key, KL_SHADER_EFFECT_KEY_SZ);
+            mgr->shader[hash % mgr->num_shaders] = shdr;
+
+            *shader = shdr;
+            ret = KL_SUCCESS;
+         }
       }
    }
 
@@ -112,12 +141,18 @@ int kl_shader_manager_get_geometry_shader(kl_render_context_t render_ctx, const 
    return _get_shader(render_ctx, effect_key, shader, GL_GEOMETRY_SHADER_EXT);
 }
 
-void kl_shader_manager_destroy_shader(kl_shader_t* shader)
+void kl_shader_manager_destroy_shader(kl_render_context_t render_ctx, kl_shader_t* shader)
 {
    if(shader != NULL && *shader != NULL)
    {
       kl_shader_t shdr = *shader;
-      glDeleteShader(shdr->shader);
-      kl_heap_free(shdr);
+      shdr->ref_count--;
+      if(shdr->ref_count == 0)
+      {
+         uint32_t hash = kl_hash(shdr->effect_key, strlen(shdr->effect_key), 0);
+         render_ctx->shader_mgr->shader[hash % render_ctx->shader_mgr->num_shaders] = NULL;
+         glDeleteShader(shdr->shader);
+         kl_heap_free(shdr);
+      }
    }
 }

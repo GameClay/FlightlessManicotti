@@ -100,9 +100,9 @@ void kl_particle_render_geom_shdr_free(kl_particle_render_geom_shdr_t* renderer)
       glDetachShader(rdr->program, rdr->pix_shader->shader);
       glDeleteProgram(rdr->program);
 
-      kl_shader_manager_destroy_shader(&rdr->vert_shader);
-      kl_shader_manager_destroy_shader(&rdr->pix_shader);
-      kl_shader_manager_destroy_shader(&rdr->geom_shader);
+      kl_shader_manager_destroy_shader(rdr->context, &rdr->vert_shader);
+      kl_shader_manager_destroy_shader(rdr->context, &rdr->pix_shader);
+      kl_shader_manager_destroy_shader(rdr->context, &rdr->geom_shader);
 
       kl_heap_free(rdr);
    }
@@ -170,19 +170,19 @@ void kl_particle_render_geom_shdr_assign_effect(kl_particle_render_geom_shdr_t r
             if(pix_shader != NULL) glDetachShader(program, pix_shader->shader);
             glDeleteProgram(program);
 
-            kl_shader_manager_destroy_shader(&vert_shader);
-            kl_shader_manager_destroy_shader(&pix_shader);
-            kl_shader_manager_destroy_shader(&geom_shader);
+            kl_shader_manager_destroy_shader(renderer->context, &vert_shader);
+            kl_shader_manager_destroy_shader(renderer->context, &pix_shader);
+            kl_shader_manager_destroy_shader(renderer->context, &geom_shader);
          }
          else
          {
-            kl_shader_manager_destroy_shader(&vert_shader);
-            kl_shader_manager_destroy_shader(&geom_shader);
+            kl_shader_manager_destroy_shader(renderer->context, &vert_shader);
+            kl_shader_manager_destroy_shader(renderer->context, &geom_shader);
          }
       }
       else
       {
-         kl_shader_manager_destroy_shader(&vert_shader);
+         kl_shader_manager_destroy_shader(renderer->context, &vert_shader);
       }
    }
 

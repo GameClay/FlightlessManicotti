@@ -29,7 +29,7 @@ extern "C" {
 typedef struct _kl_shader* kl_shader_t;
 
 typedef struct {
-   struct _kl_shader* shader;
+   struct _kl_shader** shader;
    uint32_t num_shaders;
    kl_render_context_t render_ctx;
 } _kl_shader_manager, *kl_shader_manager_t;
@@ -47,7 +47,7 @@ int kl_shader_manager_get_pixel_shader(kl_render_context_t render_ctx, const cha
 int kl_shader_manager_get_geometry_shader(kl_render_context_t render_ctx, const char* effect_key,
    kl_shader_t* shader);
 
-void kl_shader_manager_destroy_shader(kl_shader_t* shader);
+void kl_shader_manager_destroy_shader(kl_render_context_t render_ctx, kl_shader_t* shader);
 
 #ifdef __cplusplus
 }

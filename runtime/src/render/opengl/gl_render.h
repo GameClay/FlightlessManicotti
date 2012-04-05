@@ -27,6 +27,10 @@ struct _kl_render_context
    kl_shader_manager_t shader_mgr;
 };
 
+#define KL_SHADER_EFFECT_KEY_SZ 256
+
 struct _kl_shader {
    GLuint shader;
+   uint16_t ref_count;
+   char effect_key[KL_SHADER_EFFECT_KEY_SZ];
 };
