@@ -131,6 +131,6 @@ int luaopen_vector2d(lua_State* L)
    lua_setfield(L, -2, "__tostring");
 
    luaL_register(L, VECTOR2D_LUA_LIB, vector2d_class_methods);
-   
+
    return 1;
 }
