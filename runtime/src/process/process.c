@@ -132,7 +132,7 @@ int kl_tick_process_list(const kl_process_manager_t mgr)
 
    tick_fn = pom->tick;
    context = pom->context;
-   for(i = 0; i < pom->max_id_allocated; i++)
+   for(i = 0; i <= pom->max_id_allocated; i++)
    {
       if(tick_fn[i] != NULL)
          tick_fn[i](context[i]);
@@ -152,7 +152,7 @@ int kl_advance_process_list(const kl_process_manager_t mgr, float dt)
    advance_time_fn = pom->advance_time;
    context = pom->context;
 
-   for(i = 0; i < pom->max_id_allocated; i++)
+   for(i = 0; i <= pom->max_id_allocated; i++)
    {
       if(advance_time_fn[i] != NULL)
          advance_time_fn[i](dt, context[i]);
