@@ -1,0 +1,22 @@
+import sys
+
+Import('env')
+
+# Add kiss_fft includes to the path
+env.Append(CPPPATH = [env.Dir('.').abspath])
+
+coreEnv = env.Clone()
+
+kiss_fft_src = [
+   "kiss_fft.c",
+]
+
+coreEnv.Append(CCFLAGS = ['-O3',
+                          '-mtune=native',
+                          '-ffast-math',
+                          '-fomit-frame-pointer',
+                          '-unroll-loops'])
+
+kiss_fft_lib = coreEnv.StaticLibrary('kiss_fft', kiss_fft_src)
+
+Return('kiss_fft_lib')
