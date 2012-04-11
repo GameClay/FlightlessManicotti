@@ -55,7 +55,7 @@ function Events.unsubscribe(fn, eventid)
       local handlers = Events.subscriptions[eventid] or {}
       for i,v in ipairs(handlers) do
          if v == fn then
-            table.remove()
+            table.remove(Events.subscriptions[eventid], i)
             return true
          end
       end
