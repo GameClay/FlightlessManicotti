@@ -30,8 +30,14 @@ static int kl_script_event_dequeue_wrap(lua_State* L)
    kl_script_event_t event;
    if(kl_script_event_dequeue(sctx, &event) == KL_SUCCESS)
    {
+      const char* context_type = kl_get_script_event_context_type(event.event.id);
       lua_pushinteger(L, event.event.id);
       lua_pushlightuserdata(L, event.event.context.as_ptr);
+      if(context_type != NULL)
+      {
+         luaL_getmetatable(L, context_type);
+         lua_setmetatable(L, -2);
+      }
       lua_pushinteger(L, event.event.arg);
       return 3;
    }

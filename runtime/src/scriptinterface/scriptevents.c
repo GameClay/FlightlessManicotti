@@ -20,10 +20,22 @@
 #include <FlightlessManicotti/core/hash.h>
 #include <string.h>
 
+const char* g_script_event_context_type[1024] = {0}; /* This is pretty hacky */
+
 uint32_t kl_register_script_event(const char* name)
 {
    uint32_t ret = kl_hash(name, strlen(name), 0);
    /*KL_LOGF(KL_LL_NRM, "-Registering event: %s as %u\n", name, ret);*/
    /* TODO: track allocated ids in debug? */
    return ret;
+}
+
+void kl_register_script_event_context_type(uint32_t id, const char* table_name)
+{
+   g_script_event_context_type[id % 1024] = table_name;
+}
+
+extern KL_API const char* kl_get_script_event_context_type(uint32_t id)
+{
+   return g_script_event_context_type[id % 1024];
 }
