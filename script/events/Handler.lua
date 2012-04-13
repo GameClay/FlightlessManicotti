@@ -36,10 +36,10 @@ Events.conditioners = {
 --!
 --! @param  fn       Event handler being registered.
 --! @param  eventid  Event id for which the specified object desires updates.
-function Events.subscribe(fn, eventid)
+function Events.subscribe(fn, eventid, object)
    if type(fn) == "function" then
       Events.subscriptions[eventid] = Events.subscriptions[eventid] or {}
-      table.insert(Events.subscriptions[eventid], fn)
+      table.insert(Events.subscriptions[eventid], {fn, object})
    else
       error("First argument to Events.subscribe should be a function.")
    end
@@ -54,7 +54,7 @@ function Events.unsubscribe(fn, eventid)
    if type(fn) == "function" then
       local handlers = Events.subscriptions[eventid] or {}
       for i,v in ipairs(handlers) do
-         if v == fn then
+         if v[1] == fn then
             table.remove(Events.subscriptions[eventid], i)
             return true
          end
@@ -78,7 +78,11 @@ function Events.handler()
       -- Execute handlers
       local handlers = Events.subscriptions[id] or {}
       for _,v in ipairs(handlers) do
-         v(arg, context)
+         if v[2] == nil then
+            v[1](arg, context)
+         else
+            v[1](v[2], arg, context)
+         end
       end
 
       -- Next event
