@@ -16,16 +16,14 @@
 -- limitations under the License.
 
 --! @class Lsystem
-Lsystem = {}
+Lsystem = {_start = {}, _rules = {}}
 
 --! Constructor.
 --! @memberof Lsystem
-function Lsystem.new()
-   local o = {}
-   setmetatable(o, {__index = Lsystem})
-
-   o._start = {}
-   o._rules = {}
+function Lsystem:new(o)
+   o = o or {}
+   setmetatable(o, self)
+   self.__index = self
 
    return o
 end

@@ -18,16 +18,15 @@
 --! @class ComponentBucket
 --! Add docs here!
 --! @ingroup script_components
-ComponentBucket = {}
+ComponentBucket = {_components = {}}
 
 --! Constructor.
 --! @memberof ComponentBucket
-function ComponentBucket.new()
-   local o = {}
-   setmetatable(o, {__index = ComponentBucket})
-   
-   o._components = {}
-   
+function ComponentBucket:new()
+   o = o or {}
+   setmetatable(o, self)
+   self.__index = self
+
    return o
 end
 

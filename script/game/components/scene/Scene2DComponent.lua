@@ -23,13 +23,13 @@ require 'game.components.Component'
 --! @extends Component
 --! @ingroup script_components
 --! @ingroup script_scene2d
-Scene2DComponent = DeclareComponentType()
+Scene2DComponent = Component:new()
 
 --! Constructor.
 --!
 --! @param  scene Scene with which this component should register during onadded.
 --! @memberof Scene2DComponent
-function Scene2DComponent.new(scene)
+function Scene2DComponent:new(scene)
    local o = {}
    setmetatable(o, {__index = Scene2DComponent})
    

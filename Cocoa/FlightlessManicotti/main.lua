@@ -37,7 +37,7 @@ function main(...)
 end
 
 function dragoncurve(iterations)
-   local lsys = Lsystem.new()
+   local lsys = Lsystem:new()
    lsys:setstart({"F", "X"})
    lsys:addrule("X", {"X", "+", "Y", "F"})
    lsys:addrule("Y", {"F", "X", "-", "Y"})
@@ -71,7 +71,7 @@ function dragoncurve(iterations)
 end
 
 function sierpinski(iterations)
-   local lsys = Lsystem.new()
+   local lsys = Lsystem:new()
    lsys:setstart({"A"})
    lsys:addrule("A", {"B", "-", "A", "-", "B"})
    lsys:addrule("B", {"A", "+", "B", "+", "A"})

@@ -23,18 +23,15 @@
 --! @see ComponentBucket
 --! @see DeclareComponentType
 --! @ingroup script_components
-Component = {}
+Component = {_isregistered = false, _owner = nil, _name = nil}
 
 --! Constructor.
 --! @memberof Component
-function Component.new()
-   local o = {}
-   setmetatable(o, {__index = Component})
-   
-   o._isregistered = false
-   o._owner = nil
-   o._name = nil
-   
+function Component:new(o)
+   o = o or {}
+   setmetatable(o, self)
+   self.__index = self
+
    return o
 end
 

@@ -23,7 +23,7 @@ require 'game.components.Component'
 --! @extends Component
 --! @ingroup script_components
 --! @ingroup script_scene3d
-Scene3DComponent = DeclareComponentType()
+Scene3DComponent = Component:new()
 
 --! Constructor.
 --!

@@ -25,20 +25,18 @@ require 'game.components.Component'
 --! subscribes to Events.advancetime and Events.processtick.
 --! @extends Component
 --! @ingroup script_components
-ProcessComponent = DeclareComponentType()
+ProcessComponent = Component:new()
 
 --! Constructor.
 --! @memberof ProcessComponent
-function ProcessComponent.new(processtickfn, advancetimefn)
-   local o = {}
-   setmetatable(o, {__index = ProcessComponent})
-   
-   assert(not processtickfn or type(processtickfn) == "function", "First argument to ProcessCompoenent.new must be a function.")
-   assert(not advancetimefn or type(advancetimefn) == "function", "Second argument to ProcessCompoenent.new must be a function.")
-   
-   o._processtick = processtickfn
-   o._advancetime = advancetimefn
-   
+function ProcessComponent:new(o)
+   o = o or {}
+   setmetatable(o, self)
+   self.__index = self
+
+   assert(not processtickfn or type(processtickfn) == "function", "'processtick' must be a function.")
+   assert(not advancetimefn or type(advancetimefn) == "function", "'advancetime' must be a function.")
+
    return o
 end
 
@@ -46,12 +44,12 @@ end
 --!
 --! @memberof ProcessComponent
 function ProcessComponent:onadded()
-   if self._processtick then
-      Events.subscribe(self._processtick, Events.processtick)
+   if self.processtick then
+      Events.subscribe(self.processtick, Events.processtick)
    end
-   
-   if self._advancetime then
-      Events.subscribe(self._advancetime, Events.advancetime)
+
+   if self.advancetime then
+      Events.subscribe(self.advancetime, Events.advancetime)
    end
 end
 
@@ -59,11 +57,11 @@ end
 --! @memberof ProcessComponent
 function ProcessComponent:onremoved()
    -- Unsubscribe
-   if self._processtick then
-      Events.unsubscribe(self._processtick, Events.processtick)
+   if self.processtick then
+      Events.unsubscribe(self.processtick, Events.processtick)
    end
-   
-   if self._advancetime then
-      Events.unsubscribe(self._advancetime, Events.advancetime)
+
+   if self.advancetime then
+      Events.unsubscribe(self.advancetime, Events.advancetime)
    end
 end
