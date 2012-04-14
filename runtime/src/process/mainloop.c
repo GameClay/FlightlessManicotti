@@ -135,12 +135,6 @@ int kl_mainloop_iteration()
    kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT, &scriptfence);
 
    /*
-    * Render
-    */
-
-   /* ... */
-
-   /*
     * Runtime frame is complete
     */
 
