@@ -40,11 +40,11 @@ int kl_particle_system_alloc(kl_particle_system_t* system, uint32_t max_particle
    /* Hax, emit particles */
    {
       int i = 0;
-      for(i = 0; i < 600; i++)
+      for(i = 0; i < 200; i++)
       {
          float angle = ((rand() % 100) / 100.0f);
-         sys->px_stream[i] = kl_cos(angle * KL_2PI) * 0.5f;
-         sys->py_stream[i] = kl_sin(angle * KL_2PI) * 0.5f;
+         sys->px_stream[i] = kl_cos(angle * KL_2PI_F) * 0.5f;
+         sys->py_stream[i] = kl_sin(angle * KL_2PI_F) * 0.5f;
          sys->pz_stream[i] = 0.0f;
 
          sys->lifespan_stream[i] = 30.0f * 1000.0f;

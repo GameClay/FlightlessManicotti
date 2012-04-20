@@ -29,9 +29,11 @@ extern "C" {
 #include <float.h>
 #include <stdint.h>
 
-#define KL_PI  3.14159265f
-#define KL_2PI 6.28318531f
+#define KL_PI_F 3.14159265f
+#define KL_2PI_F 6.28318531f
 #define KL_EPSILON_F 0.00001f
+
+#define KL_UINT16_MAX_F 32767.0f
 
 #define kl_fsel(a, x, y) (a >= 0.0f ? x : y)
 #define kl_sin sinf
