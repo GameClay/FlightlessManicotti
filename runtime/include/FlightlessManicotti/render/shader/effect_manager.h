@@ -16,34 +16,36 @@
  * limitations under the License.
  */
 
-#include <OpenGL/OpenGL.h> /* Mac */
+#ifndef _KL_EFFECT_MANAGER_H_
+#define _KL_EFFECT_MANAGER_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <FlightlessManicotti/render/shader/shader_manager.h>
-#include <FlightlessManicotti/render/shader/effect_manager.h>
 
-struct _kl_render_context
-{
-   CGLContextObj drawableCGLContext;
-   CGLContextObj resourceCGLContext;
+typedef struct _kl_effect* kl_effect_t;
 
-   kl_shader_manager_t shader_mgr;
-   kl_effect_manager_t effect_mgr;
-};
+typedef struct {
+   struct _kl_effect** effect;
+   uint32_t num_effects;
+   kl_render_context_t render_ctx;
+} _kl_effect_manager, *kl_effect_manager_t;
 
-#define KL_SHADER_EFFECT_KEY_SZ 256
+int kl_effect_manager_create(kl_effect_manager_t* manager, uint32_t num_effects, kl_render_context_t render_ctx);
 
-struct _kl_shader {
-   GLuint shader;
-   uint16_t ref_count;
-   char effect_key[KL_SHADER_EFFECT_KEY_SZ];
-};
+void kl_effect_manager_destroy(kl_effect_manager_t* manager);
 
-struct _kl_effect {
-   GLuint program;
+int kl_effect_manager_get_effect(kl_render_context_t render_ctx, const char* effect_key,
+   kl_effect_t* effect);
 
-   kl_shader_t pixel;
-   kl_shader_t geometry;
-   kl_shader_t vertex;
+void kl_effect_manager_bind_effect(kl_effect_t effect);
 
-   uint16_t ref_count;
-   char effect_key[KL_SHADER_EFFECT_KEY_SZ];
-};
+void kl_effect_manager_destroy_effect(kl_render_context_t render_ctx, kl_effect_t* effect);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

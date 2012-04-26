@@ -60,6 +60,12 @@ int kl_init_rendering(kl_render_context_t* context, void* handle)
       CGLCreateContext(pixelFormat, ctx->drawableCGLContext, &ctx->resourceCGLContext);
 
       kl_shader_manager_create(&ctx->shader_mgr, 256, ctx);
+      kl_effect_manager_create(&ctx->effect_mgr, 64, ctx);
+
+      /* sighhax */
+      {
+         kl_effect_manager_get_effect(ctx, "PassThroughRowMajor", &hax_effect);
+      }
 
       /* hax */
       kl_particle_system_alloc(&haxparticles, 2048);
@@ -175,6 +181,7 @@ void kl_destroy_rendering(kl_render_context_t* context)
    if(context != NULL && *context != NULL)
    {
       kl_render_context_t ctx = *context;
+      kl_effect_manager_destroy(&ctx->effect_mgr);
       kl_shader_manager_destroy(&ctx->shader_mgr);
 
       CGLReleaseContext(ctx->resourceCGLContext);
