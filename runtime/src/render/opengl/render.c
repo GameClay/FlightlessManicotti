@@ -62,6 +62,28 @@ int kl_init_rendering(kl_render_context_t* context, void* handle)
       kl_shader_manager_create(&ctx->shader_mgr, 256, ctx);
       kl_effect_manager_create(&ctx->effect_mgr, 64, ctx);
 
+      /* Create offscreen target */
+      ctx->feedback_fbo.width = 512;
+      ctx->feedback_fbo.height = 512;
+      glGenFramebuffersEXT(1, &ctx->feedback_fbo.framebuffer);
+      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, ctx->feedback_fbo.framebuffer);
+      glGenTextures(1, &ctx->feedback_fbo.texture);
+      glBindTexture(GL_TEXTURE_2D, ctx->feedback_fbo.texture);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, ctx->feedback_fbo.width, ctx->feedback_fbo.height,
+                   0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+      glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+                                GL_TEXTURE_2D, ctx->feedback_fbo.texture, 0);
+
+      if(glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT) != GL_FRAMEBUFFER_COMPLETE_EXT)
+      {
+         /* Blarg! */
+      }
+
+      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+      glBindTexture(GL_TEXTURE_2D, 0);
+
       /* sighhax */
       {
          kl_effect_manager_get_effect(ctx, "PassThroughRowMajor", &hax_effect);
@@ -181,6 +203,10 @@ void kl_destroy_rendering(kl_render_context_t* context)
    if(context != NULL && *context != NULL)
    {
       kl_render_context_t ctx = *context;
+
+      glDeleteFramebuffersEXT(1, &ctx->feedback_fbo.framebuffer);
+      glDeleteTextures(1, &ctx->feedback_fbo.texture);
+
       kl_effect_manager_destroy(&ctx->effect_mgr);
       kl_shader_manager_destroy(&ctx->shader_mgr);
 
