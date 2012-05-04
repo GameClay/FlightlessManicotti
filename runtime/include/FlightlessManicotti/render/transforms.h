@@ -15,33 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-#include <stdio.h>
-#include <stdlib.h>
-#include <FlightlessManicotti/fm.h>
-#include <FlightlessManicotti/scriptinterface/script.h>
 
-int main(int argc, const char* argv[])
-{
-   if(kl_initialize(KL_FALSE, "example/main.lua", argc, argv) == KL_SUCCESS)
-   {
-      // Send the script a test event
-      kl_script_event_t fooevt;
-      fooevt.event.id = kl_register_script_event("TestEvent");
-      fooevt.event.context.as_ptr = NULL;
-      fooevt.event.arg = 42;
-      
-      kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &fooevt);
-      
-      while(kl_mainloop_iteration() == KL_SUCCESS)
-         ;
-      
-      kl_destroy();
-   }
-#ifdef WIN32
-   printf("Press any key to continue...");
-   getchar();
+#ifndef _KL_TRANSFORMS_H_
+#define _KL_TRANSFORMS_H_
+
+#ifdef __cplusplus
+extern "C" {
 #endif
-   
-   return 0;
+
+#include <FlightlessManicotti/fm.h>
+#include <FlightlessManicotti/math/matrix.h>
+
+typedef struct {
+   kl_matrix_t world_to_camera;  /* AKA: View */
+   kl_matrix_t camera_to_screen; /* AKA: Projection */
+} _kl_transforms, *kl_transforms_t;
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif
