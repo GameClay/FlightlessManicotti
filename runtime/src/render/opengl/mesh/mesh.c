@@ -20,8 +20,6 @@
 #include "render/opengl/gl_render.h"
 #include <OpenGL/gl.h>
 
-#define kl_bit_test(var, pos) ((var) & (1 << (pos))) /* TODO: Move this */
-
 struct _kl_mesh_internal {
    GLuint vert_buffer;
    GLuint norm_buffer;
@@ -33,7 +31,7 @@ struct _kl_mesh_internal {
    uint32_t dynamic_mask;
 };
 
-int kl_mesh_init(kl_mesh_t mesh)
+int kl_mesh_init(kl_mesh_t* mesh)
 {
    int ret = KL_ERROR;
 
@@ -56,7 +54,7 @@ int kl_mesh_init(kl_mesh_t mesh)
    return ret;
 }
 
-void kl_mesh_deinit(kl_mesh_t mesh)
+void kl_mesh_deinit(kl_mesh_t* mesh)
 {
    if(mesh != NULL && mesh->internal != NULL)
    {
@@ -71,55 +69,55 @@ void kl_mesh_deinit(kl_mesh_t mesh)
    }
 }
 
-#define MESH_DRAW_TYPE(x) (kl_bit_test(dynamic_mask, x) ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW)
+#define MESH_DRAW_TYPE(x) ((dynamic_mask & x) ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW)
 
-void kl_mesh_buffer_data(kl_mesh_t mesh, uint32_t dynamic_mask)
+void kl_mesh_buffer_data(kl_mesh_t* mesh, uint32_t update_mask, uint32_t dynamic_mask)
 {
    if(mesh != NULL && mesh->internal != NULL)
    {
       kl_mesh_internal_t internal = mesh->internal;
       internal->dynamic_mask = dynamic_mask;
 
-      if(mesh->vertex != NULL)
+      if(mesh->vertex != NULL && (update_mask & kl_mesh_element_vertex))
       {
          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, internal->vert_buffer);
          glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->num_verts * sizeof(float) * 3,
-                      mesh->vertex, MESH_DRAW_TYPE(kl_mesh_dynamic_vertex));
+                      mesh->vertex, MESH_DRAW_TYPE(kl_mesh_element_vertex));
       }
 
-      if(mesh->normal != NULL)
+      if(mesh->normal != NULL && (update_mask & kl_mesh_element_normal))
       {
          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, internal->norm_buffer);
          glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->num_verts * sizeof(float) * 3,
-                      mesh->normal, MESH_DRAW_TYPE(kl_mesh_dynamic_normal));
+                      mesh->normal, MESH_DRAW_TYPE(kl_mesh_element_normal));
       }
 
-      if(mesh->tex0 != NULL)
+      if(mesh->tex0 != NULL && (update_mask & kl_mesh_element_tex0))
       {
          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, internal->tex0_buffer);
          glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->num_verts * sizeof(float) * 2, /* HAX, should be able to have 1,2,3 or 4 */
-                      mesh->tex0, MESH_DRAW_TYPE(kl_mesh_dynamic_tex0));
+                      mesh->tex0, MESH_DRAW_TYPE(kl_mesh_element_tex0));
       }
 
-      if(mesh->col0 != NULL)
+      if(mesh->col0 != NULL && (update_mask & kl_mesh_element_col0))
       {
          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, internal->col0_buffer);
          glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->num_verts * sizeof(uint32_t),
-                      mesh->col0, MESH_DRAW_TYPE(kl_mesh_dynamic_col0));
+                      mesh->col0, MESH_DRAW_TYPE(kl_mesh_element_col0));
       }
 
-      if(mesh->index != NULL)
+      if(mesh->index != NULL && (update_mask & kl_mesh_element_index))
       {
          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, internal->idx_buffer);
          glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->num_indices * sizeof(uint16_t),
-                      mesh->index, MESH_DRAW_TYPE(kl_mesh_dynamic_index));
+                      mesh->index, MESH_DRAW_TYPE(kl_mesh_element_index));
       }
    }
 }
 
 #undef MESH_DRAW_TYPE
 
-void kl_mesh_bind(kl_mesh_t mesh)
+void kl_mesh_bind(kl_mesh_t* mesh)
 {
    if(mesh != NULL && mesh->internal != NULL)
    {
