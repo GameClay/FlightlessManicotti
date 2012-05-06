@@ -123,6 +123,26 @@ static int Mesh_update(lua_State* L)
    return 0;
 }
 
+static int Mesh_loadctm(lua_State* L)
+{
+   kl_mesh_t* mesh = NULL;
+
+   luaL_argcheck(L, lua_isstring(L, 2), 2, "expected mesh name");
+
+   mesh = (kl_mesh_t*)lua_touserdata(L, 1);
+
+   if(mesh != NULL)
+   {
+      if(kl_mesh_load_ctm(mesh, lua_tostring(L, 2)) != KL_SUCCESS)
+      {
+         lua_pushstring(L, "error loading mesh");
+         lua_error(L);
+      }
+   }
+
+   return 0;
+}
+
 static int Mesh_getpositions(lua_State* L)
 {
    kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
@@ -162,6 +182,7 @@ static int Mesh_getindices(lua_State* L)
 static const struct luaL_reg Mesh_instance_methods [] = {
    {"reserve", Mesh_reserve},
    {"update", Mesh_update},
+   {"loadctm", Mesh_loadctm},
    {"getpositions", Mesh_getpositions},
    {"getindices", Mesh_getindices},
 

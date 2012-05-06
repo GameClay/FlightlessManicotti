@@ -89,3 +89,13 @@ extern KL_API void kl_mesh_buffer_data(kl_mesh_t* mesh, uint32_t update_mask, ui
  * @param mesh    Mesh to prepare for drawing, or NULL.
  */
 extern KL_API void kl_mesh_bind(kl_mesh_t* mesh);
+
+/**
+ * Load a CTM mesh into an initialized mesh.
+ *
+ * @param mesh       Mesh to load CTM into.
+ * @param mesh_name  Name of the mesh to load.
+ *
+ * @return KL_SUCCESS if successful.
+ */
+extern KL_API int kl_mesh_load_ctm(kl_mesh_t* mesh, const char* mesh_name);
