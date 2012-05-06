@@ -147,36 +147,40 @@ static int Mesh_getpositions(lua_State* L)
 {
    kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
 
-   if(mesh->vertex != NULL)
+   if(mesh != NULL && mesh->vertex != NULL)
    {
+      lua_pushinteger(L, mesh->num_verts);
       lua_pushlightuserdata(L, mesh->vertex);
       luaL_getmetatable(L, FLOAT_ARRAY_LUA_LIB);
       lua_setmetatable(L, -2);
    }
    else
    {
+      lua_pushinteger(L, 0);
       lua_pushnil(L);
    }
 
-   return 1;
+   return 2;
 }
 
 static int Mesh_getindices(lua_State* L)
 {
    kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
 
-   if(mesh->vertex != NULL)
+   if(mesh != NULL && mesh->index != NULL)
    {
+      lua_pushinteger(L, mesh->num_indices);
       lua_pushlightuserdata(L, mesh->index);
       luaL_getmetatable(L, UINT16_ARRAY_LUA_LIB);
       lua_setmetatable(L, -2);
    }
    else
    {
+      lua_pushinteger(L, 0);
       lua_pushnil(L);
    }
 
-   return 1;
+   return 2;
 }
 
 static const struct luaL_reg Mesh_instance_methods [] = {

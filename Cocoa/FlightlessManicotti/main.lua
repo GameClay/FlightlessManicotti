@@ -14,6 +14,8 @@ require 'events'
 require 'game.components'
 require 'game.components.scene.Scene3DComponent'
 require 'game.Lsystem'
+require 'parameters'
+require 'parameters.spectrum.SpectrumComponent'
 
 -- Main is executed only once, it is not a loop. It receives the arguments
 -- that were passed to the 'kl_initialize' function.
@@ -27,13 +29,26 @@ function main(...)
    -- Sign up for the Init/Destroy events
    Events.subscribe(testinit, Events.init)
    Events.subscribe(testdestroy, Events.destroy)
+   Events.subscribe(testrenderinit, Events.renderinit)
 
-   local testscene = Scene3D.new(1024)
+   -- Test
+   kick = Parameter:new("kick")
+   kick:addcomponent(
+      SpectrumComponent:new{
+         onspectrumupdate = function (self, spectrum_sz, spectrum)
+            local v = 0.0
+            for i = 2, 5 do
+               local f = spectrum[i]
+               v = v + f * f
+            end
+            local val = math.sqrt(v / 3)
+            self:owner():setvalue(val)
+         end
+      },
+   "spectrum")
 
-   testscene = nil
-
-   --lsys_verts = sierpinski(10)
-   lsys_verts = dragoncurve(10)
+   lsys_verts = sierpinski(10)
+   --lsys_verts = dragoncurve(10)
 end
 
 function dragoncurve(iterations)
@@ -102,6 +117,43 @@ function sierpinski(iterations)
    end
 
    return lsys_verts
+end
+
+function testrenderinit()
+   print("RenderInit called!")
+--end
+
+--function fsdfa()
+   -- Moar test
+   testmesh = Mesh.new()
+   testmesh:reserve(4, 6)
+   local n,pos = testmesh:getpositions()
+   pos[1] = -0.5
+   pos[2] = -0.5
+   pos[3] =  0.0
+
+   pos[4] = -0.5
+   pos[5] =  0.5
+   pos[6] =  0.0
+
+   pos[7] =  0.5
+   pos[8] = -0.5
+   pos[9] =  0.0
+
+   pos[10] = 0.5
+   pos[11] = 0.5
+   pos[12] = 0.0
+
+   local n,idx = testmesh:getindices()
+   idx[1] = 0
+   idx[2] = 1
+   idx[3] = 2
+   idx[4] = 1
+   idx[5] = 2
+   idx[6] = 3
+
+   testmesh:update(Mesh.element.vertex + Mesh.element.index, Mesh.element.none)
+   testmesh:setashaxmesh()
 end
 
 function testinit()
