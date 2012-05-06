@@ -28,7 +28,7 @@ struct _kl_mesh_internal {
 
    GLuint idx_buffer;
 
-   uint32_t dynamic_mask;
+   uint32_t buffered_data;
 };
 
 int kl_mesh_init(kl_mesh_t* mesh)
@@ -45,6 +45,7 @@ int kl_mesh_init(kl_mesh_t* mesh)
          glGenBuffers(1, &internal->tex0_buffer);
          glGenBuffers(1, &internal->col0_buffer);
          glGenBuffers(1, &internal->idx_buffer);
+         internal->buffered_data = 0;
 
          mesh->internal = internal;
          ret = KL_SUCCESS;
@@ -76,7 +77,7 @@ void kl_mesh_buffer_data(kl_mesh_t* mesh, uint32_t update_mask, uint32_t dynamic
    if(mesh != NULL && mesh->internal != NULL)
    {
       kl_mesh_internal_t internal = mesh->internal;
-      internal->dynamic_mask = dynamic_mask;
+      internal->buffered_data |= update_mask;
 
       if(mesh->vertex != NULL && (update_mask & kl_mesh_element_vertex))
       {
@@ -123,35 +124,35 @@ void kl_mesh_bind(kl_mesh_t* mesh)
    {
       kl_mesh_internal_t internal = mesh->internal;
 
-      if(mesh->vertex != NULL)
+      if(mesh->vertex != NULL && (internal->buffered_data & kl_mesh_element_vertex))
       {
          glEnableClientState(GL_VERTEX_ARRAY);
          glBindBuffer(GL_ARRAY_BUFFER, internal->vert_buffer);
          glVertexPointer(3, GL_FLOAT, 3 * sizeof(float), NULL);
       }
 
-      if(mesh->normal != NULL)
+      if(mesh->normal != NULL && (internal->buffered_data & kl_mesh_element_normal))
       {
          glEnableClientState(GL_NORMAL_ARRAY);
          glBindBuffer(GL_ARRAY_BUFFER, internal->norm_buffer);
          glNormalPointer(GL_FLOAT, 3 * sizeof(float), NULL);
       }
 
-      if(mesh->tex0 != NULL)
+      if(mesh->tex0 != NULL && (internal->buffered_data & kl_mesh_element_tex0))
       {
          glEnableClientState(GL_TEXTURE_COORD_ARRAY);
          glBindBuffer(GL_ARRAY_BUFFER, internal->tex0_buffer);
          glTexCoordPointer(2 /* hax */, GL_FLOAT, 2 * sizeof(float), NULL);
       }
 
-      if(mesh->col0 != NULL)
+      if(mesh->col0 != NULL && (internal->buffered_data & kl_mesh_element_col0))
       {
          glEnableClientState(GL_COLOR_ARRAY);
          glBindBuffer(GL_ARRAY_BUFFER, internal->tex0_buffer);
          glColorPointer(4, GL_FLOAT, 0, NULL);
       }
 
-      if(mesh->index != NULL)
+      if(mesh->index != NULL && (internal->buffered_data & kl_mesh_element_index))
       {
          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, internal->idx_buffer);
       }

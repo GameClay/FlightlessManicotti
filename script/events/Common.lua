@@ -57,3 +57,19 @@ Events.init = Events.register(SCTX, "Init")
 --! There are no arguments passed to this event handler.
 --! @memberof Events
 Events.destroy = Events.register(SCTX, "Destroy")
+
+--! Init event.
+--!
+--! This event occurs once, when the rendering sub-system is ready.
+--!
+--! There are no arguments passed to this event handler.
+--! @memberof Events
+Events.renderinit = Events.register(SCTX, "RenderInit")
+
+--! Power spectrum update event.
+--!
+--! This event occurs when the audio power spectrum has been updated.
+--!
+--! There are no arguments passed to this event handler.
+--! @memberof Events
+Events.powerspectrumupdate = Events.register(SCTX, "PowerSpectrumUpdate")
