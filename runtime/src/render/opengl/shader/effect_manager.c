@@ -34,7 +34,7 @@ int kl_effect_manager_create(kl_effect_manager_t* manager, uint32_t num_effects,
       if(mgr != NULL)
       {
          mgr->effect = kl_heap_alloc(sizeof(struct _kl_effect*) * num_effects);
-         memset(mgr->effect, 0, sizeof(struct _kl_effect*) * num_effects);
+         kl_zero_mem(mgr->effect, sizeof(struct _kl_effect*) * num_effects);
          mgr->num_effects = num_effects;
          mgr->render_ctx = render_ctx;
 

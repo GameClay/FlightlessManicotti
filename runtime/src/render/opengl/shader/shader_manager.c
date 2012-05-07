@@ -36,7 +36,7 @@ int kl_shader_manager_create(kl_shader_manager_t* manager, uint32_t num_shaders,
       if(mgr != NULL)
       {
          mgr->shader = kl_heap_alloc(sizeof(struct _kl_shader*) * num_shaders);
-         memset(mgr->shader, 0, sizeof(struct _kl_shader*) * num_shaders);
+         kl_zero_mem(mgr->shader, sizeof(struct _kl_shader*) * num_shaders);
          mgr->num_shaders = num_shaders;
          mgr->render_ctx = render_ctx;
 
