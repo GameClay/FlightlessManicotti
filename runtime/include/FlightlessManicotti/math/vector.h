@@ -31,6 +31,8 @@ KL_ALIGNED_STRUCT_PRE(16) {
 
 extern kl_math_f_ab_restrict_fn kl_vector_dot;
 
+extern kl_math_abc_restrict_fn kl_vector_cross;
+
 extern KL_API void kl_vector_math_self_test();
 
 #ifdef __cplusplus

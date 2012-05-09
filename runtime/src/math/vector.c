@@ -46,6 +46,28 @@ float kl_vector_dot_c(const float* KL_RESTRICT a, const float* KL_RESTRICT b)
    return (a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3]);
 }
 
+/* Needed? */
+void kl_vector_cross_sse(const float* KL_RESTRICT a, const float* KL_RESTRICT b, float* KL_RESTRICT c)
+{
+   kl_float32x4_t v0, v1, vr;
+
+   v0 = kl_load_float32x4(a);
+   v1 = kl_load_float32x4(b);
+   vr = _mm_sub_ps(
+      _mm_mul_ps(_mm_shuffle_ps(v0, v0, _MM_SHUFFLE(3, 0, 2, 1)), _mm_shuffle_ps(v1, v1, _MM_SHUFFLE(3, 1, 0, 2))),
+      _mm_mul_ps(_mm_shuffle_ps(v0, v0, _MM_SHUFFLE(3, 1, 0, 2)), _mm_shuffle_ps(v1, v1, _MM_SHUFFLE(3, 0, 2, 1)))
+   );
+
+   kl_store_float32x4(c, vr);
+}
+
+void kl_vector_cross_c(const float* KL_RESTRICT a, const float* KL_RESTRICT b, float* KL_RESTRICT c)
+{
+   c[0] = a[1] * b[2] - a[2] * b[1];
+   c[1] = a[2] * b[0] - a[0] * b[2];
+   c[2] = a[0] * b[1] - a[1] * b[0];
+}
+
 #define NUM_TEST_RUNS 50000
 void kl_vector_math_self_test()
 {
@@ -87,3 +109,4 @@ void kl_vector_math_self_test()
 }
 
 kl_math_f_ab_restrict_fn kl_vector_dot = kl_vector_dot_sse3;
+kl_math_abc_restrict_fn kl_vector_cross = kl_vector_cross_c;
