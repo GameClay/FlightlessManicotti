@@ -17,6 +17,8 @@
  */
 
 #include <FlightlessManicotti/render/mesh/mesh.h>
+#include <FlightlessManicotti/core/rarray.h>
+#include <FlightlessManicotti/math/vector.h>
 #include <openctm.h>
 #include <string.h>
 
@@ -72,4 +74,106 @@ int kl_mesh_load_ctm(kl_mesh_t* mesh, const char* mesh_name)
 
    ctmFreeContext(context);
    return ret;
+}
+
+void kl_mesh_recompute_normals(kl_mesh_t* mesh, uint16_t start_idx, uint16_t num_tris)
+{
+   if(mesh != NULL && mesh->index != NULL && mesh->vertex != NULL && mesh->normal != NULL &&
+      mesh->face_normal != NULL && mesh->num_indices >= num_tris * 3 + start_idx)
+   {
+      int i, j, k;
+      kl_rarray_t* vert_face_assoc;
+
+      if(num_tris == 0)
+      {
+         num_tris = mesh->num_indices / 3;
+      }
+
+      /* First pass, compute face normals */
+      for(i = 0; i < num_tris; i++)
+      {
+         int face = start_idx / 3 + i;
+         float* face_normal = &mesh->face_normal[face * 3];
+         const uint16_t* index = &mesh->index[start_idx + i * 3];
+         const float* v0 = &mesh->vertex[index[0] * 3];
+         const float* v1 = &mesh->vertex[index[1] * 3];
+         const float* v2 = &mesh->vertex[index[2] * 3];
+         float vt1[4];
+         float vt2[4];
+         float vr[4];
+         float len;
+
+         vt1[0] = v1[0] - v0[0];
+         vt1[1] = v1[1] - v0[1];
+         vt1[2] = v1[2] - v0[2];
+         vt1[3] = 0.0f;
+
+         vt2[0] = v2[0] - v1[0];
+         vt2[1] = v2[1] - v1[1];
+         vt2[2] = v2[2] - v1[2];
+         vt2[3] = 0.0f;
+
+         kl_vector_cross(vt1, vt2, vr);
+         len = sqrt(vr[0] * vr[0] + vr[1] * vr[1] + vr[2] * vr[2]);
+         face_normal[0] = vr[0] / len;
+         face_normal[1] = vr[1] / len;
+         face_normal[2] = vr[2] / len;
+      }
+
+      /* Compute per-vertex normals */
+      vert_face_assoc = kl_heap_alloc(sizeof(kl_rarray_t) * mesh->num_verts);
+      for(i = 0; i < mesh->num_verts; i++)
+      {
+         kl_rarray_init(&vert_face_assoc[i], sizeof(uint16_t), 8);
+      }
+
+      for(i = 0; i < num_tris; i++)
+      {
+         const uint16_t* index = &mesh->index[start_idx + i * 3];
+         const uint16_t face = (start_idx / 3) + i;
+
+         kl_rarray_append(&vert_face_assoc[index[0]], &face);
+         kl_rarray_append(&vert_face_assoc[index[1]], &face);
+         kl_rarray_append(&vert_face_assoc[index[2]], &face);
+      }
+
+      for(i = 0; i < num_tris; i++)
+      {
+         uint16_t idx = start_idx + i * 3;
+
+         for(k = 0; k < 3; k++)
+         {
+            uint16_t index = mesh->index[idx + k];
+
+            const uint16_t* assoc_verts = vert_face_assoc[index].elements;
+            float nrm[3];
+            float len;
+            kl_zero_mem(nrm, sizeof(nrm));
+            for(j = 0; j < vert_face_assoc[index].max_idx; j++)
+            {
+               int face = assoc_verts[j];
+               const float* fnrm = &mesh->face_normal[face * 3];
+               nrm[0] += fnrm[0];
+               nrm[1] += fnrm[1];
+               nrm[2] += fnrm[2];
+            }
+            nrm[0] /= vert_face_assoc[index].max_idx;
+            nrm[1] /= vert_face_assoc[index].max_idx;
+            nrm[2] /= vert_face_assoc[index].max_idx;
+            len = sqrt(nrm[0] * nrm[0] + nrm[1] * nrm[1] + nrm[2] * nrm[2]);
+            nrm[0] /= len;
+            nrm[1] /= len;
+            nrm[2] /= len;
+
+            memcpy(&mesh->normal[index * 3], nrm, sizeof(float) * 3);
+         }
+      }
+
+      for(i = 0; i < mesh->num_verts; i++)
+      {
+         kl_rarray_destroy(&vert_face_assoc[i]);
+      }
+
+      kl_heap_free(vert_face_assoc);
+   }
 }

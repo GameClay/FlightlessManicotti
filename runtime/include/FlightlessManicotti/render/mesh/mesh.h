@@ -16,6 +16,13 @@
  * limitations under the License.
  */
 
+#ifndef _KL_MESH_H_
+#define _KL_MESH_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <FlightlessManicotti/render/render.h>
 #include <stdint.h>
 
@@ -31,6 +38,7 @@ typedef struct {
    size_t num_verts;
 
    uint16_t* index;
+   float* face_normal;
    size_t num_indices;
 } kl_mesh_t;
 
@@ -99,3 +107,18 @@ extern KL_API void kl_mesh_bind(kl_mesh_t* mesh);
  * @return KL_SUCCESS if successful.
  */
 extern KL_API int kl_mesh_load_ctm(kl_mesh_t* mesh, const char* mesh_name);
+
+/**
+ * Re-compute per-vertex normals.
+ *
+ * @param mesh       Mesh on which to recompute normals.
+ * @param start_idx  Starting index for recomputation.
+ * @param num_tris   Number of triangles starting at start_idx to recompute normals for, or 0 for all.
+ */
+extern KL_API void kl_mesh_recompute_normals(kl_mesh_t* mesh, uint16_t start_idx, uint16_t num_tris);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

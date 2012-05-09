@@ -95,6 +95,7 @@ static int Mesh_reserve(lua_State* L)
 
       mesh->num_indices = lua_tonumber(L, 3);
       mesh->index = kl_heap_alloc(sizeof(uint16_t) * mesh->num_indices);
+      mesh->face_normal = kl_heap_alloc(sizeof(float) * mesh->num_indices); /* Assuming triangle list */
    }
 
    return 0;
@@ -123,6 +124,18 @@ static int Mesh_update(lua_State* L)
    return 0;
 }
 
+static int Mesh_computenormals(lua_State* L)
+{
+   kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
+
+   if(mesh != NULL)
+   {
+      kl_mesh_recompute_normals(mesh, 0, 0);
+   }
+
+   return 0;
+}
+
 static int Mesh_loadctm(lua_State* L)
 {
    kl_mesh_t* mesh = NULL;
@@ -137,6 +150,23 @@ static int Mesh_loadctm(lua_State* L)
       {
          lua_pushstring(L, "error loading mesh");
          lua_error(L);
+      }
+      else
+      {
+         if(mesh->normal == NULL)
+         {
+            mesh->normal = kl_heap_alloc(sizeof(float) * 3 * mesh->num_verts);
+         }
+
+         if(mesh->tex0 == NULL)
+         {
+            mesh->tex0 = kl_heap_alloc(sizeof(float) * 2 * mesh->num_verts);
+         }
+
+         if(mesh->col0 == NULL)
+         {
+            mesh->col0 = kl_heap_alloc(sizeof(uint32_t) * mesh->num_verts);
+         }
       }
    }
 
@@ -189,6 +219,7 @@ static const struct luaL_reg Mesh_instance_methods [] = {
    {"loadctm", Mesh_loadctm},
    {"getpositions", Mesh_getpositions},
    {"getindices", Mesh_getindices},
+   {"computenormals", Mesh_computenormals},
 
    {"setashaxmesh", Mesh_setashaxmesh},
 
