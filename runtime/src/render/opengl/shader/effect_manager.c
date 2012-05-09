@@ -94,10 +94,19 @@ int kl_effect_manager_get_effect(kl_render_context_t render_ctx, const char* eff
          if(kl_shader_manager_get_pixel_shader(render_ctx, effect_key_buffer, &pix_shader) == KL_SUCCESS)
          {
             GLint link_success;
+            KL_BOOL has_geom = KL_FALSE;
             program = glCreateProgram();
 
             glAttachShader(program, vert_shader->shader);
             glAttachShader(program, pix_shader->shader);
+
+            sprintf(effect_key_buffer, "%s.Geometry.%s", effect_key, "GL2");
+            if(kl_shader_manager_get_geometry_shader(render_ctx, effect_key_buffer, &geom_shader) == KL_SUCCESS)
+            {
+               glAttachShader(program, geom_shader->shader);
+
+               has_geom = KL_TRUE;
+            }
 
             glLinkProgram(program);
 
@@ -109,7 +118,7 @@ int kl_effect_manager_get_effect(kl_render_context_t render_ctx, const char* eff
 
                eff->program = program;
                eff->pixel = pix_shader;
-               eff->geometry = NULL;
+               eff->geometry = (has_geom == KL_TRUE ? geom_shader : NULL);
                eff->vertex = vert_shader;
                eff->ref_count = 1;
                strncpy(eff->effect_key, effect_key, KL_SHADER_EFFECT_KEY_SZ);
