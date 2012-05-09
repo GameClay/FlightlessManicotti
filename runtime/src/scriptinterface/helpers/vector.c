@@ -20,9 +20,10 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #include <FlightlessManicotti/fm.h>
-#include "scriptinterface/helpers/vector2d.h"
+#include "scriptinterface/helpers/vector.h"
 
 extern const char* VECTOR2D_LUA_LIB;
+extern const char* VECTOR3D_LUA_LIB;
 
 void lua_readvector2d(lua_State* L, int param_idx, float* out_xy)
 {
@@ -53,3 +54,38 @@ void lua_readvector2d(lua_State* L, int param_idx, float* out_xy)
       luaL_argcheck(L, 0, 3, "expected numerical array, or vector2d");
    }
 }
+
+void lua_readvector3d(lua_State* L, int param_idx, float* out_xyz)
+{
+   float* tempxyz;
+   int top;
+   
+   if(lua_istable(L, param_idx))
+   {
+      top = lua_gettop(L);
+      lua_pushinteger(L, 1);
+      lua_gettable(L, param_idx);
+      lua_pushinteger(L, 2);
+      lua_gettable(L, param_idx);
+      lua_pushinteger(L, 3);
+      lua_gettable(L, param_idx);
+      luaL_argcheck(L, lua_isnumber(L, top + 1) && lua_isnumber(L, top + 2) && lua_isnumber(L, top + 3),
+         param_idx, "expected numerical array");
+      out_xyz[0] = lua_tonumber(L, top + 1);
+      out_xyz[1] = lua_tonumber(L, top + 2);
+      out_xyz[2] = lua_tonumber(L, top + 3);
+   }
+   else if(lua_isuserdata(L, 3))
+   {
+      /* Won't return if error */
+      tempxyz = (float*)luaL_checkudata(L, param_idx, VECTOR3D_LUA_LIB);
+      out_xyz[0] = tempxyz[0];
+      out_xyz[1] = tempxyz[1];
+      out_xyz[2] = tempxyz[2];
+   }
+   else
+   {
+      luaL_argcheck(L, 0, 3, "expected numerical array, or vector3d");
+   }
+}
+

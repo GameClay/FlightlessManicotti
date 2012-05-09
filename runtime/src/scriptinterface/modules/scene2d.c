@@ -22,7 +22,7 @@
 #include <lualib.h>
 #include <FlightlessManicotti/game/scene2d/scene_container_2d.h>
 #include <FlightlessManicotti/core/hash.h>
-#include "scriptinterface/helpers/vector2d.h"
+#include "scriptinterface/helpers/vector.h"
 
 #define SCENE2D_LIB "Scene2D"
 #define SCENEENTITY2D "SceneEntity2D"
