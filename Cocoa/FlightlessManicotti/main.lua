@@ -119,14 +119,31 @@ function sierpinski(iterations)
    return lsys_verts
 end
 
+function spheremesh(M, N)
+   local mesh = Mesh.new()
+   mesh:reserve(M * N, 0)
+
+   local len,pos = mesh:getpositions()
+   for m = 0, (M - 1) do
+      for n = 0, (N - 1) do
+         pos[n + m * M + 1] =  math.sin(math.pi * m / M) * math.cos(2 * math.pi * n / N)
+         pos[n + m * M + 2] =  math.cos(math.pi * m / M)
+         pos[n + m * M + 3] = -math.sin(math.pi * m / M) * math.sin(2 * math.pi * n / N)
+      end
+   end
+
+   mesh:update(Mesh.element.vertex, Mesh.element.none)
+   return mesh
+end
+
 function testrenderinit()
    print("RenderInit called!")
---end
 
---function fsdfa()
    -- Moar test
+   --testmesh = spheremesh(10, 10)
+
    testmesh = Mesh.new()
-   testmesh:reserve(4, 6)
+   --[[testmesh:reserve(4, 6)
    local n,pos = testmesh:getpositions()
    pos[1] = -0.5
    pos[2] = -0.5
@@ -148,12 +165,16 @@ function testrenderinit()
    idx[1] = 0
    idx[2] = 1
    idx[3] = 2
-   idx[4] = 1
-   idx[5] = 2
-   idx[6] = 3
+   idx[4] = 2
+   idx[5] = 1
+   idx[6] = 3]]
 
-   testmesh:update(Mesh.element.vertex + Mesh.element.index, Mesh.element.none)
-   testmesh:setashaxmesh()
+   testmesh:loadctm("./bunny.ctm")
+   testmesh:computenormals()
+   testmesh:update(Mesh.element.normal, Mesh.element.none)
+   --testmesh:update(Mesh.element.vertex + Mesh.element.normal + Mesh.element.index, Mesh.element.none)
+
+   --testmesh:setashaxmesh()
 end
 
 function testinit()

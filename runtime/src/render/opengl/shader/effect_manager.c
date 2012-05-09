@@ -105,6 +105,11 @@ int kl_effect_manager_get_effect(kl_render_context_t render_ctx, const char* eff
             {
                glAttachShader(program, geom_shader->shader);
 
+      /* HAX */
+      glProgramParameteriEXT(program, GL_GEOMETRY_INPUT_TYPE_EXT, GL_POINTS);
+      glProgramParameteriEXT(program, GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_LINE_STRIP);
+      glProgramParameteriEXT(program, GL_GEOMETRY_VERTICES_OUT_EXT, 2);
+
                has_geom = KL_TRUE;
             }
 
