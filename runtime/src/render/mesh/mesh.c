@@ -43,6 +43,7 @@ int kl_mesh_load_ctm(kl_mesh_t* mesh, const char* mesh_name)
       verts = ctmGetFloatArray(context, CTM_VERTICES);
       if(verts != NULL)
       {
+         if(mesh->vertex != NULL) kl_heap_free(mesh->vertex);
          mesh->vertex = kl_heap_alloc(mesh->num_verts * sizeof(float) * 3);
          memcpy(mesh->vertex, verts, mesh->num_verts * sizeof(float) * 3);
          buffer_mask |= kl_mesh_element_vertex;
@@ -51,6 +52,7 @@ int kl_mesh_load_ctm(kl_mesh_t* mesh, const char* mesh_name)
       normals = ctmGetFloatArray(context, CTM_NORMALS);
       if(normals != NULL)
       {
+         if(mesh->normal != NULL) kl_heap_free(mesh->normal);
          mesh->normal = kl_heap_alloc(mesh->num_verts * sizeof(float) * 3);
          memcpy(mesh->normal, normals, mesh->num_verts * sizeof(float) * 3);
          buffer_mask |= kl_mesh_element_normal;
@@ -59,6 +61,7 @@ int kl_mesh_load_ctm(kl_mesh_t* mesh, const char* mesh_name)
       indices = ctmGetIntegerArray(context, CTM_INDICES);
       if(indices != NULL)
       {
+         if(mesh->index != NULL) kl_heap_free(mesh->index);
          mesh->index = kl_heap_alloc(mesh->num_indices * sizeof(uint16_t));
          for(i = 0; i < mesh->num_indices; i++)
          {
