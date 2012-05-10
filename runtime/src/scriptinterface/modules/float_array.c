@@ -21,23 +21,44 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #include <FlightlessManicotti/fm.h>
+#include <FlightlessManicotti/scriptinterface/types.h>
 
 #define FLOAT_ARRAY_INSTANCE_TABLE "float_array_instance_method_table"
 const char* FLOAT_ARRAY_LUA_LIB = "float_array";
+
+int push_lua_float_array(lua_State* L, float* a, size_t sz)
+{
+   kl_lua_float_array_t* array = (kl_lua_float_array_t*)lua_newuserdata(L, sizeof(kl_lua_float_array_t));
+   luaL_getmetatable(L, FLOAT_ARRAY_LUA_LIB);
+   lua_setmetatable(L, -2);
+
+   array->len = sz;
+   array->array = a;
+
+   return 1;
+}
 
 static int float_array_index(lua_State* L)
 {
    size_t len;
    const char* key;
    int idx;
-   float* array = (float*)lua_topointer(L, 1);
+   kl_lua_float_array_t* array = (kl_lua_float_array_t*)lua_touserdata(L, 1);
 
    key = lua_tolstring(L, 2, &len);
    idx = atoi(key);
    if(idx > 0)
    {
-      lua_pushnumber(L, array[idx - 1]);
-      return 1;
+      if(idx <= array->len)
+      {
+         lua_pushnumber(L, array->array[idx - 1]);
+         return 1;
+      }
+      else
+      {
+         lua_pushfstring(L, "Invalid index: '%s'.", key);
+         lua_error(L); /* Never returns */
+      }
    }
 
    lua_getglobal(L, FLOAT_ARRAY_INSTANCE_TABLE);
@@ -51,21 +72,36 @@ static int float_array_newindex(lua_State* L)
    size_t len;
    int idx;
    const char* key;
-   float* array = (float*)lua_topointer(L, 1);
+   kl_lua_float_array_t* array = (kl_lua_float_array_t*)lua_touserdata(L, 1);
 
    key = lua_tolstring(L, 2, &len);
    idx = atoi(key);
 
    if(idx > 0)
    {
-      luaL_argcheck(L, lua_isnumber(L, 3), 3, "expected number");
-      array[idx - 1] = lua_tonumber(L, 3);
-      return 0;
+      if(idx <= array->len)
+      {
+         luaL_argcheck(L, lua_isnumber(L, 3), 3, "expected number");
+         array->array[idx - 1] = lua_tonumber(L, 3);
+         return 0;
+      }
+      else
+      {
+         lua_pushfstring(L, "Invalid index: '%s'.", key);
+         lua_error(L); /* Never returns */
+      }
    }
 
    lua_pushfstring(L, "Invalid index: '%s'.", key);
    lua_error(L); /* Never returns */
    return 0;
+}
+
+static int float_array_len(lua_State* L)
+{
+   kl_lua_float_array_t* array = (kl_lua_float_array_t*)lua_touserdata(L, 1);
+   lua_pushinteger(L, array->len);
+   return 1;
 }
 
 int luaopen_float_array(lua_State* L)
@@ -75,6 +111,8 @@ int luaopen_float_array(lua_State* L)
    lua_setfield(L, -2, "__index");
    lua_pushcfunction(L, float_array_newindex);
    lua_setfield(L, -2, "__newindex");
+   lua_pushcfunction(L, float_array_len);
+   lua_setfield(L, -2, "__len");
 
    return 1;
 }

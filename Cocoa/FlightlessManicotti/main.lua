@@ -123,7 +123,7 @@ function spheremesh(M, N)
    local mesh = Mesh.new()
    mesh:reserve(M * N, 0)
 
-   local len,pos = mesh:getpositions()
+   local pos = mesh:getpositions()
    local positions = {}
    for m = 0, (M - 1) do
       for n = 0, (N - 1) do
@@ -151,7 +151,7 @@ function testrenderinit()
 
    --testmesh = Mesh.new()
    --[[testmesh:reserve(4, 6)
-   local n,pos = testmesh:getpositions()
+   local pos = testmesh:getpositions()
    pos[1] = -0.5
    pos[2] = -0.5
    pos[3] =  0.0
@@ -168,7 +168,7 @@ function testrenderinit()
    pos[11] = 0.5
    pos[12] = 0.0
 
-   local n,idx = testmesh:getindices()
+   local idx = testmesh:getindices()
    idx[1] = 0
    idx[2] = 1
    idx[3] = 2
@@ -176,9 +176,9 @@ function testrenderinit()
    idx[5] = 1
    idx[6] = 3]]
 
-   testmesh:loadctm("./bunny.ctm")
-   testmesh:computenormals()
-   testmesh:update(Mesh.element.normal, Mesh.element.none)
+   --testmesh:loadctm("./bunny.ctm")
+   --testmesh:computenormals()
+   --testmesh:update(Mesh.element.normal, Mesh.element.none)
    --testmesh:update(Mesh.element.vertex + Mesh.element.normal + Mesh.element.index, Mesh.element.none)
 
    --testmesh:setashaxmesh()

@@ -25,8 +25,8 @@
 #include "render/opengl/gl_render.h"
 
 const char* MESH_LUA_LIB = "Mesh";
-extern const char* FLOAT_ARRAY_LUA_LIB;
-extern const char* UINT16_ARRAY_LUA_LIB;
+extern int push_lua_float_array(lua_State* L, float* a, size_t sz);
+extern int push_lua_uint16_array(lua_State* L, uint16_t* a, size_t sz);
 
 extern kl_render_context_t g_script_render_context;
 
@@ -88,14 +88,7 @@ static int Mesh_reserve(lua_State* L)
    if(mesh != NULL)
    {
       mesh->num_verts = lua_tonumber(L, 2);
-      mesh->vertex = kl_heap_alloc(sizeof(float) * 3 * mesh->num_verts);
-      mesh->normal = kl_heap_alloc(sizeof(float) * 3 * mesh->num_verts);
-      mesh->tex0 = kl_heap_alloc(sizeof(float) * 2 * mesh->num_verts);
-      mesh->col0 = kl_heap_alloc(sizeof(uint32_t) * mesh->num_verts);
-
       mesh->num_indices = lua_tonumber(L, 3);
-      mesh->index = kl_heap_alloc(sizeof(uint16_t) * mesh->num_indices);
-      mesh->face_normal = kl_heap_alloc(sizeof(float) * mesh->num_indices); /* Assuming triangle list */
    }
 
    return 0;
@@ -130,6 +123,17 @@ static int Mesh_computenormals(lua_State* L)
 
    if(mesh != NULL)
    {
+      if(mesh->normal == NULL)
+      {
+         mesh->normal = kl_heap_alloc(sizeof(float) * 3 * mesh->num_verts);
+      }
+
+      if(mesh->face_normal == NULL)
+      {
+         /* Triangle list, so (num / 3) * 3 = num */
+         mesh->face_normal = kl_heap_alloc(sizeof(float) * mesh->num_indices);
+      }
+
       kl_mesh_recompute_normals(mesh, 0, 0);
    }
 
@@ -151,23 +155,6 @@ static int Mesh_loadctm(lua_State* L)
          lua_pushstring(L, "error loading mesh");
          lua_error(L);
       }
-      else
-      {
-         if(mesh->normal == NULL)
-         {
-            mesh->normal = kl_heap_alloc(sizeof(float) * 3 * mesh->num_verts);
-         }
-
-         if(mesh->tex0 == NULL)
-         {
-            mesh->tex0 = kl_heap_alloc(sizeof(float) * 2 * mesh->num_verts);
-         }
-
-         if(mesh->col0 == NULL)
-         {
-            mesh->col0 = kl_heap_alloc(sizeof(uint32_t) * mesh->num_verts);
-         }
-      }
    }
 
    return 0;
@@ -177,40 +164,36 @@ static int Mesh_getpositions(lua_State* L)
 {
    kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
 
-   if(mesh != NULL && mesh->vertex != NULL)
+   if(mesh != NULL)
    {
-      lua_pushinteger(L, mesh->num_verts);
-      lua_pushlightuserdata(L, mesh->vertex);
-      luaL_getmetatable(L, FLOAT_ARRAY_LUA_LIB);
-      lua_setmetatable(L, -2);
-   }
-   else
-   {
-      lua_pushinteger(L, 0);
-      lua_pushnil(L);
+      if(mesh->vertex == NULL)
+      {
+         mesh->vertex = kl_heap_alloc(sizeof(float) * 3 * mesh->num_verts);
+      }
+
+      return push_lua_float_array(L, mesh->vertex, mesh->num_verts * 3);
    }
 
-   return 2;
+   lua_pushnil(L);
+   return 1;
 }
 
 static int Mesh_getindices(lua_State* L)
 {
    kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
 
-   if(mesh != NULL && mesh->index != NULL)
+   if(mesh != NULL)
    {
-      lua_pushinteger(L, mesh->num_indices);
-      lua_pushlightuserdata(L, mesh->index);
-      luaL_getmetatable(L, UINT16_ARRAY_LUA_LIB);
-      lua_setmetatable(L, -2);
-   }
-   else
-   {
-      lua_pushinteger(L, 0);
-      lua_pushnil(L);
+      if(mesh->index == NULL)
+      {
+         mesh->index = kl_heap_alloc(sizeof(uint16_t) * mesh->num_indices);
+      }
+
+      return push_lua_uint16_array(L, mesh->index, mesh->num_indices);
    }
 
-   return 2;
+   lua_pushnil(L);
+   return 1;
 }
 
 static const struct luaL_reg Mesh_instance_methods [] = {
