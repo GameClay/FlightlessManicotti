@@ -33,6 +33,7 @@ extern int luaopen_vector3d(lua_State* L);
 extern int luaopen_scene3d(lua_State* L);
 extern int luaopen_float_array(lua_State* L);
 extern int luaopen_uint16_array(lua_State* L);
+extern int luaopen_vector3_array(lua_State* L);
 extern int luaopen_parameter(lua_State* L);
 extern int luaopen_mesh(lua_State* L);
 
@@ -89,6 +90,7 @@ int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_
    luaopen_scene3d(sctx->lua_state);
    luaopen_float_array(sctx->lua_state);
    luaopen_uint16_array(sctx->lua_state);
+   luaopen_vector3_array(sctx->lua_state);
    luaopen_parameter(sctx->lua_state);
    luaopen_mesh(sctx->lua_state);
 

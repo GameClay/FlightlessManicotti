@@ -124,17 +124,14 @@ function spheremesh(M, N)
    mesh:reserve(M * N, 0)
 
    local pos = mesh:getpositions()
-   local positions = {}
+   local i = 1
    for m = 0, (M - 1) do
       for n = 0, (N - 1) do
-         table.insert(positions,  math.sin(math.pi * m / M) * math.cos(2 * math.pi * n / N))
-         table.insert(positions,  math.cos(math.pi * m / M))
-         table.insert(positions, -math.sin(math.pi * m / M) * math.sin(2 * math.pi * n / N))
+         pos[i].x =  math.sin(math.pi * m / M) * math.cos(2 * math.pi * n / N)
+         pos[i].y =  math.cos(math.pi * m / M)
+         pos[i].z = -math.sin(math.pi * m / M) * math.sin(2 * math.pi * n / N)
+         i = i + 1
       end
-   end
-
-   for i = 1, #positions do
-      pos[i] = positions[i]
    end
 
    mesh:update(Mesh.element.vertex, Mesh.element.none)

@@ -27,6 +27,7 @@
 const char* MESH_LUA_LIB = "Mesh";
 extern int push_lua_float_array(lua_State* L, float* a, size_t sz);
 extern int push_lua_uint16_array(lua_State* L, uint16_t* a, size_t sz);
+extern int push_lua_vector3_array(lua_State* L, float* a, size_t sz);
 
 extern kl_render_context_t g_script_render_context;
 
@@ -171,7 +172,7 @@ static int Mesh_getpositions(lua_State* L)
          mesh->vertex = kl_heap_alloc(sizeof(float) * 3 * mesh->num_verts);
       }
 
-      return push_lua_float_array(L, mesh->vertex, mesh->num_verts * 3);
+      return push_lua_vector3_array(L, mesh->vertex, mesh->num_verts);
    }
 
    lua_pushnil(L);

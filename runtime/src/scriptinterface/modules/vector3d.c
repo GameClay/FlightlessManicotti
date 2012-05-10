@@ -110,6 +110,11 @@ static int vector3d_newindex(lua_State* L)
    }
    else if(len == 2 && key[0] == 'x' && key[1] == 'y')
    {
+      lua_readvector2d(L, 3, xyz);
+      return 0;
+   }
+   else if(len == 3 && key[0] == 'x' && key[1] == 'y' && key[2] == 'z')
+   {
       lua_readvector3d(L, 3, xyz);
       return 0;
    }
