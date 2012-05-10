@@ -124,12 +124,17 @@ function spheremesh(M, N)
    mesh:reserve(M * N, 0)
 
    local len,pos = mesh:getpositions()
+   local positions = {}
    for m = 0, (M - 1) do
       for n = 0, (N - 1) do
-         pos[n + m * M + 1] =  math.sin(math.pi * m / M) * math.cos(2 * math.pi * n / N)
-         pos[n + m * M + 2] =  math.cos(math.pi * m / M)
-         pos[n + m * M + 3] = -math.sin(math.pi * m / M) * math.sin(2 * math.pi * n / N)
+         table.insert(positions,  math.sin(math.pi * m / M) * math.cos(2 * math.pi * n / N))
+         table.insert(positions,  math.cos(math.pi * m / M))
+         table.insert(positions, -math.sin(math.pi * m / M) * math.sin(2 * math.pi * n / N))
       end
+   end
+
+   for i = 1, #positions do
+      pos[i] = positions[i]
    end
 
    mesh:update(Mesh.element.vertex, Mesh.element.none)
@@ -140,9 +145,11 @@ function testrenderinit()
    print("RenderInit called!")
 
    -- Moar test
-   --testmesh = spheremesh(10, 10)
+   testmesh = spheremesh(10, 10)
+   testmesh:update(Mesh.element.vertex + Mesh.element.index, Mesh.element.none)
+   testmesh:setashaxmesh()
 
-   testmesh = Mesh.new()
+   --testmesh = Mesh.new()
    --[[testmesh:reserve(4, 6)
    local n,pos = testmesh:getpositions()
    pos[1] = -0.5
