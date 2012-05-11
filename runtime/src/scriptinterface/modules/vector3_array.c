@@ -22,7 +22,7 @@
 #include <lualib.h>
 #include <FlightlessManicotti/fm.h>
 #include <FlightlessManicotti/scriptinterface/types.h>
-#include "scriptinterface/helpers/vector.h"
+#include "scriptinterface/helpers/readers.h"
 
 #define VECTOR3_ARRAY_INSTANCE_TABLE "vector3_array_instance_method_table"
 const char* VECTOR3_ARRAY_LUA_LIB = "vector3_array";

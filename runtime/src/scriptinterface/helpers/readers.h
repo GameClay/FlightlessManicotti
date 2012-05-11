@@ -16,5 +16,14 @@
  * limitations under the License.
  */
 
+#ifndef _KL_LUA_READ_HELPERS_H_
+#define _KL_LUA_READ_HELPERS_H_
+
+#include <lua.h>
+#include <stdint.h>
+
 void lua_readvector2d(lua_State* L, int param_idx, float* out_xy);
 void lua_readvector3d(lua_State* L, int param_idx, float* out_xyz);
+void lua_readtriangleface(lua_State* L, int param_idx, uint16_t* out_abc);
+
+#endif

@@ -21,7 +21,7 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #include <FlightlessManicotti/fm.h>
-#include "scriptinterface/helpers/vector.h"
+#include "scriptinterface/helpers/readers.h"
 
 #define VECTOR2D_INSTANCE_TABLE "vector2d_instance_method_table"
 const char* VECTOR2D_LUA_LIB = "vector2d";

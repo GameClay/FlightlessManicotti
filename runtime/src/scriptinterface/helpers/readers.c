@@ -20,32 +20,30 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #include <FlightlessManicotti/fm.h>
-#include "scriptinterface/helpers/vector.h"
+#include "scriptinterface/helpers/readers.h"
 
 extern const char* VECTOR2D_LUA_LIB;
 extern const char* VECTOR3D_LUA_LIB;
 
 void lua_readvector2d(lua_State* L, int param_idx, float* out_xy)
 {
-   float* tempxy;
-   int top;
-   
    if(lua_istable(L, param_idx))
    {
-      top = lua_gettop(L);
+      int top = lua_gettop(L);
       lua_pushinteger(L, 1);
-      lua_gettable(L, param_idx);
+      lua_gettable(L, param_idx - 1);
       lua_pushinteger(L, 2);
-      lua_gettable(L, param_idx);
+      lua_gettable(L, param_idx - 2);
       luaL_argcheck(L, lua_isnumber(L, top + 1) && lua_isnumber(L, top + 2), 
-         param_idx, "expected numerical array");
+         param_idx - 2, "expected numerical array");
       out_xy[0] = lua_tonumber(L, top + 1);
       out_xy[1] = lua_tonumber(L, top + 2);
+      lua_pop(L, 2);
    }
    else if(lua_isuserdata(L, 3))
    {
       /* Won't return if error */
-      tempxy = (float*)luaL_checkudata(L, param_idx, VECTOR2D_LUA_LIB);
+      float* tempxy = (float*)luaL_checkudata(L, param_idx, VECTOR2D_LUA_LIB);
       out_xy[0] = tempxy[0];
       out_xy[1] = tempxy[1];
    }
@@ -57,28 +55,26 @@ void lua_readvector2d(lua_State* L, int param_idx, float* out_xy)
 
 void lua_readvector3d(lua_State* L, int param_idx, float* out_xyz)
 {
-   float* tempxyz;
-   int top;
-   
    if(lua_istable(L, param_idx))
    {
-      top = lua_gettop(L);
+      int top = lua_gettop(L);
       lua_pushinteger(L, 1);
-      lua_gettable(L, param_idx);
+      lua_gettable(L, param_idx - 1);
       lua_pushinteger(L, 2);
-      lua_gettable(L, param_idx);
+      lua_gettable(L, param_idx - 2);
       lua_pushinteger(L, 3);
-      lua_gettable(L, param_idx);
+      lua_gettable(L, param_idx - 3);
       luaL_argcheck(L, lua_isnumber(L, top + 1) && lua_isnumber(L, top + 2) && lua_isnumber(L, top + 3),
-         param_idx, "expected numerical array");
+         param_idx - 3, "expected numerical array");
       out_xyz[0] = lua_tonumber(L, top + 1);
       out_xyz[1] = lua_tonumber(L, top + 2);
       out_xyz[2] = lua_tonumber(L, top + 3);
+      lua_pop(L, 3);
    }
    else if(lua_isuserdata(L, 3))
    {
       /* Won't return if error */
-      tempxyz = (float*)luaL_checkudata(L, param_idx, VECTOR3D_LUA_LIB);
+      float* tempxyz = (float*)luaL_checkudata(L, param_idx, VECTOR3D_LUA_LIB);
       out_xyz[0] = tempxyz[0];
       out_xyz[1] = tempxyz[1];
       out_xyz[2] = tempxyz[2];
@@ -89,3 +85,26 @@ void lua_readvector3d(lua_State* L, int param_idx, float* out_xyz)
    }
 }
 
+void lua_readtriangleface(lua_State* L, int param_idx, uint16_t* out_abc)
+{
+   if(lua_istable(L, param_idx))
+   {
+      int top = lua_gettop(L);
+      lua_pushinteger(L, 1);
+      lua_gettable(L, param_idx - 1);
+      lua_pushinteger(L, 2);
+      lua_gettable(L, param_idx - 2);
+      lua_pushinteger(L, 3);
+      lua_gettable(L, param_idx - 3);
+      luaL_argcheck(L, lua_isnumber(L, top + 1) && lua_isnumber(L, top + 2) && lua_isnumber(L, top + 3),
+         param_idx - 3, "expected numerical array");
+      out_abc[0] = lua_tonumber(L, top + 1);
+      out_abc[1] = lua_tonumber(L, top + 2);
+      out_abc[2] = lua_tonumber(L, top + 3);
+      lua_pop(L, 3);
+   }
+   else
+   {
+      luaL_argcheck(L, 0, 3, "expected numerical array");
+   }
+}
