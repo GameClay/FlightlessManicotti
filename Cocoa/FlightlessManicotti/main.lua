@@ -119,59 +119,57 @@ function sierpinski(iterations)
    return lsys_verts
 end
 
-function spheremesh(M, N)
-   local mesh = Mesh.new()
-   mesh:reserve(M * N, 0)
-
-   local pos = mesh:getpositions()
-   for m = 0, (M - 1) do
-      for n = 0, (N - 1) do
-         local idx = n + m * N + 1
-         pos[idx].x =  math.sin(math.pi * m / M) * math.cos(2 * math.pi * n / N)
-         pos[idx].y =  math.cos(math.pi * m / M)
-         pos[idx].z = -math.sin(math.pi * m / M) * math.sin(2 * math.pi * n / N)
+function surface(slices, stacks, fn)
+   local verts = {}
+   for i = 0, slices do
+      local theta = i * math.pi / slices
+      for j = 0, (stacks - 1) do
+         local phi = j * 2 * math.pi / stacks
+         local vert = fn(theta, phi)
+         table.insert(verts, vert)
       end
    end
 
-   mesh:update(Mesh.element.vertex, Mesh.element.none)
+   local faces = {}
+   local v = 0
+   for i = 0, (slices - 1) do
+      for j = 0, (stacks - 1) do
+         local n = (j + 1) % stacks
+
+         local a = v + n
+         local b = v + j
+         local c = v + j + stacks
+         local d = v + n + stacks
+
+         table.insert(faces, {a, b, c})
+         table.insert(faces, {a, c, d})
+      end
+      v = v + stacks
+   end
+
+   local mesh = Mesh.new()
+   mesh:setpositions(verts)
+   mesh:setfaces(faces)
+   mesh:computenormals()
+   mesh:update(Mesh.element.vertex + Mesh.element.normal + Mesh.element.index, Mesh.element.none)
    return mesh
+end
+
+function sphere(u, v)
+   local x =  math.sin(u) * math.cos(v)
+   local y =  math.cos(u)
+   local z = -math.sin(u) * math.sin(v)
+   return {x, y, z}
 end
 
 function testrenderinit()
    print("RenderInit called!")
 
    -- Moar test
-   testmesh = spheremesh(20, 20)
-   testmesh:update(Mesh.element.vertex + Mesh.element.index, Mesh.element.none)
+   testmesh = surface(15, 15, sphere)
    testmesh:setashaxmesh()
 
    --testmesh = Mesh.new()
-   --[[testmesh:reserve(4, 6)
-   local pos = testmesh:getpositions()
-   pos[1] = -0.5
-   pos[2] = -0.5
-   pos[3] =  0.0
-
-   pos[4] = -0.5
-   pos[5] =  0.5
-   pos[6] =  0.0
-
-   pos[7] =  0.5
-   pos[8] = -0.5
-   pos[9] =  0.0
-
-   pos[10] = 0.5
-   pos[11] = 0.5
-   pos[12] = 0.0
-
-   local idx = testmesh:getindices()
-   idx[1] = 0
-   idx[2] = 1
-   idx[3] = 2
-   idx[4] = 2
-   idx[5] = 1
-   idx[6] = 3]]
-
    --testmesh:loadctm("./bunny.ctm")
    --testmesh:computenormals()
    --testmesh:update(Mesh.element.normal, Mesh.element.none)

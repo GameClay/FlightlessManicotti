@@ -23,6 +23,7 @@
 #include <FlightlessManicotti/render/mesh/mesh.h>
 #include <FlightlessManicotti/render/render.h>
 #include "render/opengl/gl_render.h"
+#include "scriptinterface/helpers/readers.h"
 
 const char* MESH_LUA_LIB = "Mesh";
 extern int push_lua_float_array(lua_State* L, float* a, size_t sz);
@@ -78,23 +79,6 @@ static int Mesh_gc(lua_State* L)
    return 0;
 }
 
-static int Mesh_reserve(lua_State* L)
-{
-   kl_mesh_t* mesh = NULL;
-
-   luaL_argcheck(L, lua_isnumber(L, 2), 2, "expected number of vertices to reserve");
-   luaL_argcheck(L, lua_isnumber(L, 3), 3, "expected number of indices to reserve");
-
-   mesh = (kl_mesh_t*)lua_touserdata(L, 1);
-   if(mesh != NULL)
-   {
-      mesh->num_verts = lua_tonumber(L, 2);
-      mesh->num_indices = lua_tonumber(L, 3);
-   }
-
-   return 0;
-}
-
 static int Mesh_update(lua_State* L)
 {
    kl_mesh_t* mesh = NULL;
@@ -122,7 +106,7 @@ static int Mesh_computenormals(lua_State* L)
 {
    kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
 
-   if(mesh != NULL)
+   if(mesh != NULL && mesh->verts != NULL)
    {
       if(mesh->normal == NULL)
       {
@@ -167,16 +151,42 @@ static int Mesh_getpositions(lua_State* L)
 
    if(mesh != NULL)
    {
-      if(mesh->vertex == NULL)
+      if(mesh->vertex != NULL)
       {
-         mesh->vertex = kl_heap_alloc(sizeof(float) * 3 * mesh->num_verts);
+         return push_lua_vector3_array(L, mesh->vertex, mesh->num_verts);
       }
-
-      return push_lua_vector3_array(L, mesh->vertex, mesh->num_verts);
    }
 
    lua_pushnil(L);
    return 1;
+}
+
+static int Mesh_setpositions(lua_State* L)
+{
+   kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
+
+   luaL_argcheck(L, lua_istable(L, 2), 2, "expected table of vertices {{x1, y1, z1}, {x2, y2, z2}, ...}");
+   if(mesh != NULL)
+   {
+      int table_sz = luaL_getn(L, 2);
+      float* cur_vert = NULL;
+
+      if(mesh->vertex != NULL) kl_heap_free(mesh->vertex);
+      mesh->num_verts = table_sz;
+      mesh->vertex = kl_heap_alloc(sizeof(float) * 3 * mesh->num_verts);
+      cur_vert = mesh->vertex;
+
+      lua_pushnil(L);
+      while(lua_next(L, 2))
+      {
+         lua_readvector3d(L, -1, cur_vert);
+         lua_pop(L, 1);
+         cur_vert += 3;
+      }
+      lua_pop(L, 1);
+   }
+
+   return 0;
 }
 
 static int Mesh_getindices(lua_State* L)
@@ -185,25 +195,83 @@ static int Mesh_getindices(lua_State* L)
 
    if(mesh != NULL)
    {
-      if(mesh->index == NULL)
+      if(mesh->index != NULL)
       {
-         mesh->index = kl_heap_alloc(sizeof(uint16_t) * mesh->num_indices);
+         return push_lua_uint16_array(L, mesh->index, mesh->num_indices);
       }
-
-      return push_lua_uint16_array(L, mesh->index, mesh->num_indices);
    }
 
    lua_pushnil(L);
    return 1;
 }
 
+static int Mesh_setindices(lua_State* L)
+{
+   kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
+
+   luaL_argcheck(L, lua_istable(L, 2), 2, "expected table of indices {i1, i2, i3, ...}");
+   if(mesh != NULL)
+   {
+      int table_sz = luaL_getn(L, 2);
+      uint16_t* cur_idx = NULL;
+
+      if(mesh->index != NULL) kl_heap_free(mesh->index);
+      mesh->num_indices = table_sz;
+      mesh->index = kl_heap_alloc(sizeof(uint16_t) * mesh->num_indices);
+      cur_idx = mesh->index;
+
+      lua_pushnil(L);
+      while(lua_next(L, 2))
+      {
+         *cur_idx = lua_tonumber(L, -1);
+         lua_pop(L, 1);
+         cur_idx++;
+      }
+      lua_pop(L, 1);
+   }
+
+   return 0;
+}
+
+static int Mesh_setfaces(lua_State* L)
+{
+   kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
+
+   luaL_argcheck(L, lua_istable(L, 2), 2, "expected table of faces {{f11, f12, f13}, {f21, f22, f23}, ...}");
+   if(mesh != NULL)
+   {
+      int table_sz = luaL_getn(L, 2);
+      uint16_t* cur_idx = NULL;
+
+      if(mesh->index != NULL) kl_heap_free(mesh->index);
+      mesh->num_indices = table_sz * 3;
+      mesh->index = kl_heap_alloc(sizeof(uint16_t) * 3 * mesh->num_indices);
+      cur_idx = mesh->index;
+
+      lua_pushnil(L);
+      while(lua_next(L, 2))
+      {
+         lua_readtriangleface(L, -1, cur_idx);
+         lua_pop(L, 1);
+         cur_idx += 3;
+      }
+      lua_pop(L, 1);
+   }
+
+   return 0;
+}
+
 static const struct luaL_reg Mesh_instance_methods [] = {
-   {"reserve", Mesh_reserve},
    {"update", Mesh_update},
    {"loadctm", Mesh_loadctm},
-   {"getpositions", Mesh_getpositions},
-   {"getindices", Mesh_getindices},
    {"computenormals", Mesh_computenormals},
+
+   {"getpositions", Mesh_getpositions},
+   {"setpositions", Mesh_setpositions},
+
+   {"getindices", Mesh_getindices},
+   {"setindices", Mesh_setindices},
+   {"setfaces", Mesh_setfaces},
 
    {"setashaxmesh", Mesh_setashaxmesh},
 
