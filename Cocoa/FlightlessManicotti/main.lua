@@ -46,9 +46,6 @@ function main(...)
          end
       },
    "spectrum")
-
-   lsys_verts = sierpinski(10)
-   --lsys_verts = dragoncurve(10)
 end
 
 function dragoncurve(iterations)
@@ -166,16 +163,14 @@ function testrenderinit()
    print("RenderInit called!")
 
    -- Moar test
-   testmesh = surface(15, 15, sphere)
+   local testmesh = surface(15, 15, sphere)
+
+   --[[local testmesh = Mesh.new()
+   testmesh:loadctm("./bunny.ctm")
+   testmesh:computenormals()
+   testmesh:update(Mesh.element.vertex + Mesh.element.normal + Mesh.element.index, Mesh.element.none)]]
+
    testmesh:setashaxmesh()
-
-   --testmesh = Mesh.new()
-   --testmesh:loadctm("./bunny.ctm")
-   --testmesh:computenormals()
-   --testmesh:update(Mesh.element.normal, Mesh.element.none)
-   --testmesh:update(Mesh.element.vertex + Mesh.element.normal + Mesh.element.index, Mesh.element.none)
-
-   --testmesh:setashaxmesh()
 end
 
 function testinit()
