@@ -114,7 +114,7 @@ static int Mesh_computenormals(lua_State* L)
 {
    kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
 
-   if(mesh != NULL && mesh->verts != NULL)
+   if(mesh != NULL && mesh->vertex != NULL)
    {
       if(mesh->normal == NULL)
       {
