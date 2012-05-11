@@ -52,6 +52,7 @@ static int vector3d_index(lua_State* L)
          case 'z':
          {
             lua_pushnumber(L, xyz[2]);
+            return 1;
          }
       }
    }
