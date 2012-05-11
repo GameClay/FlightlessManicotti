@@ -190,7 +190,7 @@ void kl_matrix_math_self_test()
 #define RFl ((float)random() / RAND_MAX)
    for(i = 0; i < 16; i++) a.m[i] = RFl;
    for(i = 0; i < 16; i++) b.m[i] = RFl;
-   for(i = 0; i < 4; i++) v.xyzw[i] = RFl;
+   for(i = 0; i < 4; i++) v.v[i] = RFl;
 #undef RFl
 
    kl_matrix_mul_matrix_sse(a.m, b.m, c1.m);
@@ -200,12 +200,12 @@ void kl_matrix_math_self_test()
       KL_ASSERT(fabs(c1.m[i] - c2.m[i]) < KL_EPSILON_F, "Mismatch in matrix-matrix multiply");
    }
 
-   kl_matrix_mul_vector_sse3(a.m, v.xyzw, d1.xyzw);
-   kl_matrix_mul_vector_c(a.m, v.xyzw, d2.xyzw);
+   kl_matrix_mul_vector_sse3(a.m, v.v, d1.v);
+   kl_matrix_mul_vector_c(a.m, v.v, d2.v);
 
    for(i = 0; i < 4; i++)
    {
-      KL_ASSERT(fabs(d1.xyzw[i] - d2.xyzw[i]) < KL_EPSILON_F, "Mismatch in matrix-vector transform");
+      KL_ASSERT(fabs(d1.v[i] - d2.v[i]) < KL_EPSILON_F, "Mismatch in matrix-vector transform");
    }
 
    /* Matrix * Matrix benchmarking */

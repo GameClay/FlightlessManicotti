@@ -25,9 +25,10 @@ extern "C" {
 
 #include <FlightlessManicotti/math/math.h>
 
-KL_ALIGNED_STRUCT_PRE(16) {
-   float xyzw[4];
-} KL_ALIGNED_STRUCT_POST(kl_vector4_t, 16);
+typedef KL_ALIGNPRE(16) union {
+   float v[4];
+   kl_float32x4_t vec;
+} kl_vector4_t KL_ALIGNPOST(16);
 
 extern kl_math_f_ab_restrict_fn kl_vector_dot;
 

@@ -7,6 +7,8 @@
 //
 
 #import "KLAppDelegate.h"
+
+#define KL_ARCH_X64
 #include <FlightlessManicotti/fm.h>
 
 @implementation KLAppDelegate

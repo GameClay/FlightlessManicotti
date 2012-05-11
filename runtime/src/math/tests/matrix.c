@@ -87,12 +87,12 @@ float kl_matrix_mul_vector_sse3_timing(uint32_t num)
 
 #define RFl ((float)random() / RAND_MAX)
    for(j = 0; j < num; j++) for(i = 0; i < 16; i++) a[j].m[i] = RFl;
-   for(j = 0; j < num; j++) for(i = 0; i < 4; i++) b[j].xyzw[i] = RFl;
+   for(j = 0; j < num; j++) for(i = 0; i < 4; i++) b[j].v[i] = RFl;
 #undef RFl
 
    kl_high_resolution_timer_query(&start_time);
    for(i = 0; i < num; i++)
-      kl_matrix_mul_vector_sse3(a[i].m, b[i].xyzw, c[i].xyzw);
+      kl_matrix_mul_vector_sse3(a[i].m, b[i].v, c[i].v);
    kl_high_resolution_timer_query(&end_time);
    delta_time = end_time - start_time;
    kl_absolute_time_to_ns(&delta_time, &time_ns);
@@ -116,12 +116,12 @@ float kl_matrix_mul_vector_c_timing(uint32_t num)
 
 #define RFl ((float)random() / RAND_MAX)
    for(j = 0; j < num; j++) for(i = 0; i < 16; i++) a[j].m[i] = RFl;
-   for(j = 0; j < num; j++) for(i = 0; i < 4; i++) b[j].xyzw[i] = RFl;
+   for(j = 0; j < num; j++) for(i = 0; i < 4; i++) b[j].v[i] = RFl;
 #undef RFl
 
    kl_high_resolution_timer_query(&start_time);
    for(i = 0; i < num; i++)
-      kl_matrix_mul_vector_c(a[i].m, b[i].xyzw, c[i].xyzw);
+      kl_matrix_mul_vector_c(a[i].m, b[i].v, c[i].v);
    kl_high_resolution_timer_query(&end_time);
    delta_time = end_time - start_time;
    kl_absolute_time_to_ns(&delta_time, &time_ns);
@@ -145,7 +145,7 @@ float kl_matrix_mul_vector_batch_sse3_timing(uint32_t num)
 
 #define RFl ((float)random() / RAND_MAX)
    for(i = 0; i < 16; i++) a.m[i] = RFl;
-   for(j = 0; j < num; j++) for(i = 0; i < 4; i++) b[j].xyzw[i] = RFl;
+   for(j = 0; j < num; j++) for(i = 0; i < 4; i++) b[j].v[i] = RFl;
 #undef RFl
 
    kl_high_resolution_timer_query(&start_time);
@@ -172,7 +172,7 @@ float kl_matrix_mul_vector_batch_c_timing(uint32_t num)
 
 #define RFl ((float)random() / RAND_MAX)
    for(i = 0; i < 16; i++) a.m[i] = RFl;
-   for(j = 0; j < num; j++) for(i = 0; i < 4; i++) b[j].xyzw[i] = RFl;
+   for(j = 0; j < num; j++) for(i = 0; i < 4; i++) b[j].v[i] = RFl;
 #undef RFl
 
    kl_high_resolution_timer_query(&start_time);

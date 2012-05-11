@@ -46,7 +46,6 @@ float kl_vector_dot_c(const float* KL_RESTRICT a, const float* KL_RESTRICT b)
    return (a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3]);
 }
 
-/* Needed? */
 void kl_vector_cross_sse(const float* KL_RESTRICT a, const float* KL_RESTRICT b, float* KL_RESTRICT c)
 {
    kl_float32x4_t v0, v1, vr;
@@ -78,19 +77,19 @@ void kl_vector_math_self_test()
    kl_vector4_t v1[NUM_TEST_RUNS], v2[NUM_TEST_RUNS], v3[NUM_TEST_RUNS], v4[NUM_TEST_RUNS];
 
 #define RFl ((float)random() / RAND_MAX)
-   for(j = 0; j < NUM_TEST_RUNS; j++) for(i = 0; i < 4; i++) v1[j].xyzw[i] = RFl;
-   for(j = 0; j < NUM_TEST_RUNS; j++) for(i = 0; i < 4; i++) v2[j].xyzw[i] = RFl;
-   for(j = 0; j < NUM_TEST_RUNS; j++) for(i = 0; i < 4; i++) v3[j].xyzw[i] = RFl;
-   for(j = 0; j < NUM_TEST_RUNS; j++) for(i = 0; i < 4; i++) v4[j].xyzw[i] = RFl;
+   for(j = 0; j < NUM_TEST_RUNS; j++) for(i = 0; i < 4; i++) v1[j].v[i] = RFl;
+   for(j = 0; j < NUM_TEST_RUNS; j++) for(i = 0; i < 4; i++) v2[j].v[i] = RFl;
+   for(j = 0; j < NUM_TEST_RUNS; j++) for(i = 0; i < 4; i++) v3[j].v[i] = RFl;
+   for(j = 0; j < NUM_TEST_RUNS; j++) for(i = 0; i < 4; i++) v4[j].v[i] = RFl;
 #undef RFl
 
-   KL_ASSERT(fabs(kl_vector_dot(v1[0].xyzw, v2[0].xyzw) - kl_vector_dot_c(v1[0].xyzw, v2[0].xyzw)) < KL_EPSILON_F,
+   KL_ASSERT(fabs(kl_vector_dot(v1[0].v, v2[0].v) - kl_vector_dot_c(v1[0].v, v2[0].v)) < KL_EPSILON_F,
       "Mismatch in vector dot product");
 
    /* Dot product benchmarking */
    kl_high_resolution_timer_query(&start_time);
    for(i = 0; i < NUM_TEST_RUNS; i++)
-      kl_vector_dot_sse3(v1[i].xyzw, v2[i].xyzw);
+      kl_vector_dot_sse3(v1[i].v, v2[i].v);
    kl_high_resolution_timer_query(&end_time);
    delta_time = end_time - start_time;
    kl_absolute_time_to_ns(&delta_time, &time_ns);
@@ -98,7 +97,7 @@ void kl_vector_math_self_test()
 
    kl_high_resolution_timer_query(&start_time);
    for(i = 0; i < NUM_TEST_RUNS; i++)
-      kl_vector_dot_c(v3[i].xyzw, v4[i].xyzw);
+      kl_vector_dot_c(v3[i].v, v4[i].v);
    kl_high_resolution_timer_query(&end_time);
    delta_time = end_time - start_time;
    kl_absolute_time_to_ns(&delta_time, &time_ns);
@@ -109,4 +108,4 @@ void kl_vector_math_self_test()
 }
 
 kl_math_f_ab_restrict_fn kl_vector_dot = kl_vector_dot_sse3;
-kl_math_abc_restrict_fn kl_vector_cross = kl_vector_cross_c;
+kl_math_abc_restrict_fn kl_vector_cross = kl_vector_cross_sse;

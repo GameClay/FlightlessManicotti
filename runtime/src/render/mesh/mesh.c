@@ -101,26 +101,26 @@ void kl_mesh_recompute_normals(kl_mesh_t* mesh, uint16_t start_idx, uint16_t num
          const float* v0 = &mesh->vertex[index[0] * 3];
          const float* v1 = &mesh->vertex[index[1] * 3];
          const float* v2 = &mesh->vertex[index[2] * 3];
-         float vt1[4];
-         float vt2[4];
-         float vr[4];
+         kl_vector4_t vt1;
+         kl_vector4_t vt2;
+         kl_vector4_t vr;
          float len;
 
-         vt1[0] = v1[0] - v0[0];
-         vt1[1] = v1[1] - v0[1];
-         vt1[2] = v1[2] - v0[2];
-         vt1[3] = 0.0f;
+         vt1.v[0] = v1[0] - v0[0];
+         vt1.v[1] = v1[1] - v0[1];
+         vt1.v[2] = v1[2] - v0[2];
+         vt1.v[3] = 0.0f;
 
-         vt2[0] = v2[0] - v1[0];
-         vt2[1] = v2[1] - v1[1];
-         vt2[2] = v2[2] - v1[2];
-         vt2[3] = 0.0f;
+         vt2.v[0] = v2[0] - v1[0];
+         vt2.v[1] = v2[1] - v1[1];
+         vt2.v[2] = v2[2] - v1[2];
+         vt2.v[3] = 0.0f;
 
-         kl_vector_cross(vt1, vt2, vr);
-         len = sqrt(vr[0] * vr[0] + vr[1] * vr[1] + vr[2] * vr[2]);
-         face_normal[0] = vr[0] / len;
-         face_normal[1] = vr[1] / len;
-         face_normal[2] = vr[2] / len;
+         kl_vector_cross(vt1.v, vt2.v, vr.v);
+         len = sqrt(vr.v[0] * vr.v[0] + vr.v[1] * vr.v[1] + vr.v[2] * vr.v[2]);
+         face_normal[0] = vr.v[0] / len;
+         face_normal[1] = vr.v[1] / len;
+         face_normal[2] = vr.v[2] / len;
       }
 
       /* Compute per-vertex normals */

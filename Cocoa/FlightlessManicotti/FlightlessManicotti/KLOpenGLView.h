@@ -8,6 +8,8 @@
 
 #import <AppKit/AppKit.h>
 #import <CoreVideo/CoreVideo.h>
+
+#define KL_ARCH_X64
 #include <FlightlessManicotti/render/render.h>
 
 @interface KLOpenGLView : NSOpenGLView
