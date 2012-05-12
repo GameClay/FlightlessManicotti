@@ -6,7 +6,7 @@ runtime_env = env.Clone()
 
 # Files used for runtime library
 core_files = Glob('src/core/*.c', strings=True) + Glob('src/process/*.c', strings=True) + \
-   Glob('src/math/*.c', strings=True) + Glob('src/math/tests/*.c', strings=True)
+   Glob('src/math/*.c', strings=True) + Glob('src/math/tests/*.c', strings=True) + Glob('src/math/noise/*.cpp', strings=True)
 script_files = Glob('src/scriptinterface/*.c', strings=True) + Glob('src/scriptinterface/modules/*.c', strings=True) + \
    Glob('src/scriptinterface/helpers/*.c', strings=True)
 game_files = Glob('src/game/*.c', strings=True) + Glob('src/game/scene2d/*.c', strings=True) + \
@@ -41,7 +41,8 @@ runtime_env.Append(CCFLAGS = ['-Werror'])
 runtime_env.Append(CPPDEFINES = ['KL_BUILD_LIBRARY'])
 
 if not (env['OS'] == 'ios' or env['OS'] == 'android'):
-   runtime_env.Append(CCFLAGS = ['-ansi', '-std=c89', '-pedantic'])
+   runtime_env.Append(CCFLAGS = ['-ansi', '-pedantic'])
+   runtime_env.Append(CFLAGS = ['-std=c89'])
 
 # Sanskrit log defines
 runtime_env.Append(CPPDEFINES = ['SKLOG_IDENT=FlightlessManicotti'])
