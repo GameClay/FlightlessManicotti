@@ -160,6 +160,8 @@ extern KL_API int kl_script_event_fence_wait(const kl_script_event_fence_t* fenc
 
 extern KL_API int kl_script_event_fence_notify(kl_script_event_fence_t* fence);
 
+extern KL_API void kl_script_console_input(kl_script_context_t context, const char* input);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

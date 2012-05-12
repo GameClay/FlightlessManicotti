@@ -21,6 +21,7 @@
 #include "scriptinterface.h"
 #include <FlightlessManicotti/core/simd.h>
 #include <sanskrit/sklog.h>
+#include <string.h>
 #include "swig_autogen.h"
 
 /* Extern the lua module loaders */
@@ -42,6 +43,9 @@ kl_script_context_t g_script_context = NULL;
 
 /* script.events.EOF */
 kl_script_event_t g_event_EOF;
+
+/* script.events.ConsoleInput */
+kl_script_event_t g_event_ConsoleInput;
 
 int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_queue_max)
 {
@@ -76,6 +80,13 @@ int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_
    g_event_EOF.event.id = kl_register_script_event("EOF");
    g_event_EOF.event.context.as_64 = 0;
    g_event_EOF.event.arg = 0;
+
+   /* Set up console line input */
+   g_event_ConsoleInput.event.id = kl_register_script_event("ConsoleInput");
+   g_event_ConsoleInput.event.context.as_ptr = NULL;
+   g_event_ConsoleInput.event.arg = 0;
+   kl_register_script_event_context_type(g_event_ConsoleInput.event.id,
+      (const char*)LUA_TSTRING);
 
    /* Start up lua */
    sctx->lua_state = lua_open();
@@ -371,4 +382,13 @@ int kl_script_event_pump(kl_script_context_t context)
    }
    
    return ret;
+}
+
+void kl_script_console_input(kl_script_context_t context, const char* input)
+{
+   char* copy = kl_heap_alloc(strlen(input) + 1);
+   strcpy(copy, input);
+   g_event_ConsoleInput.event.context.as_ptr = copy;
+
+   kl_script_event_enqueue(context, &g_event_ConsoleInput);
 }

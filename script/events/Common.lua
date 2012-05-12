@@ -23,6 +23,14 @@
 --! @memberof Events
 Events.eof = Events.register(SCTX, "EOF")
 
+--! Console input event.
+--!
+--! This event is sent to execute a Lua string from the input console.
+--!
+--! The Lua string to be executed is provided as an argument to the event handler.
+--! @memberof Events
+Events.consoleinput = Events.register(SCTX, "ConsoleInput")
+
 --! AdvanceTime event.
 --!
 --! This event occurs once, and only once, each frame.

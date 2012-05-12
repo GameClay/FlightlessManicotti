@@ -14,4 +14,5 @@
 
 -(void)update:(NSTimer *)theTimer;
 
+-(IBAction)onTextEntry:(id)sender;
 @end

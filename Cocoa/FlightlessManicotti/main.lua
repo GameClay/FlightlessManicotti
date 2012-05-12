@@ -26,6 +26,9 @@ function main(...)
       print("   "..tostring(arg[i]))
    end
 
+   -- Assign a handler for console command input
+   Events.subscribe(consoleinput, Events.consoleinput);
+
    -- Sign up for the Init/Destroy events
    Events.subscribe(testinit, Events.init)
    Events.subscribe(testdestroy, Events.destroy)
@@ -46,6 +49,10 @@ function main(...)
          end
       },
    "spectrum")
+end
+
+function consoleinput(_, inputstring)
+   print(loadstring(inputstring)())
 end
 
 function dragoncurve(iterations)
