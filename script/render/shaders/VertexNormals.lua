@@ -5,9 +5,10 @@ DeclareShader('Vertex.GL2', [[
 
    void main()
    {
-      gl_Position = ftransform();
+      gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
       gl_FrontColor = gl_Color;
-      vNormal = vec4(gl_Normal, 0.0);
+      vec4 nrm = gl_Vertex + vec4(gl_Normal, 0.0) * 0.5;
+      vNormal = gl_ModelViewProjectionMatrix * nrm;
    }
 ]])
 
@@ -26,8 +27,8 @@ DeclareShader('Geometry.GL2', [[
          EmitVertex();
 
          // Top Left
-         gl_Position = gl_PositionIn[i] + normalize(gl_PositionIn[i] * vNormal[0]) * 0.1;
-         gl_FrontColor = vec4(0.0, 1.0, 0.0, 1.0);
+         gl_Position = vNormal[0];
+         gl_FrontColor = vec4(0.0, 0.0, 1.0, 1.0);
          EmitVertex();
 
          EndPrimitive();
