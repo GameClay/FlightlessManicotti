@@ -86,6 +86,7 @@ void kl_mesh_recompute_normals(kl_mesh_t* mesh, uint16_t start_idx, uint16_t num
    {
       int i, j, k;
       kl_rarray_t* vert_face_assoc;
+      kl_vector4_t tmpnrm;
 
       if(num_tris == 0)
       {
@@ -149,26 +150,25 @@ void kl_mesh_recompute_normals(kl_mesh_t* mesh, uint16_t start_idx, uint16_t num
             uint16_t index = mesh->index[idx + k];
 
             const uint16_t* assoc_verts = vert_face_assoc[index].elements;
-            float nrm[3];
             float len;
-            kl_zero_mem(nrm, sizeof(nrm));
+            kl_zero_mem(tmpnrm.v, sizeof(tmpnrm.v));
             for(j = 0; j < vert_face_assoc[index].max_idx; j++)
             {
                int face = assoc_verts[j];
                const float* fnrm = &mesh->face_normal[face * 3];
-               nrm[0] += fnrm[0];
-               nrm[1] += fnrm[1];
-               nrm[2] += fnrm[2];
+               tmpnrm.v[0] += fnrm[0];
+               tmpnrm.v[1] += fnrm[1];
+               tmpnrm.v[2] += fnrm[2];
             }
-            nrm[0] /= vert_face_assoc[index].max_idx;
-            nrm[1] /= vert_face_assoc[index].max_idx;
-            nrm[2] /= vert_face_assoc[index].max_idx;
-            len = sqrt(nrm[0] * nrm[0] + nrm[1] * nrm[1] + nrm[2] * nrm[2]);
-            nrm[0] /= len;
-            nrm[1] /= len;
-            nrm[2] /= len;
+            tmpnrm.v[0] /= vert_face_assoc[index].max_idx;
+            tmpnrm.v[1] /= vert_face_assoc[index].max_idx;
+            tmpnrm.v[2] /= vert_face_assoc[index].max_idx;
+            len = kl_vector_dot(tmpnrm.v, tmpnrm.v);
+            tmpnrm.v[0] /= len;
+            tmpnrm.v[1] /= len;
+            tmpnrm.v[2] /= len;
 
-            memcpy(&mesh->normal[index * 3], nrm, sizeof(float) * 3);
+            memcpy(&mesh->normal[index * 3], tmpnrm.v, sizeof(float) * 3);
          }
       }
 
