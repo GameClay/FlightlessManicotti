@@ -52,6 +52,7 @@ function main(...)
 end
 
 function consoleinput(_, inputstring)
+   print("> "..inputstring)
    print(loadstring(inputstring)())
 end
 
