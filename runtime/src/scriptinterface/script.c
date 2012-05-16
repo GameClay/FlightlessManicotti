@@ -260,6 +260,7 @@ void kl_script_destroy(kl_script_context_t* context)
       {
          KL_ASSERT(sctx->thread != NULL, "Contex marked as threaded, but no thread found.");
          sctx->keep_running = KL_FALSE;
+         kl_script_event_endframe(sctx, NULL);
          amp_thread_join_and_destroy(&sctx->thread, AMP_DEFAULT_ALLOCATOR);
          sctx->thread = NULL;
       }
