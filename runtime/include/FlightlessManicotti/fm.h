@@ -103,14 +103,15 @@ extern "C" {
 /**
  * Initialize the runtime.
  *
- * @param use_threads  Run scripting on its own thread.
- * @param main_script  The startup script.
- * @param argc         Number of arguments.
- * @param argv         Array of arguments.
+ * @param use_threads   Run scripting on its own thread.
+ * @param wait_on_fence Wait on script fences.
+ * @param main_script   The startup script.
+ * @param argc          Number of arguments.
+ * @param argv          Array of arguments.
  * @return KL_SUCCESS if successful.
  *         KL_ERROR if unsuccessful.
  */
-extern KL_API int kl_initialize(KL_BOOL use_threads, const char* main_script, int argc, const char* argv[]);
+extern KL_API int kl_initialize(KL_BOOL use_threads, KL_BOOL wait_on_fence, const char* main_script, int argc, const char* argv[]);
 
 /**
  * Execute a single iteration of the "main loop"

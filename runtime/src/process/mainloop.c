@@ -21,13 +21,13 @@
 #include <FlightlessManicotti/process/process.h>
 #include <FlightlessManicotti/core/timer.h>
 
-kl_script_event_fence_t scriptfence;
+kl_script_event_fence_t* scriptfence = NULL;
 KL_BOOL pump_script;
 kl_absolute_time_t last_frame_time;
 kl_absolute_time_t last_tick_time;
 kl_absolute_time_t tick_frequency;
 
-int kl_init_mainloop(const char* main_script, int argc, const char* argv[])
+int kl_init_mainloop(const char* main_script, KL_BOOL wait_on_fences, int argc, const char* argv[])
 {
    int ret = KL_SUCCESS;
    uint64_t tick_frequency_ns = 32 * 1e6;
@@ -35,6 +35,13 @@ int kl_init_mainloop(const char* main_script, int argc, const char* argv[])
    /*
     * Get the script processing ready
     */
+
+   /* Assign script fence if requested */
+   if(wait_on_fences == KL_TRUE)
+   {
+      scriptfence = kl_heap_alloc(sizeof(kl_script_event_fence_t));
+      kl_zero_mem(scriptfence, sizeof(kl_script_event_fence_t));
+   }
 
    /* Determine if we need to pump the script processor, or if it is asynchronous */
    pump_script = (kl_script_is_threaded(KL_DEFAULT_SCRIPT_CONTEXT) == KL_FALSE);
@@ -47,7 +54,7 @@ int kl_init_mainloop(const char* main_script, int argc, const char* argv[])
    }
 
    /* Prime the script-event queue. */
-   kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT, &scriptfence);
+   kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT, scriptfence);
    if(pump_script && (kl_script_event_pump(KL_DEFAULT_SCRIPT_CONTEXT) != KL_SUCCESS))
    {
       ret = KL_ERROR;
@@ -101,10 +108,10 @@ int kl_mainloop_iteration()
       if(kl_script_event_pump(KL_DEFAULT_SCRIPT_CONTEXT) != KL_SUCCESS)
          return KL_ERROR;
    }
-   else
+   else if(scriptfence != NULL)
    {
       /* Wait on fence from previous frame */
-      while(kl_script_event_fence_wait(&scriptfence) == KL_RETRY)
+      while(kl_script_event_fence_wait(scriptfence) == KL_RETRY)
          ;
    }
 
@@ -132,7 +139,7 @@ int kl_mainloop_iteration()
    /*
     * End script event frame
     */
-   kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT, &scriptfence);
+   kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT, scriptfence);
 
    /*
     * Runtime frame is complete

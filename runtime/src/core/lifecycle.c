@@ -42,7 +42,7 @@ extern kl_beat_manager_t g_beat_manager;
 extern kl_midi_manager_t g_midi_manager;
 
 /* kl_init_mainloop from process/mainloop.c */
-extern int kl_init_mainloop(const char* main_script, int argc, const char* argv[]);
+extern int kl_init_mainloop(const char* main_script, KL_BOOL wait_on_fences, int argc, const char* argv[]);
 
 /* script.events.Init */
 kl_script_event_t g_event_Init;
@@ -50,7 +50,7 @@ kl_script_event_t g_event_Init;
 /* script.events.Destroy */
 kl_script_event_t g_event_Destroy;
 
-int kl_initialize(KL_BOOL use_threads, const char* main_script, int argc, const char* argv[])
+int kl_initialize(KL_BOOL use_threads, KL_BOOL wait_on_fence, const char* main_script, int argc, const char* argv[])
 {
    int ret = KL_ERROR;
 
@@ -83,7 +83,7 @@ int kl_initialize(KL_BOOL use_threads, const char* main_script, int argc, const 
 
    /* Let the "main loop" do initialization */
    if(ret == KL_SUCCESS)
-      ret = kl_init_mainloop(main_script, argc, argv);
+      ret = kl_init_mainloop(main_script, wait_on_fence, argc, argv);
 
    /* Allocate beat manager */
    ret |= kl_beat_manager_alloc(&g_beat_manager);
