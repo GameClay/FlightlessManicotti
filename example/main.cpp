@@ -23,7 +23,7 @@
 
 int main(int argc, const char* argv[])
 {
-   if(kl_initialize(KL_FALSE, "example/main.lua", argc, argv) == KL_SUCCESS)
+   if(kl_initialize(KL_FALSE, KL_TRUE, "example/main.lua", argc, argv) == KL_SUCCESS)
    {
       // Send the script a test event
       kl_script_event_t fooevt;

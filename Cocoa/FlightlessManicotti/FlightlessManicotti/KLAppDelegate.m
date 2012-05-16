@@ -37,7 +37,11 @@ ALCdevice *device = NULL;
     if (self)
     {
         NSArray *args = [[NSProcessInfo processInfo] arguments]; // TODO
-        if(kl_initialize(KL_FALSE, "main.lua", 0, NULL) == KL_SUCCESS)
+        if(kl_initialize(KL_TRUE, // Threaded script processing
+                         KL_FALSE, // Don't wait on script fences
+                         "main.lua", // main script
+                         0, // No args yet
+                         NULL) == KL_SUCCESS)
         {
             [[NSRunLoop currentRunLoop] addTimer:
              [NSTimer timerWithTimeInterval:0.0
