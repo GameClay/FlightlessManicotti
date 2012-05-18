@@ -37,7 +37,7 @@ ALCdevice *device = NULL;
     if (self)
     {
         NSArray *args = [[NSProcessInfo processInfo] arguments]; // TODO
-        if(kl_initialize(KL_TRUE, // Threaded script processing
+        if(kl_initialize(KL_FALSE, // Threaded script processing
                          KL_FALSE, // Don't wait on script fences
                          "main.lua", // main script
                          0, // No args yet
