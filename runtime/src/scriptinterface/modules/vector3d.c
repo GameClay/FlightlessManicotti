@@ -67,7 +67,7 @@ static int vector3d_index(lua_State* L)
       lua_pushnumber(L, xyz[0]);
       lua_pushnumber(L, xyz[1]);
       lua_pushnumber(L, xyz[2]);
-      return 2;
+      return 3;
    }
 
    /* Wasn't x or y, so check the instance table */
