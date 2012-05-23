@@ -26,7 +26,8 @@
 
 #define VECTOR3_ARRAY_INSTANCE_TABLE "vector3_array_instance_method_table"
 const char* VECTOR3_ARRAY_LUA_LIB = "vector3_array";
-extern const char* VECTOR3D_LUA_LIB;
+
+extern int push_lua_vector3(lua_State* L, float* a);
 
 int push_lua_vector3_array(lua_State* L, float* a, size_t sz)
 {
@@ -53,10 +54,7 @@ static int vector3_array_index(lua_State* L)
    {
       if(idx <= array->len)
       {
-         lua_pushlightuserdata(L, &array->array[(idx - 1) * 3]);
-         luaL_getmetatable(L, VECTOR3D_LUA_LIB);
-         lua_setmetatable(L, -2);
-         return 1;
+         return push_lua_vector3(L, &array->array[(idx - 1) * 3]);
       }
       else
       {

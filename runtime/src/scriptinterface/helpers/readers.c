@@ -20,6 +20,7 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #include <FlightlessManicotti/fm.h>
+#include <FlightlessManicotti/scriptinterface/types.h>
 #include "scriptinterface/helpers/readers.h"
 
 extern const char* VECTOR2D_LUA_LIB;
@@ -43,7 +44,8 @@ void lua_readvector2d(lua_State* L, int param_idx, float* out_xy)
    else if(lua_isuserdata(L, 3))
    {
       /* Won't return if error */
-      float* tempxy = (float*)luaL_checkudata(L, param_idx, VECTOR2D_LUA_LIB);
+      lua_vectorf* vec = (lua_vectorf*)luaL_checkudata(L, param_idx, VECTOR2D_LUA_LIB);
+      float* tempxy = vec->vec;
       out_xy[0] = tempxy[0];
       out_xy[1] = tempxy[1];
    }
@@ -74,7 +76,8 @@ void lua_readvector3d(lua_State* L, int param_idx, float* out_xyz)
    else if(lua_isuserdata(L, 3))
    {
       /* Won't return if error */
-      float* tempxyz = (float*)luaL_checkudata(L, param_idx, VECTOR3D_LUA_LIB);
+      lua_vectorf* vec = (lua_vectorf*)luaL_checkudata(L, param_idx, VECTOR3D_LUA_LIB);
+      float* tempxyz = vec->vec;
       out_xyz[0] = tempxyz[0];
       out_xyz[1] = tempxyz[1];
       out_xyz[2] = tempxyz[2];

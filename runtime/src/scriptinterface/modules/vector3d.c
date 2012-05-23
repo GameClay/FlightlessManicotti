@@ -21,16 +21,29 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #include <FlightlessManicotti/fm.h>
+#include <FlightlessManicotti/scriptinterface/types.h>
 #include "scriptinterface/helpers/readers.h"
 
 #define VECTOR3D_INSTANCE_TABLE "vector3d_instance_method_table"
 const char* VECTOR3D_LUA_LIB = "vector3d";
 
+int push_lua_vector3(lua_State* L, float* a)
+{
+   lua_vectorf* vec = (lua_vectorf*)lua_newuserdata(L, sizeof(lua_vectorf));
+   luaL_getmetatable(L, VECTOR3D_LUA_LIB);
+   lua_setmetatable(L, -2);
+
+   vec->vec = a;
+
+   return 1;
+}
+
 static int vector3d_index(lua_State* L)
 {
    size_t len;
    const char* key;
-   float* xyz = (float*)lua_topointer(L, 1);
+   lua_vectorf* vec = (lua_vectorf*)lua_topointer(L, 1);
+   float* xyz = vec->vec;
 
    /* Check for x, yor z, else redirect to instance table */
    key = lua_tolstring(L, 2, &len);
@@ -81,7 +94,8 @@ static int vector3d_newindex(lua_State* L)
 {
    size_t len;
    const char* key;
-   float* xyz = (float*)lua_topointer(L, 1);
+   lua_vectorf* vec = (lua_vectorf*)lua_topointer(L, 1);
+   float* xyz = vec->vec;
 
    /* Check for x, y or z, else redirect to instance table */
    key = lua_tolstring(L, 2, &len);
@@ -128,7 +142,8 @@ static int vector3d_newindex(lua_State* L)
 
 static int vector3d_tostring(lua_State* L)
 {
-   float* xyz = (float*)lua_topointer(L, 1);
+   lua_vectorf* vec = (lua_vectorf*)lua_topointer(L, 1);
+   float* xyz = vec->vec;
    lua_pushfstring(L, "(%f, %f, %f)", xyz[0], xyz[1], xyz[2]);
    return 1;
 }

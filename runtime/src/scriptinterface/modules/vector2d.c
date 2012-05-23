@@ -21,16 +21,29 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #include <FlightlessManicotti/fm.h>
+#include <FlightlessManicotti/scriptinterface/types.h>
 #include "scriptinterface/helpers/readers.h"
 
 #define VECTOR2D_INSTANCE_TABLE "vector2d_instance_method_table"
 const char* VECTOR2D_LUA_LIB = "vector2d";
 
+static int push_lua_vector2(lua_State* L, float* a)
+{
+   lua_vectorf* vec = (lua_vectorf*)lua_newuserdata(L, sizeof(lua_vectorf));
+   luaL_getmetatable(L, VECTOR2D_LUA_LIB);
+   lua_setmetatable(L, -2);
+
+   vec->vec = a;
+
+   return 1;
+}
+
 static int vector2d_index(lua_State* L)
 {
    size_t len;
    const char* key;
-   float* xy = (float*)lua_topointer(L, 1);
+   lua_vectorf* vec = (lua_vectorf*)lua_topointer(L, 1);
+   float* xy = vec->vec;
 
    /* Check for x or y, else redirect to instance table */
    key = lua_tolstring(L, 2, &len);
@@ -69,7 +82,8 @@ static int vector2d_newindex(lua_State* L)
 {
    size_t len;
    const char* key;
-   float* xy = (float*)lua_topointer(L, 1);
+   lua_vectorf* vec = (lua_vectorf*)lua_topointer(L, 1);
+   float* xy = vec->vec;
 
    /* Check for x or y, else redirect to instance table */
    key = lua_tolstring(L, 2, &len);
@@ -105,7 +119,8 @@ static int vector2d_newindex(lua_State* L)
 
 static int vector2d_tostring(lua_State* L)
 {
-   float* xy = (float*)lua_topointer(L, 1);
+   lua_vectorf* vec = (lua_vectorf*)lua_topointer(L, 1);
+   float* xy = vec->vec;
    lua_pushfstring(L, "(%f, %f)", xy[0], xy[1]);
    return 1;
 }

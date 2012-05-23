@@ -22,6 +22,12 @@
 #include <lualib.h>
 #include <FlightlessManicotti/scriptinterface/script.h>
 #include <FlightlessManicotti/scriptinterface/scriptevents.h>
+#include <FlightlessManicotti/scriptinterface/types.h>
+
+#include <FlightlessManicotti/beat/cqt_wave.h>
+
+extern const char* FLOAT_ARRAY_LUA_LIB;
+extern const char* CQT_WAVE_ARRAY_LUA_LIB;
 
 static int kl_script_event_dequeue_wrap(lua_State* L)
 {
@@ -30,11 +36,17 @@ static int kl_script_event_dequeue_wrap(lua_State* L)
    kl_script_event_t event;
    if(kl_script_event_dequeue(sctx, &event) == KL_SUCCESS)
    {
-      const char* context_type = kl_get_script_event_context_type(event.event.id);
+      uint32_t context_type = kl_get_script_event_context_type(event.event.id);
       lua_pushinteger(L, event.event.id);
 
-      switch((intptr_t)context_type)
+      switch(context_type)
       {
+         case 0:
+         {
+            lua_pushlightuserdata(L, event.event.context.as_ptr);
+            break;
+         }
+
          case LUA_TSTRING:
          {
             lua_pushstring(L, event.event.context.as_ptr);
@@ -42,14 +54,21 @@ static int kl_script_event_dequeue_wrap(lua_State* L)
             break;
          }
 
-         default:
+         case KL_SCRIPT_EVENT_CONTEXT_TYPE_FLOAT_ARRAY:
          {
-            lua_pushlightuserdata(L, event.event.context.as_ptr);
-            if(context_type != NULL)
-            {
-               luaL_getmetatable(L, context_type);
-               lua_setmetatable(L, -2);
-            }
+            kl_lua_float_array_t* array = (kl_lua_float_array_t*)lua_newuserdata(L, sizeof(kl_lua_float_array_t));
+            memcpy(array, event.event.context.as_ptr, sizeof(kl_lua_float_array_t));
+            luaL_getmetatable(L, FLOAT_ARRAY_LUA_LIB);
+            lua_setmetatable(L, -2);
+            break;
+         }
+
+         case KL_SCRIPT_EVENT_CONTEXT_TYPE_CQT_WAVE_ARRAY:
+         {
+            kl_lua_cqt_wave_array_t* array = (kl_lua_cqt_wave_array_t*)lua_newuserdata(L, sizeof(kl_lua_cqt_wave_array_t));
+            memcpy(array, event.event.context.as_ptr, sizeof(kl_lua_cqt_wave_array_t));
+            luaL_getmetatable(L, CQT_WAVE_ARRAY_LUA_LIB);
+            lua_setmetatable(L, -2);
             break;
          }
       }

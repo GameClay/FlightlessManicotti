@@ -20,7 +20,7 @@
 #include <FlightlessManicotti/core/hash.h>
 #include <string.h>
 
-const char* g_script_event_context_type[1024] = {0}; /* This is pretty hacky */
+uint32_t g_script_event_context_type[1024] = {0}; /* This is pretty hacky */
 
 uint32_t kl_register_script_event(const char* name)
 {
@@ -30,12 +30,12 @@ uint32_t kl_register_script_event(const char* name)
    return ret;
 }
 
-void kl_register_script_event_context_type(uint32_t id, const char* table_name)
+void kl_register_script_event_context_type(uint32_t id, uint32_t context_type)
 {
-   g_script_event_context_type[id % 1024] = table_name;
+   g_script_event_context_type[id % 1024] = context_type;
 }
 
-extern KL_API const char* kl_get_script_event_context_type(uint32_t id)
+extern KL_API uint32_t kl_get_script_event_context_type(uint32_t id)
 {
    return g_script_event_context_type[id % 1024];
 }

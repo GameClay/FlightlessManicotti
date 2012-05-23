@@ -84,8 +84,7 @@ int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_
    g_event_ConsoleInput.event.id = kl_register_script_event("ConsoleInput");
    g_event_ConsoleInput.event.context.as_ptr = NULL;
    g_event_ConsoleInput.event.arg = 0;
-   kl_register_script_event_context_type(g_event_ConsoleInput.event.id,
-      (const char*)LUA_TSTRING);
+   kl_register_script_event_context_type(g_event_ConsoleInput.event.id, LUA_TSTRING);
 
    /* Start up lua */
    sctx->lua_state = lua_open();

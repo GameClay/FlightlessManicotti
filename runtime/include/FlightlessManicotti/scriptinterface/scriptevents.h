@@ -49,9 +49,9 @@ typedef union
 
 extern KL_API uint32_t kl_register_script_event(const char* name);
 
-extern KL_API void kl_register_script_event_context_type(uint32_t id, const char* table_name);
+extern KL_API void kl_register_script_event_context_type(uint32_t id, uint32_t context_type);
 
-extern KL_API const char* kl_get_script_event_context_type(uint32_t id);
+extern KL_API uint32_t kl_get_script_event_context_type(uint32_t id);
 
 #ifdef __cplusplus
 } /* extern "C" */

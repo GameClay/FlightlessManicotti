@@ -35,6 +35,14 @@ typedef struct {
    uint16_t* array;
 } kl_lua_uint16_array_t;
 
+typedef struct lua_vectorf {
+   float* vec;
+} lua_vectorf;
+
+#define KL_SCRIPT_EVENT_CONTEXT_TYPE_START 16
+#define KL_SCRIPT_EVENT_CONTEXT_TYPE_FLOAT_ARRAY (KL_SCRIPT_EVENT_CONTEXT_TYPE_START + 0)
+#define KL_SCRIPT_EVENT_CONTEXT_TYPE_CQT_WAVE_ARRAY (KL_SCRIPT_EVENT_CONTEXT_TYPE_START + 1)
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
