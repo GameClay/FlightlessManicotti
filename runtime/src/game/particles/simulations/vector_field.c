@@ -62,32 +62,29 @@ void kl_particle_simulation_vector_field(float dt, void* context)
             float* KL_RESTRICT px_stream = system->px_stream;
             float* KL_RESTRICT py_stream = system->py_stream;
             float* KL_RESTRICT pz_stream = system->pz_stream;
+
             float* KL_RESTRICT vx_stream = system->vx_stream;
             float* KL_RESTRICT vy_stream = system->vy_stream;
             float* KL_RESTRICT vz_stream = system->vz_stream;
 
-            float vx = vx_stream[i];
-            float vy = vy_stream[i];
-            float vz = vz_stream[i];
+            float vx = vx_stream[i] * 0.95f;
+            float vy = vy_stream[i] * 0.95f;
+            float vz = vz_stream[i] * 0.95f;
 
             float px = px_stream[i];
-            float py = px_stream[i];
-            float pz = px_stream[i];
+            float py = py_stream[i];
+            float pz = pz_stream[i];
 
             /* Apply acceleration from vector field */
             /* HAX! Use noise */
-            vx += kl_simplex_noise_4d(px, py, pz + new_time, new_time) * dt;
-            vy += kl_simplex_noise_4d(px + new_time, py, pz, new_time) * dt;
-            vz += kl_simplex_noise_4d(px, py + new_time, pz, new_time) * dt;
+            vx += kl_simplex_noise_3d(px, py, pz + new_time);
+            vy += kl_simplex_noise_3d(px + new_time, py, pz);
+            vz += kl_simplex_noise_3d(px, py + new_time, pz);
 
             /* Update position */
-            px += vx * dt * 0.0001f;
-            py += vy * dt * 0.0001f;
-            pz += vz * dt * 0.0001f;
-
-            /* Flip velocity if we go off screen */
-            vx = kl_fsel(1.0f - fabs(px), vx, -vx);
-            vy = kl_fsel(1.0f - fabs(py), vy, -vy);
+            px += vx * dt * 0.0005f;
+            py += vy * dt * 0.0005f;
+            pz += vz * dt * 0.0005f;
 
             /* Store position */
             px_stream[i] = px;
