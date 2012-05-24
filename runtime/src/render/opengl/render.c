@@ -29,6 +29,7 @@ kl_particle_system_t haxparticles = NULL;
 kl_particle_render_quads_t haxquads = NULL;
 kl_particle_render_geom_shdr_t haxgs = NULL;
 kl_particle_simulation_t haxsim = NULL;
+extern void kl_particle_simulation_vector_field(float dt, void* context);
 
 /* moar hax */
 #include <openctm.h>
@@ -96,6 +97,7 @@ int kl_init_rendering(kl_render_context_t* context, void* handle)
       kl_particle_render_geom_shdr_alloc(&haxgs, ctx);
       kl_particle_render_geom_shdr_assign_system(haxgs, haxparticles);
       kl_particle_simulation_alloc(&haxsim);
+      haxsim->advance_fn = kl_particle_simulation_vector_field;
       kl_particle_simulation_set_system(haxsim, haxparticles);
 
       /* moar hax */
