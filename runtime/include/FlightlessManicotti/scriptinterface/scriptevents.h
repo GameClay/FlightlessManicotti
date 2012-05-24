@@ -35,7 +35,12 @@ typedef union
    struct
    {
       uint32_t id;            /**< Event id. */
-      uint32_t arg;           /**< Event-defined argument. */
+
+      union
+      {
+         uint32_t as_uint32;
+         float as_float;
+      } arg;                  /**< Event-defined argument. */
    
       union
       {

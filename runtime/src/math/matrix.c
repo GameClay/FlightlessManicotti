@@ -165,19 +165,50 @@ void kl_matrix_mul_vector_batch_c(const float* KL_RESTRICT m, const float* KL_RE
    }
 }
 
-float kl_matrix_mul_matrix_sse_timing(uint32_t num);
-float kl_matrix_mul_matrix_c_timing(uint32_t num);
-float kl_matrix_mul_vector_sse3_timing(uint32_t num);
-float kl_matrix_mul_vector_c_timing(uint32_t num);
-float kl_matrix_mul_vector_batch_sse3_timing(uint32_t num);
-float kl_matrix_mul_vector_batch_c_timing(uint32_t num);
+void kl_matrix_perspective(float* m, float left, float right, float bottom, float top, float near, float far)
+{
+   /* X's */
+   m[0] = 2.0f * near / (right - left);
+   m[1] = 0.0f;
+   m[2] = (right + left) / (right - left);
+   m[3] = 0.0f;
+
+   /* Y's */
+   m[4] = 0.0f;
+   m[5] = 2.0f * near / (top - bottom);
+   m[6] = (top + bottom) / (top - bottom);
+   m[7] = 0.0f;
+
+   /* Z's */
+   m[8] = 0.0f;
+   m[9] = 0.0f;
+   m[10] = -1.0f * (far + near) / (far - near);
+   m[11] = -2.0f * far * near / (far - near);
+
+   /* W's */
+   m[12] = 0.0f;
+   m[13] = 0.0f;
+   m[14] = -1.0f;
+   m[15] = 0.0f;
+}
+
+void kl_matrix_dump(float* m)
+{
+   sklog("%4.2f %4.2f %4.2f %4.2f\n%4.2f %4.2f %4.2f %4.2f\n%4.2f %4.2f %4.2f %4.2f\n%4.2f %4.2f %4.2f %4.2f\n",
+      m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8], m[9], m[10], m[11], m[12], m[13], m[14], m[15]);
+}
+
+extern float kl_matrix_mul_matrix_sse_timing(uint32_t num);
+extern float kl_matrix_mul_matrix_c_timing(uint32_t num);
+extern float kl_matrix_mul_vector_sse3_timing(uint32_t num);
+extern float kl_matrix_mul_vector_c_timing(uint32_t num);
+extern float kl_matrix_mul_vector_batch_sse3_timing(uint32_t num);
+extern float kl_matrix_mul_vector_batch_c_timing(uint32_t num);
 
 #define NUM_TEST_RUNS 50000
 void kl_matrix_math_self_test()
 {
-   int i, j;
-   kl_absolute_time_t start_time, end_time, delta_time;
-   uint64_t time_ns;
+   int i;
    float c_mul_ms, sse_mul_ms, c_xfm_ms, sse_xfm_ms, c_batch_xfm_ms, sse_batch_xfm_ms;
 
    kl_matrix_t a;

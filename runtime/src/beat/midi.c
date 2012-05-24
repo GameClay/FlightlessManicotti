@@ -28,7 +28,9 @@ struct _kl_midi_manager {
    MIDIPortRef midi_out_port;
    MIDIPortRef midi_in_port;
 
-   MIDIEndpointRef hax_ep;
+   MIDIEndpointRef hax_in_ep;
+   MIDIEndpointRef hax_out_ctrl_ep;
+   kl_midi_device_t hax_device;
 };
 
 kl_midi_manager_t g_midi_manager = NULL;
@@ -36,6 +38,11 @@ kl_midi_manager_t g_midi_manager = NULL;
 void _kl_midi_manager_advance_time(float dt, void* context);
 void _kl_midi_notify(const MIDINotification *message, void *refCon);
 void _kl_midi_read(const MIDIPacketList *pktlist, void *readProcRefCon, void *srcConnRefCon);
+
+void TestMIDICompletionProc(MIDISysexSendRequest *request)
+{
+   printf("%s\n", &request->data[8]);
+}
 
 int kl_midi_manager_alloc(kl_midi_manager_t* manager)
 {
@@ -45,23 +52,46 @@ int kl_midi_manager_alloc(kl_midi_manager_t* manager)
       kl_midi_manager_t mgr = kl_heap_alloc(sizeof(struct _kl_midi_manager));
       if(mgr != NULL)
       {
-         OSStatus s = MIDIClientCreate(CFSTR("EVL MIDI Client"), _kl_midi_notify, mgr, &mgr->midi_client);
+         CFStringRef tempstr = CFStringCreateWithCString(NULL, "EVL MIDI Client", kCFStringEncodingUTF8);
+         OSStatus s = MIDIClientCreate(tempstr, _kl_midi_notify, mgr, &mgr->midi_client);
+         CFRelease(tempstr);
 
-         s = MIDIOutputPortCreate(mgr->midi_client, CFSTR("EVL MIDI Output Port"), &mgr->midi_out_port);
+         tempstr = CFStringCreateWithCString(NULL, "EVL MIDI Output Port", kCFStringEncodingUTF8);
+         s = MIDIOutputPortCreate(mgr->midi_client, tempstr, &mgr->midi_out_port);
+         CFRelease(tempstr);
 
-         s = MIDIInputPortCreate(mgr->midi_client, CFSTR("EVL MIDI Input Port"), _kl_midi_read,
+         tempstr = CFStringCreateWithCString(NULL, "EVL MIDI Input Port", kCFStringEncodingUTF8);
+         s = MIDIInputPortCreate(mgr->midi_client, tempstr, _kl_midi_read,
             mgr, &mgr->midi_in_port);
+         CFRelease(tempstr);
 
          /* hax */
+         kl_zero_mem(&mgr->hax_device, sizeof(kl_midi_device_t));
          {
+            MIDIDeviceRef deviceref;
+            int i;
             const ItemCount numberOfSources      = MIDIGetNumberOfSources();
+            const ItemCount numberOfDestinations = MIDIGetNumberOfSources();
+
+            deviceref = MIDIGetDevice(0);
+
+            mgr->hax_in_ep = 0;
+            mgr->hax_out_ctrl_ep = 0;
 
             if(numberOfSources > 0)
             {
-               mgr->hax_ep = MIDIGetSource(0);
-               MIDIPortConnectSource(mgr->midi_in_port, mgr->hax_ep, NULL);
+               mgr->hax_in_ep = MIDIGetSource(0);
+               MIDIPortConnectSource(mgr->midi_in_port, mgr->hax_in_ep, &mgr->hax_device);
             }
-            else mgr->hax_ep = 0;
+
+            for(i = 0; i < numberOfDestinations; i++)
+            {
+               CFStringRef name;
+               MIDIObjectGetStringProperty(deviceref, kMIDIPropertyName, &name);
+            }
+
+            mgr->hax_out_ctrl_ep = MIDIGetDestination(2);
+            MIDIPortConnectSource(mgr->midi_out_port, mgr->hax_out_ctrl_ep, &mgr->hax_device);
          }
 
          mgr->pid = kl_reserve_process_id(KL_DEFAULT_PROCESS_MANAGER,
@@ -82,7 +112,8 @@ void kl_midi_manager_free(kl_midi_manager_t* manager)
 
       kl_release_process_id(KL_DEFAULT_PROCESS_MANAGER, mgr->pid);
 
-      MIDIPortDisconnectSource(mgr->midi_in_port, mgr->hax_ep);
+      MIDIPortDisconnectSource(mgr->midi_in_port, mgr->hax_in_ep);
+      MIDIPortDisconnectSource(mgr->midi_in_port, mgr->hax_out_ctrl_ep);
       MIDIPortDispose(mgr->midi_out_port);
       MIDIPortDispose(mgr->midi_in_port);
       MIDIClientDispose(mgr->midi_client);
@@ -93,7 +124,33 @@ void kl_midi_manager_free(kl_midi_manager_t* manager)
 
 void _kl_midi_manager_advance_time(float dt, void* context)
 {
+   /* moar hax */
+   kl_midi_manager_t mgr = (kl_midi_manager_t)context;
+   static int foo = 0;
+   if(foo == 0)
+   {
+      static Byte data[] = {
+          0xF0, 
+          0x00, 0x20, 0x32, /* Berhinger */
+          0x7F, /* Any device id */
+          0x7F, /* Any model id */
+          0x43, /* Request snapshot */
+          /* No data */
+          0xF7, /* End sysex */
+      };
 
+      static MIDISysexSendRequest sysex;
+
+      sysex.destination = mgr->hax_out_ctrl_ep;
+      sysex.data = data;
+      sysex.bytesToSend = sizeof(data);
+      sysex.complete = 0;
+      sysex.completionProc = TestMIDICompletionProc;
+      sysex.completionRefCon = NULL;
+
+      /*MIDISendSysex(&sysex);*/
+      foo = 1;
+   }
 }
 
 void _kl_midi_notify(const MIDINotification *message, void *refCon)
@@ -117,10 +174,48 @@ void _kl_midi_notify(const MIDINotification *message, void *refCon)
 
 void _kl_midi_read(const MIDIPacketList *pktlist, void *readProcRefCon, void *srcConnRefCon)
 {
-   int numPackets;
+   int i;
    const MIDIPacket *packet = &pktlist->packet[0];
-   for(numPackets = pktlist->numPackets; numPackets > 0; numPackets--)
+   kl_midi_manager_t mgr = (kl_midi_manager_t)readProcRefCon;
+   kl_midi_device_t* device = (kl_midi_device_t*)srcConnRefCon;
+   kl_midi_device_t new_state;
+
+   KL_UNUSED(mgr);
+
+   kl_zero_mem(&new_state, sizeof(kl_midi_device_t));
+
+   /* Read packets */
+   for(i = pktlist->numPackets; i > 0; i--)
    {
+      switch(packet->data[0])
+      {
+         case 176: /* Chan 1 Control/Mode Change */
+         {
+            const int8_t idx = packet->data[1];
+            const int8_t value = packet->data[2];
+
+            new_state.last_value[idx] = new_state.value[idx];
+            device->last_sample_time[idx] = new_state.sample_time[idx];
+            new_state.value[idx] = value;
+            new_state.sample_time[idx] = packet->timeStamp;
+            break;
+         }
+      }
       packet = MIDIPacketNext(packet);
    }
+
+   /* Update device state */
+   for(i = 0; i < 256; i++)
+   {
+      if(new_state.sample_time[i] > 0)
+      {
+         device->last_value[i] = device->value[i];
+         device->last_sample_time[i] = device->sample_time[i];
+         device->value[i] = new_state.value[i];
+         device->sample_time[i] = new_state.sample_time[i];
+         device->delta[i] = new_state.value[i] - device->last_value[i];
+      }
+   }
+
+   /* Dispatch */
 }

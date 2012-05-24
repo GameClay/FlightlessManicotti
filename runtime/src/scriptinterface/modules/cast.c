@@ -22,10 +22,16 @@
 #include <lualib.h>
 #include <FlightlessManicotti/fm.h>
 
+typedef union {
+   lua_Integer l_int;
+   lua_Number l_num;
+} castf;
+
 static int kl_cast_int_to_number(lua_State* L)
 {
-   lua_Integer iint = lua_tointeger(L, 1);
-   lua_pushnumber(L, *((lua_Number*)&iint));
+   castf thingy;
+   thingy.l_int = lua_tointeger(L, 1);
+   lua_pushnumber(L, thingy.l_num);
    return 1;
 }
 

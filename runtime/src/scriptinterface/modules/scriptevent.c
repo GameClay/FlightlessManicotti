@@ -72,7 +72,7 @@ static int kl_script_event_dequeue_wrap(lua_State* L)
             break;
          }
       }
-      lua_pushinteger(L, event.event.arg);
+      lua_pushinteger(L, event.event.arg.as_uint32);
       return 3;
    }
    

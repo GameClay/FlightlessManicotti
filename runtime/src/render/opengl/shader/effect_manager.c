@@ -17,6 +17,7 @@
  */
 
 #include <FlightlessManicotti/render/shader/effect_manager.h>
+#include <FlightlessManicotti/core/hash.h>
 #include <sanskrit/sklog.h>
 #include <stdio.h>
 #include <string.h>

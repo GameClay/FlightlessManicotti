@@ -70,12 +70,12 @@ int kl_initialize(KL_BOOL use_threads, KL_BOOL wait_on_fence, const char* main_s
       /* Set up Init event */
       g_event_Init.event.id = kl_register_script_event("Init");
       g_event_Init.event.context.as_64 = 0;
-      g_event_Init.event.arg = 0;
+      g_event_Init.event.arg.as_uint32 = 0;
 
       /* Set up Destroy event */
       g_event_Destroy.event.id = kl_register_script_event("Destroy");
       g_event_Destroy.event.context.as_64 = 0;
-      g_event_Destroy.event.arg = 0;
+      g_event_Destroy.event.arg.as_uint32 = 0;
    }
 
    /* TODO: Growable process list size */

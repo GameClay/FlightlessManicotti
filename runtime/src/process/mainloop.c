@@ -133,7 +133,7 @@ int kl_mainloop_iteration()
    kl_advance_process_list(KL_DEFAULT_PROCESS_MANAGER, dt);
 
    /* Send script advance-time event */
-   g_advance_time_script_event.event.arg = *((uint32_t*)&dt);
+   g_advance_time_script_event.event.arg.as_float = dt;
    kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &g_advance_time_script_event);
 
    /*

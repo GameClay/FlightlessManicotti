@@ -63,11 +63,11 @@ int kl_alloc_process_manager(kl_process_manager_t* mgr, uint32_t num_processes)
 
       g_advance_time_script_event.event.id = kl_register_script_event("AdvanceTime");
       g_advance_time_script_event.event.context.as_ptr = NULL;
-      g_advance_time_script_event.event.arg = 0;
+      g_advance_time_script_event.event.arg.as_uint32 = 0;
 
       g_tick_script_event.event.id = kl_register_script_event("ProcessTick");
       g_tick_script_event.event.context.as_ptr = NULL;
-      g_tick_script_event.event.arg = 0;
+      g_tick_script_event.event.arg.as_uint32 = 0;
 
       pom->num_processes = num_processes;
       pom->max_id_allocated = 0;

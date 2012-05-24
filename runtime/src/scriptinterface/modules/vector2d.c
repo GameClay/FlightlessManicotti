@@ -27,7 +27,7 @@
 #define VECTOR2D_INSTANCE_TABLE "vector2d_instance_method_table"
 const char* VECTOR2D_LUA_LIB = "vector2d";
 
-static int push_lua_vector2(lua_State* L, float* a)
+int push_lua_vector2(lua_State* L, float* a)
 {
    lua_vectorf* vec = (lua_vectorf*)lua_newuserdata(L, sizeof(lua_vectorf));
    luaL_getmetatable(L, VECTOR2D_LUA_LIB);

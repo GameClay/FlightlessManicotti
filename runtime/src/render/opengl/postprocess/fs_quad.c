@@ -26,7 +26,7 @@ struct _kl_fs_quad_renderer {
 
 int kl_init_fullscreen_quad_renderer(kl_fs_quad_renderer_t* fs_quad, kl_render_context_t ctx)
 {
-   
+   return 0;
 }
 
 void kl_destroy_fullscreen_quad_renderer(kl_fs_quad_renderer_t* fs_quad)

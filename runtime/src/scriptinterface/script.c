@@ -78,12 +78,12 @@ int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_
    /* Set up EOF event */
    g_event_EOF.event.id = kl_register_script_event("EOF");
    g_event_EOF.event.context.as_64 = 0;
-   g_event_EOF.event.arg = 0;
+   g_event_EOF.event.arg.as_uint32 = 0;
 
    /* Set up console line input */
    g_event_ConsoleInput.event.id = kl_register_script_event("ConsoleInput");
    g_event_ConsoleInput.event.context.as_ptr = NULL;
-   g_event_ConsoleInput.event.arg = 0;
+   g_event_ConsoleInput.event.arg.as_uint32 = 0;
    kl_register_script_event_context_type(g_event_ConsoleInput.event.id, LUA_TSTRING);
 
    /* Start up lua */

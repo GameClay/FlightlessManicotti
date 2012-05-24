@@ -205,6 +205,10 @@ void _kl_particle_render_quads_advance_time(float dt, void* context)
       const float* lifespan_stream = system->lifespan_stream;
       const float* time_stream = system->time_stream;
 
+      KL_UNUSED(vx_stream);
+      KL_UNUSED(vy_stream);
+      KL_UNUSED(vz_stream);
+
       /* swap y/z on base points since z is not "up", y is "up" by default */
 #define fillVert() { \
       vert->xyz[0] = base_pt->x * size * 0.5f + px_stream[i]; \
@@ -219,6 +223,8 @@ void _kl_particle_render_quads_advance_time(float dt, void* context)
          GLubyte color[4] = {0xFF, 0xFF, 0xFF, 0xFF};
          particle_vertex* vert = &verts[i * 4];
          _point3f_simple *base_pt = &sBaseBillboardPoints[i % sNumBillboardPointSets * 4];
+
+         KL_UNUSED(t);
 
          color[1] = (uint8_t)(beats->measure_interp * 0xFF);
 

@@ -48,8 +48,10 @@ extern "C" {
 #  define KL_RESTRICT restrict
 #elif _MSC_VER
 #  define KL_RESTRICT __restrict
+#elif __GNUC__
+#  define KL_RESTRICT __restrict__
 #else
-#  define KL_RESTRICT 
+#  define KL_RESTRICT
 #endif
 
 /*
