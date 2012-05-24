@@ -64,6 +64,13 @@ extern KL_API void kl_particle_render_geom_shdr_assign_system(kl_particle_render
 extern KL_API void kl_particle_render_geom_shdr_assign_effect(kl_particle_render_geom_shdr_t renderer,
    const char* effect_key);
 
+/**
+ * Draw a geometry shader particle system.
+ *
+ * @param renderer   Particle renderer to draw.
+ */
+extern KL_API void kl_particle_render_geom_shdr_draw(kl_particle_render_geom_shdr_t renderer);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
