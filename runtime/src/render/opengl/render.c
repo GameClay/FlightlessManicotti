@@ -60,6 +60,9 @@ int kl_init_rendering(kl_render_context_t* context, void* handle)
       CGLRetainContext(ctx->drawableCGLContext);
       CGLCreateContext(pixelFormat, ctx->drawableCGLContext, &ctx->resourceCGLContext);
 
+      CGLSetCurrentContext(ctx->drawableCGLContext);
+      CGLLockContext(ctx->drawableCGLContext);
+
       kl_shader_manager_create(&ctx->shader_mgr, 256, ctx);
       kl_effect_manager_create(&ctx->effect_mgr, 64, ctx);
 
@@ -174,6 +177,8 @@ int kl_init_rendering(kl_render_context_t* context, void* handle)
             kl_heap_free(idx);
          }
       }
+
+      CGLUnlockContext(ctx->drawableCGLContext);
 
       *context = ctx;
       ret = KL_SUCCESS;
