@@ -10,7 +10,8 @@ core_files = Glob('src/core/*.c', strings=True) + Glob('src/process/*.c', string
 script_files = Glob('src/scriptinterface/*.c', strings=True) + Glob('src/scriptinterface/modules/*.c', strings=True) + \
    Glob('src/scriptinterface/helpers/*.c', strings=True)
 game_files = Glob('src/game/*.c', strings=True) + Glob('src/game/scene2d/*.c', strings=True) + \
-   Glob('src/game/scene3d/*.c', strings=True) + Glob('src/game/particles/*.c', strings=True)
+   Glob('src/game/scene3d/*.c', strings=True) + Glob('src/game/particles/*.c', strings=True) + \
+   Glob('src/game/parameters/*.c', strings=True) + Glob('src/game/particles/simulations/*.c', strings=True)
 render_files = Glob('src/render/*.c', strings=True) + Glob('src/render/script/*.c', strings=True)
 beat_files = Glob('src/beat/*.c', strings=True)
 sanskrit_files = Glob('src/sanskrit/src/*.c', strings=True)
