@@ -19,6 +19,26 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTime
     return result;
 }
 
+- (id)initWithFrame:(NSRect)frame
+{
+    NSOpenGLPixelFormatAttribute attrs[] =
+    {
+        //NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core,
+        NSOpenGLPFADoubleBuffer,
+        NSOpenGLPFADepthSize, 32,
+        //NSOpenGLPFAAccelerated,
+        0
+    };
+
+    NSOpenGLPixelFormat* pixFmt = [[NSOpenGLPixelFormat alloc] initWithAttributes:attrs];
+
+    self = [super initWithFrame:frame pixelFormat:pixFmt];
+
+    if(!self) return nil;
+
+    return self;
+}
+
 - (void)reshape
 {
     NSRect bounds = [self bounds];
@@ -33,31 +53,24 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTime
     GLint swapInt = 1;
     [[self openGLContext] setValues:&swapInt forParameter:NSOpenGLCPSwapInterval];
 #endif
-    
+
     // Create a display link capable of being used with all active displays
     CVDisplayLinkCreateWithActiveCGDisplays(&displayLink);
-    
+
     // Set the renderer output callback function
     CVDisplayLinkSetOutputCallback(displayLink, &MyDisplayLinkCallback, self);
-    
+
     // Set the display link for the current renderer
     CGLContextObj cglContext = [[self openGLContext] CGLContextObj];
-    
-    NSOpenGLPixelFormatAttribute attrs[] =
-    {
-        NSOpenGLPFADoubleBuffer,
-        NSOpenGLPFADepthSize, 32,
-        0
-    };
-    
-    NSOpenGLPixelFormat* pixFmt = [[NSOpenGLPixelFormat alloc] initWithAttributes:attrs];
-    [self setPixelFormat:pixFmt];
     CGLPixelFormatObj cglPixelFormat = [[self pixelFormat] CGLPixelFormatObj];
     CVDisplayLinkSetCurrentCGDisplayFromOpenGLContext(displayLink, cglContext, cglPixelFormat);
-    
+
     // Init the rendering
     kl_init_rendering(&renderContext, (void*)cglContext);
-    
+
+    NSString *versionString = [NSString stringWithCString:(const char*)glGetString(GL_VERSION)encoding:NSASCIIStringEncoding];
+    NSLog(@"OpenGL Version: %@", versionString);
+
     // Activate the display link
     CVDisplayLinkStart(displayLink);
 }
