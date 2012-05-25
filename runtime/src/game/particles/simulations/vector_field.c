@@ -31,6 +31,14 @@ void kl_particle_simulation_vector_field(float dt, void* context)
       float* KL_RESTRICT time_stream = system->time_stream;
       const float* KL_RESTRICT lifespan_stream = system->lifespan_stream;
 
+      float* KL_RESTRICT px_stream = system->px_stream;
+      float* KL_RESTRICT py_stream = system->py_stream;
+      float* KL_RESTRICT pz_stream = system->pz_stream;
+
+      float* KL_RESTRICT vx_stream = system->vx_stream;
+      float* KL_RESTRICT vy_stream = system->vy_stream;
+      float* KL_RESTRICT vz_stream = system->vz_stream;
+
       for(i = 0; i < system->num_particles; i++)
       {
          float new_time = time_stream[i] + dt;
@@ -61,14 +69,6 @@ void kl_particle_simulation_vector_field(float dt, void* context)
 
          /* Vector field */
          {
-            float* KL_RESTRICT px_stream = system->px_stream;
-            float* KL_RESTRICT py_stream = system->py_stream;
-            float* KL_RESTRICT pz_stream = system->pz_stream;
-
-            float* KL_RESTRICT vx_stream = system->vx_stream;
-            float* KL_RESTRICT vy_stream = system->vy_stream;
-            float* KL_RESTRICT vz_stream = system->vz_stream;
-
             float vx = vx_stream[i] * 0.95f;
             float vy = vy_stream[i] * 0.95f;
             float vz = vz_stream[i] * 0.95f;
