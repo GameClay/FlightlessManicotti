@@ -28,10 +28,12 @@ void kl_particle_simulation_constant(float dt, void* context)
    {
       int i = 0;
       float* time_stream = system->time_stream;
+      const float* KL_RESTRICT lifespan_stream = system->lifespan_stream;
+
       for(i = 0; i < system->num_particles; i++)
       {
-         float new_time = time_stream[i] - dt;
-         if(time_stream[i] <= 0.0f)
+         float new_time = time_stream[i] + dt;
+         if(time_stream[i] > lifespan_stream[i])
          {
             int last_idx = system->num_particles - 1;
             if(i < last_idx)
@@ -54,7 +56,7 @@ void kl_particle_simulation_constant(float dt, void* context)
             continue;
          }
 
-         time_stream[i] = kl_fsel(new_time, new_time, 0.0f);
+         time_stream[i] = new_time;
       }
    }
 }

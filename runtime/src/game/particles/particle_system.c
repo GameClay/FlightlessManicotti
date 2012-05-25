@@ -47,8 +47,12 @@ int kl_particle_system_alloc(kl_particle_system_t* system, uint32_t max_particle
          sys->py_stream[i] = kl_sin(angle * KL_2PI_F) * 0.5f;
          sys->pz_stream[i] = 0.0f;
 
-         sys->lifespan_stream[i] = 30.0f * 1000.0f;
-         sys->time_stream[i] = (25.0f + 5.0f * angle) * 1000.0f;
+         sys->vx_stream[i] = 0.0f;
+         sys->vy_stream[i] = 0.0f;
+         sys->vz_stream[i] = 0.0f;
+
+         sys->lifespan_stream[i] = INFINITY;
+         sys->time_stream[i] = 0.0f;
       }
       sys->num_particles = i;
    }
