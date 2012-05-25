@@ -23,8 +23,8 @@
 
 kl_script_event_fence_t* scriptfence = NULL;
 KL_BOOL pump_script;
-kl_absolute_time_t last_frame_time;
-kl_absolute_time_t last_tick_time;
+kl_absolute_time_t last_frame_time = 0;
+kl_absolute_time_t last_tick_time = 0;
 kl_absolute_time_t tick_frequency;
 
 int kl_init_mainloop(const char* main_script, KL_BOOL wait_on_fences, int argc, const char* argv[])
@@ -62,10 +62,6 @@ int kl_init_mainloop(const char* main_script, KL_BOOL wait_on_fences, int argc, 
    }
    kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT, NULL);
 
-   /* Initialize last frame time to now */
-   kl_high_resolution_timer_query(&last_frame_time);
-   last_tick_time = last_frame_time;
-
    /* Compute tick frequency in absolute-time */
    kl_ns_to_absolute_time(&tick_frequency_ns, &tick_frequency);
    
@@ -80,6 +76,13 @@ int kl_mainloop_iteration()
    kl_absolute_time_t delta_time;
    uint64_t delta_ns;
    float dt;
+
+   /* Initialize last frame time to now */
+   if(last_frame_time == 0)
+   {
+      kl_high_resolution_timer_query(&last_frame_time);
+      last_tick_time = last_frame_time;
+   }
 
    /*
     * Prepare for frame
