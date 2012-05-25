@@ -27,16 +27,16 @@ extern "C" {
 #include <stdint.h>
 
 typedef struct {
-   float* px_stream;
-   float* py_stream;
-   float* pz_stream;
+   float* KL_RESTRICT px_stream;
+   float* KL_RESTRICT py_stream;
+   float* KL_RESTRICT pz_stream;
 
-   float* vx_stream;
-   float* vy_stream;
-   float* vz_stream;
+   float* KL_RESTRICT vx_stream;
+   float* KL_RESTRICT vy_stream;
+   float* KL_RESTRICT vz_stream;
 
-   float* lifespan_stream;
-   float* time_stream;
+   float* KL_RESTRICT lifespan_stream;
+   float* KL_RESTRICT time_stream;
 
    uint32_t num_particles;
    uint32_t max_particles;
