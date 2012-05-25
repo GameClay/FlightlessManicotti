@@ -21,6 +21,13 @@
 #include <sanskrit/sklog.h>
 #include <pmmintrin.h>
 
+const kl_matrix_t KL_MATRIX_IDENTITY = {{
+   1.0f, 0.0f, 0.0f, 0.0f,
+   0.0f, 1.0f, 0.0f, 0.0f,
+   0.0f, 0.0f, 1.0f, 0.0f,
+   0.0f, 0.0f, 0.0f, 1.0f
+}};
+
 void kl_matrix_mul_matrix_sse(const float* KL_RESTRICT a, const float* KL_RESTRICT b, float* KL_RESTRICT c)
 {
    kl_float32x4_t a0, a1, a2, a3, b0, b1, b2, b3, c0, c1, c2, c3;
@@ -190,6 +197,87 @@ void kl_matrix_perspective(float* m, float left, float right, float bottom, floa
    m[13] = 0.0f;
    m[14] = -1.0f;
    m[15] = 0.0f;
+}
+
+void kl_matrix_ortho(float* m, float left, float right, float bottom, float top, float near, float far)
+{
+   /* X's */
+   m[0] = 2.0f / (right - left);
+   m[1] = 0.0f;
+   m[2] = 0.0f;
+   m[3] = -1.0f * (right + left) / (right - left);
+
+   /* Y's */
+   m[4] = 0.0f;
+   m[5] = 2.0f / (top - bottom);
+   m[6] = 0.0f;
+   m[7] = -1.0f * (top + bottom) / (top - bottom);
+
+   /* Z's */
+   m[8] = 0.0f;
+   m[9] = 0.0f;
+   m[10] = -2.0f / (far - near);
+   m[11] = -1.0f * (far + near) / (far - near);
+
+   /* W's */
+   m[12] = 0.0f;
+   m[13] = 0.0f;
+   m[14] = 0.0f;
+   m[15] = 1.0f;
+}
+
+void kl_matrix_identity(float* m)
+{
+   /* X's */
+   m[0] = 1.0f;
+   m[1] = 0.0f;
+   m[2] = 0.0f;
+   m[3] = 0.0f;
+
+   /* Y's */
+   m[4] = 0.0f;
+   m[5] = 1.0f;
+   m[6] = 0.0f;
+   m[7] = 0.0f;
+
+   /* Z's */
+   m[8] = 0.0f;
+   m[9] = 0.0f;
+   m[10] = 1.0f;
+   m[11] = 0.0f;
+
+   /* W's */
+   m[12] = 0.0f;
+   m[13] = 0.0f;
+   m[14] = 0.0f;
+   m[15] = 1.0f;
+}
+
+void kl_matrix_scale(float* m, float x, float y, float z)
+{
+   /* X's */
+   m[0] = x;
+   m[1] = 0.0f;
+   m[2] = 0.0f;
+   m[3] = 0.0f;
+
+   /* Y's */
+   m[4] = 0.0f;
+   m[5] = y;
+   m[6] = 0.0f;
+   m[7] = 0.0f;
+
+   /* Z's */
+   m[8] = 0.0f;
+   m[9] = 0.0f;
+   m[10] = z;
+   m[11] = 0.0f;
+
+   /* W's */
+   m[12] = 0.0f;
+   m[13] = 0.0f;
+   m[14] = 0.0f;
+   m[15] = 1.0f;
 }
 
 void kl_matrix_dump(float* m)

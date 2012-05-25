@@ -68,11 +68,60 @@ extern kl_math_abc_restrict_fn kl_matrix_mul_vector;
 extern kl_math_abcn_restrict_fn kl_matrix_mul_vector_batch;
 
 /**
+ * Create a perspective projection matrix.
+ *
+ * @param m       Matrix.
+ * @param left    Left.
+ * @param right   Right.
+ * @param near    Near.
+ * @param far     Far.
+ */
+extern KL_API void kl_matrix_perspective(float* m, float left, float right, float bottom, float top, float near, float far);
+
+/**
+ * Create an orthographic projection matrix.
+ *
+ * @param m       Matrix.
+ * @param left    Left.
+ * @param right   Right.
+ * @param near    Near.
+ * @param far     Far.
+ */
+extern KL_API void kl_matrix_ortho(float* m, float left, float right, float bottom, float top, float near, float far);
+
+/**
+ * Initialize a matrix to the identity matrix.
+ */
+extern KL_API void kl_matrix_identity(float* m);
+
+/**
+ * Create a scaling matrix.
+ *
+ * @param m       Matrix.
+ * @param x       X scale.
+ * @param y       Y scale.
+ * @param z       Z scale.
+ */
+extern KL_API void kl_matrix_scale(float* m, float x, float y, float z);
+
+/**
+ * Dump a matrix to the console.
+ *
+ * @param m    Matrix.
+ */
+extern KL_API void kl_matrix_dump(float* m);
+
+/**
  * Test SIMD vs C implementations of matrix math functions.
  *
  * Asserts if a failure occurs.
  */
 extern KL_API void kl_matrix_math_self_test();
+
+/**
+ * Constant identity matrix.
+ */
+extern const kl_matrix_t KL_MATRIX_IDENTITY;
 
 #ifdef __cplusplus
 } /* extern "C" */
