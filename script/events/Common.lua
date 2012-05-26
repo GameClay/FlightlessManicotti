@@ -70,7 +70,8 @@ Events.destroy = Events.register(SCTX, "Destroy")
 --!
 --! This event occurs once, when the rendering sub-system is ready.
 --!
---! There are no arguments passed to this event handler.
+--! The renderer being initialized is passed as an argument to this
+--! event handler.
 --! @memberof Events
 Events.renderinit = Events.register(SCTX, "RenderInit")
 
