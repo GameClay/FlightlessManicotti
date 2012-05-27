@@ -22,6 +22,8 @@
 #include <lualib.h>
 #include <FlightlessManicotti/render/render_list.h>
 
+#include <OpenGL/gl.h>
+
 extern kl_render_context_t g_script_render_context;
 
 /* Hax */
@@ -92,6 +94,7 @@ static int RenderInstance_new(lua_State* L)
    inst->list_index = UINT32_MAX;
    inst->material = NULL;
    inst->mesh = NULL;
+   inst->draw_type = GL_TRIANGLES;
    kl_matrix_identity(inst->obj_to_world.m);
 
    luaL_getmetatable(L, RENDER_INSTANCE_LUA_LIB);
@@ -140,10 +143,18 @@ static int RenderInstance_settransform(lua_State* L)
    return 0;
 }
 
+static int RenderInstance_setdrawtype(lua_State* L)
+{
+   kl_render_instance_t* inst = (kl_render_instance_t*)lua_touserdata(L, 1);
+   inst->draw_type = lua_tointeger(L, 2);
+   return 0;
+}
+
 static const struct luaL_reg RenderInstance_instance_methods [] = {
    {"setmesh", RenderInstance_setmesh},
    {"setmaterial", RenderInstance_setmaterial},
    {"settransform", RenderInstance_settransform},
+   {"setdrawtype", RenderInstance_setdrawtype},
    {NULL, NULL}
 };
 
@@ -173,6 +184,16 @@ int luaopen_render_list(lua_State* L)
    lua_setfield(L, -2, "__gc");
 
    luaL_register(L, RENDER_INSTANCE_LUA_LIB, RenderInstance_class_methods);
+
+   /* Draw type constant */
+   lua_newtable(L);
+
+   lua_pushnumber(L, GL_POINTS);
+   lua_setfield(L, -2, "points");
+   lua_pushnumber(L, GL_TRIANGLES);
+   lua_setfield(L, -2, "triangles");
+
+   lua_setfield(L, -2, "drawtype");
 
    return 1;
 }
