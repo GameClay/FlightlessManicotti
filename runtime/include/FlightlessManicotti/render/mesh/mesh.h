@@ -40,6 +40,8 @@ typedef struct {
    uint16_t* index;
    float* face_normal;
    size_t num_indices;
+
+   uint32_t primitive_type;
 } kl_mesh_t;
 
 typedef enum {
