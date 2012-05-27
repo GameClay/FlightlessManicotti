@@ -16,9 +16,13 @@
  * limitations under the License.
  */
 
+#ifndef _GL_RENDER_H_
+#define _GL_RENDER_H_
+
 #include <OpenGL/OpenGL.h> /* Mac */
 #include <FlightlessManicotti/render/shader/shader_manager.h>
 #include <FlightlessManicotti/render/shader/effect_manager.h>
+#include <FlightlessManicotti/render/render_list.h>
 
 struct _kl_offscreen_target {
    GLuint framebuffer, texture;
@@ -29,6 +33,8 @@ struct _kl_render_context
 {
    CGLContextObj drawableCGLContext;
    CGLContextObj resourceCGLContext;
+
+   kl_render_list_t* render_list;
 
    kl_shader_manager_t shader_mgr;
    kl_effect_manager_t effect_mgr;
@@ -54,3 +60,5 @@ struct _kl_effect {
    uint16_t ref_count;
    char effect_key[KL_SHADER_EFFECT_KEY_SZ];
 };
+
+#endif

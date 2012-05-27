@@ -45,6 +45,11 @@ extern KL_API int kl_init_rendering(kl_render_context_t* context, void* handle);
 extern KL_API void kl_destroy_rendering(kl_render_context_t* context);
 
 /**
+ * Update the size of the render context.
+ */
+extern KL_API void kl_render_reshape(kl_render_context_t context, float display_width, float display_height);
+
+/**
  * Indicate that a frame should be rendered.
  *
  * @param context          Render context on which to draw the frame.
@@ -52,6 +57,19 @@ extern KL_API void kl_destroy_rendering(kl_render_context_t* context);
  * @param display_height   Height of the frame to render.
  */
 extern KL_API void kl_render_frame(kl_render_context_t context, float display_width, float display_height);
+
+/**
+ * Assign a render list to a render context.
+ *
+ * @param context Rendering context to destroy.
+ * @param list    Render list to assign to context.
+ */
+extern KL_API void kl_render_assign_list(kl_render_context_t context, void* list);
+
+/**
+ * Debug rendering of CQT or FFT spectrum.
+ */
+extern int kl_render_spectrum_setting;
 
 #ifdef __cplusplus
 }
