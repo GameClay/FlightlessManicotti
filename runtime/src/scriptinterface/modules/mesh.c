@@ -24,7 +24,6 @@
 #include <FlightlessManicotti/render/render.h>
 #include "render/opengl/gl_render.h"
 #include "scriptinterface/helpers/readers.h"
-#include <OpenGL/gl.h>
 
 const char* MESH_LUA_LIB = "Mesh";
 extern int push_lua_float_array(lua_State* L, float* a, size_t sz);
@@ -270,19 +269,6 @@ static int Mesh_setfaces(lua_State* L)
    return 0;
 }
 
-static int Mesh_setdrawtype(lua_State* L)
-{
-   kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
-
-   if(mesh != NULL)
-   {
-      mesh->primitive_type = lua_tointeger(L, 2);
-   }
-
-   lua_pushnil(L);
-   return 1;
-}
-
 static const struct luaL_reg Mesh_instance_methods [] = {
    {"update", Mesh_update},
    {"loadctm", Mesh_loadctm},
@@ -294,7 +280,6 @@ static const struct luaL_reg Mesh_instance_methods [] = {
    {"getindices", Mesh_getindices},
    {"setindices", Mesh_setindices},
    {"setfaces", Mesh_setfaces},
-   {"setdrawtype", Mesh_setdrawtype},
 
    {"setashaxmesh", Mesh_setashaxmesh},
 
@@ -317,7 +302,7 @@ int luaopen_mesh(lua_State* L)
 
    luaL_register(L, MESH_LUA_LIB, Mesh_class_methods);
 
-   /* Mesh element constants */
+   /* Constants */
    lua_newtable(L);
 
    lua_pushnumber(L, kl_mesh_element_vertex);
@@ -336,16 +321,6 @@ int luaopen_mesh(lua_State* L)
    lua_setfield(L, -2, "none");
 
    lua_setfield(L, -2, "element");
-
-   /* Draw type constants */
-   lua_newtable(L);
-
-   lua_pushnumber(L, GL_TRIANGLES);
-   lua_setfield(L, -2, "triangles");
-   lua_pushnumber(L, GL_POINTS);
-   lua_setfield(L, -2, "points");
-
-   lua_setfield(L, -2, "drawtype");
 
    return 1;
 }

@@ -726,7 +726,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
             glLoadTransposeMatrixf(inst->obj_to_world.m);
             kl_mesh_bind(inst->mesh);
             kl_effect_manager_bind_effect(inst->material);
-            glDrawElements(inst->mesh->primitive_type, inst->mesh->num_indices, GL_UNSIGNED_SHORT, NULL);
+            glDrawElements(GL_TRIANGLES, inst->mesh->num_indices, GL_UNSIGNED_SHORT, NULL);
             kl_effect_manager_bind_effect(NULL);
             kl_mesh_bind(NULL);
          }
