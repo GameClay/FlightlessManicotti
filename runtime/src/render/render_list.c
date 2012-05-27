@@ -38,7 +38,10 @@ void kl_render_list_deinit(kl_render_list_t* list)
    if(list != NULL)
    {
       kl_heap_free(list->list);
+      list->list = NULL;
       kl_free_idx_allocator(&list->idx_alloc);
+      list->idx_alloc = NULL;
+      list->max_idx = 0;
    }
 }
 
