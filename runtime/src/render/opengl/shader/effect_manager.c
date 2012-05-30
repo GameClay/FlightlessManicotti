@@ -23,7 +23,6 @@
 #include <string.h>
 
 #include "render/opengl/gl_render.h"
-#include <OpenGL/gl.h>
 
 int kl_effect_manager_create(kl_effect_manager_t* manager, uint32_t num_effects, kl_render_context_t render_ctx)
 {

@@ -25,7 +25,6 @@
 
 /* hax */
 #include "render/opengl/gl_render.h"
-#include <OpenGL/gl.h>
 
 int kl_shader_manager_create(kl_shader_manager_t* manager, uint32_t num_shaders, kl_render_context_t render_ctx)
 {

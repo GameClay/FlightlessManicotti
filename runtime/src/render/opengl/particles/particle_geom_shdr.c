@@ -20,7 +20,6 @@
 #include <FlightlessManicotti/math/math.h>
 #include <FlightlessManicotti/process/process.h>
 #include "render/opengl/gl_render.h"
-#include <OpenGL/gl.h>
 
 #include <FlightlessManicotti/render/shader/shader_manager.h>
 #include <sanskrit/sklog.h>
