@@ -177,7 +177,7 @@
 		434EB0681513DB27005112AE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 				ORGANIZATIONNAME = GameClay;
 			};
 			buildConfigurationList = 434EB06B1513DB27005112AE /* Build configuration list for PBXProject "FlightlessManicotti" */;
