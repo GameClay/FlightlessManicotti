@@ -191,6 +191,10 @@ int luaopen_render_list(lua_State* L)
    lua_setfield(L, -2, "points");
    lua_pushnumber(L, GL_TRIANGLES);
    lua_setfield(L, -2, "triangles");
+   lua_pushnumber(L, GL_LINES);
+   lua_setfield(L, -2, "lines");
+   lua_pushnumber(L, GL_LINE_STRIP);
+   lua_setfield(L, -2, "line_strip");
 
    lua_setfield(L, -2, "drawtype");
 

@@ -17,10 +17,10 @@
  */
 
 #include <FlightlessManicotti/render/render.h>
+#include <OpenGL/gl.h>
 #include "gl_render.h"
 #include <FlightlessManicotti/math/matrix.h>
 #include <FlightlessManicotti/scriptinterface/scriptevents.h>
-#include <FlightlessManicotti/render/mesh/mesh.h>
 #include "scriptinterface/scriptinterface.h"
 #include <sanskrit/sklog.h>
 
@@ -40,6 +40,8 @@ kl_script_event_t g_event_RenderInit;
 kl_effect_t hax_effect = NULL;
 
 /* offensive hax */
+#include <FlightlessManicotti/core/timer.h>
+#include <FlightlessManicotti/render/mesh/mesh.h>
 kl_mesh_t* g_hax_script_mesh = NULL;
 
 int kl_init_rendering(kl_render_context_t* context, void* handle)
