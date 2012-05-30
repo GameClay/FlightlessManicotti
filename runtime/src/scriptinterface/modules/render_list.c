@@ -74,8 +74,8 @@ static int RenderList_removeinst(lua_State* L)
 }
 
 static const struct luaL_reg RenderList_instance_methods [] = {
-   {"insertinst", RenderList_insertinst},
-   {"removeinst", RenderList_removeinst},
+   {"insert", RenderList_insertinst},
+   {"remove", RenderList_removeinst},
    {NULL, NULL}
 };
 
