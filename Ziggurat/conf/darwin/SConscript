@@ -21,7 +21,7 @@ env.Append(CPPDEFINES=[env['ZIG_OS_DARWIN']])
 
 env.Append(CPPFLAGS=['-pipe'])
 
-ccld = ['-mmacosx-version-min=10.5.4']
+ccld = ['-mmacosx-version-min=10.7']
 env.Append(CXXFLAGS=ccld)
 env.Append(CFLAGS=ccld)
 env.Append(LINKFLAGS=ccld)
