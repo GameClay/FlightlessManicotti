@@ -39,6 +39,13 @@ extern "C" {
 #define kl_sin sinf
 #define kl_cos cosf
 
+#define kl_max(x, y) kl_fsel(y - x, y, x)
+#define kl_min(x, y) kl_fsel(y - x, x, y)
+
+#define kl_lerp(a, b, t) (a + t * (b - a))
+
+#define kl_is_zero(f) kl_fsel(fabs(f) - KL_EPSILON_F, 1, 0)
+
 typedef void (*kl_math_abc_restrict_fn)(const float* KL_RESTRICT a, const float* KL_RESTRICT b, float* KL_RESTRICT c);
 typedef void (*kl_math_abcn_restrict_fn)(const float* KL_RESTRICT a, const float* KL_RESTRICT b, float* KL_RESTRICT c, uint32_t n);
 typedef float (*kl_math_f_ab_restrict_fn)(const float* KL_RESTRICT a, const float* KL_RESTRICT b);
