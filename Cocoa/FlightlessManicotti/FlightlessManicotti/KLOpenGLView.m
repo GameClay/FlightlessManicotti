@@ -26,7 +26,6 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTime
         //NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core,
         NSOpenGLPFADoubleBuffer,
         NSOpenGLPFADepthSize, 32,
-        //NSOpenGLPFAAccelerated,
         0
     };
 
