@@ -82,6 +82,7 @@ float kl_matrix_mul_matrix_c_timing(uint32_t num)
    return (float)time_ns * 1e-6;
 }
 
+#if 3 <= __SSE__ || defined(__SSE3__)
 float kl_matrix_mul_vector_sse3_timing(uint32_t num)
 {
    kl_absolute_time_t start_time, end_time, delta_time;
@@ -110,6 +111,7 @@ float kl_matrix_mul_vector_sse3_timing(uint32_t num)
 
    return (float)time_ns * 1e-6;
 }
+#endif
 
 float kl_matrix_mul_vector_c_timing(uint32_t num)
 {
@@ -140,6 +142,7 @@ float kl_matrix_mul_vector_c_timing(uint32_t num)
    return (float)time_ns * 1e-6;
 }
 
+#if 3 <= __SSE__ || defined(__SSE3__)
 float kl_matrix_mul_vector_batch_sse3_timing(uint32_t num)
 {
    kl_absolute_time_t start_time, end_time, delta_time;
@@ -166,6 +169,7 @@ float kl_matrix_mul_vector_batch_sse3_timing(uint32_t num)
 
    return (float)time_ns * 1e-6;
 }
+#endif
 
 float kl_matrix_mul_vector_batch_c_timing(uint32_t num)
 {

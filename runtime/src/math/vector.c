@@ -21,6 +21,7 @@
 #include <sanskrit/sklog.h>
 #include <pmmintrin.h>
 
+#if 3 <= __SSE__ || defined(__SSE3__)
 float kl_vector_dot_sse3(const float* KL_RESTRICT a, const float* KL_RESTRICT b)
 {
    kl_float32x4_t v0, v1, vr;
@@ -40,6 +41,7 @@ float kl_vector_dot_sse3(const float* KL_RESTRICT a, const float* KL_RESTRICT b)
    _mm_store_ss(&ret, vr);
    return ret;
 }
+#endif
 
 float kl_vector_dot_c(const float* KL_RESTRICT a, const float* KL_RESTRICT b)
 {
@@ -87,6 +89,7 @@ void kl_vector_math_self_test()
       "Mismatch in vector dot product");
 
    /* Dot product benchmarking */
+#if 3 <= __SSE__ || defined(__SSE3__)
    kl_high_resolution_timer_query(&start_time);
    for(i = 0; i < NUM_TEST_RUNS; i++)
       kl_vector_dot_sse3(v1[i].v, v2[i].v);
@@ -94,6 +97,7 @@ void kl_vector_math_self_test()
    delta_time = end_time - start_time;
    kl_absolute_time_to_ns(&delta_time, &time_ns);
    sse_dot_ms = (float)time_ns * 1e-6;
+#endif
 
    kl_high_resolution_timer_query(&start_time);
    for(i = 0; i < NUM_TEST_RUNS; i++)
@@ -107,5 +111,9 @@ void kl_vector_math_self_test()
       NUM_TEST_RUNS, sse_dot_ms, c_dot_ms);
 }
 
+#if 3 <= __SSE__ || defined(__SSE3__)
 kl_math_f_ab_restrict_fn kl_vector_dot = kl_vector_dot_sse3;
+#else
+kl_math_f_ab_restrict_fn kl_vector_dot = kl_vector_dot_c;
+#endif
 kl_math_abc_restrict_fn kl_vector_cross = kl_vector_cross_sse;

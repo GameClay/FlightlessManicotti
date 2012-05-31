@@ -92,6 +92,7 @@ void kl_matrix_mul_matrix_c(const float* KL_RESTRICT a, const float* KL_RESTRICT
    mresult[15]= a[12]*b[3]+ a[13]*b[7]+ a[14]*b[11]+ a[15]*b[15];
 }
 
+#if 3 <= __SSE__ || defined(__SSE3__)
 void kl_matrix_mul_vector_sse3(const float* KL_RESTRICT a, const float* KL_RESTRICT vec, float* KL_RESTRICT o)
 {
    kl_float32x4_t v =  kl_load_float32x4(vec);
@@ -112,6 +113,7 @@ void kl_matrix_mul_vector_sse3(const float* KL_RESTRICT a, const float* KL_RESTR
 
    kl_store_float32x4(o, result);
 }
+#endif
 
 void kl_matrix_mul_vector_c(const float* KL_RESTRICT m, const float* KL_RESTRICT p, float* KL_RESTRICT presult)
 {
@@ -121,6 +123,7 @@ void kl_matrix_mul_vector_c(const float* KL_RESTRICT m, const float* KL_RESTRICT
    presult[3] = m[12]*p[0]+ m[13]*p[1]+ m[14]*p[2] + m[15]*p[3];
 }
 
+#if 3 <= __SSE__ || defined(__SSE3__)
 void kl_matrix_mul_vector_batch_sse3(const float* KL_RESTRICT a, const float* KL_RESTRICT vec, float* KL_RESTRICT o, uint32_t n)
 {
    const size_t prefetch_dist = 512;
@@ -157,6 +160,7 @@ void kl_matrix_mul_vector_batch_sse3(const float* KL_RESTRICT a, const float* KL
       _mm_prefetch(vec + prefetch_dist, _MM_HINT_T0);
    }
 }
+#endif
 
 void kl_matrix_mul_vector_batch_c(const float* KL_RESTRICT m, const float* KL_RESTRICT vec, float* KL_RESTRICT o, uint32_t n)
 {
@@ -304,8 +308,11 @@ void kl_matrix_math_self_test()
    kl_matrix_t c1;
    kl_matrix_t c2;
    kl_vector4_t v;
+#if 3 <= __SSE__ || defined(__SSE3__)
    kl_vector4_t d1;
    kl_vector4_t d2;
+#endif
+
 #define RFl ((float)random() / RAND_MAX)
    for(i = 0; i < 16; i++) a.m[i] = RFl;
    for(i = 0; i < 16; i++) b.m[i] = RFl;
@@ -318,7 +325,7 @@ void kl_matrix_math_self_test()
    {
       KL_ASSERT(fabs(c1.m[i] - c2.m[i]) < KL_EPSILON_F, "Mismatch in matrix-matrix multiply");
    }
-
+#if 3 <= __SSE__ || defined(__SSE3__)
    kl_matrix_mul_vector_sse3(a.m, v.v, d1.v);
    kl_matrix_mul_vector_c(a.m, v.v, d2.v);
 
@@ -326,11 +333,13 @@ void kl_matrix_math_self_test()
    {
       KL_ASSERT(fabs(d1.v[i] - d2.v[i]) < KL_EPSILON_F, "Mismatch in matrix-vector transform");
    }
+#endif
 
    /* Matrix * Matrix benchmarking */
    sse_mul_ms = kl_matrix_mul_matrix_sse_timing(NUM_TEST_RUNS);
    c_mul_ms = kl_matrix_mul_matrix_c_timing(NUM_TEST_RUNS);
 
+#if 3 <= __SSE__ || defined(__SSE3__)
    /* Matrix * Vector benchmarking */
    sse_xfm_ms = kl_matrix_mul_vector_sse3_timing(NUM_TEST_RUNS);
    c_xfm_ms = kl_matrix_mul_vector_c_timing(NUM_TEST_RUNS);
@@ -338,6 +347,7 @@ void kl_matrix_math_self_test()
    /* Matrix * Vector batch benchmarking */
    sse_batch_xfm_ms = kl_matrix_mul_vector_batch_sse3_timing(NUM_TEST_RUNS);
    c_batch_xfm_ms = kl_matrix_mul_vector_batch_c_timing(NUM_TEST_RUNS);
+#endif
 
    sklog("Matrix self tests passed. (%d iterations)\n" \
       "\tMatrix * Matrix: SSE %fms, C %fms\n" \
@@ -348,5 +358,11 @@ void kl_matrix_math_self_test()
 
 /* Assign function pointers dynamically later */
 kl_math_abc_restrict_fn kl_matrix_mul_matrix = kl_matrix_mul_matrix_sse;
+
+#if 3 <= __SSE__ || defined(__SSE3__)
 kl_math_abc_restrict_fn kl_matrix_mul_vector = kl_matrix_mul_vector_sse3;
 kl_math_abcn_restrict_fn kl_matrix_mul_vector_batch = kl_matrix_mul_vector_batch_sse3;
+#else
+kl_math_abc_restrict_fn kl_matrix_mul_vector = kl_matrix_mul_vector_c;
+kl_math_abcn_restrict_fn kl_matrix_mul_vector_batch = kl_matrix_mul_vector_batch_c;
+#endif
