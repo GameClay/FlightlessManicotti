@@ -33,11 +33,8 @@ extern int luaopen_vector3d(lua_State* L);
 extern int luaopen_float_array(lua_State* L);
 extern int luaopen_uint16_array(lua_State* L);
 extern int luaopen_vector3_array(lua_State* L);
-extern int luaopen_parameter(lua_State* L);
 extern int luaopen_mesh(lua_State* L);
 extern int luaopen_vizthingy(lua_State* L);
-extern int luaopen_cqt_wave(lua_State* L);
-extern int luaopen_cqt_wave_array(lua_State* L);
 extern int luaopen_render_list(lua_State* L);
 
 /* KL_DEFAULT_SCRIPT_CONTEXT */
@@ -101,11 +98,8 @@ int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_
    luaopen_float_array(sctx->lua_state);
    luaopen_uint16_array(sctx->lua_state);
    luaopen_vector3_array(sctx->lua_state);
-   luaopen_parameter(sctx->lua_state);
    luaopen_mesh(sctx->lua_state);
    luaopen_vizthingy(sctx->lua_state);
-   luaopen_cqt_wave(sctx->lua_state);
-   luaopen_cqt_wave_array(sctx->lua_state);
    luaopen_render_list(sctx->lua_state);
 
    LOAD_SWIG_LIBS(sctx->lua_state);

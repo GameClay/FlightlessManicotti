@@ -32,26 +32,6 @@ extern int push_lua_vector3_array(lua_State* L, float* a, size_t sz);
 
 extern kl_render_context_t g_script_render_context;
 
-/* <Hax> */
-int g_hax_script_mesh_ref = LUA_REFNIL;
-extern kl_mesh_t* g_hax_script_mesh;
-static int Mesh_setashaxmesh(lua_State* L)
-{
-   kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
-   if(mesh != NULL)
-   {
-      luaL_unref(L, LUA_REGISTRYINDEX, g_hax_script_mesh_ref);
-
-      lua_pushvalue(L, 1);
-      g_hax_script_mesh_ref = luaL_ref(L, LUA_REGISTRYINDEX);
-
-      g_hax_script_mesh = mesh;
-   }
-
-   return 0;
-}
-/* </Hax> */
-
 static int Mesh_new(lua_State* L)
 {
    kl_mesh_t* mesh = (kl_mesh_t*)lua_newuserdata(L, sizeof(kl_mesh_t));
@@ -280,8 +260,6 @@ static const struct luaL_reg Mesh_instance_methods [] = {
    {"getindices", Mesh_getindices},
    {"setindices", Mesh_setindices},
    {"setfaces", Mesh_setfaces},
-
-   {"setashaxmesh", Mesh_setashaxmesh},
 
    {NULL, NULL}
 };

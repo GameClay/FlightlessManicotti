@@ -24,10 +24,7 @@
 #include <FlightlessManicotti/scriptinterface/scriptevents.h>
 #include <FlightlessManicotti/scriptinterface/types.h>
 
-#include <FlightlessManicotti/beat/cqt_wave.h>
-
 extern const char* FLOAT_ARRAY_LUA_LIB;
-extern const char* CQT_WAVE_ARRAY_LUA_LIB;
 
 static int kl_script_event_dequeue_wrap(lua_State* L)
 {
@@ -59,15 +56,6 @@ static int kl_script_event_dequeue_wrap(lua_State* L)
             kl_lua_float_array_t* array = (kl_lua_float_array_t*)lua_newuserdata(L, sizeof(kl_lua_float_array_t));
             memcpy(array, event.event.context.as_ptr, sizeof(kl_lua_float_array_t));
             luaL_getmetatable(L, FLOAT_ARRAY_LUA_LIB);
-            lua_setmetatable(L, -2);
-            break;
-         }
-
-         case KL_SCRIPT_EVENT_CONTEXT_TYPE_CQT_WAVE_ARRAY:
-         {
-            kl_lua_cqt_wave_array_t* array = (kl_lua_cqt_wave_array_t*)lua_newuserdata(L, sizeof(kl_lua_cqt_wave_array_t));
-            memcpy(array, event.event.context.as_ptr, sizeof(kl_lua_cqt_wave_array_t));
-            luaL_getmetatable(L, CQT_WAVE_ARRAY_LUA_LIB);
             lua_setmetatable(L, -2);
             break;
          }

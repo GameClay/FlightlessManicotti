@@ -224,17 +224,16 @@ void _kl_particle_render_geom_shdr_advance_time(float dt, void* context)
 
    if(system != NULL && last_used_idx != next_buffer_idx)
    {
-      uint32_t i = 0;
       uint32_t num_particles = system->num_particles;
 
       const float* px_stream = system->px_stream;
       const float* py_stream = system->py_stream;
       const float* pz_stream = system->pz_stream;
-      const float* vx_stream = system->vx_stream;
+      /*const float* vx_stream = system->vx_stream;
       const float* vy_stream = system->vy_stream;
       const float* vz_stream = system->vz_stream;
       const float* lifespan_stream = system->lifespan_stream;
-      const float* time_stream = system->time_stream;
+      const float* time_stream = system->time_stream;*/
 
       CGLSetCurrentContext(renderer->context->resourceCGLContext);
       CGLLockContext(renderer->context->resourceCGLContext);

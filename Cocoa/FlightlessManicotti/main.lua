@@ -12,10 +12,7 @@ end
 
 require 'events'
 require 'game.components'
-require 'game.components.scene.Scene3DComponent'
 require 'game.Lsystem'
-require 'parameters'
-require 'parameters.spectrum.SpectrumComponent'
 
 -- Main is executed only once, it is not a loop. It receives the arguments
 -- that were passed to the 'kl_initialize' function.
@@ -33,22 +30,6 @@ function main(...)
    Events.subscribe(testinit, Events.init)
    Events.subscribe(testdestroy, Events.destroy)
    Events.subscribe(testrenderinit, Events.renderinit)
-
-   -- Test
-   kick = Parameter:new("kick")
-   kick:addcomponent(
-      SpectrumComponent:new{
-         onspectrumupdate = function (self, spectrum_sz, spectrum)
-            local v = 0.0
-            for i = 2, 5 do
-               local f = spectrum[i]
-               v = v + f * f
-            end
-            local val = math.sqrt(v / 3)
-            self:owner():setvalue(val)
-         end
-      },
-   "spectrum")
 end
 
 function consoleinput(_, inputstring)
@@ -177,8 +158,6 @@ function testrenderinit()
    testmesh:loadctm("./bunny.ctm")
    testmesh:computenormals()
    testmesh:update(Mesh.element.vertex + Mesh.element.normal + Mesh.element.index, Mesh.element.none)]]
-
-   testmesh:setashaxmesh()
 end
 
 function testinit()
