@@ -21,9 +21,6 @@
 #include <FlightlessManicotti/process/process.h>
 #include "render/opengl/gl_render.h"
 
-#include <FlightlessManicotti/beat/beat.h> /* hax */
-#include <sanskrit/sklog.h>
-
 typedef struct {
    GLfloat xyz[3];
    GLubyte color[4];
@@ -187,7 +184,6 @@ void _kl_particle_render_quads_advance_time(float dt, void* context)
    int next_buffer_idx = !renderer->buffer_idx;
    int last_used_idx = renderer->last_used_idx;
    kl_particle_system_t system = renderer->system;
-   kl_beat_manager_t beats = kl_beat_manager_default();
 
    if(system != NULL && last_used_idx != next_buffer_idx)
    {
@@ -218,14 +214,12 @@ void _kl_particle_render_quads_advance_time(float dt, void* context)
       for(i = 0; i < num_particles; i++)
       {
          const float t = time_stream[i] / lifespan_stream[i];
-         const float size = 0.03f * (kl_cos(beats->beat_interp * KL_PI_F) + 1.0f) * 0.5f;
+         const float size = 0.1f;
          GLubyte color[4] = {0xFF, 0xFF, 0xFF, 0xFF};
          particle_vertex* vert = &verts[i * 4];
          _point3f_simple *base_pt = &sBaseBillboardPoints[i % sNumBillboardPointSets * 4];
 
          KL_UNUSED(t);
-
-         color[1] = (uint8_t)(beats->measure_interp * 0xFF);
 
          fillVert();
          base_pt++;

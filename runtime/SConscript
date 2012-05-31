@@ -11,9 +11,8 @@ script_files = Glob('src/scriptinterface/*.c', strings=True) + Glob('src/scripti
    Glob('src/scriptinterface/helpers/*.c', strings=True)
 game_files = Glob('src/game/*.c', strings=True) + Glob('src/game/scene2d/*.c', strings=True) + \
    Glob('src/game/scene3d/*.c', strings=True) + Glob('src/game/particles/*.c', strings=True) + \
-   Glob('src/game/parameters/*.c', strings=True) + Glob('src/game/particles/simulations/*.c', strings=True)
+   Glob('src/game/particles/simulations/*.c', strings=True)
 render_files = Glob('src/render/*.c', strings=True) + Glob('src/render/script/*.c', strings=True)
-beat_files = Glob('src/beat/*.c', strings=True)
 sanskrit_files = Glob('src/sanskrit/src/*.c', strings=True)
 
 # Platform specific render implementation
@@ -28,7 +27,7 @@ swig_files = Glob('src/scriptinterface/swig/*.i', strings=True)
 runtime_env.Command("src/swig_autogen.h", swig_files, build_swig_header.build)
 
 # Assemble the runtime lib source files
-lib_files = core_files + script_files + swig_files + game_files + render_files + beat_files + sanskrit_files
+lib_files = core_files + script_files + swig_files + game_files + render_files + sanskrit_files
 
 # Prune out excluded files
 excluded_files = []
