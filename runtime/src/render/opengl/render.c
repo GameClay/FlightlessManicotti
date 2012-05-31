@@ -17,10 +17,10 @@
  */
 
 #include <FlightlessManicotti/render/render.h>
-#include <OpenGL/gl.h>
 #include "gl_render.h"
 #include <FlightlessManicotti/math/matrix.h>
 #include <FlightlessManicotti/scriptinterface/scriptevents.h>
+#include <FlightlessManicotti/render/mesh/mesh.h>
 #include "scriptinterface/scriptinterface.h"
 #include <sanskrit/sklog.h>
 
@@ -36,12 +36,7 @@ kl_script_event_t g_event_RenderInit;
 #include <string.h>
 #include <FlightlessManicotti/math/math.h>
 
-/* sighhax */
-kl_effect_t hax_effect = NULL;
-
 /* offensive hax */
-#include <FlightlessManicotti/core/timer.h>
-#include <FlightlessManicotti/render/mesh/mesh.h>
 kl_mesh_t* g_hax_script_mesh = NULL;
 
 int kl_init_rendering(kl_render_context_t* context, void* handle)
@@ -108,11 +103,6 @@ int kl_init_rendering(kl_render_context_t* context, void* handle)
          glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
       }
 
-      /* sighhax */
-      {
-         /*kl_effect_manager_get_effect(ctx, "VertexNormals", &hax_effect);*/
-      }
-
       /* Null out render list */
       ctx->render_list = NULL;
 
@@ -139,9 +129,6 @@ int kl_init_rendering(kl_render_context_t* context, void* handle)
 
 void kl_destroy_rendering(kl_render_context_t* context)
 {
-   /* sighhax */
-   kl_effect_manager_destroy_effect(*context, &hax_effect);
-
    if(context != NULL && *context != NULL)
    {
       kl_render_context_t ctx = *context;
@@ -206,6 +193,10 @@ void kl_render_assign_list(kl_render_context_t context, void* list)
    context->render_list = (kl_render_list_t*)list;
 }
 
+/* Slight hax */
+extern void kl_cqt_lights_enable(kl_cqt_t cqt);
+extern void kl_cqt_lights_disable();
+
 void kl_render_frame(kl_render_context_t context, float display_width, float display_height)
 {
    float cqt_colors[12][3] = {
@@ -221,17 +212,6 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
       {0.5f, 0.0f, 1.0f},  /* A */
       {1.0f, 0.0f, 1.0f},  /* A#/Bb */
       {1.0f, 0.0f, 0.5f},  /* B */
-   };
-
-   float cqt_lights[8][3] = {
-      {1.0f, 0.25f, 0.0f},  /* C#/Db */
-      {1.0f, 1.0f, 0.0f},  /* D */
-      {0.5f, 1.0f, 0.0f},  /* D#/Eb */
-      {0.0f, 1.0f, 0.5f},  /* F */
-      {0.0f, 1.0f, 1.0f},  /* F#/Gb */
-      {0.0f, 0.5f, 1.0f},  /* G */
-      {0.5f, 0.0f, 1.0f},  /* A */
-      {1.0f, 0.0f, 1.0f},  /* A#/Bb */
    };
    kl_cqt_t cqt = kl_freq_manager_get_cqt(NULL);
 
@@ -572,17 +552,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
 
    if(g_hax_script_mesh != NULL)
    {
-      kl_absolute_time_t current_time;
-      uint64_t current_time_ns;
-      GLfloat lightpos[4];
       int i;
-      int lmax;
-      glGetIntegerv(GL_MAX_LIGHTS, &lmax);
-      lmax = lmax > 12 ? 12 : lmax;
-
-      kl_high_resolution_timer_query(&current_time);
-      kl_absolute_time_to_ns(&current_time, &current_time_ns);
-
       kl_mesh_bind(g_hax_script_mesh);
 
       glMatrixMode(GL_MODELVIEW);
@@ -590,57 +560,14 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
 
       glEnable(GL_DEPTH_TEST);
 
-      glEnable(GL_LIGHTING);
-      glShadeModel(GL_SMOOTH);
-
-      for(i = 0; i < lmax; i++)
-      {
-         float interp = (float)i / (float)lmax;
-         float angle = interp * KL_2PI_F + KL_PI_F / 12.0f;
-         float vx = -1.0f * kl_cos(angle);
-         float vy = kl_sin(angle);
-         lightpos[0] =  vx;
-         lightpos[1] =  vy;
-         lightpos[2] = -0.15f;
-         lightpos[3] =  0.0;
-         glLightfv(GL_LIGHT0 + i, GL_POSITION, lightpos);
-      }
-
       if(kl_freq_manager_get_cqt_texture(NULL) != 0) /* HAX */
       {
-         float cqt_spectrum[4096];
          int o, num_octaves, bins_per_octave;
          float** octaves;
 
-         kl_zero_mem(cqt_spectrum, sizeof(cqt_spectrum));
+         kl_cqt_lights_enable(cqt);
+
          kl_cqt_get_octaves(cqt, &octaves, &num_octaves, &bins_per_octave);
-         for(o = 3; o < num_octaves; o++)
-         {
-            for(i = 0; i < bins_per_octave; i++)
-            {
-               float val = octaves[o][i];
-               cqt_spectrum[i] += val;
-            }
-         }
-
-         for(i = 0; i < lmax; i++)
-         {
-            float val = 0.0f;
-            int omax = bins_per_octave / lmax;
-            for(o = 0; o < omax; o++)
-            {
-               val += cqt_spectrum[o + i * omax];
-            }
-            val /= omax;
-            val *= 3.0f;
-
-            lightpos[0] = cqt_lights[i][0] * val;
-            lightpos[1] = cqt_lights[i][1] * val;
-            lightpos[2] = cqt_lights[i][2] * val;
-            lightpos[3] = 1.0;
-            glLightfv(GL_LIGHT0 + i, GL_DIFFUSE, lightpos);
-            glEnable(GL_LIGHT0 + i);
-         }
 
          /* bass-based rotation */
          o = (bins_per_octave + bins_per_octave / 2) / 3;
@@ -685,27 +612,12 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
             glRotatef(bass_theta_3, 0.0f, 0.0f, 1.0f);
          }
       }
-      else
-      {
-         kl_matrix_scale(modelview_mat.m, 0.15f, 0.15f, 0.15f);
-         glLoadTransposeMatrixf(modelview_mat.m);
-         glRotatef((float)current_time_ns * 1e-8, 1.0f, 1.0f, 0.0f);
-      }
-      
-      /*glRotatef(90.0f, 1.0f, 0.0f, 0.0f);*/
-      /*glTranslatef(0.0f, 0.0f, -5.0f);*/
 
 /*glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );*/
       glDrawElements(GL_TRIANGLES, g_hax_script_mesh->num_indices, GL_UNSIGNED_SHORT, NULL);
 /*glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );*/
 
-      glDisable(GL_LIGHTING);
-      for(i = 0; i < lmax; i++) glDisable(GL_LIGHT0 + i);
-
-      /* Draw vertex normals */
-      /*kl_effect_manager_bind_effect(hax_effect);
-      glDrawArrays(GL_POINTS, 0, g_hax_script_mesh->num_verts);
-      kl_effect_manager_bind_effect(NULL);*/
+      kl_cqt_lights_disable();
 
       glDisable(GL_DEPTH_TEST);
 
@@ -713,6 +625,12 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
    }
 
    /* Draw render list */
+
+   /* Hax */
+   glEnable(GL_TEXTURE_1D);
+   glBindTexture(GL_TEXTURE_1D, kl_freq_manager_get_cqt_texture(NULL));
+
+   glEnable(GL_BLEND);
    if(context->render_list != NULL && context->render_list->list != NULL)
    {
       uint32_t max_idx = context->render_list->max_idx;
@@ -724,6 +642,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
          {
             glMatrixMode(GL_MODELVIEW);
             glLoadTransposeMatrixf(inst->obj_to_world.m);
+            glBlendFunc(inst->blend_src, inst->blend_dest);
             kl_mesh_bind(inst->mesh);
             kl_effect_manager_bind_effect(inst->material);
             glDrawElements(inst->draw_type, inst->mesh->num_indices, GL_UNSIGNED_SHORT, NULL);
@@ -732,6 +651,9 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
          }
       }
    }
+   glDisable(GL_BLEND);
+
+   glDisable(GL_TEXTURE_1D);
 
    glFinish();
 

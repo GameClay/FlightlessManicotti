@@ -94,6 +94,8 @@ static int RenderInstance_new(lua_State* L)
    inst->material = NULL;
    inst->mesh = NULL;
    inst->draw_type = GL_TRIANGLES;
+   inst->blend_src = GL_ONE;
+   inst->blend_dest = GL_ZERO;
    kl_matrix_identity(inst->obj_to_world.m);
 
    luaL_getmetatable(L, RENDER_INSTANCE_LUA_LIB);
@@ -123,7 +125,10 @@ static int RenderInstance_setmesh(lua_State* L)
 static int RenderInstance_setmaterial(lua_State* L)
 {
    kl_render_instance_t* inst = (kl_render_instance_t*)lua_touserdata(L, 1);
-   const char* effect_key = lua_tostring(L, 2);
+   const char* effect_key;
+
+   luaL_argcheck(L, lua_isstring(L, 2), 2, "expected material identifier");
+   effect_key = lua_tostring(L, 2);
 
    if(inst->material != NULL)
    {
@@ -145,7 +150,18 @@ static int RenderInstance_settransform(lua_State* L)
 static int RenderInstance_setdrawtype(lua_State* L)
 {
    kl_render_instance_t* inst = (kl_render_instance_t*)lua_touserdata(L, 1);
+   luaL_argcheck(L, lua_isnumber(L, 2), 2, "expected draw type");
    inst->draw_type = lua_tointeger(L, 2);
+   return 0;
+}
+
+static int RenderInstance_setblend(lua_State* L)
+{
+   kl_render_instance_t* inst = (kl_render_instance_t*)lua_touserdata(L, 1);
+   luaL_argcheck(L, lua_isnumber(L, 2), 2, "expected blend type");
+   luaL_argcheck(L, lua_isnumber(L, 3), 3, "expected blend type");
+   inst->blend_src = lua_tointeger(L, 2);
+   inst->blend_dest = lua_tointeger(L, 3);
    return 0;
 }
 
@@ -154,6 +170,7 @@ static const struct luaL_reg RenderInstance_instance_methods [] = {
    {"setmaterial", RenderInstance_setmaterial},
    {"settransform", RenderInstance_settransform},
    {"setdrawtype", RenderInstance_setdrawtype},
+   {"setblend", RenderInstance_setblend},
    {NULL, NULL}
 };
 
@@ -197,6 +214,32 @@ int luaopen_render_list(lua_State* L)
    lua_setfield(L, -2, "line_strip");
 
    lua_setfield(L, -2, "drawtype");
+
+   /* Blend type constant */
+   lua_newtable(L);
+
+   lua_pushnumber(L, GL_ZERO);
+   lua_setfield(L, -2, "zero");
+   lua_pushnumber(L, GL_ONE);
+   lua_setfield(L, -2, "one");
+   lua_pushnumber(L, GL_SRC_COLOR);
+   lua_setfield(L, -2, "src_color");
+   lua_pushnumber(L, GL_ONE_MINUS_SRC_COLOR);
+   lua_setfield(L, -2, "one_minus_src_color");
+   lua_pushnumber(L, GL_DST_COLOR);
+   lua_setfield(L, -2, "dst_color");
+   lua_pushnumber(L, GL_ONE_MINUS_DST_COLOR);
+   lua_setfield(L, -2, "one_minus_dst_color");
+   lua_pushnumber(L, GL_SRC_ALPHA);
+   lua_setfield(L, -2, "src_alpha");
+   lua_pushnumber(L, GL_ONE_MINUS_SRC_ALPHA);
+   lua_setfield(L, -2, "one_minus_src_alpha");
+   lua_pushnumber(L, GL_DST_ALPHA);
+   lua_setfield(L, -2, "dst_alpha");
+   lua_pushnumber(L, GL_ONE_MINUS_DST_ALPHA);
+   lua_setfield(L, -2, "one_minus_dst_alpha");
+
+   lua_setfield(L, -2, "blend");
 
    return 1;
 }

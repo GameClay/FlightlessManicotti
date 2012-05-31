@@ -32,7 +32,11 @@ extern "C" {
 typedef struct {
    kl_matrix_t obj_to_world;
    kl_mesh_t* mesh;
+
    kl_effect_t material; /* TODO: Proper material */
+   uint32_t blend_src;
+   uint32_t blend_dest;
+
    uint32_t list_index;
    uint32_t draw_type;
 } kl_render_instance_t;
