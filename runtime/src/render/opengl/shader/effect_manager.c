@@ -163,11 +163,117 @@ int kl_effect_manager_get_effect(kl_render_context_t render_ctx, const char* eff
    return ret;
 }
 
-void kl_effect_manager_bind_effect(kl_effect_t effect)
+void kl_effect_manager_bind_effect(kl_effect_t effect, kl_shader_constant_t** constant,
+   size_t num_constants)
 {
    if(effect != NULL)
    {
+      int i;
+      int num_tex = 0;
       glUseProgram(effect->program);
+
+      for(i = 0; i < num_constants; i++)
+      {
+         GLint loc = glGetUniformLocation(effect->program, constant[i]->name);
+         if(loc < 0) continue;
+
+         switch(constant[i]->constant_type)
+         {
+            case KL_SHADER_CONSTANT_TYPE_MATRIX:
+            {
+               glUniformMatrix4fv(loc, constant[i]->constant_num,
+                  GL_FALSE, constant[i]->constant.as_float_ptr);
+               break;
+            }
+
+            case KL_SHADER_CONSTANT_TYPE_TEX:
+            {
+               GLint tex_type;
+               glUniform1i(loc, num_tex);
+               glActiveTexture(GL_TEXTURE0 + num_tex);
+               switch(constant[i]->constant_sz)
+               {
+                  case 1: tex_type = GL_TEXTURE_1D; break;
+                  case 2: tex_type = GL_TEXTURE_2D; break;
+                  case 3: tex_type = GL_TEXTURE_3D; break;
+                  case 4: tex_type = GL_TEXTURE_CUBE_MAP; break;
+               }
+               glBindTexture(GL_TEXTURE_2D, constant[i]->constant.as_tex);
+               num_tex++;
+               break;
+            }
+
+            case KL_SHADER_CONSTANT_TYPE_FLOAT:
+            {
+               switch(constant[i]->constant_sz)
+               {
+                  case 1:
+                  {
+                     glUniform1fv(loc, constant[i]->constant_num,
+                        constant[i]->constant.as_float_ptr);
+                     break;
+                  }
+
+                  case 2:
+                  {
+                     glUniform2fv(loc, constant[i]->constant_num,
+                        constant[i]->constant.as_float_ptr);
+                     break;
+                  }
+
+                  case 3:
+                  {
+                     glUniform3fv(loc, constant[i]->constant_num,
+                        constant[i]->constant.as_float_ptr);
+                     break;
+                  }
+
+                  case 4:
+                  {
+                     glUniform4fv(loc, constant[i]->constant_num,
+                        constant[i]->constant.as_float_ptr);
+                     break;
+                  }
+               }
+               break;
+            }
+
+            case KL_SHADER_CONSTANT_TYPE_INT:
+            {
+               switch(constant[i]->constant_sz)
+               {
+                  case 1:
+                  {
+                     glUniform1iv(loc, constant[i]->constant_num,
+                        constant[i]->constant.as_int_ptr);
+                     break;
+                  }
+
+                  case 2:
+                  {
+                     glUniform2iv(loc, constant[i]->constant_num,
+                        constant[i]->constant.as_int_ptr);
+                     break;
+                  }
+
+                  case 3:
+                  {
+                     glUniform3iv(loc, constant[i]->constant_num,
+                        constant[i]->constant.as_int_ptr);
+                     break;
+                  }
+
+                  case 4:
+                  {
+                     glUniform4iv(loc, constant[i]->constant_num,
+                        constant[i]->constant.as_int_ptr);
+                     break;
+                  }
+               }
+               break;
+            }
+         }
+      }
    }
    else
    {

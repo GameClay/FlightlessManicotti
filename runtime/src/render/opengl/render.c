@@ -127,9 +127,9 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
             glLoadTransposeMatrixf(inst->obj_to_world.m);
             glBlendFunc(inst->blend_src, inst->blend_dest);
             kl_mesh_bind(inst->mesh);
-            kl_effect_manager_bind_effect(inst->material);
+            kl_effect_manager_bind_effect(inst->material, inst->consts, inst->num_consts);
             glDrawElements(inst->draw_type, inst->mesh->num_indices, GL_UNSIGNED_SHORT, NULL);
-            kl_effect_manager_bind_effect(NULL);
+            kl_effect_manager_bind_effect(NULL, NULL, 0);
             kl_mesh_bind(NULL);
          }
       }

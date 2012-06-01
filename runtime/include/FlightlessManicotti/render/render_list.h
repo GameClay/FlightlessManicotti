@@ -37,6 +37,9 @@ typedef struct {
    uint32_t blend_src;
    uint32_t blend_dest;
 
+   kl_shader_constant_t** consts;
+   size_t num_consts;
+
    uint32_t list_index;
    uint32_t draw_type;
 } kl_render_instance_t;
