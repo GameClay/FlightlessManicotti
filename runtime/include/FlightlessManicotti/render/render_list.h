@@ -44,6 +44,7 @@ typedef struct {
    uint32_t draw_type;
 
    void* render_target;
+   KL_BOOL clear_before_draw;
 } kl_render_instance_t;
 
 typedef struct {

@@ -20,6 +20,7 @@
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
+#include <sanskrit/sklog.h>
 #include <FlightlessManicotti/render/render.h>
 #include "render/opengl/gl_render.h"
 
@@ -29,10 +30,54 @@ const char* RENDER_TARGET_LUA_LIB = "RenderTarget";
 
 static int RenderTarget_new(lua_State* L)
 {
-   struct _kl_offscreen_target* inst =
-      (struct _kl_offscreen_target*)lua_newuserdata(L, sizeof(struct _kl_offscreen_target));
+   struct _kl_offscreen_target* target = NULL;
 
-   KL_UNUSED(inst);
+   luaL_argcheck(L, lua_isnumber(L, 1), 1, "expected target width");
+   luaL_argcheck(L, lua_isnumber(L, 2), 2, "expected target height");
+
+   target = (struct _kl_offscreen_target*)lua_newuserdata(L, sizeof(struct _kl_offscreen_target));
+   target->width = lua_tointeger(L, 1);
+   target->height = lua_tointeger(L, 2);
+
+   CGLSetCurrentContext(g_script_render_context->resourceCGLContext);
+   CGLLockContext(g_script_render_context->resourceCGLContext);
+   {
+      glGenFramebuffersEXT(1, &target->framebuffer);
+      glGenTextures(1, &target->texture);
+      glGenRenderbuffersEXT(1, &target->depthstencil);
+
+      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, target->framebuffer);
+
+      glBindTexture(GL_TEXTURE_2D, target->texture);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, target->width, target->height,
+                   0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+      glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+                                GL_TEXTURE_2D, target->texture, 0);
+
+      glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, target->depthstencil);
+      glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH24_STENCIL8_EXT, target->width, target->height);
+      glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT,
+                                   target->depthstencil);
+
+      if(glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT) != GL_FRAMEBUFFER_COMPLETE_EXT)
+      {
+         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+         CGLUnlockContext(g_script_render_context->resourceCGLContext);
+         skerr("Script render target creation failed.");
+         lua_pop(L, 1);
+         lua_pushnil(L);
+         return 1;
+      }
+
+      /* Clear framebuffer */
+      glClearColor(0, 0, 0, 0);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+   }
+   CGLUnlockContext(g_script_render_context->resourceCGLContext);
 
    luaL_getmetatable(L, RENDER_TARGET_LUA_LIB);
    lua_setmetatable(L, -2);
@@ -42,9 +87,18 @@ static int RenderTarget_new(lua_State* L)
 
 static int RenderTarget_gc(lua_State* L)
 {
+   struct _kl_offscreen_target* target = (struct _kl_offscreen_target*)lua_touserdata(L, 1);
+
+   CGLSetCurrentContext(g_script_render_context->resourceCGLContext);
+   CGLLockContext(g_script_render_context->resourceCGLContext);
+   {
+      glDeleteFramebuffersEXT(1, &target->framebuffer);
+      glDeleteRenderbuffersEXT(1, &target->depthstencil);
+      glDeleteTextures(1, &target->texture);
+   }
+   CGLUnlockContext(g_script_render_context->resourceCGLContext);
    return 0;
 }
-
 
 static const struct luaL_reg RenderTarget_instance_methods [] = {
    {NULL, NULL}

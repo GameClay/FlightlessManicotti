@@ -98,6 +98,7 @@ static int RenderInstance_new(lua_State* L)
    inst->consts = NULL;
    inst->num_consts = 0;
    inst->render_target = NULL;
+   inst->clear_before_draw = 0;
 
    luaL_getmetatable(L, RENDER_INSTANCE_LUA_LIB);
    lua_setmetatable(L, -2);
@@ -221,6 +222,27 @@ static int RenderInstance_setshaderconstants(lua_State* L)
                break;
             }
 
+            case LUA_TUSERDATA:
+            {
+               int is_eq = 0;
+
+               /* Check to see if it's a render target */
+               lua_getmetatable(L, -1);
+               luaL_getmetatable(L, RENDER_TARGET_LUA_LIB);
+               is_eq = lua_equal(L, -1, -2);
+               lua_pop(L, 2);
+               if(is_eq)
+               {
+                  struct _kl_offscreen_target* target = (struct _kl_offscreen_target*)lua_touserdata(L, -1);
+                  inst->consts[i]->dealloc_constant = 0;
+                  inst->consts[i]->constant_sz = 2; /* 2D texture */
+                  inst->consts[i]->constant_num = 1;
+                  inst->consts[i]->constant_type = KL_SHADER_CONSTANT_TYPE_TEX;
+                  inst->consts[i]->constant.as_tex = target->texture;
+               }
+               break;
+            }
+
             /* TODO 
             case LUA_TFUNCTION:
             {
@@ -292,6 +314,14 @@ static int RenderInstance_setblend(lua_State* L)
    return 0;
 }
 
+static int RenderInstance_setclearbeforedraw(lua_State* L)
+{
+   kl_render_instance_t* inst = (kl_render_instance_t*)lua_touserdata(L, 1);
+   luaL_argcheck(L, lua_isboolean(L, 2), 2, "expected boolean");
+   inst->clear_before_draw = lua_toboolean(L, 2);
+   return 0;
+}
+
 static const struct luaL_reg RenderInstance_instance_methods [] = {
    {"setmesh", RenderInstance_setmesh},
    {"setmaterial", RenderInstance_setmaterial},
@@ -300,6 +330,7 @@ static const struct luaL_reg RenderInstance_instance_methods [] = {
    {"setblend", RenderInstance_setblend},
    {"setshaderconstants", RenderInstance_setshaderconstants},
    {"setrendertarget", RenderInstance_setrendertarget},
+   {"setclearbeforedraw", RenderInstance_setclearbeforedraw},
    {NULL, NULL}
 };
 
