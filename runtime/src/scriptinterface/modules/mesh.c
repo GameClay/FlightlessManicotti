@@ -29,6 +29,7 @@ const char* MESH_LUA_LIB = "Mesh";
 extern int push_lua_float_array(lua_State* L, float* a, size_t sz);
 extern int push_lua_uint16_array(lua_State* L, uint16_t* a, size_t sz);
 extern int push_lua_vector3_array(lua_State* L, float* a, size_t sz);
+extern int push_lua_vector2_array(lua_State* L, float* a, size_t sz);
 
 extern kl_render_context_t g_script_render_context;
 
@@ -177,6 +178,50 @@ static int Mesh_setpositions(lua_State* L)
    return 0;
 }
 
+static int Mesh_gettexcoords(lua_State* L)
+{
+   kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
+
+   if(mesh != NULL)
+   {
+      if(mesh->tex0 != NULL)
+      {
+         return push_lua_vector2_array(L, mesh->tex0, mesh->num_verts);
+      }
+   }
+
+   lua_pushnil(L);
+   return 1;
+}
+
+static int Mesh_settexcoords(lua_State* L)
+{
+   kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
+
+   luaL_argcheck(L, lua_istable(L, 2), 2, "expected table of texture coords {{x1, y1}, {x2, y2}, ...}");
+   if(mesh != NULL)
+   {
+      int table_sz = luaL_getn(L, 2);
+      float* cur_vert = NULL;
+
+      if(mesh->tex0 != NULL) kl_heap_free(mesh->tex0);
+      mesh->num_verts = table_sz;
+      mesh->tex0 = kl_heap_alloc(sizeof(float) * 2 * mesh->num_verts);
+      cur_vert = mesh->tex0;
+
+      lua_pushnil(L);
+      while(lua_next(L, 2))
+      {
+         lua_readvector2d(L, -1, cur_vert);
+         lua_pop(L, 1);
+         cur_vert += 2;
+      }
+      lua_pop(L, 1);
+   }
+
+   return 0;
+}
+
 static int Mesh_getindices(lua_State* L)
 {
    kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
@@ -256,6 +301,9 @@ static const struct luaL_reg Mesh_instance_methods [] = {
 
    {"getpositions", Mesh_getpositions},
    {"setpositions", Mesh_setpositions},
+
+   {"settexcoords", Mesh_settexcoords},
+   {"gettexcoords", Mesh_gettexcoords},
 
    {"getindices", Mesh_getindices},
    {"setindices", Mesh_setindices},
