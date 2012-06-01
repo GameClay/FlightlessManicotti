@@ -39,8 +39,8 @@ static int RenderTarget_new(lua_State* L)
    target->width = lua_tointeger(L, 1);
    target->height = lua_tointeger(L, 2);
 
-   CGLSetCurrentContext(g_script_render_context->resourceCGLContext);
-   CGLLockContext(g_script_render_context->resourceCGLContext);
+   CGLSetCurrentContext(g_script_render_context->drawableCGLContext);
+   CGLLockContext(g_script_render_context->drawableCGLContext);
    {
       glGenFramebuffersEXT(1, &target->framebuffer);
       glGenTextures(1, &target->texture);
@@ -64,7 +64,8 @@ static int RenderTarget_new(lua_State* L)
       if(glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT) != GL_FRAMEBUFFER_COMPLETE_EXT)
       {
          glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-         CGLUnlockContext(g_script_render_context->resourceCGLContext);
+         glBindTexture(GL_TEXTURE_2D, 0);
+         CGLUnlockContext(g_script_render_context->drawableCGLContext);
          skerr("Script render target creation failed.");
          lua_pop(L, 1);
          lua_pushnil(L);
@@ -76,8 +77,9 @@ static int RenderTarget_new(lua_State* L)
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+      glBindTexture(GL_TEXTURE_2D, 0);
    }
-   CGLUnlockContext(g_script_render_context->resourceCGLContext);
+   CGLUnlockContext(g_script_render_context->drawableCGLContext);
 
    luaL_getmetatable(L, RENDER_TARGET_LUA_LIB);
    lua_setmetatable(L, -2);
@@ -89,18 +91,63 @@ static int RenderTarget_gc(lua_State* L)
 {
    struct _kl_offscreen_target* target = (struct _kl_offscreen_target*)lua_touserdata(L, 1);
 
-   CGLSetCurrentContext(g_script_render_context->resourceCGLContext);
-   CGLLockContext(g_script_render_context->resourceCGLContext);
+   CGLSetCurrentContext(g_script_render_context->drawableCGLContext);
+   CGLLockContext(g_script_render_context->drawableCGLContext);
    {
       glDeleteFramebuffersEXT(1, &target->framebuffer);
       glDeleteRenderbuffersEXT(1, &target->depthstencil);
       glDeleteTextures(1, &target->texture);
    }
-   CGLUnlockContext(g_script_render_context->resourceCGLContext);
+   CGLUnlockContext(g_script_render_context->drawableCGLContext);
+   return 0;
+}
+
+static int RenderTarget_update(lua_State* L)
+{
+   struct _kl_offscreen_target* target = NULL;
+
+   luaL_argcheck(L, lua_isnumber(L, 2), 2, "expected target width");
+   luaL_argcheck(L, lua_isnumber(L, 3), 3, "expected target height");
+
+   target = (struct _kl_offscreen_target*)lua_touserdata(L, 1);
+   target->width = lua_tointeger(L, 2);
+   target->height = lua_tointeger(L, 3);
+
+   CGLSetCurrentContext(g_script_render_context->drawableCGLContext);
+   CGLLockContext(g_script_render_context->drawableCGLContext);
+   {
+      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, target->framebuffer);
+
+      glBindTexture(GL_TEXTURE_2D, target->texture);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, target->width, target->height,
+                   0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+      glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, target->depthstencil);
+      glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH24_STENCIL8_EXT, target->width, target->height);
+
+      if(glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT) != GL_FRAMEBUFFER_COMPLETE_EXT)
+      {
+         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+         glBindTexture(GL_TEXTURE_2D, 0);
+         CGLUnlockContext(g_script_render_context->drawableCGLContext);
+         skerr("Script render target update failed.");
+         return 0;
+      }
+
+      /* Clear framebuffer */
+      glClearColor(0, 0, 0, 0);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+      glBindTexture(GL_TEXTURE_2D, 0);
+   }
+   CGLUnlockContext(g_script_render_context->drawableCGLContext);
+
    return 0;
 }
 
 static const struct luaL_reg RenderTarget_instance_methods [] = {
+   {"update", RenderTarget_update},
    {NULL, NULL}
 };
 
