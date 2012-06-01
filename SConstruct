@@ -89,9 +89,8 @@ else:
 dependencies = [
    'amp',
    'lua',
-   'sqlite3',
-   'lsqlite3',
-   'openctm'
+   'openctm',
+   'kiss_fft'
 ]
 
 if env.GetOption('microalloc'):
