@@ -33,6 +33,7 @@ extern "C" {
 
 typedef struct kl_shader_constant_t {
    union {
+      void* as_ptr;
       float* as_float_ptr;
       int* as_int_ptr;
       int as_tex;

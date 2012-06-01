@@ -315,11 +315,22 @@ static int RenderInstance_updateshaderconstants(lua_State* L)
 
          if(constant != NULL)
          {
+            void* old_ptr = NULL;
+
             switch(lua_type(L, -1))
             {
                case LUA_TNUMBER:
                {
-                  constant->constant.as_float_ptr = kl_heap_alloc(sizeof(float));
+                  if(constant->constant_type != KL_SHADER_CONSTANT_TYPE_FLOAT)
+                  {
+                     if(constant->dealloc_constant)
+                     {
+                        old_ptr = constant->constant.as_ptr;
+                     }
+
+                     constant->constant.as_float_ptr = kl_heap_alloc(sizeof(float));
+                  }
+
                   constant->dealloc_constant = 1;
                   constant->constant_sz = 1;
                   constant->constant_num = 1;
@@ -370,6 +381,11 @@ static int RenderInstance_updateshaderconstants(lua_State* L)
                {
                   break;
                }
+            }
+
+            if(old_ptr != NULL)
+            {
+               kl_heap_free(old_ptr);
             }
          }
       }
