@@ -75,7 +75,10 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTime
 }
 
 - (CVReturn)getFrameForTime:(const CVTimeStamp*)outputTime
-{    
+{
+    // Mainloop iteration
+    kl_mainloop_iteration();
+
     // draw here
     if(renderContext != NULL)
         kl_render_frame(renderContext, displayWidth, displayHeight);
