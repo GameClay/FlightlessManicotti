@@ -42,6 +42,8 @@ typedef struct {
 
    uint32_t list_index;
    uint32_t draw_type;
+
+   void* render_target;
 } kl_render_instance_t;
 
 typedef struct {

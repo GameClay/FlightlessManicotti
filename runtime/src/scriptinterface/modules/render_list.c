@@ -25,13 +25,11 @@
 
 extern kl_render_context_t g_script_render_context;
 
-/* Hax */
-#include <FlightlessManicotti/math/matrix.h>
-
 const char* RENDER_LIST_LUA_LIB = "RenderList";
 const char* RENDER_INSTANCE_LUA_LIB = "RenderInstance";
 
 extern const char* MESH_LUA_LIB;
+extern const char* RENDER_TARGET_LUA_LIB;
 
 static int RenderList_new(lua_State* L)
 {
@@ -99,6 +97,7 @@ static int RenderInstance_new(lua_State* L)
    kl_matrix_identity(inst->obj_to_world.m);
    inst->consts = NULL;
    inst->num_consts = 0;
+   inst->render_target = NULL;
 
    luaL_getmetatable(L, RENDER_INSTANCE_LUA_LIB);
    lua_setmetatable(L, -2);
@@ -261,6 +260,20 @@ static int RenderInstance_settransform(lua_State* L)
    return 0;
 }
 
+static int RenderInstance_setrendertarget(lua_State* L)
+{
+   kl_render_instance_t* inst = (kl_render_instance_t*)lua_touserdata(L, 1);
+   struct _kl_offscreen_target* target = NULL;
+
+   if(!lua_isnoneornil(L, 2))
+   {
+      target = (struct _kl_offscreen_target*)luaL_checkudata(L, 2, RENDER_TARGET_LUA_LIB);
+   }
+
+   inst->render_target = target;
+   return 0;
+}
+
 static int RenderInstance_setdrawtype(lua_State* L)
 {
    kl_render_instance_t* inst = (kl_render_instance_t*)lua_touserdata(L, 1);
@@ -286,6 +299,7 @@ static const struct luaL_reg RenderInstance_instance_methods [] = {
    {"setdrawtype", RenderInstance_setdrawtype},
    {"setblend", RenderInstance_setblend},
    {"setshaderconstants", RenderInstance_setshaderconstants},
+   {"setrendertarget", RenderInstance_setrendertarget},
    {NULL, NULL}
 };
 
