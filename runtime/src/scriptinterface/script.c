@@ -92,7 +92,7 @@ int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_
    kl_register_script_event_context_type(g_event_ConsoleInput.event.id, LUA_TSTRING);
 
    /* Start up lua */
-   sctx->lua_state = lua_open();
+   sctx->lua_state = luaL_newstate();
    luaL_openlibs(sctx->lua_state);
 
    luaopen_scriptevents(sctx->lua_state);
