@@ -161,33 +161,21 @@ static int RenderInstance_setmaterial(lua_State* L)
 static int RenderInstance_setshaderconstants(lua_State* L)
 {
    kl_render_instance_t* inst = (kl_render_instance_t*)lua_touserdata(L, 1);
-   int i;
+   int i, num_consts, old_num_consts;
+   kl_shader_constant_t** consts;
+   kl_shader_constant_t** old_consts;
    luaL_argcheck(L, lua_istable(L, 2), 2, "expected table of shader constants");
 
-   if(inst->consts != NULL)
-   {
-      for(i = 0; i < inst->num_consts; i++)
-      {
-         if(inst->consts[i]->dealloc_constant)
-         {
-            kl_heap_free(inst->consts[i]->constant.as_float_ptr);
-         }
-         kl_heap_free(inst->consts[i]);
-      }
-      kl_heap_free(inst->consts);
-   }
-
-   i = 0;
+   num_consts = 0;
    lua_pushnil(L);
    while(lua_next(L, 2))
    {
       lua_pop(L, 1);
-      i++;
+      num_consts++;
    }
-   if(i == 0) lua_pop(L, 1);
+   if(num_consts == 0) lua_pop(L, 1);
 
-   inst->num_consts = i;
-   inst->consts = kl_heap_alloc(sizeof(kl_shader_constant_t*) * inst->num_consts);
+   consts = kl_heap_alloc(sizeof(kl_shader_constant_t*) * num_consts);
 
    i = 0;
    lua_pushnil(L);
@@ -200,20 +188,20 @@ static int RenderInstance_setshaderconstants(lua_State* L)
          lua_pushvalue(L, -2);
          name = lua_tolstring(L, -1, &name_len);
          lua_pop(L, 1);
-         inst->consts[i] = kl_heap_alloc(sizeof(kl_shader_constant_t) + name_len);
-         kl_zero_mem(inst->consts[i], sizeof(kl_shader_constant_t) + name_len);
-         strcpy(inst->consts[i]->name, name);
+         consts[i] = kl_heap_alloc(sizeof(kl_shader_constant_t) + name_len);
+         kl_zero_mem(consts[i], sizeof(kl_shader_constant_t) + name_len);
+         strcpy(consts[i]->name, name);
 
          switch(lua_type(L, -1))
          {
             case LUA_TNUMBER:
             {
-               inst->consts[i]->constant.as_float_ptr = kl_heap_alloc(sizeof(float));
-               inst->consts[i]->dealloc_constant = 1;
-               inst->consts[i]->constant_sz = 1;
-               inst->consts[i]->constant_num = 1;
-               inst->consts[i]->constant_type = KL_SHADER_CONSTANT_TYPE_FLOAT;
-               *inst->consts[i]->constant.as_float_ptr = lua_tonumber(L, -1);
+               consts[i]->constant.as_float_ptr = kl_heap_alloc(sizeof(float));
+               consts[i]->dealloc_constant = 1;
+               consts[i]->constant_sz = 1;
+               consts[i]->constant_num = 1;
+               consts[i]->constant_type = KL_SHADER_CONSTANT_TYPE_FLOAT;
+               *consts[i]->constant.as_float_ptr = lua_tonumber(L, -1);
                break;
             }
 
@@ -234,11 +222,11 @@ static int RenderInstance_setshaderconstants(lua_State* L)
                if(is_eq)
                {
                   struct _kl_offscreen_target* target = (struct _kl_offscreen_target*)lua_touserdata(L, -1);
-                  inst->consts[i]->dealloc_constant = 0;
-                  inst->consts[i]->constant_sz = 2; /* 2D texture */
-                  inst->consts[i]->constant_num = 1;
-                  inst->consts[i]->constant_type = KL_SHADER_CONSTANT_TYPE_TEX;
-                  inst->consts[i]->constant.as_tex = target->texture;
+                  consts[i]->dealloc_constant = 0;
+                  consts[i]->constant_sz = 2; /* 2D texture */
+                  consts[i]->constant_num = 1;
+                  consts[i]->constant_type = KL_SHADER_CONSTANT_TYPE_TEX;
+                  consts[i]->constant.as_tex = target->texture;
                }
                break;
             }
@@ -263,12 +251,130 @@ static int RenderInstance_setshaderconstants(lua_State* L)
       }
       else
       {
-         inst->consts[i] = kl_heap_alloc(sizeof(kl_shader_constant_t));
+         consts[i] = kl_heap_alloc(sizeof(kl_shader_constant_t));
          kl_zero_mem(inst->consts[i], sizeof(kl_shader_constant_t));
       }
 
       lua_pop(L, 1);
       i++;
+   }
+   lua_pop(L, 1);
+
+   old_num_consts = inst->num_consts;
+   old_consts = inst->consts;
+
+   CGLLockContext(g_script_render_context->drawableCGLContext);
+   inst->num_consts = num_consts;
+   inst->consts = consts;
+   CGLUnlockContext(g_script_render_context->drawableCGLContext);
+
+   if(old_consts != NULL)
+   {
+      for(i = 0; i < old_num_consts; i++)
+      {
+         if(old_consts[i]->dealloc_constant)
+         {
+            kl_heap_free(old_consts[i]->constant.as_float_ptr);
+         }
+         kl_heap_free(old_consts[i]);
+      }
+      kl_heap_free(old_consts);
+   }
+
+   return 0;
+}
+
+
+static int RenderInstance_updateshaderconstants(lua_State* L)
+{
+   int i;
+   kl_render_instance_t* inst = (kl_render_instance_t*)lua_touserdata(L, 1);
+   luaL_argcheck(L, lua_istable(L, 2), 2, "expected table of shader constants");
+
+   lua_pushnil(L);
+   while(lua_next(L, 2))
+   {
+      if(lua_isstring(L, -2))
+      {
+         kl_shader_constant_t* constant = NULL;
+         /* Find the shader constant with this name */
+         for(i = 0; i < inst->num_consts; i++)
+         {
+            size_t name_len;
+            const char* name;
+            lua_pushvalue(L, -2);
+            name = lua_tolstring(L, -1, &name_len);
+            lua_pop(L, 1);
+
+            if(strcmp(name, inst->consts[i]->name) == 0)
+            {
+               constant = inst->consts[i];
+               break;
+            }
+         }
+
+         if(constant != NULL)
+         {
+            switch(lua_type(L, -1))
+            {
+               case LUA_TNUMBER:
+               {
+                  constant->constant.as_float_ptr = kl_heap_alloc(sizeof(float));
+                  constant->dealloc_constant = 1;
+                  constant->constant_sz = 1;
+                  constant->constant_num = 1;
+                  constant->constant_type = KL_SHADER_CONSTANT_TYPE_FLOAT;
+                  *constant->constant.as_float_ptr = lua_tonumber(L, -1);
+                  break;
+               }
+
+               case LUA_TTABLE:
+               {
+                  break;
+               }
+
+               case LUA_TUSERDATA:
+               {
+                  int is_eq = 0;
+
+                  /* Check to see if it's a render target */
+                  lua_getmetatable(L, -1);
+                  luaL_getmetatable(L, RENDER_TARGET_LUA_LIB);
+                  is_eq = lua_equal(L, -1, -2);
+                  lua_pop(L, 2);
+                  if(is_eq)
+                  {
+                     struct _kl_offscreen_target* target = (struct _kl_offscreen_target*)lua_touserdata(L, -1);
+                     constant->dealloc_constant = 0;
+                     constant->constant_sz = 2; /* 2D texture */
+                     constant->constant_num = 1;
+                     constant->constant_type = KL_SHADER_CONSTANT_TYPE_TEX;
+                     constant->constant.as_tex = target->texture;
+                  }
+                  break;
+               }
+
+               /* TODO 
+               case LUA_TFUNCTION:
+               {
+                  break;
+               } */
+
+               /* TODO
+               case LUA_TLIGHTUSERDATA:
+               {
+                  break;
+               } */
+
+               default:
+               {
+                  break;
+               }
+            }
+         }
+      }
+
+      lua_pop(L, 1);
    }
    lua_pop(L, 1);
 
@@ -329,6 +435,7 @@ static const struct luaL_reg RenderInstance_instance_methods [] = {
    {"setdrawtype", RenderInstance_setdrawtype},
    {"setblend", RenderInstance_setblend},
    {"setshaderconstants", RenderInstance_setshaderconstants},
+   {"updateshaderconstants", RenderInstance_updateshaderconstants},
    {"setrendertarget", RenderInstance_setrendertarget},
    {"setclearbeforedraw", RenderInstance_setclearbeforedraw},
    {NULL, NULL}
