@@ -45,8 +45,6 @@ int kl_init_rendering(kl_render_context_t* context, void* handle)
 
    if(context != NULL)
    {
-      int i;
-
       kl_render_context_t ctx = kl_heap_alloc(sizeof(struct _kl_render_context));
 
       CGLPixelFormatObj pixelFormat = NULL;
@@ -62,46 +60,6 @@ int kl_init_rendering(kl_render_context_t* context, void* handle)
 
       kl_shader_manager_create(&ctx->shader_mgr, 256, ctx);
       kl_effect_manager_create(&ctx->effect_mgr, 64, ctx);
-
-      /* Create offscreen targets */
-      ctx->active_fbo = 0;
-      for(i = 0; i < 2; i++)
-      {
-         ctx->feedback_fbo[i].width = 512;
-         ctx->feedback_fbo[i].height = 512;
-
-         glGenFramebuffersEXT(1, &ctx->feedback_fbo[i].framebuffer);
-         glGenTextures(1, &ctx->feedback_fbo[i].texture);
-         glGenRenderbuffersEXT(1, &ctx->feedback_fbo[i].depthstencil);
-
-         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, ctx->feedback_fbo[i].framebuffer);
-
-         glBindTexture(GL_TEXTURE_2D, ctx->feedback_fbo[i].texture);
-         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, ctx->feedback_fbo[i].width, ctx->feedback_fbo[i].height,
-                      0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-         glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
-                                   GL_TEXTURE_2D, ctx->feedback_fbo[i].texture, 0);
-
-         glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, ctx->feedback_fbo[i].depthstencil);
-         glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH24_STENCIL8_EXT,
-                                  ctx->feedback_fbo[i].width, ctx->feedback_fbo[i].height);
-         glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT,
-                                      ctx->feedback_fbo[i].depthstencil);
-
-         if(glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT) != GL_FRAMEBUFFER_COMPLETE_EXT)
-         {
-            /* Blarg! */
-            skerr("ARRRGGHHHH ERROR ERROR!");
-         }
-
-         /* Clear framebuffer */
-         glClearColor(0, 0, 0, 0);
-         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-      }
 
       /* Null out render list */
       ctx->render_list = NULL;
@@ -133,13 +91,6 @@ void kl_destroy_rendering(kl_render_context_t* context)
    {
       kl_render_context_t ctx = *context;
 
-      glDeleteFramebuffersEXT(1, &ctx->feedback_fbo[0].framebuffer);
-      glDeleteFramebuffersEXT(1, &ctx->feedback_fbo[1].framebuffer);
-      glDeleteRenderbuffersEXT(1, &ctx->feedback_fbo[0].depthstencil);
-      glDeleteRenderbuffersEXT(1, &ctx->feedback_fbo[1].depthstencil);
-      glDeleteTextures(1, &ctx->feedback_fbo[0].texture);
-      glDeleteTextures(1, &ctx->feedback_fbo[1].texture);
-
       kl_effect_manager_destroy(&ctx->effect_mgr);
       kl_shader_manager_destroy(&ctx->shader_mgr);
 
@@ -151,39 +102,10 @@ void kl_destroy_rendering(kl_render_context_t* context)
 
 void kl_render_reshape(kl_render_context_t context, float display_width, float display_height)
 {
-   int i;
-
    CGLSetCurrentContext(context->drawableCGLContext);
    CGLLockContext(context->drawableCGLContext);
 
-   for(i = 0; i < 2; i++)
-   {
-      context->feedback_fbo[i].width = display_width;
-      context->feedback_fbo[i].height = display_height;
-
-      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, context->feedback_fbo[i].framebuffer);
-
-      glBindTexture(GL_TEXTURE_2D, context->feedback_fbo[i].texture);
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, context->feedback_fbo[i].width,
-                   context->feedback_fbo[i].height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
-      glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, context->feedback_fbo[i].depthstencil);
-      glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH24_STENCIL8_EXT,
-                               context->feedback_fbo[i].width, context->feedback_fbo[i].height);
-
-      if(glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT) != GL_FRAMEBUFFER_COMPLETE_EXT)
-      {
-         /* Blarg! */
-         skerr("ARRRGGHHHH ERROR ERROR!");
-      }
-
-      /* Clear framebuffer */
-      glClearColor(0, 0, 0, 0);
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-      glBindTexture(GL_TEXTURE_2D, 0);
-   }
+   /* Send script event */
 
    CGLUnlockContext(context->drawableCGLContext);
 }

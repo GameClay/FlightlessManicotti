@@ -27,7 +27,7 @@
 #include <FlightlessManicotti/render/render_list.h>
 
 struct _kl_offscreen_target {
-   GLuint framebuffer, texture;
+   GLuint framebuffer, texture, depthstencil;
    GLuint width, height;
 };
 
@@ -40,8 +40,6 @@ struct _kl_render_context
 
    kl_shader_manager_t shader_mgr;
    kl_effect_manager_t effect_mgr;
-
-   struct _kl_offscreen_target feedback_fbo;
 };
 
 #define KL_SHADER_EFFECT_KEY_SZ 256
