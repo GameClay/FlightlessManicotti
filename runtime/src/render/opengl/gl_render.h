@@ -31,6 +31,11 @@ struct _kl_offscreen_target {
    GLuint width, height;
 };
 
+#define KL_MESH_POSITION_IDX 0
+#define KL_MESH_NORMAL_IDX   1
+#define KL_MESH_TEX0_IDX     2
+#define KL_MESH_COLOR_IDX    3
+
 struct _kl_render_context
 {
    CGLContextObj drawableCGLContext;

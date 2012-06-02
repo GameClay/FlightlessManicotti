@@ -93,18 +93,11 @@ extern KL_API void kl_mesh_buffer_data(kl_mesh_t* mesh, uint32_t update_mask, ui
 /**
  * Prepare a mesh for drawing by binding internal buffers.
  *
- * @param mesh    Mesh to prepare for drawing.
- * @param effect  Effect to be used for mesh rendering.
- */
-extern KL_API void kl_mesh_bind(const kl_mesh_t* mesh, const kl_effect_t effect);
-
-/**
- * Unbind a mesh.
+ * Pass NULL to unbind meshes.
  *
- * @param mesh    Mesh to unbind.
- * @param effect  Effect bound to mesh.
+ * @param mesh    Mesh to prepare for drawing, or NULL.
  */
-extern KL_API void kl_mesh_unbind(const kl_mesh_t* mesh, const kl_effect_t effect);
+extern KL_API void kl_mesh_bind(const kl_mesh_t* mesh);
 
 /**
  * Load a CTM mesh into an initialized mesh.

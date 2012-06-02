@@ -114,6 +114,12 @@ int kl_effect_manager_get_effect(kl_render_context_t render_ctx, const char* eff
                has_geom = KL_TRUE;
             }
 
+            /* Bind mesh attribute locations */
+            glBindAttribLocation(program, KL_MESH_POSITION_IDX, "InPosition");
+            glBindAttribLocation(program, KL_MESH_NORMAL_IDX, "InNormal");
+            glBindAttribLocation(program, KL_MESH_TEX0_IDX, "InTex0");
+            glBindAttribLocation(program, KL_MESH_COLOR_IDX, "InColor");
+
             glLinkProgram(program);
 
             /* Check link status */

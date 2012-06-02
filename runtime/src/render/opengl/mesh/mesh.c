@@ -83,6 +83,8 @@ void kl_mesh_buffer_data(kl_mesh_t* mesh, uint32_t update_mask, uint32_t dynamic
       kl_mesh_internal_t internal = mesh->internal;
       internal->buffered_data |= update_mask;
 
+      glBindVertexArray(internal->vao);
+
       if(mesh->vertex != NULL && (update_mask & kl_mesh_element_vertex))
       {
          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, internal->vert_buffer);
@@ -122,57 +124,41 @@ void kl_mesh_buffer_data(kl_mesh_t* mesh, uint32_t update_mask, uint32_t dynamic
 
 #undef MESH_DRAW_TYPE
 
-void kl_mesh_bind(const kl_mesh_t* mesh, const kl_effect_t effect)
+void kl_mesh_bind(const kl_mesh_t* mesh)
 {
-   if(mesh != NULL && mesh->internal != NULL && effect != NULL)
+   if(mesh != NULL && mesh->internal != NULL)
    {
       kl_mesh_internal_t internal = mesh->internal;
-      GLint loc;
 
+      /* Bind VAO */
       glBindVertexArray(internal->vao);
 
       if(mesh->vertex != NULL && (internal->buffered_data & kl_mesh_element_vertex))
       {
-         loc = glGetAttribLocation(effect->program, "InPosition");
-         if(loc > -1)
-         {
-            glEnableVertexAttribArray(loc);
-            glBindBuffer(GL_ARRAY_BUFFER, internal->vert_buffer);
-            glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
-         }
+         glEnableVertexAttribArray(KL_MESH_POSITION_IDX);
+         glBindBuffer(GL_ARRAY_BUFFER, internal->vert_buffer);
+         glVertexAttribPointer(KL_MESH_POSITION_IDX, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
       }
 
       if(mesh->normal != NULL && (internal->buffered_data & kl_mesh_element_normal))
       {
-         loc = glGetAttribLocation(effect->program, "InNormal");
-         if(loc > -1)
-         {
-            glEnableVertexAttribArray(loc);
-            glBindBuffer(GL_ARRAY_BUFFER, internal->norm_buffer);
-            glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
-         }
+         glEnableVertexAttribArray(KL_MESH_NORMAL_IDX);
+         glBindBuffer(GL_ARRAY_BUFFER, internal->norm_buffer);
+         glVertexAttribPointer(KL_MESH_NORMAL_IDX, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
       }
 
       if(mesh->tex0 != NULL && (internal->buffered_data & kl_mesh_element_tex0))
       {
-         loc = glGetAttribLocation(effect->program, "InTex0");
-         if(loc > -1)
-         {
-            glEnableVertexAttribArray(loc);
-            glBindBuffer(GL_ARRAY_BUFFER, internal->tex0_buffer);
-            glVertexAttribPointer(loc, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
-         }
+         glEnableVertexAttribArray(KL_MESH_TEX0_IDX);
+         glBindBuffer(GL_ARRAY_BUFFER, internal->tex0_buffer);
+         glVertexAttribPointer(KL_MESH_TEX0_IDX, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
       }
 
       if(mesh->col0 != NULL && (internal->buffered_data & kl_mesh_element_col0))
       {
-         loc = glGetAttribLocation(effect->program, "InColor");
-         if(loc > -1)
-         {
-            glEnableVertexAttribArray(loc);
-            glBindBuffer(GL_ARRAY_BUFFER, internal->col0_buffer);
-            glVertexAttribPointer(loc, 1, GL_UNSIGNED_INT, GL_TRUE, sizeof(uint32_t), NULL);
-         }
+         glEnableVertexAttribArray(KL_MESH_COLOR_IDX);
+         glBindBuffer(GL_ARRAY_BUFFER, internal->col0_buffer);
+         glVertexAttribPointer(KL_MESH_COLOR_IDX, 1, GL_UNSIGNED_INT, GL_TRUE, sizeof(uint32_t), NULL);
       }
 
       if(mesh->index != NULL && (internal->buffered_data & kl_mesh_element_index))
@@ -180,54 +166,12 @@ void kl_mesh_bind(const kl_mesh_t* mesh, const kl_effect_t effect)
          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, internal->idx_buffer);
       }
    }
-}
-
-void kl_mesh_unbind(const kl_mesh_t* mesh, const kl_effect_t effect)
-{
-   if(mesh != NULL && mesh->internal != NULL && effect != NULL)
+   else
    {
-      kl_mesh_internal_t internal = mesh->internal;
-      GLint loc;
-
-      if(mesh->vertex != NULL && (internal->buffered_data & kl_mesh_element_vertex))
-      {
-         loc = glGetAttribLocation(effect->program, "InPosition");
-         if(loc > -1)
-         {
-            glDisableVertexAttribArray(loc);
-         }
-      }
-
-      if(mesh->normal != NULL && (internal->buffered_data & kl_mesh_element_normal))
-      {
-         loc = glGetAttribLocation(effect->program, "InNormal");
-         if(loc > -1)
-         {
-            glDisableVertexAttribArray(loc);
-         }
-      }
-
-      if(mesh->tex0 != NULL && (internal->buffered_data & kl_mesh_element_tex0))
-      {
-         loc = glGetAttribLocation(effect->program, "InTex0");
-         if(loc > -1)
-         {
-            glDisableVertexAttribArray(loc);
-         }
-      }
-
-      if(mesh->col0 != NULL && (internal->buffered_data & kl_mesh_element_col0))
-      {
-         loc = glGetAttribLocation(effect->program, "InColor");
-         if(loc > -1)
-         {
-            glDisableVertexAttribArray(loc);
-         }
-      }
-
-      if(mesh->index != NULL && (internal->buffered_data & kl_mesh_element_index))
-      {
-         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-      }
+      glDisableVertexAttribArray(KL_MESH_POSITION_IDX);
+      glDisableVertexAttribArray(KL_MESH_NORMAL_IDX);
+      glDisableVertexAttribArray(KL_MESH_TEX0_IDX);
+      glDisableVertexAttribArray(KL_MESH_COLOR_IDX);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
    }
 }

@@ -169,7 +169,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
             /* Bind mesh and shaders */
             kl_effect_manager_bind_effect(inst->material, &hax_render_state,
                (const kl_shader_constant_t**)inst->consts, inst->num_consts);
-            kl_mesh_bind(inst->mesh, inst->material);
+            kl_mesh_bind(inst->mesh);
 
             /* Set up target */
             if(inst->render_target != NULL)
@@ -196,11 +196,13 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
                glViewport(0, 0, display_width, display_height);
             }
 
-            /* Unbind mesh/shaders */
-            kl_mesh_unbind(inst->mesh, inst->material);
+            /* Unbind shaders */
             kl_effect_manager_bind_effect(NULL, NULL, NULL, 0);
          }
       }
+
+      /* Unbind meshes */
+      kl_mesh_bind(NULL);
    }
    glDisable(GL_BLEND);
 
