@@ -34,7 +34,7 @@ KL_ALIGNED_STRUCT_PRE(16) {
    kl_matrix_t world_to_screen;
 
    kl_matrix_t object_to_screen;
-} KL_ALIGNED_STRUCT_POST(kl_render_state_t, 16);
+} KL_ALIGNED_STRUCT_POST(kl_transform_state_t, 16);
 
 /**
  * Initialize rendering subsystem.

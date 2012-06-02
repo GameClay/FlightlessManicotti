@@ -117,8 +117,8 @@ extern void kl_cqt_lights_disable();
 
 void kl_render_frame(kl_render_context_t context, float display_width, float display_height)
 {
-   kl_render_state_t hax_render_state;
-   kl_matrix_identity(hax_render_state.world_to_camera.m);
+   kl_transform_state_t hax_xfm_state;
+   kl_matrix_identity(hax_xfm_state.world_to_camera.m);
 
    CGLSetCurrentContext(context->drawableCGLContext);
    CGLLockContext(context->drawableCGLContext);
@@ -128,18 +128,18 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
    glClearColor(0, 0, 0, 0);
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-   kl_matrix_ortho(hax_render_state.camera_to_screen.m, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 50.0f);
+   kl_matrix_ortho(hax_xfm_state.camera_to_screen.m, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 50.0f);
 
    /* Camera * Projection */
    kl_matrix_mul_matrix(
-      hax_render_state.world_to_camera.m,
-      hax_render_state.camera_to_screen.m,
-      hax_render_state.world_to_screen.m);
+      hax_xfm_state.world_to_camera.m,
+      hax_xfm_state.camera_to_screen.m,
+      hax_xfm_state.world_to_screen.m);
 
    kl_matrix_mul_matrix(
       KL_MATRIX_IDENTITY.m,
-      hax_render_state.world_to_screen.m,
-      hax_render_state.object_to_screen.m);
+      hax_xfm_state.world_to_screen.m,
+      hax_xfm_state.object_to_screen.m);
 
    /* Draw render list */
    /* Hax */
@@ -182,7 +182,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
             }
 
             /* Bind mesh and shaders */
-            kl_effect_manager_bind_effect(inst->material, &hax_render_state,
+            kl_effect_manager_bind_effect(inst->material, &hax_xfm_state,
                (const kl_shader_constant_t**)inst->consts, inst->num_consts);
             kl_mesh_bind(inst->mesh);
 
