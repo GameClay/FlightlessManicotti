@@ -29,8 +29,8 @@ extern "C" {
 #include <FlightlessManicotti/render/mesh/mesh.h>
 #include <FlightlessManicotti/render/shader/effect_manager.h>
 
-typedef struct {
-   kl_matrix_t obj_to_world;
+KL_ALIGNED_STRUCT_PRE(16) {
+   kl_matrix_t object_to_world;
    kl_mesh_t* mesh;
 
    kl_effect_t material; /* TODO: Proper material */
@@ -45,7 +45,7 @@ typedef struct {
 
    void* render_target;
    KL_BOOL clear_before_draw;
-} kl_render_instance_t;
+} KL_ALIGNED_STRUCT_POST(kl_render_instance_t, 16);
 
 typedef struct {
    kl_idx_allocator_t idx_alloc;

@@ -20,8 +20,8 @@
 #define _GL_RENDER_H_
 
 #include <OpenGL/OpenGL.h> /* Mac */
+#include <OpenGL/gl3.h>
 
-#include <OpenGL/gl.h>
 #include <FlightlessManicotti/render/shader/shader_manager.h>
 #include <FlightlessManicotti/render/shader/effect_manager.h>
 #include <FlightlessManicotti/render/render_list.h>

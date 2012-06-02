@@ -1,5 +1,5 @@
 -- From: http://prideout.net/blog/?p=1
-ApiVersionToLanguageVersion = { GL2 = 120, GL3 = 140, GL4 = 150 }
+ApiVersionToLanguageVersion = { GL2 = 120, GL3 = 150, GL4 = 150 }
 
 function DeclareShader(shaderKey, shaderSource)
    -- Prepend the line number directive for proper error messages.

@@ -18,13 +18,14 @@
 
 #include <FlightlessManicotti/render/mesh/mesh.h>
 #include "render/opengl/gl_render.h"
-#include <OpenGL/gl.h>
 
 struct _kl_mesh_internal {
    GLuint vert_buffer;
    GLuint norm_buffer;
    GLuint tex0_buffer;
    GLuint col0_buffer;
+
+   GLuint vao;
 
    GLuint idx_buffer;
 
@@ -40,6 +41,8 @@ int kl_mesh_init(kl_mesh_t* mesh)
       kl_mesh_internal_t internal = kl_heap_alloc(sizeof(struct _kl_mesh_internal));
       if(internal != NULL)
       {
+         glGenVertexArrays(1, &internal->vao);
+         glBindVertexArray(internal->vao);
          glGenBuffers(1, &internal->vert_buffer);
          glGenBuffers(1, &internal->norm_buffer);
          glGenBuffers(1, &internal->tex0_buffer);
@@ -64,6 +67,7 @@ void kl_mesh_deinit(kl_mesh_t* mesh)
       glDeleteBuffers(1, &mesh->internal->tex0_buffer);
       glDeleteBuffers(1, &mesh->internal->col0_buffer);
       glDeleteBuffers(1, &mesh->internal->idx_buffer);
+      glDeleteVertexArrays(1, &mesh->internal->vao);
 
       kl_heap_free(mesh->internal);
       mesh->internal = NULL;
@@ -120,10 +124,12 @@ void kl_mesh_buffer_data(kl_mesh_t* mesh, uint32_t update_mask, uint32_t dynamic
 
 void kl_mesh_bind(const kl_mesh_t* mesh, const kl_effect_t effect)
 {
-   if(mesh != NULL && mesh->internal != NULL)
+   if(mesh != NULL && mesh->internal != NULL && effect != NULL)
    {
       kl_mesh_internal_t internal = mesh->internal;
       GLint loc;
+
+      glBindVertexArray(internal->vao);
 
       if(mesh->vertex != NULL && (internal->buffered_data & kl_mesh_element_vertex))
       {
@@ -178,7 +184,7 @@ void kl_mesh_bind(const kl_mesh_t* mesh, const kl_effect_t effect)
 
 void kl_mesh_unbind(const kl_mesh_t* mesh, const kl_effect_t effect)
 {
-   if(mesh != NULL && mesh->internal != NULL)
+   if(mesh != NULL && mesh->internal != NULL && effect != NULL)
    {
       kl_mesh_internal_t internal = mesh->internal;
       GLint loc;

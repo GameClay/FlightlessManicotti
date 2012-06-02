@@ -28,10 +28,13 @@ extern "C" {
 
 typedef struct _kl_render_context* kl_render_context_t;
 
-typedef struct kl_render_state_t {
+KL_ALIGNED_STRUCT_PRE(16) {
    kl_matrix_t world_to_camera;
    kl_matrix_t camera_to_screen;
-} kl_render_state_t;
+   kl_matrix_t world_to_screen;
+
+   kl_matrix_t object_to_screen;
+} KL_ALIGNED_STRUCT_POST(kl_render_state_t, 16);
 
 /**
  * Initialize rendering subsystem.

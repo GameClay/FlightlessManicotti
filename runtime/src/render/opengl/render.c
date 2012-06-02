@@ -117,24 +117,8 @@ extern void kl_cqt_lights_disable();
 
 void kl_render_frame(kl_render_context_t context, float display_width, float display_height)
 {
-   float cqt_colors[12][3] = {
-      {1.0f, 0.0f, 0.0f},  /* C */
-      {1.0f, 0.5f, 0.0f},  /* C#/Db */
-      {1.0f, 1.0f, 0.0f},  /* D */
-      {0.5f, 1.0f, 0.0f},  /* D#/Eb */
-      {0.0f, 1.0f, 0.0f},  /* E */
-      {0.0f, 1.0f, 0.5f},  /* F */
-      {0.0f, 1.0f, 1.0f},  /* F#/Gb */
-      {0.0f, 0.5f, 1.0f},  /* G */
-      {0.0f, 0.0f, 1.0f},  /* G#/Ab */
-      {0.5f, 0.0f, 1.0f},  /* A */
-      {1.0f, 0.0f, 1.0f},  /* A#/Bb */
-      {1.0f, 0.0f, 0.5f},  /* B */
-   };
-   kl_cqt_t cqt = kl_freq_manager_get_cqt(NULL);
-
-   kl_matrix_t projection_mat;
-   kl_matrix_t modelview_mat;
+   kl_render_state_t hax_render_state;
+   kl_matrix_identity(hax_render_state.world_to_camera.m);
 
    CGLSetCurrentContext(context->drawableCGLContext);
    CGLLockContext(context->drawableCGLContext);
@@ -144,132 +128,21 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
    glClearColor(0, 0, 0, 0);
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-   glMatrixMode(GL_PROJECTION);
-   kl_matrix_ortho(projection_mat.m, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 50.0f);
-   glLoadTransposeMatrixf(projection_mat.m);
+   kl_matrix_ortho(hax_render_state.camera_to_screen.m, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 50.0f);
 
-#if 1
-   {
-      float cqt_spectrum[4096];
-      int i, o, num_octaves, bins_per_octave;
-      float** octaves;
+   /* Camera * Projection */
+   kl_matrix_mul_matrix(
+      hax_render_state.world_to_camera.m,
+      hax_render_state.camera_to_screen.m,
+      hax_render_state.world_to_screen.m);
 
-      if(kl_freq_manager_get_cqt_texture(NULL) != 0) /* HAX */
-      {
-         int active_target = context->active_fbo;
-
-         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, context->feedback_fbo[active_target].framebuffer);
-         glViewport(0, 0, context->feedback_fbo[active_target].width,
-                    context->feedback_fbo[active_target].height);
-
-         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-         glMatrixMode(GL_MODELVIEW);
-         glLoadTransposeMatrixf(KL_MATRIX_IDENTITY.m);
-
-         /* render to feedback buffer */
-         {
-            glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, context->feedback_fbo[!active_target].texture);
-
-            glBegin(GL_TRIANGLE_STRIP);
-               glColor4f(0.995f, 0.995f, 0.995f, 1.0f);
-
-               glTexCoord2f(0.0f, 0.0f);
-               glVertex2f(-1.01f, -1.01f);
-
-               glTexCoord2f(0.0f, 1.0f);
-               glVertex2f(-1.01f, 1.01f);
-
-               glTexCoord2f(1.0f, 0.0f);
-               glVertex2f(1.01f, -1.01f);
-
-               glTexCoord2f(1.0f, 1.0f);
-               glVertex2f(1.01f, 1.01f);
-            glEnd();
-
-            glBindTexture(GL_TEXTURE_2D, 0);
-            glDisable(GL_TEXTURE_2D);
-         }
-
-         kl_zero_mem(cqt_spectrum, sizeof(cqt_spectrum));
-         kl_cqt_get_octaves(cqt, &octaves, &num_octaves, &bins_per_octave);
-         for(o = 3; o < num_octaves; o++)
-         {
-            for(i = 0; i < bins_per_octave; i++)
-            {
-               float val = octaves[o][i];
-               cqt_spectrum[i] += val;
-            }
-         }
-
-         kl_matrix_scale(modelview_mat.m, 0.3f, 0.3f, 0.3f);
-         glLoadTransposeMatrixf(modelview_mat.m);
-
-         glEnable(GL_BLEND);
-         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-         /* Render melody range */
-         glBegin(GL_LINE_LOOP);
-         for(i = 0; i < bins_per_octave; i++)
-         {
-            float interp = (float)i / (float)bins_per_octave;
-            float angle = interp * KL_2PI_F;
-            float vx = -1.0f * kl_cos(angle);
-            float vy = kl_sin(angle);
-            int cindex = floor(12 * interp);
-            float val = cqt_spectrum[i];
-            glColor4f(cqt_colors[cindex][0],
-                      cqt_colors[cindex][1],
-                      cqt_colors[cindex][2], val * 10.0f);
-            glVertex2f(vx * (0.9f - val),
-                       vy * (0.9f - val));
-         }
-         glEnd();
-         glDisable(GL_BLEND);
-
-         glLoadTransposeMatrixf(KL_MATRIX_IDENTITY.m);
-
-         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-         glViewport(0, 0, display_width, display_height);
-
-         /* Render result to back buffer */
-         {
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_ONE, GL_ONE);
-            glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, context->feedback_fbo[active_target].texture);
-
-            glBegin(GL_TRIANGLE_STRIP);
-               glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-
-               glTexCoord2f(0.0f, 0.0f);
-               glVertex2f(-1.0f, -1.0f);
-
-               glTexCoord2f(0.0f, 1.0f);
-               glVertex2f(-1.0f, 1.0f);
-
-               glTexCoord2f(1.0f, 0.0f);
-               glVertex2f(1.0f, -1.0f);
-
-               glTexCoord2f(1.0f, 1.0f);
-               glVertex2f(1.0f, 1.0f);
-            glEnd();
-
-            glBindTexture(GL_TEXTURE_2D, 0);
-            glDisable(GL_TEXTURE_2D);
-            glDisable(GL_BLEND);
-         }
-
-         context->active_fbo = !active_target;
-      }
-   }
-#endif
+   kl_matrix_mul_matrix(
+      KL_MATRIX_IDENTITY.m,
+      hax_render_state.world_to_screen.m,
+      hax_render_state.object_to_screen.m);
 
    /* Draw render list */
    /* Hax */
-   glEnable(GL_TEXTURE_1D);
    glBindTexture(GL_TEXTURE_1D, kl_freq_manager_get_cqt_texture(NULL));
    /* /Hax */
 
@@ -283,15 +156,18 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
          const kl_render_instance_t* inst = context->render_list->list[i];
          if(inst != NULL && inst->mesh != NULL)
          {
-            /* Set obj->world matrix */
-            glMatrixMode(GL_MODELVIEW);
-            glLoadTransposeMatrixf(inst->obj_to_world.m);
+            /* Compute matrix */
+            /*
+            kl_matrix_mul_matrix(
+               inst->object_to_world.m,
+               hax_render_state.world_to_screen.m,
+               hax_render_state.object_to_screen.m);*/
 
             /* Set up blend */
             glBlendFunc(inst->blend_src, inst->blend_dest);
 
             /* Bind mesh and shaders */
-            kl_effect_manager_bind_effect(inst->material, NULL,
+            kl_effect_manager_bind_effect(inst->material, &hax_render_state,
                (const kl_shader_constant_t**)inst->consts, inst->num_consts);
             kl_mesh_bind(inst->mesh, inst->material);
 
@@ -299,7 +175,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
             if(inst->render_target != NULL)
             {
                struct _kl_offscreen_target* target = inst->render_target;
-               glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, target->framebuffer);
+               glBindFramebuffer(GL_FRAMEBUFFER, target->framebuffer);
                glViewport(0, 0, target->width, target->height);
             }
 
@@ -316,7 +192,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
             /* Tear down target */
             if(inst->render_target != NULL)
             {
-               glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+               glBindFramebuffer(GL_FRAMEBUFFER, 0);
                glViewport(0, 0, display_width, display_height);
             }
 
@@ -328,181 +204,200 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
    }
    glDisable(GL_BLEND);
 
-   glDisable(GL_TEXTURE_1D); /* Hax */
-
-   /* Spectrum/wave visualization*/
-   if(kl_render_spectrum_setting == 0)
+#if 0
    {
-      /* Render FFT spectrum */
-      int i;
-      size_t spectrum_sz;
-      float* hax_spectrum = kl_freq_manager_get_spectrum(KL_DEFAULT_FREQ_MANAGER, &spectrum_sz);
-      glBegin(GL_LINES);
-      for(i = 0; i < spectrum_sz; i++)
-      {
-         float interp = (float)i / spectrum_sz;
-         glColor3f(1.0f - interp, interp, 0.0f);
-         glVertex2f(-1.0f + interp * 2.0f, -0.99f);
-         glVertex2f(-1.0f + interp * 2.0f, hax_spectrum[i] - 0.99f);
-      }
-      glEnd();
-   }
-   else if(kl_render_spectrum_setting == 1)
-   {
-      /* Render CQT spectrum */
-      int i, o, num_octaves, bins_per_octave;
-      float** octaves;
+      float cqt_colors[12][3] = {
+         {1.0f, 0.0f, 0.0f},  /* C */
+         {1.0f, 0.5f, 0.0f},  /* C#/Db */
+         {1.0f, 1.0f, 0.0f},  /* D */
+         {0.5f, 1.0f, 0.0f},  /* D#/Eb */
+         {0.0f, 1.0f, 0.0f},  /* E */
+         {0.0f, 1.0f, 0.5f},  /* F */
+         {0.0f, 1.0f, 1.0f},  /* F#/Gb */
+         {0.0f, 0.5f, 1.0f},  /* G */
+         {0.0f, 0.0f, 1.0f},  /* G#/Ab */
+         {0.5f, 0.0f, 1.0f},  /* A */
+         {1.0f, 0.0f, 1.0f},  /* A#/Bb */
+         {1.0f, 0.0f, 0.5f},  /* B */
+      };
+      kl_cqt_t cqt = kl_freq_manager_get_cqt(NULL);
 
-      if(kl_freq_manager_get_cqt_texture(NULL) != 0) /* HAX */
+      /* Spectrum/wave visualization*/
+      if(kl_render_spectrum_setting == 0)
       {
-         kl_cqt_get_octaves(cqt, &octaves, &num_octaves, &bins_per_octave);
+         /* Render FFT spectrum */
+         int i;
+         size_t spectrum_sz;
+         float* hax_spectrum = kl_freq_manager_get_spectrum(KL_DEFAULT_FREQ_MANAGER, &spectrum_sz);
          glBegin(GL_LINES);
-         for(o = 0; o < num_octaves; o++)
+         for(i = 0; i < spectrum_sz; i++)
          {
-            for(i = 0; i < bins_per_octave; i++)
-            {
-               float val = octaves[o][i];
-               float interp = (float)(o * bins_per_octave + i) / (float)(num_octaves * bins_per_octave);
-               int cindex = floor(12.0f * i / bins_per_octave);
-               glColor3fv(cqt_colors[cindex]);
-               glVertex2f(-1.0f + interp * 2.0f, -0.99f);
-               glVertex2f(-1.0f + interp * 2.0f, val - 0.99f);
-            }
+            float interp = (float)i / spectrum_sz;
+            glColor3f(1.0f - interp, interp, 0.0f);
+            glVertex2f(-1.0f + interp * 2.0f, -0.99f);
+            glVertex2f(-1.0f + interp * 2.0f, hax_spectrum[i] - 0.99f);
          }
          glEnd();
       }
-   }
-   else if(kl_render_spectrum_setting == 2)
-   {
-      /* Render CQT waves on top of CQT spectrum */
-      if(kl_freq_manager_get_cqt_texture(NULL) != 0) /* HAX */
+      else if(kl_render_spectrum_setting == 1)
       {
+         /* Render CQT spectrum */
          int i, o, num_octaves, bins_per_octave;
          float** octaves;
-         int num_waves;
-         kl_cqt_wave_t* waves = kl_cqt_get_waves(cqt, &num_waves);
-         kl_cqt_get_octaves(cqt, &octaves, &num_octaves, &bins_per_octave);
 
-         glBegin(GL_LINES);
-         for(o = 0; o < num_octaves; o++)
+         if(kl_freq_manager_get_cqt_texture(NULL) != 0) /* HAX */
          {
-            for(i = 0; i < bins_per_octave; i++)
+            kl_cqt_get_octaves(cqt, &octaves, &num_octaves, &bins_per_octave);
+            glBegin(GL_LINES);
+            for(o = 0; o < num_octaves; o++)
             {
-               float val = octaves[o][i];
-               float interp = (float)(o * bins_per_octave + i) / (float)(num_octaves * bins_per_octave);
-               int cindex = floor(12.0f * i / bins_per_octave);
-               glColor3f(cqt_colors[cindex][0] * 0.6f,
-                         cqt_colors[cindex][1] * 0.6f,
-                         cqt_colors[cindex][2] * 0.6f);
-               glVertex2f(-1.0f + interp * 2.0f, -0.99f);
-               glVertex2f(-1.0f + interp * 2.0f, val - 0.99f);
+               for(i = 0; i < bins_per_octave; i++)
+               {
+                  float val = octaves[o][i];
+                  float interp = (float)(o * bins_per_octave + i) / (float)(num_octaves * bins_per_octave);
+                  int cindex = floor(12.0f * i / bins_per_octave);
+                  glColor3fv(cqt_colors[cindex]);
+                  glVertex2f(-1.0f + interp * 2.0f, -0.99f);
+                  glVertex2f(-1.0f + interp * 2.0f, val - 0.99f);
+               }
             }
+            glEnd();
          }
-         glEnd();
-
-         glColor3f(1.0f, 1.0f, 1.0f);
-         glBegin(GL_LINES);
-         for(i = 0; i < num_waves; i++)
-         {
-            if(waves[i].amp_state != KL_WAVE_STATE_DISSIPATED)
-            {
-               glVertex2f(-1.0f + ((float)waves[i].peak / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
-               glVertex2f(-1.0f + ((float)waves[i].peak / (float)(num_octaves * bins_per_octave)) * 2.0f, waves[i].peakval - 0.99f);
-
-               glVertex2f(-1.0f + ((float)waves[i].start / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
-               glVertex2f(-1.0f + ((float)waves[i].end   / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
-            }
-         }
-         glEnd();
       }
-   }
-   else if(kl_render_spectrum_setting == 3)
-   {
-      /* Render CQT waves */
-      if(kl_freq_manager_get_cqt_texture(NULL) != 0) /* HAX */
+      else if(kl_render_spectrum_setting == 2)
       {
-         int i, num_octaves, bins_per_octave;
-         float** octaves;
-         int num_waves;
-         kl_cqt_wave_t* waves = kl_cqt_get_waves(cqt, &num_waves);
-         kl_cqt_get_octaves(cqt, &octaves, &num_octaves, &bins_per_octave);
-         for(i = 0; i < num_waves; i++)
+         /* Render CQT waves on top of CQT spectrum */
+         if(kl_freq_manager_get_cqt_texture(NULL) != 0) /* HAX */
          {
-            if(waves[i].amp_state != KL_WAVE_STATE_DISSIPATED)
-            {
-               int peak_color = ((float)(waves[i].peak % bins_per_octave)) / (float)bins_per_octave * 12;
-               int start_color = ((float)(waves[i].start % bins_per_octave)) / (float)bins_per_octave * 12;
-               int end_color = ((float)(waves[i].end % bins_per_octave)) / (float)bins_per_octave * 12;
+            int i, o, num_octaves, bins_per_octave;
+            float** octaves;
+            int num_waves;
+            kl_cqt_wave_t* waves = kl_cqt_get_waves(cqt, &num_waves);
+            kl_cqt_get_octaves(cqt, &octaves, &num_octaves, &bins_per_octave);
 
-               glBegin(GL_LINES);
-                  glColor3fv(cqt_colors[peak_color]);
+            glBegin(GL_LINES);
+            for(o = 0; o < num_octaves; o++)
+            {
+               for(i = 0; i < bins_per_octave; i++)
+               {
+                  float val = octaves[o][i];
+                  float interp = (float)(o * bins_per_octave + i) / (float)(num_octaves * bins_per_octave);
+                  int cindex = floor(12.0f * i / bins_per_octave);
+                  glColor3f(cqt_colors[cindex][0] * 0.6f,
+                            cqt_colors[cindex][1] * 0.6f,
+                            cqt_colors[cindex][2] * 0.6f);
+                  glVertex2f(-1.0f + interp * 2.0f, -0.99f);
+                  glVertex2f(-1.0f + interp * 2.0f, val - 0.99f);
+               }
+            }
+            glEnd();
+
+            glColor3f(1.0f, 1.0f, 1.0f);
+            glBegin(GL_LINES);
+            for(i = 0; i < num_waves; i++)
+            {
+               if(waves[i].amp_state != KL_WAVE_STATE_DISSIPATED)
+               {
                   glVertex2f(-1.0f + ((float)waves[i].peak / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
                   glVertex2f(-1.0f + ((float)waves[i].peak / (float)(num_octaves * bins_per_octave)) * 2.0f, waves[i].peakval - 0.99f);
 
-                  glColor3fv(cqt_colors[start_color]);
                   glVertex2f(-1.0f + ((float)waves[i].start / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
-                  glColor3fv(cqt_colors[end_color]);
                   glVertex2f(-1.0f + ((float)waves[i].end   / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
-               glEnd();
+               }
             }
+            glEnd();
          }
       }
-   }
-   else if(kl_render_spectrum_setting == 4)
-   {
-      /* Render CQT waves */
-      if(kl_freq_manager_get_cqt_texture(NULL) != 0) /* HAX */
+      else if(kl_render_spectrum_setting == 3)
       {
-         int i, o, num_octaves, bins_per_octave;
-         float** octaves;
-         int num_waves;
-         kl_cqt_wave_t* waves = kl_cqt_get_waves(cqt, &num_waves);
-
-         float state_colors[5][3] = {
-            {0.0f, 0.0f, 0.0f},  /* Dissipating */
-            {1.0f, 1.0f, 1.0f},  /* New */
-            {0.0f, 1.0f, 0.0f},  /* Increasing */
-            {1.0f, 0.0f, 0.0f},  /* Decreasing */
-            {0.0f, 0.0f, 1.0f},  /* Constant */
-         };
-
-         kl_cqt_get_octaves(cqt, &octaves, &num_octaves, &bins_per_octave);
-
-         glBegin(GL_LINES);
-         for(o = 0; o < num_octaves; o++)
+         /* Render CQT waves */
+         if(kl_freq_manager_get_cqt_texture(NULL) != 0) /* HAX */
          {
-            for(i = 0; i < bins_per_octave; i++)
+            int i, num_octaves, bins_per_octave;
+            float** octaves;
+            int num_waves;
+            kl_cqt_wave_t* waves = kl_cqt_get_waves(cqt, &num_waves);
+            kl_cqt_get_octaves(cqt, &octaves, &num_octaves, &bins_per_octave);
+            for(i = 0; i < num_waves; i++)
             {
-               float val = octaves[o][i];
-               float interp = (float)(o * bins_per_octave + i) / (float)(num_octaves * bins_per_octave);
-               glColor3f(0.4f, 0.4f, 0.4f);
-               glVertex2f(-1.0f + interp * 2.0f, -0.99f);
-               glVertex2f(-1.0f + interp * 2.0f, val - 0.99f);
+               if(waves[i].amp_state != KL_WAVE_STATE_DISSIPATED)
+               {
+                  int peak_color = ((float)(waves[i].peak % bins_per_octave)) / (float)bins_per_octave * 12;
+                  int start_color = ((float)(waves[i].start % bins_per_octave)) / (float)bins_per_octave * 12;
+                  int end_color = ((float)(waves[i].end % bins_per_octave)) / (float)bins_per_octave * 12;
+
+                  glBegin(GL_LINES);
+                     glColor3fv(cqt_colors[peak_color]);
+                     glVertex2f(-1.0f + ((float)waves[i].peak / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
+                     glVertex2f(-1.0f + ((float)waves[i].peak / (float)(num_octaves * bins_per_octave)) * 2.0f, waves[i].peakval - 0.99f);
+
+                     glColor3fv(cqt_colors[start_color]);
+                     glVertex2f(-1.0f + ((float)waves[i].start / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
+                     glColor3fv(cqt_colors[end_color]);
+                     glVertex2f(-1.0f + ((float)waves[i].end   / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
+                  glEnd();
+               }
             }
          }
-         glEnd();
-
-         for(i = 0; i < num_waves; i++)
+      }
+      else if(kl_render_spectrum_setting == 4)
+      {
+         /* Render CQT waves */
+         if(kl_freq_manager_get_cqt_texture(NULL) != 0) /* HAX */
          {
-            if(waves[i].amp_state != KL_WAVE_STATE_DISSIPATED)
-            {
-               glBegin(GL_LINES);
-                  glColor3fv(state_colors[waves[i].amp_state]);
-                  glVertex2f(-1.0f + ((float)waves[i].peak / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
-                  glVertex2f(-1.0f + ((float)waves[i].peak / (float)(num_octaves * bins_per_octave)) * 2.0f, waves[i].peakval - 0.99f);
+            int i, o, num_octaves, bins_per_octave;
+            float** octaves;
+            int num_waves;
+            kl_cqt_wave_t* waves = kl_cqt_get_waves(cqt, &num_waves);
 
-                  glColor3fv(state_colors[waves[i].pitch_state]);
-                  glVertex2f(-1.0f + ((float)waves[i].start / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
-                  glVertex2f(-1.0f + ((float)waves[i].end   / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
-               glEnd();
+            float state_colors[5][3] = {
+               {0.0f, 0.0f, 0.0f},  /* Dissipating */
+               {1.0f, 1.0f, 1.0f},  /* New */
+               {0.0f, 1.0f, 0.0f},  /* Increasing */
+               {1.0f, 0.0f, 0.0f},  /* Decreasing */
+               {0.0f, 0.0f, 1.0f},  /* Constant */
+            };
+
+            kl_cqt_get_octaves(cqt, &octaves, &num_octaves, &bins_per_octave);
+
+            glBegin(GL_LINES);
+            for(o = 0; o < num_octaves; o++)
+            {
+               for(i = 0; i < bins_per_octave; i++)
+               {
+                  float val = octaves[o][i];
+                  float interp = (float)(o * bins_per_octave + i) / (float)(num_octaves * bins_per_octave);
+                  glColor3f(0.4f, 0.4f, 0.4f);
+                  glVertex2f(-1.0f + interp * 2.0f, -0.99f);
+                  glVertex2f(-1.0f + interp * 2.0f, val - 0.99f);
+               }
+            }
+            glEnd();
+
+            for(i = 0; i < num_waves; i++)
+            {
+               if(waves[i].amp_state != KL_WAVE_STATE_DISSIPATED)
+               {
+                  glBegin(GL_LINES);
+                     glColor3fv(state_colors[waves[i].amp_state]);
+                     glVertex2f(-1.0f + ((float)waves[i].peak / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
+                     glVertex2f(-1.0f + ((float)waves[i].peak / (float)(num_octaves * bins_per_octave)) * 2.0f, waves[i].peakval - 0.99f);
+
+                     glColor3fv(state_colors[waves[i].pitch_state]);
+                     glVertex2f(-1.0f + ((float)waves[i].start / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
+                     glVertex2f(-1.0f + ((float)waves[i].end   / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
+                  glEnd();
+               }
             }
          }
       }
    }
+#endif
 
-#if 1
+#if 0
    if(g_hax_script_mesh != NULL)
    {
+      kl_matrix_t modelview_mat;
       int i;
       kl_mesh_bind(g_hax_script_mesh);
 

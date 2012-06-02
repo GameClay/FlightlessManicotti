@@ -1,25 +1,27 @@
 require 'render.ShaderFactory'
 
-DeclareShader('Vertex.GL2', [[
-   attribute vec3 InPosition;
-   attribute vec4 InColor;
+DeclareShader('Vertex.GL3', [[
+   in vec3 InPosition;
+   in vec4 InColor;
 
    varying vec4 vNormal;
+
+   uniform mat4 object_to_screen;
 
    void main()
    {
       vec4 pos = vec4(InPosition, 1.0);
-      gl_Position = gl_ModelViewProjectionMatrix * pos;
+      gl_Position = object_to_screen * pos;
       gl_FrontColor = gl_Color;
       vec4 nrm = pos + vec4(gl_Normal, 0.0) * 0.5;
-      vNormal = gl_ModelViewProjectionMatrix * nrm;
+      vNormal = object_to_screen * nrm;
    }
 ]])
 
-DeclareShader('Geometry.GL2', [[
+DeclareShader('Geometry.GL3', [[
    #extension GL_EXT_geometry_shader4 : enable
 
-   varying in vec4 vNormal[1]; // In = points so size = 1
+   in vec4 vNormal[1]; // In = points so size = 1
 
    void main()
    {

@@ -42,28 +42,28 @@ static int RenderTarget_new(lua_State* L)
    CGLSetCurrentContext(g_script_render_context->drawableCGLContext);
    CGLLockContext(g_script_render_context->drawableCGLContext);
    {
-      glGenFramebuffersEXT(1, &target->framebuffer);
+      glGenFramebuffers(1, &target->framebuffer);
       glGenTextures(1, &target->texture);
-      glGenRenderbuffersEXT(1, &target->depthstencil);
+      glGenRenderbuffers(1, &target->depthstencil);
 
-      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, target->framebuffer);
+      glBindFramebuffer(GL_FRAMEBUFFER, target->framebuffer);
 
       glBindTexture(GL_TEXTURE_2D, target->texture);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, target->width, target->height,
                    0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-      glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                                 GL_TEXTURE_2D, target->texture, 0);
 
-      glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, target->depthstencil);
-      glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH24_STENCIL8_EXT, target->width, target->height);
-      glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT,
-                                   target->depthstencil);
+      glBindRenderbuffer(GL_RENDERBUFFER, target->depthstencil);
+      glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, target->width, target->height);
+      glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER,
+                                 target->depthstencil);
 
-      if(glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT) != GL_FRAMEBUFFER_COMPLETE_EXT)
+      if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
       {
-         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+         glBindFramebuffer(GL_FRAMEBUFFER, 0);
          glBindTexture(GL_TEXTURE_2D, 0);
          CGLUnlockContext(g_script_render_context->drawableCGLContext);
          skerr("Script render target creation failed.");
@@ -76,7 +76,7 @@ static int RenderTarget_new(lua_State* L)
       glClearColor(0, 0, 0, 0);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
       glBindTexture(GL_TEXTURE_2D, 0);
    }
    CGLUnlockContext(g_script_render_context->drawableCGLContext);
@@ -94,8 +94,8 @@ static int RenderTarget_gc(lua_State* L)
    CGLSetCurrentContext(g_script_render_context->drawableCGLContext);
    CGLLockContext(g_script_render_context->drawableCGLContext);
    {
-      glDeleteFramebuffersEXT(1, &target->framebuffer);
-      glDeleteRenderbuffersEXT(1, &target->depthstencil);
+      glDeleteFramebuffers(1, &target->framebuffer);
+      glDeleteRenderbuffers(1, &target->depthstencil);
       glDeleteTextures(1, &target->texture);
    }
    CGLUnlockContext(g_script_render_context->drawableCGLContext);
@@ -116,18 +116,18 @@ static int RenderTarget_update(lua_State* L)
    CGLSetCurrentContext(g_script_render_context->drawableCGLContext);
    CGLLockContext(g_script_render_context->drawableCGLContext);
    {
-      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, target->framebuffer);
+      glBindFramebuffer(GL_FRAMEBUFFER, target->framebuffer);
 
       glBindTexture(GL_TEXTURE_2D, target->texture);
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, target->width, target->height,
                    0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
-      glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, target->depthstencil);
-      glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH24_STENCIL8_EXT, target->width, target->height);
+      glBindRenderbuffer(GL_RENDERBUFFER, target->depthstencil);
+      glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, target->width, target->height);
 
-      if(glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT) != GL_FRAMEBUFFER_COMPLETE_EXT)
+      if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
       {
-         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+         glBindFramebuffer(GL_FRAMEBUFFER, 0);
          glBindTexture(GL_TEXTURE_2D, 0);
          CGLUnlockContext(g_script_render_context->drawableCGLContext);
          skerr("Script render target update failed.");
@@ -138,7 +138,7 @@ static int RenderTarget_update(lua_State* L)
       glClearColor(0, 0, 0, 0);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
       glBindTexture(GL_TEXTURE_2D, 0);
    }
    CGLUnlockContext(g_script_render_context->drawableCGLContext);

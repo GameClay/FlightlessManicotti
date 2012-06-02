@@ -57,7 +57,7 @@ void kl_effect_manager_destroy(kl_effect_manager_t* manager)
 }
 
 int kl_effect_manager_get_effect(kl_render_context_t render_ctx, const char* effect_key,
-   kl_effect_t* effect)
+   const char* gl_version_string, kl_effect_t* effect)
 {
    int ret = KL_ERROR;
    uint32_t hash = kl_hash(effect_key, strlen(effect_key), 0);
@@ -83,14 +83,20 @@ int kl_effect_manager_get_effect(kl_render_context_t render_ctx, const char* eff
       char effect_key_buffer[512];
       kl_shader_t vert_shader, geom_shader, pix_shader;
       GLuint program;
+      float glLanguageVersion;
+      GLuint version;
 
       CGLSetCurrentContext(render_ctx->resourceCGLContext);
       CGLLockContext(render_ctx->resourceCGLContext);
 
-      sprintf(effect_key_buffer, "%s.Vertex.%s", effect_key, "GL2");
+      sscanf((char *)glGetString(GL_SHADING_LANGUAGE_VERSION), "%f", &glLanguageVersion);
+      version = 100 * glLanguageVersion;
+      KL_UNUSED(version);
+
+      sprintf(effect_key_buffer, "%s.Vertex.%s", effect_key, gl_version_string);
       if(kl_shader_manager_get_vertex_shader(render_ctx, effect_key_buffer, &vert_shader) == KL_SUCCESS)
       {
-         sprintf(effect_key_buffer, "%s.Fragment.%s", effect_key, "GL2");
+         sprintf(effect_key_buffer, "%s.Fragment.%s", effect_key, gl_version_string);
          if(kl_shader_manager_get_pixel_shader(render_ctx, effect_key_buffer, &pix_shader) == KL_SUCCESS)
          {
             GLint link_success;
@@ -100,15 +106,10 @@ int kl_effect_manager_get_effect(kl_render_context_t render_ctx, const char* eff
             glAttachShader(program, vert_shader->shader);
             glAttachShader(program, pix_shader->shader);
 
-            sprintf(effect_key_buffer, "%s.Geometry.%s", effect_key, "GL2");
+            sprintf(effect_key_buffer, "%s.Geometry.%s", effect_key, gl_version_string);
             if(kl_shader_manager_get_geometry_shader(render_ctx, effect_key_buffer, &geom_shader) == KL_SUCCESS)
             {
                glAttachShader(program, geom_shader->shader);
-
-      /* HAX */
-      glProgramParameteriEXT(program, GL_GEOMETRY_INPUT_TYPE_EXT, GL_POINTS);
-      glProgramParameteriEXT(program, GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_LINE_STRIP);
-      glProgramParameteriEXT(program, GL_GEOMETRY_VERTICES_OUT_EXT, 2);
 
                has_geom = KL_TRUE;
             }
@@ -174,12 +175,13 @@ void kl_effect_manager_bind_effect(kl_effect_t effect, const kl_render_state_t* 
       glUseProgram(effect->program);
 
       /* Assign matrices */
-      loc = glGetUniformLocation(effect->program, "");
+      loc = glGetUniformLocation(effect->program, "object_to_screen");
       if(loc != -1)
       {
-         glUniformMatrix4fv(loc, 1, GL_FALSE, constant[i]->constant.as_float_ptr);
+         glUniformMatrix4fv(loc, 1, GL_FALSE, render_state->object_to_screen.m);
       }
 
+      /* Assign other constants */
       for(i = 0; i < num_constants; i++)
       {
          loc = glGetUniformLocation(effect->program, constant[i]->name);

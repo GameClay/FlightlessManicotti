@@ -256,6 +256,7 @@ void _kl_particle_render_quads_advance_time(float dt, void* context)
 
 void kl_particle_render_quads_draw(kl_particle_render_quads_t renderer)
 {
+   /*
    GLuint buffer_idx = renderer->buffer_idx;
 
    glBindBuffer(GL_ARRAY_BUFFER, renderer->vert_buffer[buffer_idx]);
@@ -273,4 +274,5 @@ void kl_particle_render_quads_draw(kl_particle_render_quads_t renderer)
    glDisableClientState(GL_COLOR_ARRAY);
 
    renderer->last_used_idx = buffer_idx;
+   */
 }

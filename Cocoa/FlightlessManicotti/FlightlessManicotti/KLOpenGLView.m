@@ -34,9 +34,9 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTime
 {
    NSOpenGLPixelFormatAttribute attrs[] =
    {
-      //NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core,
+      NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core,
       NSOpenGLPFADoubleBuffer,
-      NSOpenGLPFADepthSize, 32,
+      NSOpenGLPFADepthSize, 24,
       0
    };
    

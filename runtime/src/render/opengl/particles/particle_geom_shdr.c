@@ -136,10 +136,6 @@ void kl_particle_render_geom_shdr_assign_effect(kl_particle_render_geom_shdr_t r
             glBindAttribLocation(program, 1, "in_Y");
             glBindAttribLocation(program, 2, "in_Z");
 
-            glProgramParameteriEXT(program, GL_GEOMETRY_INPUT_TYPE_EXT, GL_POINTS);
-            glProgramParameteriEXT(program, GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_TRIANGLE_STRIP);
-            glProgramParameteriEXT(program, GL_GEOMETRY_VERTICES_OUT_EXT, 4);
-
             glLinkProgram(program);
 
             /* TODO: Check link status */

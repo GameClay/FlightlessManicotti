@@ -1,26 +1,33 @@
 require 'render.ShaderFactory'
 
-DeclareShader('Vertex.GL2', [[
-   attribute vec3 InPosition;
-   attribute vec2 InTex0;
+DeclareShader('Vertex.GL3', [[
+   in vec3 InPosition;
+   in vec2 InTex0;
 
-   varying vec2 tex_coord0;
+   out vec2 tex_coord0;
+   out vec4 color0;
+
    uniform float hax_color;
+   uniform mat4 object_to_screen;
 
    void main()
    {
-      gl_Position = gl_ModelViewProjectionMatrix * vec4(InPosition, 1.0);
+      gl_Position = object_to_screen * vec4(InPosition, 1.0);
       tex_coord0 = InTex0.xy;
-      gl_FrontColor = vec4(hax_color, hax_color, hax_color, 1.0);
+      color0 = vec4(hax_color, hax_color, hax_color, 1.0);
    }
 ]])
 
-DeclareShader('Fragment.GL2', [[
+DeclareShader('Fragment.GL3', [[
+   in vec2 tex_coord0;
+   in vec4 color0;
+
+   out vec4 fragout0;
+
    uniform sampler2D tex0;
-   varying vec2 tex_coord0;
 
    void main()
    {
-      gl_FragColor = texture2D(tex0, tex_coord0) * gl_Color;
+      fragout0 = texture(tex0, tex_coord0) * color0;
    }
 ]])

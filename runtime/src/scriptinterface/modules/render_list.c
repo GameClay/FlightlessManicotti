@@ -94,7 +94,7 @@ static int RenderInstance_new(lua_State* L)
    inst->draw_type = GL_TRIANGLES;
    inst->blend_src = GL_ONE;
    inst->blend_dest = GL_ZERO;
-   kl_matrix_identity(inst->obj_to_world.m);
+   kl_matrix_identity(inst->object_to_world.m);
    inst->consts = NULL;
    inst->num_consts = 0;
    inst->render_target = NULL;
@@ -153,7 +153,7 @@ static int RenderInstance_setmaterial(lua_State* L)
       kl_effect_manager_destroy_effect(g_script_render_context, &inst->material);
    }
 
-   kl_effect_manager_get_effect(g_script_render_context, effect_key, &inst->material);
+   kl_effect_manager_get_effect(g_script_render_context, effect_key, "GL3", &inst->material);
 
    return 0;
 }
@@ -400,7 +400,7 @@ static int RenderInstance_updateshaderconstants(lua_State* L)
 static int RenderInstance_settransform(lua_State* L)
 {
    kl_render_instance_t* inst = (kl_render_instance_t*)lua_touserdata(L, 1);
-   kl_matrix_identity(inst->obj_to_world.m); /* Hax */
+   kl_matrix_identity(inst->object_to_world.m); /* Hax */
    return 0;
 }
 
