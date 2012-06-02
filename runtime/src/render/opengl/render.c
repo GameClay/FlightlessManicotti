@@ -166,11 +166,6 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
             /* Set up blend */
             glBlendFunc(inst->blend_src, inst->blend_dest);
 
-            /* Bind mesh and shaders */
-            kl_effect_manager_bind_effect(inst->material, &hax_render_state,
-               (const kl_shader_constant_t**)inst->consts, inst->num_consts);
-            kl_mesh_bind(inst->mesh);
-
             /* Set up target */
             if(inst->render_target != NULL)
             {
@@ -186,8 +181,17 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             }
 
+            /* Bind mesh and shaders */
+            kl_effect_manager_bind_effect(inst->material, &hax_render_state,
+               (const kl_shader_constant_t**)inst->consts, inst->num_consts);
+            kl_mesh_bind(inst->mesh);
+
             /* Draw */
             glDrawElements(inst->draw_type, inst->mesh->num_indices, GL_UNSIGNED_SHORT, NULL);
+
+            /* Unbind shaders and mesh */
+            kl_mesh_bind(NULL);
+            kl_effect_manager_bind_effect(NULL, NULL, NULL, 0);
 
             /* Tear down target */
             if(inst->render_target != NULL)
@@ -195,14 +199,8 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
                glBindFramebuffer(GL_FRAMEBUFFER, 0);
                glViewport(0, 0, display_width, display_height);
             }
-
-            /* Unbind shaders */
-            kl_effect_manager_bind_effect(NULL, NULL, NULL, 0);
          }
       }
-
-      /* Unbind meshes */
-      kl_mesh_bind(NULL);
    }
    glDisable(GL_BLEND);
 

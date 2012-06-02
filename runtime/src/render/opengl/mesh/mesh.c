@@ -42,12 +42,11 @@ int kl_mesh_init(kl_mesh_t* mesh)
       if(internal != NULL)
       {
          glGenVertexArrays(1, &internal->vao);
-         glBindVertexArray(internal->vao);
-         glGenBuffers(1, &internal->vert_buffer);
-         glGenBuffers(1, &internal->norm_buffer);
-         glGenBuffers(1, &internal->tex0_buffer);
-         glGenBuffers(1, &internal->col0_buffer);
-         glGenBuffers(1, &internal->idx_buffer);
+         internal->vert_buffer = 0;
+         internal->norm_buffer = 0;
+         internal->tex0_buffer = 0;
+         internal->col0_buffer = 0;
+         internal->idx_buffer = 0;
          internal->buffered_data = 0;
 
          mesh->internal = internal;
@@ -87,38 +86,68 @@ void kl_mesh_buffer_data(kl_mesh_t* mesh, uint32_t update_mask, uint32_t dynamic
 
       if(mesh->vertex != NULL && (update_mask & kl_mesh_element_vertex))
       {
-         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, internal->vert_buffer);
-         glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->num_verts * sizeof(float) * 3,
+         if(internal->vert_buffer == 0)
+         {
+            glGenBuffers(1, &internal->vert_buffer);
+         }
+         glBindBuffer(GL_ARRAY_BUFFER, internal->vert_buffer);
+         glBufferData(GL_ARRAY_BUFFER, mesh->num_verts * sizeof(float) * 3,
                       mesh->vertex, MESH_DRAW_TYPE(kl_mesh_element_vertex));
+         glEnableVertexAttribArray(KL_MESH_POSITION_IDX);
+         glVertexAttribPointer(KL_MESH_POSITION_IDX, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
       }
 
       if(mesh->normal != NULL && (update_mask & kl_mesh_element_normal))
       {
-         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, internal->norm_buffer);
-         glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->num_verts * sizeof(float) * 3,
+         if(internal->norm_buffer == 0)
+         {
+            glGenBuffers(1, &internal->norm_buffer);
+         }
+         glBindBuffer(GL_ARRAY_BUFFER, internal->norm_buffer);
+         glBufferData(GL_ARRAY_BUFFER, mesh->num_verts * sizeof(float) * 3,
                       mesh->normal, MESH_DRAW_TYPE(kl_mesh_element_normal));
+         glEnableVertexAttribArray(KL_MESH_NORMAL_IDX);
+         glVertexAttribPointer(KL_MESH_NORMAL_IDX, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
       }
 
       if(mesh->tex0 != NULL && (update_mask & kl_mesh_element_tex0))
       {
-         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, internal->tex0_buffer);
-         glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->num_verts * sizeof(float) * 2, /* HAX, should be able to have 1,2,3 or 4 */
+         if(internal->tex0_buffer == 0)
+         {
+            glGenBuffers(1, &internal->tex0_buffer);
+         }
+         glBindBuffer(GL_ARRAY_BUFFER, internal->tex0_buffer);
+         glBufferData(GL_ARRAY_BUFFER, mesh->num_verts * sizeof(float) * 2, /* HAX, should be able to have 1,2,3 or 4 */
                       mesh->tex0, MESH_DRAW_TYPE(kl_mesh_element_tex0));
+         glEnableVertexAttribArray(KL_MESH_TEX0_IDX);
+         glVertexAttribPointer(KL_MESH_TEX0_IDX, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
       }
 
       if(mesh->col0 != NULL && (update_mask & kl_mesh_element_col0))
       {
-         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, internal->col0_buffer);
-         glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->num_verts * sizeof(uint32_t),
+         if(internal->col0_buffer == 0)
+         {
+            glGenBuffers(1, &internal->col0_buffer);
+         }
+         glBindBuffer(GL_ARRAY_BUFFER, internal->col0_buffer);
+         glBufferData(GL_ARRAY_BUFFER, mesh->num_verts * sizeof(uint32_t),
                       mesh->col0, MESH_DRAW_TYPE(kl_mesh_element_col0));
+         glEnableVertexAttribArray(KL_MESH_COLOR_IDX);
+         glVertexAttribPointer(KL_MESH_COLOR_IDX, 1, GL_UNSIGNED_INT, GL_TRUE, sizeof(uint32_t), NULL);
       }
 
       if(mesh->index != NULL && (update_mask & kl_mesh_element_index))
       {
+         if(internal->idx_buffer == 0)
+         {
+            glGenBuffers(1, &internal->idx_buffer);
+         }
          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, internal->idx_buffer);
          glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->num_indices * sizeof(uint16_t),
                       mesh->index, MESH_DRAW_TYPE(kl_mesh_element_index));
       }
+
+      glBindVertexArray(0);
    }
 }
 
@@ -128,50 +157,10 @@ void kl_mesh_bind(const kl_mesh_t* mesh)
 {
    if(mesh != NULL && mesh->internal != NULL)
    {
-      kl_mesh_internal_t internal = mesh->internal;
-
-      /* Bind VAO */
-      glBindVertexArray(internal->vao);
-
-      if(mesh->vertex != NULL && (internal->buffered_data & kl_mesh_element_vertex))
-      {
-         glEnableVertexAttribArray(KL_MESH_POSITION_IDX);
-         glBindBuffer(GL_ARRAY_BUFFER, internal->vert_buffer);
-         glVertexAttribPointer(KL_MESH_POSITION_IDX, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
-      }
-
-      if(mesh->normal != NULL && (internal->buffered_data & kl_mesh_element_normal))
-      {
-         glEnableVertexAttribArray(KL_MESH_NORMAL_IDX);
-         glBindBuffer(GL_ARRAY_BUFFER, internal->norm_buffer);
-         glVertexAttribPointer(KL_MESH_NORMAL_IDX, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
-      }
-
-      if(mesh->tex0 != NULL && (internal->buffered_data & kl_mesh_element_tex0))
-      {
-         glEnableVertexAttribArray(KL_MESH_TEX0_IDX);
-         glBindBuffer(GL_ARRAY_BUFFER, internal->tex0_buffer);
-         glVertexAttribPointer(KL_MESH_TEX0_IDX, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
-      }
-
-      if(mesh->col0 != NULL && (internal->buffered_data & kl_mesh_element_col0))
-      {
-         glEnableVertexAttribArray(KL_MESH_COLOR_IDX);
-         glBindBuffer(GL_ARRAY_BUFFER, internal->col0_buffer);
-         glVertexAttribPointer(KL_MESH_COLOR_IDX, 1, GL_UNSIGNED_INT, GL_TRUE, sizeof(uint32_t), NULL);
-      }
-
-      if(mesh->index != NULL && (internal->buffered_data & kl_mesh_element_index))
-      {
-         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, internal->idx_buffer);
-      }
+      glBindVertexArray(mesh->internal->vao);
    }
    else
    {
-      glDisableVertexAttribArray(KL_MESH_POSITION_IDX);
-      glDisableVertexAttribArray(KL_MESH_NORMAL_IDX);
-      glDisableVertexAttribArray(KL_MESH_TEX0_IDX);
-      glDisableVertexAttribArray(KL_MESH_COLOR_IDX);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+      glBindVertexArray(0);
    }
 }
