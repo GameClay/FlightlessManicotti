@@ -163,18 +163,26 @@ int kl_effect_manager_get_effect(kl_render_context_t render_ctx, const char* eff
    return ret;
 }
 
-void kl_effect_manager_bind_effect(kl_effect_t effect, kl_shader_constant_t** constant,
-   size_t num_constants)
+void kl_effect_manager_bind_effect(kl_effect_t effect, const kl_render_state_t* render_state,
+   const kl_shader_constant_t** constant, size_t num_constants)
 {
    if(effect != NULL)
    {
       int i;
       int num_tex = 0;
+      GLint loc;
       glUseProgram(effect->program);
+
+      /* Assign matrices */
+      loc = glGetUniformLocation(effect->program, "");
+      if(loc != -1)
+      {
+         glUniformMatrix4fv(loc, 1, GL_FALSE, constant[i]->constant.as_float_ptr);
+      }
 
       for(i = 0; i < num_constants; i++)
       {
-         GLint loc = glGetUniformLocation(effect->program, constant[i]->name);
+         loc = glGetUniformLocation(effect->program, constant[i]->name);
          if(loc < 0) continue;
 
          switch(constant[i]->constant_type)

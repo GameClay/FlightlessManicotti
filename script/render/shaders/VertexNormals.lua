@@ -1,13 +1,17 @@
 require 'render.ShaderFactory'
 
 DeclareShader('Vertex.GL2', [[
+   attribute vec3 InPosition;
+   attribute vec4 InColor;
+
    varying vec4 vNormal;
 
    void main()
    {
-      gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+      vec4 pos = vec4(InPosition, 1.0);
+      gl_Position = gl_ModelViewProjectionMatrix * pos;
       gl_FrontColor = gl_Color;
-      vec4 nrm = gl_Vertex + vec4(gl_Normal, 0.0) * 0.5;
+      vec4 nrm = pos + vec4(gl_Normal, 0.0) * 0.5;
       vNormal = gl_ModelViewProjectionMatrix * nrm;
    }
 ]])

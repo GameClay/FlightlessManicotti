@@ -24,8 +24,14 @@ extern "C" {
 #endif
 
 #include <FlightlessManicotti/fm.h>
+#include <FlightlessManicotti/math/matrix.h>
 
 typedef struct _kl_render_context* kl_render_context_t;
+
+typedef struct kl_render_state_t {
+   kl_matrix_t world_to_camera;
+   kl_matrix_t camera_to_screen;
+} kl_render_state_t;
 
 /**
  * Initialize rendering subsystem.

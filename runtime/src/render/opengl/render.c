@@ -18,7 +18,6 @@
 
 #include <FlightlessManicotti/render/render.h>
 #include "gl_render.h"
-#include <FlightlessManicotti/math/matrix.h>
 #include <FlightlessManicotti/scriptinterface/scriptevents.h>
 #include <FlightlessManicotti/render/mesh/mesh.h>
 #include "scriptinterface/scriptinterface.h"
@@ -32,9 +31,6 @@ kl_script_event_t g_event_RenderInit;
 
 /* heinous hax */
 #include <FlightlessManicotti/beat/freq.h>
-#include <math.h>
-#include <string.h>
-#include <FlightlessManicotti/math/math.h>
 
 /* offensive hax */
 kl_mesh_t* g_hax_script_mesh = NULL;
@@ -284,7 +280,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
       int i;
       for(i = 0; i <= max_idx; i++)
       {
-         kl_render_instance_t* inst = context->render_list->list[i];
+         const kl_render_instance_t* inst = context->render_list->list[i];
          if(inst != NULL && inst->mesh != NULL)
          {
             /* Set obj->world matrix */
@@ -295,8 +291,9 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
             glBlendFunc(inst->blend_src, inst->blend_dest);
 
             /* Bind mesh and shaders */
-            kl_mesh_bind(inst->mesh);
-            kl_effect_manager_bind_effect(inst->material, inst->consts, inst->num_consts);
+            kl_effect_manager_bind_effect(inst->material, NULL,
+               (const kl_shader_constant_t**)inst->consts, inst->num_consts);
+            kl_mesh_bind(inst->mesh, inst->material);
 
             /* Set up target */
             if(inst->render_target != NULL)
@@ -324,8 +321,8 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
             }
 
             /* Unbind mesh/shaders */
-            kl_effect_manager_bind_effect(NULL, NULL, 0);
-            kl_mesh_bind(NULL);
+            kl_mesh_unbind(inst->mesh, inst->material);
+            kl_effect_manager_bind_effect(NULL, NULL, NULL, 0);
          }
       }
    }
