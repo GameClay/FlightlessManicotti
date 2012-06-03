@@ -54,12 +54,12 @@ static int RenderTarget_new(lua_State* L)
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, target->width, target->height,
                    0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
       glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                GL_TEXTURE_2D, target->texture, 0);
+                             GL_TEXTURE_2D, target->texture, 0);
 
       glBindRenderbuffer(GL_RENDERBUFFER, target->depthstencil);
       glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, target->width, target->height);
       glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER,
-                                 target->depthstencil);
+                                target->depthstencil);
 
       if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
       {
