@@ -55,7 +55,7 @@ void kl_render_list_insert_instance(kl_render_list_t* list, kl_render_instance_t
 
 void kl_render_list_remove_instance(kl_render_list_t* list, kl_render_instance_t* inst)
 {
-   if(inst->list_index == UINT32_MAX)
+   if(inst->list_index != UINT32_MAX)
    {
       uint32_t idx = inst->list_index;
       list->list[idx] = NULL;
