@@ -110,6 +110,10 @@ static int Texture_new(lua_State* L)
 
       glBindTexture(texture->tex_type, texture->texture);
 
+      /* Slight hax, should be able to specify wrap mode */
+      glTexParameteri(texture->tex_type, GL_TEXTURE_WRAP_S, GL_REPEAT);
+      glTexParameteri(texture->tex_type, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
       /* Slight hax, should be able to specify min/mag filter */
       glTexParameteri(texture->tex_type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       glTexParameteri(texture->tex_type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -118,11 +122,16 @@ static int Texture_new(lua_State* L)
       {
          case GL_TEXTURE_2D:
          {
-            glTexImage2D(texture->tex_type, 0 /* TODO: Mip-levels */, internalFormat, width, height,
+            glTexImage2D(texture->tex_type, 0, internalFormat, width, height,
                          0, srcFormat, GL_UNSIGNED_BYTE, bits);
             break;
          }
       }
+
+      /* Generate mip levels */
+      glEnable(texture->tex_type);
+      glGenerateMipmap(texture->tex_type);
+      glDisable(texture->tex_type);
 
       glBindTexture(texture->tex_type, 0);
    }
