@@ -144,18 +144,18 @@ int kl_effect_manager_get_effect(kl_render_context_t render_ctx, const char* eff
                char* linkInfoLog;
                int maxLength;
 
-               glDetachShader(program, vert_shader->shader);
-               glDetachShader(program, pix_shader->shader);
-               kl_shader_manager_destroy_shader(render_ctx, &pix_shader);
-               kl_shader_manager_destroy_shader(render_ctx, &vert_shader);
-               glDeleteProgram(program);
-
                glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
                linkInfoLog = kl_heap_alloc(maxLength);
 
                glGetProgramInfoLog(program, maxLength, &maxLength, linkInfoLog);
                skerr(linkInfoLog);
                kl_heap_free(linkInfoLog);
+
+               glDetachShader(program, vert_shader->shader);
+               glDetachShader(program, pix_shader->shader);
+               kl_shader_manager_destroy_shader(render_ctx, &pix_shader);
+               kl_shader_manager_destroy_shader(render_ctx, &vert_shader);
+               glDeleteProgram(program);
             }
          }
          else

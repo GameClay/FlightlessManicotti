@@ -22,8 +22,6 @@
 #include "render/script/getshader.h"
 #include <stdio.h>
 #include <string.h>
-
-/* hax */
 #include "render/opengl/gl_render.h"
 
 int kl_shader_manager_create(kl_shader_manager_t* manager, uint32_t num_shaders, kl_render_context_t render_ctx)
@@ -103,6 +101,8 @@ int _get_shader(kl_render_context_t render_ctx, const char* effect_key,
             glGetShaderInfoLog(gl_shader, maxLength, &maxLength, vertexInfoLog);
             skerr(vertexInfoLog);
             kl_heap_free(vertexInfoLog);
+
+            glDeleteShader(gl_shader);
          }
          else
          {
