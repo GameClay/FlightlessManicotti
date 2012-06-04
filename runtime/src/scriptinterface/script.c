@@ -36,6 +36,7 @@ extern int luaopen_vector2_array(lua_State* L);
 extern int luaopen_mesh(lua_State* L);
 extern int luaopen_render_list(lua_State* L);
 extern int luaopen_render_target(lua_State* L);
+extern int luaopen_texture(lua_State* L);
 
 extern int luaopen_vizthingy(lua_State* L);
 extern int luaopen_cqt_wave(lua_State* L);
@@ -106,6 +107,7 @@ int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_
    luaopen_mesh(sctx->lua_state);
    luaopen_render_list(sctx->lua_state);
    luaopen_render_target(sctx->lua_state);
+   luaopen_texture(sctx->lua_state);
 
    luaopen_vizthingy(sctx->lua_state);
    luaopen_cqt_wave(sctx->lua_state);

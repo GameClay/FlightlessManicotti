@@ -22,6 +22,7 @@
 #include <FlightlessManicotti/render/mesh/mesh.h>
 #include "scriptinterface/scriptinterface.h"
 #include <sanskrit/sklog.h>
+#include <FreeImage.h>
 
 int kl_render_spectrum_setting = 0;
 kl_render_context_t g_script_render_context = NULL;
@@ -38,6 +39,8 @@ kl_mesh_t* g_hax_script_mesh = NULL;
 int kl_init_rendering(kl_render_context_t* context, void* handle)
 {
    int ret = KL_ERROR;
+
+   FreeImage_Initialise(FALSE);
 
    if(context != NULL)
    {
@@ -93,6 +96,8 @@ void kl_destroy_rendering(kl_render_context_t* context)
       CGLReleaseContext(ctx->resourceCGLContext);
       CGLReleaseContext(ctx->drawableCGLContext);
       kl_heap_free(ctx);
+
+      FreeImage_DeInitialise();
    }
 }
 

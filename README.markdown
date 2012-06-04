@@ -36,6 +36,7 @@ All dependencies are included within the repository, and are built as part of th
 * [Lua](http://www.lua.org/) version [5.1.4](http://www.lua.org/ftp/lua-5.1.4.tar.gz) with patch [5.1.4-2](http://www.lua.org/ftp/patch-lua-5.1.4-2)
 * [MicroAllocator](http://codesuppository.blogspot.com/2009/09/free-open-source-micro-allocator-in-c.html) version [5](http://code.google.com/p/microallocator/source/browse/?r=5)
 * [OpenCTM](http://openctm.sourceforge.net/) version [1.0.3](https://sourceforge.net/projects/openctm/files/OpenCTM-1.0.3/OpenCTM-1.0.3-src.tar.bz2/download)
+* [FreeImage](http://freeimage.sourceforge.net/) version [3.15.3](http://downloads.sourceforge.net/freeimage/FreeImage3153.zip)
 
 # Philosophy
 At its core, FlightlessManicotti is an implementation of several ideas and architectural-philosophies that my colleagues, and I have talked about over beer for several years. 

@@ -11,8 +11,9 @@ script_files = Glob('src/scriptinterface/*.c', strings=True) + Glob('src/scripti
    Glob('src/scriptinterface/helpers/*.c', strings=True)
 game_files = Glob('src/game/*.c', strings=True) + Glob('src/game/scene2d/*.c', strings=True) + \
    Glob('src/game/scene3d/*.c', strings=True) + Glob('src/game/particles/*.c', strings=True) + \
-   Glob('src/game/particles/simulations/*.c', strings=True)
+   Glob('src/game/parameters/*.c', strings=True) + Glob('src/game/particles/simulations/*.c', strings=True)
 render_files = Glob('src/render/*.c', strings=True) + Glob('src/render/script/*.c', strings=True)
+beat_files = Glob('src/beat/*.c', strings=True)
 sanskrit_files = Glob('src/sanskrit/src/*.c', strings=True)
 
 # Platform specific render implementation
@@ -27,7 +28,7 @@ swig_files = Glob('src/scriptinterface/swig/*.i', strings=True)
 runtime_env.Command("src/swig_autogen.h", swig_files, build_swig_header.build)
 
 # Assemble the runtime lib source files
-lib_files = core_files + script_files + swig_files + game_files + render_files + sanskrit_files
+lib_files = core_files + script_files + swig_files + game_files + render_files + beat_files + sanskrit_files
 
 # Prune out excluded files
 excluded_files = []
@@ -70,7 +71,19 @@ if (env['OS'] == 'ios' or env['OS'] == 'darwin'):
                                    '-framework', 'OpenGL',
                                    '-framework', 'CoreMIDI'])
 
-   runtime_env.Append(CCFLAGS = ['-fconstant-cfstrings']) # For CFSTR macro
+# LuaJIT
+if '' == env.subst('$LUAJIT'):
+   env['LUAJIT'] = '/usr/local'
+runtime_env.Append(CPPPATH = [env['LUAJIT'] + '/include/luajit-2.0'])
+runtime_env.Append(LIBPATH = [env['LUAJIT'] + '/lib'])
+runtime_env.Append(LIBS = ['libluajit-5.1'])
+
+# FreeImage
+if '' == env.subst('$FREEIMAGE'):
+   env['FREEIMAGE'] = '/usr/local'
+runtime_env.Append(CPPPATH = [env['FREEIMAGE'] + '/include'])
+runtime_env.Append(LIBPATH = [env['FREEIMAGE'] + '/lib'])
+runtime_env.Append(LIBS = ['libfreeimage'])
 
 # Build lib
 return_libs = []

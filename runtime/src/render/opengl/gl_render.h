@@ -31,6 +31,11 @@ struct _kl_offscreen_target {
    GLuint width, height;
 };
 
+struct _kl_texture {
+   GLuint texture;
+   GLenum tex_type;
+};
+
 #define KL_MESH_POSITION_IDX 0
 #define KL_MESH_NORMAL_IDX   1
 #define KL_MESH_TEX0_IDX     2

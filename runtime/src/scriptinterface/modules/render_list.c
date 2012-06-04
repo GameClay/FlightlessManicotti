@@ -30,6 +30,7 @@ const char* RENDER_INSTANCE_LUA_LIB = "RenderInstance";
 
 extern const char* MESH_LUA_LIB;
 extern const char* RENDER_TARGET_LUA_LIB;
+extern const char* TEXTURE_LUA_LIB;
 
 static int RenderList_new(lua_State* L)
 {
@@ -208,6 +209,29 @@ void RenderInstance_shaderconsthelper(lua_State* L, kl_shader_constant_t* consta
                constant->constant_num = 1;
                constant->constant_type = KL_SHADER_CONSTANT_TYPE_TEX;
                constant->constant.as_tex = target->texture;
+            }
+
+            /* Check to see if it's a texture */
+            lua_getmetatable(L, -1);
+            luaL_getmetatable(L, TEXTURE_LUA_LIB);
+            is_eq = lua_equal(L, -1, -2);
+            lua_pop(L, 2);
+            if(is_eq)
+            {
+               struct _kl_texture* tex = (struct _kl_texture*)lua_touserdata(L, -1);
+               constant->dealloc_constant = 0;
+               constant->constant_num = 1;
+               constant->constant_type = KL_SHADER_CONSTANT_TYPE_TEX;
+               constant->constant.as_tex = tex->texture;
+
+               switch(tex->tex_type)
+               {
+                  case GL_TEXTURE_2D:
+                  {
+                     constant->constant_sz = 2; /* 2D texture */
+                     break;
+                  }
+               }
             }
             break;
          }
