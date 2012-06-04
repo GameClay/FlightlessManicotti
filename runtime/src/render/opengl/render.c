@@ -30,11 +30,8 @@ kl_render_context_t g_script_render_context = NULL;
 /* script.events.RenderInit */
 kl_script_event_t g_event_RenderInit;
 
-/* heinous hax */
+/* Vizthingy only */
 #include <FlightlessManicotti/beat/freq.h>
-
-/* offensive hax */
-kl_mesh_t* g_hax_script_mesh = NULL;
 
 int kl_init_rendering(kl_render_context_t* context, void* handle)
 {
@@ -115,10 +112,6 @@ void kl_render_assign_list(kl_render_context_t context, void* list)
 {
    context->render_list = (kl_render_list_t*)list;
 }
-
-/* Slight hax */
-extern void kl_cqt_lights_enable(kl_cqt_t cqt);
-extern void kl_cqt_lights_disable();
 
 void kl_render_frame(kl_render_context_t context, float display_width, float display_height)
 {
@@ -396,83 +389,6 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
             }
          }
       }
-   }
-#endif
-
-#if 0
-   if(g_hax_script_mesh != NULL)
-   {
-      kl_matrix_t modelview_mat;
-      int i;
-      kl_mesh_bind(g_hax_script_mesh);
-
-      glMatrixMode(GL_MODELVIEW);
-      glLoadTransposeMatrixf(KL_MATRIX_IDENTITY.m);
-
-      glEnable(GL_DEPTH_TEST);
-
-      if(kl_freq_manager_get_cqt_texture(NULL) != 0) /* HAX */
-      {
-         int o, num_octaves, bins_per_octave;
-         float** octaves;
-
-         kl_cqt_lights_enable(cqt);
-
-         kl_cqt_get_octaves(cqt, &octaves, &num_octaves, &bins_per_octave);
-
-         /* bass-based rotation */
-         o = (bins_per_octave + bins_per_octave / 2) / 3;
-         {
-            static float bass_theta_1 = 0.0f;
-            static float bass_theta_2 = 0.0f;
-            static float bass_theta_3 = 0.0f;
-
-            static float bass_theta_v1 = 0.0f;
-            static float bass_theta_v2 = 0.0f;
-            static float bass_theta_v3 = 0.0f;
-
-            bass_theta_v1 *= 0.87f;
-            bass_theta_v2 *= 0.87f;
-            bass_theta_v3 *= 0.87f;
-
-            for(i = 0; i < o * 3; i++)
-            {
-               if(i < o)
-               {
-                  bass_theta_v1 += octaves[0][i];
-               }
-               else if(i < o * 2)
-               {
-                  bass_theta_v2 += octaves[0][i];
-               }
-               else
-               {
-                  bass_theta_v3 += octaves[0][i];
-               }
-            }
-
-            bass_theta_1 += bass_theta_v1;
-            bass_theta_2 += bass_theta_v2;
-            bass_theta_3 += bass_theta_v3;
-
-            kl_matrix_scale(modelview_mat.m, 0.15f, 0.15f, 0.15f);
-            glLoadTransposeMatrixf(modelview_mat.m);
-
-            glRotatef(bass_theta_1, 1.0f, 0.0f, 0.0f);
-            glRotatef(bass_theta_2, 0.0f, 1.0f, 0.0f);
-            glRotatef(bass_theta_3, 0.0f, 0.0f, 1.0f);
-         }
-      }
-
-/*glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );*/
-      glDrawElements(GL_TRIANGLES, g_hax_script_mesh->num_indices, GL_UNSIGNED_SHORT, NULL);
-/*glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );*/
-
-      kl_cqt_lights_disable();
-
-      glDisable(GL_DEPTH_TEST);
-
-      kl_mesh_bind(NULL);
    }
 #endif
 
