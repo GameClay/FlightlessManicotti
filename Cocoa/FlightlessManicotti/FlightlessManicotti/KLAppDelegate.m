@@ -14,20 +14,6 @@
 #include <FlightlessManicotti/math/vector.h>
 #include <FlightlessManicotti/scriptinterface/script.h>
 
-
-// Massive Hax
-#include <OpenAL/al.h>
-#include <OpenAL/alc.h>
-#include <FlightlessManicotti/beat/freq.h>
-
-const int SRATE = 44100;
-const int SSIZE = KL_FFT_SZ;
-
-ALshort buffer[44100 * 4];
-ALint sample;
-ALCdevice *device = NULL;
-BOOL g_loop_last_buffer = FALSE;
-
 BOOL g_shutting_down = FALSE;
 
 @implementation KLAppDelegate
@@ -46,22 +32,10 @@ BOOL g_shutting_down = FALSE;
                        0, // No args yet
                        NULL) == KL_SUCCESS)
       {
-         [[NSRunLoop currentRunLoop] addTimer:
-          [NSTimer timerWithTimeInterval:0.0
-                                  target:self
-                                selector:@selector(update:)
-                                userInfo:nil
-                                 repeats:YES]
-                                      forMode:NSRunLoopCommonModes];
       }
       
       //kl_matrix_math_self_test(); // Hax
       //kl_vector_math_self_test();
-      
-      // Massive hax
-      alGetError();
-      device = alcCaptureOpenDevice(NULL, SRATE, AL_FORMAT_STEREO16, SSIZE);
-      alcCaptureStart(device);
    }
    return self;
 }
@@ -73,12 +47,7 @@ BOOL g_shutting_down = FALSE;
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
-{
-   // Massive hax
-   alcCaptureStop(device);
-   alcCaptureCloseDevice(device);
-   device = NULL;
-   
+{   
    g_shutting_down = TRUE;
    
    kl_predestroy();
@@ -106,27 +75,6 @@ extern uint64_t hax_num_frames;
 -(void)doTerminate:(NSTimer *)theTimer
 {
    [NSApp replyToApplicationShouldTerminate:YES];
-}
-
--(void)update:(NSTimer *)theTimer
-{
-   // Massive hax
-   if(device != NULL)
-   {
-      if(g_loop_last_buffer)
-      {
-         kl_freq_manager_update(KL_DEFAULT_FREQ_MANAGER, buffer, SSIZE);
-      }
-      else
-      {
-         alcGetIntegerv(device, ALC_CAPTURE_SAMPLES, (ALCsizei)sizeof(ALint), &sample);
-         if(sample == SSIZE)
-         {
-            alcCaptureSamples(device, (ALCvoid *)buffer, sample);
-            kl_freq_manager_update(KL_DEFAULT_FREQ_MANAGER, buffer, sample);
-         }
-      }
-   }
 }
 
 -(IBAction)onTextEntry:(id)sender

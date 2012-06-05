@@ -24,14 +24,10 @@
 #include <sanskrit/sklog.h>
 #include <FreeImage.h>
 
-int kl_render_spectrum_setting = 0;
 kl_render_context_t g_script_render_context = NULL;
 
 /* script.events.RenderInit */
 kl_script_event_t g_event_RenderInit;
-
-/* Vizthingy only */
-#include <FlightlessManicotti/beat/freq.h>
 
 int kl_init_rendering(kl_render_context_t* context, void* handle)
 {
@@ -59,9 +55,6 @@ int kl_init_rendering(kl_render_context_t* context, void* handle)
 
       /* Null out render list */
       ctx->render_list = NULL;
-
-      /* Send renderer to freq mgr */
-      kl_freq_manager_set_render_ctx(NULL, ctx);
 
       /* Set default script render context. */
       g_script_render_context = ctx;
@@ -140,10 +133,6 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
       hax_xfm_state.object_to_screen.m);
 
    /* Draw render list */
-   /* Hax */
-   glBindTexture(GL_TEXTURE_1D, kl_freq_manager_get_cqt_texture(NULL));
-   /* /Hax */
-
    glEnable(GL_BLEND);
    if(context->render_list != NULL && context->render_list->list != NULL)
    {
@@ -201,196 +190,6 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
       }
    }
    glDisable(GL_BLEND);
-
-#if 0
-   {
-      float cqt_colors[12][3] = {
-         {1.0f, 0.0f, 0.0f},  /* C */
-         {1.0f, 0.5f, 0.0f},  /* C#/Db */
-         {1.0f, 1.0f, 0.0f},  /* D */
-         {0.5f, 1.0f, 0.0f},  /* D#/Eb */
-         {0.0f, 1.0f, 0.0f},  /* E */
-         {0.0f, 1.0f, 0.5f},  /* F */
-         {0.0f, 1.0f, 1.0f},  /* F#/Gb */
-         {0.0f, 0.5f, 1.0f},  /* G */
-         {0.0f, 0.0f, 1.0f},  /* G#/Ab */
-         {0.5f, 0.0f, 1.0f},  /* A */
-         {1.0f, 0.0f, 1.0f},  /* A#/Bb */
-         {1.0f, 0.0f, 0.5f},  /* B */
-      };
-      kl_cqt_t cqt = kl_freq_manager_get_cqt(NULL);
-
-      /* Spectrum/wave visualization*/
-      if(kl_render_spectrum_setting == 0)
-      {
-         /* Render FFT spectrum */
-         int i;
-         size_t spectrum_sz;
-         float* hax_spectrum = kl_freq_manager_get_spectrum(KL_DEFAULT_FREQ_MANAGER, &spectrum_sz);
-         glBegin(GL_LINES);
-         for(i = 0; i < spectrum_sz; i++)
-         {
-            float interp = (float)i / spectrum_sz;
-            glColor3f(1.0f - interp, interp, 0.0f);
-            glVertex2f(-1.0f + interp * 2.0f, -0.99f);
-            glVertex2f(-1.0f + interp * 2.0f, hax_spectrum[i] - 0.99f);
-         }
-         glEnd();
-      }
-      else if(kl_render_spectrum_setting == 1)
-      {
-         /* Render CQT spectrum */
-         int i, o, num_octaves, bins_per_octave;
-         float** octaves;
-
-         if(kl_freq_manager_get_cqt_texture(NULL) != 0) /* HAX */
-         {
-            kl_cqt_get_octaves(cqt, &octaves, &num_octaves, &bins_per_octave);
-            glBegin(GL_LINES);
-            for(o = 0; o < num_octaves; o++)
-            {
-               for(i = 0; i < bins_per_octave; i++)
-               {
-                  float val = octaves[o][i];
-                  float interp = (float)(o * bins_per_octave + i) / (float)(num_octaves * bins_per_octave);
-                  int cindex = floor(12.0f * i / bins_per_octave);
-                  glColor3fv(cqt_colors[cindex]);
-                  glVertex2f(-1.0f + interp * 2.0f, -0.99f);
-                  glVertex2f(-1.0f + interp * 2.0f, val - 0.99f);
-               }
-            }
-            glEnd();
-         }
-      }
-      else if(kl_render_spectrum_setting == 2)
-      {
-         /* Render CQT waves on top of CQT spectrum */
-         if(kl_freq_manager_get_cqt_texture(NULL) != 0) /* HAX */
-         {
-            int i, o, num_octaves, bins_per_octave;
-            float** octaves;
-            int num_waves;
-            kl_cqt_wave_t* waves = kl_cqt_get_waves(cqt, &num_waves);
-            kl_cqt_get_octaves(cqt, &octaves, &num_octaves, &bins_per_octave);
-
-            glBegin(GL_LINES);
-            for(o = 0; o < num_octaves; o++)
-            {
-               for(i = 0; i < bins_per_octave; i++)
-               {
-                  float val = octaves[o][i];
-                  float interp = (float)(o * bins_per_octave + i) / (float)(num_octaves * bins_per_octave);
-                  int cindex = floor(12.0f * i / bins_per_octave);
-                  glColor3f(cqt_colors[cindex][0] * 0.6f,
-                            cqt_colors[cindex][1] * 0.6f,
-                            cqt_colors[cindex][2] * 0.6f);
-                  glVertex2f(-1.0f + interp * 2.0f, -0.99f);
-                  glVertex2f(-1.0f + interp * 2.0f, val - 0.99f);
-               }
-            }
-            glEnd();
-
-            glColor3f(1.0f, 1.0f, 1.0f);
-            glBegin(GL_LINES);
-            for(i = 0; i < num_waves; i++)
-            {
-               if(waves[i].amp_state != KL_WAVE_STATE_DISSIPATED)
-               {
-                  glVertex2f(-1.0f + ((float)waves[i].peak / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
-                  glVertex2f(-1.0f + ((float)waves[i].peak / (float)(num_octaves * bins_per_octave)) * 2.0f, waves[i].peakval - 0.99f);
-
-                  glVertex2f(-1.0f + ((float)waves[i].start / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
-                  glVertex2f(-1.0f + ((float)waves[i].end   / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
-               }
-            }
-            glEnd();
-         }
-      }
-      else if(kl_render_spectrum_setting == 3)
-      {
-         /* Render CQT waves */
-         if(kl_freq_manager_get_cqt_texture(NULL) != 0) /* HAX */
-         {
-            int i, num_octaves, bins_per_octave;
-            float** octaves;
-            int num_waves;
-            kl_cqt_wave_t* waves = kl_cqt_get_waves(cqt, &num_waves);
-            kl_cqt_get_octaves(cqt, &octaves, &num_octaves, &bins_per_octave);
-            for(i = 0; i < num_waves; i++)
-            {
-               if(waves[i].amp_state != KL_WAVE_STATE_DISSIPATED)
-               {
-                  int peak_color = ((float)(waves[i].peak % bins_per_octave)) / (float)bins_per_octave * 12;
-                  int start_color = ((float)(waves[i].start % bins_per_octave)) / (float)bins_per_octave * 12;
-                  int end_color = ((float)(waves[i].end % bins_per_octave)) / (float)bins_per_octave * 12;
-
-                  glBegin(GL_LINES);
-                     glColor3fv(cqt_colors[peak_color]);
-                     glVertex2f(-1.0f + ((float)waves[i].peak / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
-                     glVertex2f(-1.0f + ((float)waves[i].peak / (float)(num_octaves * bins_per_octave)) * 2.0f, waves[i].peakval - 0.99f);
-
-                     glColor3fv(cqt_colors[start_color]);
-                     glVertex2f(-1.0f + ((float)waves[i].start / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
-                     glColor3fv(cqt_colors[end_color]);
-                     glVertex2f(-1.0f + ((float)waves[i].end   / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
-                  glEnd();
-               }
-            }
-         }
-      }
-      else if(kl_render_spectrum_setting == 4)
-      {
-         /* Render CQT waves */
-         if(kl_freq_manager_get_cqt_texture(NULL) != 0) /* HAX */
-         {
-            int i, o, num_octaves, bins_per_octave;
-            float** octaves;
-            int num_waves;
-            kl_cqt_wave_t* waves = kl_cqt_get_waves(cqt, &num_waves);
-
-            float state_colors[5][3] = {
-               {0.0f, 0.0f, 0.0f},  /* Dissipating */
-               {1.0f, 1.0f, 1.0f},  /* New */
-               {0.0f, 1.0f, 0.0f},  /* Increasing */
-               {1.0f, 0.0f, 0.0f},  /* Decreasing */
-               {0.0f, 0.0f, 1.0f},  /* Constant */
-            };
-
-            kl_cqt_get_octaves(cqt, &octaves, &num_octaves, &bins_per_octave);
-
-            glBegin(GL_LINES);
-            for(o = 0; o < num_octaves; o++)
-            {
-               for(i = 0; i < bins_per_octave; i++)
-               {
-                  float val = octaves[o][i];
-                  float interp = (float)(o * bins_per_octave + i) / (float)(num_octaves * bins_per_octave);
-                  glColor3f(0.4f, 0.4f, 0.4f);
-                  glVertex2f(-1.0f + interp * 2.0f, -0.99f);
-                  glVertex2f(-1.0f + interp * 2.0f, val - 0.99f);
-               }
-            }
-            glEnd();
-
-            for(i = 0; i < num_waves; i++)
-            {
-               if(waves[i].amp_state != KL_WAVE_STATE_DISSIPATED)
-               {
-                  glBegin(GL_LINES);
-                     glColor3fv(state_colors[waves[i].amp_state]);
-                     glVertex2f(-1.0f + ((float)waves[i].peak / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
-                     glVertex2f(-1.0f + ((float)waves[i].peak / (float)(num_octaves * bins_per_octave)) * 2.0f, waves[i].peakval - 0.99f);
-
-                     glColor3fv(state_colors[waves[i].pitch_state]);
-                     glVertex2f(-1.0f + ((float)waves[i].start / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
-                     glVertex2f(-1.0f + ((float)waves[i].end   / (float)(num_octaves * bins_per_octave)) * 2.0f, -0.99f);
-                  glEnd();
-               }
-            }
-         }
-      }
-   }
-#endif
 
    glFinish();
 

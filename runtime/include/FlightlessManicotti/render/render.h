@@ -75,11 +75,6 @@ extern KL_API void kl_render_frame(kl_render_context_t context, float display_wi
  */
 extern KL_API void kl_render_assign_list(kl_render_context_t context, void* list);
 
-/**
- * Debug rendering of CQT or FFT spectrum.
- */
-extern int kl_render_spectrum_setting;
-
 #ifdef __cplusplus
 }
 #endif

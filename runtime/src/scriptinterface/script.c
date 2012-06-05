@@ -39,9 +39,6 @@ extern int luaopen_render_target(lua_State* L);
 extern int luaopen_texture(lua_State* L);
 
 extern int luaopen_vizthingy(lua_State* L);
-extern int luaopen_cqt_wave(lua_State* L);
-extern int luaopen_cqt_wave_array(lua_State* L);
-extern int luaopen_parameter(lua_State* L);
 
 /* KL_DEFAULT_SCRIPT_CONTEXT */
 kl_script_context_t g_script_context = NULL;
@@ -110,10 +107,6 @@ int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_
    luaopen_texture(sctx->lua_state);
 
    luaopen_vizthingy(sctx->lua_state);
-   luaopen_cqt_wave(sctx->lua_state);
-   luaopen_cqt_wave_array(sctx->lua_state);
-   luaopen_parameter(sctx->lua_state);
-
    LOAD_SWIG_LIBS(sctx->lua_state);
 
    /* Assign a global for the script context assigned to this lua state */

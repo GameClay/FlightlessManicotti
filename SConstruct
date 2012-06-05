@@ -89,8 +89,7 @@ else:
 dependencies = [
    'amp',
    'lua',
-   'openctm',
-   'kiss_fft'
+   'openctm'
 ]
 
 if env.GetOption('microalloc'):

@@ -15,8 +15,6 @@
 uint64_t hax_sum_frame_time_ns = 0;
 uint64_t hax_num_frames = 0;
 
-extern BOOL g_loop_last_buffer;
-
 extern BOOL g_shutting_down;
 
 @implementation KLOpenGLView
@@ -137,14 +135,6 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTime
 {
    switch([event keyCode])
    {
-      case 1: // 's'
-         kl_render_spectrum_setting++;
-         if(kl_render_spectrum_setting > 5) kl_render_spectrum_setting = 0;
-         break;
-         
-      case 37: // 'l'
-         g_loop_last_buffer = !g_loop_last_buffer;
-         break;
       default:
          NSLog(@"Key %@", event);
          break;
