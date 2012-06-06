@@ -205,7 +205,7 @@ If a header is not available on a given platform/compiler, than a header will be
 * Postfix all exposed types with '_t'. `kl_script_context_t`
 
 ## Lua
-The scripting language for FlightlessManicotti is [Lua](http://www.lua.org/). 
+The scripting language for FlightlessManicotti is [Lua](http://www.lua.org/), using [LuaJIT](http://luajit.org/).
 
 ### Why Lua?
 * Small.
@@ -214,7 +214,6 @@ The scripting language for FlightlessManicotti is [Lua](http://www.lua.org/).
 * Performs well on embedded devices.
 * Has compatible licensing.
 * Powerful.
-* Has an LLVM front-end, [llvm-lua](http://code.google.com/p/llvm-lua/).
 
 ### Code Convention
 I haven't used Lua enough yet to put together a code convention.
