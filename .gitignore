@@ -6,3 +6,9 @@ build/
 *.pdb
 *.suo
 *.ncb
+
+# Other project files
+Cocoa/FlightlessManicotti/FlightlessManicotti.xcodeproj/project.xcworkspace/
+Cocoa/FlightlessManicotti/FlightlessManicotti.xcodeproj/xcuserdata/
+FlightlessManicotti.sublime-project
+FlightlessManicotti.sublime-workspace
