@@ -17,12 +17,6 @@ require 'game.Lsystem'
 -- Main is executed only once, it is not a loop. It receives the arguments
 -- that were passed to the 'kl_initialize' function.
 function main(...)
-
-   -- Echo the arguments that the executable received
-   for i = 2, arg["n"] do
-      print("   "..tostring(arg[i]))
-   end
-
    -- Assign a handler for console command input
    Events.subscribe(consoleinput, Events.consoleinput);
 
