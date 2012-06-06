@@ -38,8 +38,6 @@ extern int luaopen_render_list(lua_State* L);
 extern int luaopen_render_target(lua_State* L);
 extern int luaopen_texture(lua_State* L);
 
-extern int luaopen_vizthingy(lua_State* L);
-
 /* KL_DEFAULT_SCRIPT_CONTEXT */
 kl_script_context_t g_script_context = NULL;
 
@@ -87,7 +85,7 @@ int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_
    g_event_ConsoleInput.event.id = kl_register_script_event("ConsoleInput");
    g_event_ConsoleInput.event.context.as_ptr = NULL;
    g_event_ConsoleInput.event.arg.as_uint32 = 0;
-   kl_register_script_event_context_type(g_event_ConsoleInput.event.id, LUA_TSTRING);
+   kl_register_script_event_context_type(g_event_ConsoleInput.event.id, LUA_TSTRING, NULL);
 
    /* Start up lua */
    sctx->lua_state = luaL_newstate();
@@ -106,7 +104,6 @@ int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_
    luaopen_render_target(sctx->lua_state);
    luaopen_texture(sctx->lua_state);
 
-   luaopen_vizthingy(sctx->lua_state);
    LOAD_SWIG_LIBS(sctx->lua_state);
 
    /* Assign a global for the script context assigned to this lua state */

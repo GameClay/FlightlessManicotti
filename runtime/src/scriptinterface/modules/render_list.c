@@ -310,9 +310,15 @@ void RenderInstance_shaderconsthelper(lua_State* L, kl_shader_constant_t* consta
                struct _kl_texture* tex = (struct _kl_texture*)lua_touserdata(L, l_index);
                constant->dealloc_constant = 0;
                constant->constant_num = 1;
-               constant->constant_type = KL_SHADER_CONSTANT_TYPE_TEX;
-               constant->constant.as_tex = tex->texture;
 
+               if(tex->data_texture)
+               {
+                  constant->constant_type = KL_SHADER_CONSTANT_TYPE_DATA;
+                  constant->constant.as_tex = tex->data_texture;
+                  constant->constant_sz = 0;
+               }
+               else
+               {
                switch(tex->tex_type)
                {
                   case GL_TEXTURE_2D:
@@ -321,6 +327,11 @@ void RenderInstance_shaderconsthelper(lua_State* L, kl_shader_constant_t* consta
                      break;
                   }
                }
+
+                  constant->constant_type = KL_SHADER_CONSTANT_TYPE_TEX;
+                  constant->constant.as_tex = tex->texture;
+               }
+
             }
             break;
          }

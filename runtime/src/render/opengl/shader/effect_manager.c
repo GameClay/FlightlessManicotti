@@ -38,6 +38,9 @@ int kl_effect_manager_create(kl_effect_manager_t* manager, uint32_t num_effects,
          mgr->num_effects = num_effects;
          mgr->render_ctx = render_ctx;
 
+         kl_zero_mem(mgr->data_source, sizeof(mgr->data_source));
+         kl_zero_mem(mgr->data_source_context, sizeof(mgr->data_source_context));
+
          *manager = mgr;
          ret = KL_SUCCESS;
       }
@@ -53,6 +56,18 @@ void kl_effect_manager_destroy(kl_effect_manager_t* manager)
       kl_effect_manager_t mgr = *manager;
       kl_heap_free(mgr->effect);
       kl_heap_free(mgr);
+   }
+}
+
+void kl_effect_manager_register_data_source(kl_render_context_t render_ctx, uint32_t source_id,
+   kl_effect_manager_data_source_fn source_fn, const void* context)
+{
+   kl_effect_manager_t mgr = render_ctx->effect_mgr;
+
+   if(source_id < KL_EFFECT_MANAGER_MAX_DATA_SOURCES)
+   {
+      mgr->data_source[source_id] = source_fn;
+      mgr->data_source_context[source_id] = context;
    }
 }
 
@@ -133,6 +148,7 @@ int kl_effect_manager_get_effect(kl_render_context_t render_ctx, const char* eff
                eff->geometry = (has_geom == KL_TRUE ? geom_shader : NULL);
                eff->vertex = vert_shader;
                eff->ref_count = 1;
+               eff->mgr = mgr;
                strncpy(eff->effect_key, effect_key, KL_SHADER_EFFECT_KEY_SZ);
                mgr->effect[hash % mgr->num_effects] = eff;
 
@@ -215,6 +231,23 @@ void kl_effect_manager_bind_effect(kl_effect_t effect, const kl_transform_state_
                   case 4: tex_type = GL_TEXTURE_CUBE_MAP; break;
                }
                glBindTexture(GL_TEXTURE_2D, constant[i]->constant.as_tex);
+               num_tex++;
+               break;
+            }
+
+            case KL_SHADER_CONSTANT_TYPE_DATA:
+            {
+               glUniform1i(loc, num_tex);
+               glActiveTexture(GL_TEXTURE0 + num_tex);
+
+               if(effect->mgr->data_source[constant[i]->constant.as_tex] != NULL)
+               {
+                  GLint texid = effect->mgr->data_source[constant[i]->constant.as_tex](
+                     effect->mgr->data_source_context[constant[i]->constant.as_tex]);
+
+                  /* HAX! Hard coding 1D texture */
+                  glBindTexture(GL_TEXTURE_1D, texid);
+               }
                num_tex++;
                break;
             }

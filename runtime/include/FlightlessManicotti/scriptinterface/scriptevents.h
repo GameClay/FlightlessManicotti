@@ -52,11 +52,18 @@ typedef union
    kl_int32x4_t as_int32x4; /**< Representation of the script-event as an 4-component integer vector. */
 } kl_script_event_t;
 
+#define KL_SCRIPT_CONTEXT_TYPE_ASSIGNER (UINT32_MAX)
+
+typedef void (*kl_script_event_context_assigner_fn)(void* L, kl_script_event_t* event);
+
 extern KL_API uint32_t kl_register_script_event(const char* name);
 
-extern KL_API void kl_register_script_event_context_type(uint32_t id, uint32_t context_type);
+extern KL_API void kl_register_script_event_context_type(uint32_t id, uint32_t context_type,
+   kl_script_event_context_assigner_fn assigner);
 
 extern KL_API uint32_t kl_get_script_event_context_type(uint32_t id);
+
+extern KL_API kl_script_event_context_assigner_fn kl_get_script_event_context_assigner(uint32_t id);
 
 #ifdef __cplusplus
 } /* extern "C" */

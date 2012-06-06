@@ -21,6 +21,7 @@
 #include <string.h>
 
 uint32_t g_script_event_context_type[1024] = {0}; /* This is pretty hacky */
+kl_script_event_context_assigner_fn g_script_event_context_assigner[1024] = {0};
 
 uint32_t kl_register_script_event(const char* name)
 {
@@ -30,12 +31,19 @@ uint32_t kl_register_script_event(const char* name)
    return ret;
 }
 
-void kl_register_script_event_context_type(uint32_t id, uint32_t context_type)
+void kl_register_script_event_context_type(uint32_t id, uint32_t context_type,
+   kl_script_event_context_assigner_fn assigner)
 {
    g_script_event_context_type[id % 1024] = context_type;
+   g_script_event_context_assigner[id % 1024] = assigner;
 }
 
-extern KL_API uint32_t kl_get_script_event_context_type(uint32_t id)
+uint32_t kl_get_script_event_context_type(uint32_t id)
 {
    return g_script_event_context_type[id % 1024];
+}
+
+kl_script_event_context_assigner_fn kl_get_script_event_context_assigner(uint32_t id)
+{
+   return g_script_event_context_assigner[id % 1024];
 }

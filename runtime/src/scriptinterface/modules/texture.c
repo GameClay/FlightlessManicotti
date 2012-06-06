@@ -39,6 +39,22 @@ static int Texture_new(lua_State* L)
    const char* filename;
    GLenum internalFormat, srcFormat;
 
+   /* Check to see if a data source texture was requested */
+   if(lua_isnumber(L, 1))
+   {
+      texture = (struct _kl_texture*)lua_newuserdata(L, sizeof(struct _kl_texture));
+
+      texture->data_texture = lua_tointeger(L, 1);
+      texture->tex_type = 0;
+      texture->texture = 0;
+
+      luaL_getmetatable(L, TEXTURE_LUA_LIB);
+      lua_setmetatable(L, -2);
+
+      return 1;
+   }
+
+   /* Try to load the texture filename */
    luaL_argcheck(L, lua_isstring(L, 1), 1, "expected texture filename");
    filename = lua_tostring(L, 1);
 
@@ -101,6 +117,7 @@ static int Texture_new(lua_State* L)
 
    texture = (struct _kl_texture*)lua_newuserdata(L, sizeof(struct _kl_texture));
 
+   texture->data_texture = 0;
    texture->tex_type = GL_TEXTURE_2D; /* Hax */
 
    CGLSetCurrentContext(g_script_render_context->drawableCGLContext);

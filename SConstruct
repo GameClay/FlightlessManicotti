@@ -88,7 +88,6 @@ else:
 ## Build the libraries the runtime depends on
 dependencies = [
    'amp',
-   'lua',
    'openctm'
 ]
 

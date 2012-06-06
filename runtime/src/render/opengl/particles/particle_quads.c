@@ -214,7 +214,7 @@ void _kl_particle_render_quads_advance_time(float dt, void* context)
       for(i = 0; i < num_particles; i++)
       {
          const float t = time_stream[i] / lifespan_stream[i];
-         const float size = 0.1f;
+         const float size = 0.03f;
          GLubyte color[4] = {0xFF, 0xFF, 0xFF, 0xFF};
          particle_vertex* vert = &verts[i * 4];
          _point3f_simple *base_pt = &sBaseBillboardPoints[i % sNumBillboardPointSets * 4];

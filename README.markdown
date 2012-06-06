@@ -33,7 +33,7 @@ All dependencies are included within the repository, and are built as part of th
 * [amp](http://github.com/bjoernknafla/amp) revision [a84380c](http://github.com/bjoernknafla/amp/tree/a84380c4e2a6d66283bc7c33d70e6fe8f0e1e71f)
 * [nedmalloc](http://www.nedprod.com/programs/portable/nedmalloc/) revision [3f80a00](http://github.com/ned14/nedmalloc/tree/3f80a00da9d9198788ad8fca0b31f8fcb665a624)
 * [uthash](http://github.com/ned14/uthash) revision [22bf8c9](http://github.com/ned14/uthash/tree/22bf8c92ba46b3071f782e932b568597d7a9b374)
-* [Lua](http://www.lua.org/) version [5.1.4](http://www.lua.org/ftp/lua-5.1.4.tar.gz) with patch [5.1.4-2](http://www.lua.org/ftp/patch-lua-5.1.4-2)
+* [LuaJIT](http://luajit.org/) version [2.0.0-beta10](http://luajit.org/download/LuaJIT-2.0.0-beta10.tar.gz)
 * [MicroAllocator](http://codesuppository.blogspot.com/2009/09/free-open-source-micro-allocator-in-c.html) version [5](http://code.google.com/p/microallocator/source/browse/?r=5)
 * [OpenCTM](http://openctm.sourceforge.net/) version [1.0.3](https://sourceforge.net/projects/openctm/files/OpenCTM-1.0.3/OpenCTM-1.0.3-src.tar.bz2/download)
 * [FreeImage](http://freeimage.sourceforge.net/) version [3.15.3](http://downloads.sourceforge.net/freeimage/FreeImage3153.zip)

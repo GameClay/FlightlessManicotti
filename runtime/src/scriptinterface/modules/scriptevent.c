@@ -24,8 +24,6 @@
 #include <FlightlessManicotti/scriptinterface/scriptevents.h>
 #include <FlightlessManicotti/scriptinterface/types.h>
 
-extern const char* FLOAT_ARRAY_LUA_LIB;
-
 static int kl_script_event_dequeue_wrap(lua_State* L)
 {
    kl_script_context_t sctx = (kl_script_context_t)lua_topointer(L, 1);
@@ -44,6 +42,13 @@ static int kl_script_event_dequeue_wrap(lua_State* L)
             break;
          }
 
+         case LUA_TNUMBER:
+         {
+            lua_pushnumber(L, *((lua_Number*)event.event.context.as_ptr));
+            kl_heap_free(event.event.context.as_ptr);
+            break;
+         }
+
          case LUA_TSTRING:
          {
             lua_pushstring(L, event.event.context.as_ptr);
@@ -51,12 +56,11 @@ static int kl_script_event_dequeue_wrap(lua_State* L)
             break;
          }
 
-         case KL_SCRIPT_EVENT_CONTEXT_TYPE_FLOAT_ARRAY:
+         case KL_SCRIPT_CONTEXT_TYPE_ASSIGNER:
          {
-            kl_lua_float_array_t* array = (kl_lua_float_array_t*)lua_newuserdata(L, sizeof(kl_lua_float_array_t));
-            memcpy(array, event.event.context.as_ptr, sizeof(kl_lua_float_array_t));
-            luaL_getmetatable(L, FLOAT_ARRAY_LUA_LIB);
-            lua_setmetatable(L, -2);
+            kl_script_event_context_assigner_fn assigner =
+               kl_get_script_event_context_assigner(event.event.id);
+            assigner(L, &event);
             break;
          }
       }

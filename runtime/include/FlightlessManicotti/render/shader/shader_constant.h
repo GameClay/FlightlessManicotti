@@ -30,6 +30,7 @@ extern "C" {
 #define KL_SHADER_CONSTANT_TYPE_FLOAT  2
 #define KL_SHADER_CONSTANT_TYPE_INT    3
 #define KL_SHADER_CONSTANT_TYPE_TEX    4
+#define KL_SHADER_CONSTANT_TYPE_DATA   5
 
 typedef struct kl_shader_constant_t {
    union {

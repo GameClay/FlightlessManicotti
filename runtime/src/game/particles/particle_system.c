@@ -44,7 +44,7 @@ int kl_particle_system_alloc(kl_particle_system_t* system, uint32_t max_particle
       {
          float angle = ((rand() % 100) / 100.0f);
          sys->px_stream[i] = kl_cos(angle * KL_2PI_F) * 0.5f;
-         sys->py_stream[i] = kl_sin(angle * KL_2PI_F) * 0.5f;
+         sys->py_stream[i] = (kl_sin(angle * KL_2PI_F) * 0.5f) + 1.0f;
          sys->pz_stream[i] = 0.0f;
 
          sys->vx_stream[i] = 0.0f;

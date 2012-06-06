@@ -34,6 +34,8 @@ struct _kl_offscreen_target {
 struct _kl_texture {
    GLuint texture;
    GLenum tex_type;
+
+   uint32_t data_texture;
 };
 
 #define KL_MESH_POSITION_IDX 0
@@ -69,6 +71,8 @@ struct _kl_effect {
 
    uint16_t ref_count;
    char effect_key[KL_SHADER_EFFECT_KEY_SZ];
+
+   kl_effect_manager_t mgr;
 };
 
 #endif

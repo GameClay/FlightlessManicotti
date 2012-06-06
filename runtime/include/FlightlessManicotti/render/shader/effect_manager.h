@@ -28,16 +28,26 @@ extern "C" {
 
 typedef struct _kl_effect* kl_effect_t;
 
+#define KL_EFFECT_MANAGER_MAX_DATA_SOURCES 32
+
+typedef int32_t (*kl_effect_manager_data_source_fn)(const void* context);
+
 typedef struct {
    struct _kl_effect** effect;
    uint32_t num_effects;
    kl_render_context_t render_ctx;
+
+   kl_effect_manager_data_source_fn data_source[KL_EFFECT_MANAGER_MAX_DATA_SOURCES];
+   const void* data_source_context[KL_EFFECT_MANAGER_MAX_DATA_SOURCES];
 } _kl_effect_manager, *kl_effect_manager_t;
 
 extern KL_API int kl_effect_manager_create(kl_effect_manager_t* manager, uint32_t num_effects,
    kl_render_context_t render_ctx);
 
 extern KL_API void kl_effect_manager_destroy(kl_effect_manager_t* manager);
+
+extern KL_API void kl_effect_manager_register_data_source(kl_render_context_t render_ctx, uint32_t source_id,
+   kl_effect_manager_data_source_fn source_fn, const void* context);
 
 extern KL_API int kl_effect_manager_get_effect(kl_render_context_t render_ctx, const char* effect_key,
    const char* gl_version_string, kl_effect_t* effect);

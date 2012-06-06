@@ -77,16 +77,27 @@ void kl_particle_simulation_vector_field(float dt, void* context)
             float py = py_stream[i];
             float pz = pz_stream[i];
 
-            /* Apply acceleration from vector field */
-            /* HAX! Use noise */
-            vx += kl_simplex_noise_3d(px, py, pz + new_time);
-            vy += kl_simplex_noise_3d(px + new_time, py, pz);
-            vz += kl_simplex_noise_3d(px, py + new_time, pz);
+            float tvx, tvy, tvz, len;
+
+            /* Try and bounce off walls */
+            vx = kl_fsel(1.0f - fabs(px), vx, -vx);
+            vy = kl_fsel(1.0f - fabs(py), vy, -vy);
 
             /* Update position */
             px += vx * dt * 0.0005f;
             py += vy * dt * 0.0005f;
             pz += vz * dt * 0.0005f;
+
+            /* Apply acceleration from vector field */
+            /* HAX! Use noise */
+            tvx = kl_simplex_noise_3d(px, py + new_time, pz);
+            tvy = kl_simplex_noise_3d(px, py, pz + new_time);
+            tvz = kl_simplex_noise_3d(px + new_time, py, pz);
+            len = sqrtf(tvx * tvx + tvy * tvy + tvz * tvz);
+
+            vx += (tvx / len) * dt;
+            vy += (tvy / len) * dt;
+            vz += (tvz / len) * dt;
 
             /* Store position */
             px_stream[i] = px;

@@ -71,6 +71,13 @@ if (env['OS'] == 'ios' or env['OS'] == 'darwin'):
                                    '-framework', 'OpenGL',
                                    '-framework', 'CoreMIDI'])
 
+# LuaJIT
+if '' == env.subst('$LUAJIT'):
+   env['LUAJIT'] = '/usr/local'
+runtime_env.Append(CPPPATH = [env['LUAJIT'] + '/include/luajit-2.0'])
+runtime_env.Append(LIBPATH = [env['LUAJIT'] + '/lib'])
+runtime_env.Append(LIBS = ['libluajit-5.1'])
+
 # FreeImage
 if '' == env.subst('$FREEIMAGE'):
    env['FREEIMAGE'] = '/usr/local'
