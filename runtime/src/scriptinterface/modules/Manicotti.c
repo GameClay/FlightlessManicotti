@@ -25,7 +25,7 @@
 extern const char* VECTOR2D_LUA_LIB;
 extern const char* VECTOR3D_LUA_LIB;
 
-static int vizthingy_noise(lua_State* L)
+static int manicotti_noise(lua_State* L)
 {
    if(lua_isnumber(L, 1))
    {
@@ -74,13 +74,13 @@ static int vizthingy_noise(lua_State* L)
    return 1;
 }
 
-static const struct luaL_reg vizthingy_module [] = {
-    {"noise", vizthingy_noise},
+static const struct luaL_reg manicotti_module [] = {
+    {"noise", manicotti_noise},
     {NULL, NULL}
 };
 
-int luaopen_vizthingy(lua_State* L)
+int luaopen_manicotti(lua_State* L)
 {
-   luaL_register(L, "vizthingy", vizthingy_module);
+   luaL_register(L, "Manicotti", manicotti_module);
    return 1;
 }
