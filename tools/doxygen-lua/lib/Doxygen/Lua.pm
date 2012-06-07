@@ -77,8 +77,13 @@ sub parse {
             $in_function = 1;
             $line .= q{;};
             $line =~ s/:/::/;
-            #$line =~ s/\./_/;
-            $result .= "$line\n";
+            if ($line =~ /\./) {
+                $line =~ s/\./::/;
+                $result .= "static $line\n";
+            }
+            else {
+                $result .= "$line\n";
+            }
         }
         # function end
         elsif ($in_function == 1 && $line =~ /^end/) {
