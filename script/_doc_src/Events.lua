@@ -28,7 +28,7 @@ Events = {}
 --!
 --! @return The id, context, and argument of the dequeued event.
 --! @memberof Events
-function Events:dequeue(sctx)
+function Events.dequeue(sctx)
 end
 
 --! Acknowledge an end-of-frame event.
@@ -37,7 +37,7 @@ end
 --!
 --! @see Events.eof
 --! @memberof Events
-function Events:framedone(sctx)
+function Events.framedone(sctx)
 end
 
 --! Register a script event.
@@ -50,5 +50,5 @@ end
 --!
 --! @return The id of the registered event.
 --! @memberof Events
-function Events:reigster(sctx, name)
+function Events.reigster(sctx, name)
 end
