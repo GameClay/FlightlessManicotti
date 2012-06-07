@@ -17,13 +17,6 @@
 
 assert(false, "This file is used to generate documentation only, and should not be executed.")
 
---! @defgroup script_rendering Rendering
---! Script rendering constructs and functions.
---!
---! Details, details...
---!
---! @ingroup script
-
 --! @class Mesh
 --! Interface to the runtime mesh library.
 --! @ingroup script_rendering

@@ -1,0 +1,143 @@
+-- -*- Mode: C; tab-width: 3; c-basic-offset: 3; indent-tabs-mode: nil -*-
+-- vim: set filetype=C tabstop=3 softtabstop=3 shiftwidth=3 expandtab:
+
+-- FlightlessManicotti -- Copyright (C) 2010-2012 GameClay LLC
+--
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--     http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
+
+assert(false, "This file is used to generate documentation only, and should not be executed.")
+
+--! @defgroup script_rendering Rendering
+--! Script rendering constructs and functions.
+--!
+--! Rendering is fully exposed to script through the RenderList and
+--! RenderInstance classes.
+--!
+--! Render constructs should not be created until the Events.renderinit
+--! event has been issued. Before this event is sent, there is no valid
+--! graphics context on which to create GPU resource.
+--!
+--! RenderInstance objects are drawn in the order they are inserted into
+--! the RenderList.
+--!
+--! @note At some point this will be changed such that sorting can be done properly
+--!       for translucent instances and depth-test will take care of the rest.
+--!
+--! @section script_render_mesh Meshes
+--! A Mesh object is required for the runtime to draw a  RenderInstance. A Mesh
+--! can be created manually, or by loading an <A HREF="http://openctm.sourceforge.net/">OpenCTM</A> mesh.
+--!
+--! Example of manually creating a full-screen textured quad Mesh, from Zorya.
+--! @code{.lua}
+--! verts = {{-1.0, -1.0, 0.0}, {-1.0, 1.01, 0.0}, {1.0, -1.0, 0.0}, {1.0, 1.0, 0.0}}
+--! idxs = {0, 1, 2, 1, 3, 2}
+--! texcoords = {{0, 0}, {0, 1}, {1, 0}, {1, 1}}
+--! cqt.mesh.fs_quad = Mesh.new()
+--! cqt.mesh.fs_quad:setpositions(verts)
+--! cqt.mesh.fs_quad:settexcoords(texcoords)
+--! cqt.mesh.fs_quad:setindices(idxs)
+--! cqt.mesh.fs_quad:update(Mesh.element.vertex + Mesh.element.index + Mesh.element.tex0, Mesh.element.none)
+--! @endcode
+--!
+--! @section script_render_textures Textures
+--! Texture objects can be created from files, or assigned to runtime-exposed data sources.
+--!
+--! Texture files are loaded using the <A HREF="freeimage.sourceforge.net">FreeImage</A> library.
+--!
+--! Data-sources can be registered with the rendering subsystem of the runtime using the
+--! kl_effect_manager_register_data_source function.
+--!
+--! Example of creating a Texture by loading a file, from Zorya.
+--! @code{.lua}
+--! cqt.texture.nebula = Texture.new("heic0515a.jpg")
+--! @endcode
+--!
+--! Example of creating a Texture by binding a data-source, from Zorya.
+--! @code{.lua}
+--! cqt.texture.spectrum = Texture.new(Zorya.data.cqt_spectrum)
+--! @endcode
+--!
+--! @note Currently data-source textures are hard-coded to be 1d textures. This will be
+--!       changed to respect the proper dimensions of the data-source.
+--!
+--! @section script_render_targets Render Targets
+--! Render targets can be specified for each RenderInstance. By default, a RenderInstance
+--! has its target assigned to 'nil', or the backbuffer. A new RenderInstance can be
+--! created and assigned.
+--!
+--! @note Currently a RenderTarget is created with an attached 24-bit depth buffer and
+--!       an 8-bit stencil buffer. The color format is 32-bit RGBA. At some point this
+--!       will be configurable on creation/update.
+--!
+--! Example of creating a set of feedback buffers using RenderTarget, from Zorya.
+--! @code{.lua}
+--! cqt.targets.feedback = {RenderTarget.new(512, 512), RenderTarget.new(512, 512)}
+--! @endcode
+--!
+--! @section script_render_materials Materials
+--! Materials are defined in Lua using the DeclareShader function inside a file named
+--! for the material. All rendering must be done with shaders since FlightlessManicotti
+--! uses OpenGL 3.2+.
+--!
+--! This is an example of a simple texture material which is located at script/render/shaders/ColorTexture.lua
+--! @include script/render/shaders/ColorTexture.lua
+--!
+--! @section script_render_shader_consts Shader Constants
+--! Shader constants are specified by Lua tables, as name-value pairs. Texture objects as well
+--! as RenderTarget objects can be specified as bindings for sampler constants. Float, vec2, vec3,
+--! and vec4 arrays and constants are also specified using Lua tables.
+--!
+--! @note Due to the fact that all Lua numbers in LuaJIT are doubles, there is currently no support
+--!       for integer constant assignment. All numerical constants are treated as floating point types.
+--!
+--! Example of an array of vec3 shader constants, from Zorya.
+--! @code{.lua}
+--! cqt.colortable = {
+--!    {1.0, 0.0, 0.0},  -- C
+--!    {1.0, 0.5, 0.0},  -- C#/Db
+--!    {1.0, 1.0, 0.0},  -- D
+--!    {0.5, 1.0, 0.0},  -- D#/Eb
+--!    {0.0, 1.0, 0.0},  -- E
+--!    {0.0, 1.0, 0.5},  -- F
+--!    {0.0, 1.0, 1.0},  -- F#/Gb
+--!    {0.0, 0.5, 1.0},  -- G
+--!    {0.0, 0.0, 1.0},  -- G#/Ab
+--!    {0.5, 0.0, 1.0},  -- A
+--!    {1.0, 0.0, 1.0},  -- A#/Bb
+--!    {1.0, 0.0, 0.5}   -- B
+--! }
+--! @endcode
+--!
+--! @section script_render_instances Render Instances
+--! Example of creating a RenderInstance to draw a full-screen textured quad, from Zorya.
+--! @code{.lua}
+--! cqt.renderinst.nebula = RenderInstance.new()
+--! cqt.renderinst.nebula:setmesh(cqt.mesh.fs_quad)
+--! cqt.renderinst.nebula:setmaterial("CQTColorTexture")
+--! cqt.renderinst.nebula:setdrawtype(RenderInstance.drawtype.triangles)
+--! cqt.renderinst.nebula:setshaderconstants({
+--!    tex0 = cqt.texture.nebula,
+--!    hax_color = 0.15,
+--!    cqtTexture = cqt.texture.spectrum,
+--!    binsPerOctave = cqt.bins_per_octave,
+--!    numOctaves = cqt.num_octaves
+--! })
+--! cqt.renderinst.nebula:setblend(RenderInstance.blend.one, RenderInstance.blend.one)
+--! @endcode
+--!
+--! @ingroup script
+
+--! @class Render
+--! Interface to the render subsystem of the runtime.
+--! @ingroup script_rendering
+Render = {}
