@@ -22,6 +22,72 @@ assert(false, "This file is used to generate documentation only, and should not 
 --! @ingroup script_rendering
 RenderInstance = {}
 
+--! @enum RenderInstance.drawtype
+--! Draw type for the RenderInstance.
+--! @relates RenderInstance
+RenderInstance.drawtype = {}
+
+--! Draw a Mesh as points.
+--! @relates RenderInstance.drawtype
+RenderInstance.drawtype.points = GL_POINTS;
+
+--! Draw a Mesh as triangles.
+--! @relates RenderInstance.drawtype
+RenderInstance.drawtype.triangles = GL_TRIANGLES;
+
+--! Draw a Mesh as lines.
+--! @relates RenderInstance.drawtype
+RenderInstance.drawtype.lines = GL_LINES;
+
+--! Draw a Mesh as a line-strip.
+--! @relates RenderInstance.drawtype
+RenderInstance.drawtype.line_strip = GL_LINE_STRIP;
+
+--! @enum RenderInstance.blend
+--! Draw constants for a RenderInstance.
+--! @relates RenderInstance
+RenderInstance.blend = {}
+
+--! Blend constant Zero.
+--! @relates RenderInstance.blend
+RenderInstance.blend.zero = GL_ZERO;
+
+--! Blend constant One.
+--! @relates RenderInstance.blend
+RenderInstance.blend.one = GL_ONE;
+
+--! Blend constant Source Color.
+--! @relates RenderInstance.blend
+RenderInstance.blend.src_color = GL_SRC_COLOR;
+
+--! Blend constant One Minus Source Color.
+--! @relates RenderInstance.blend
+RenderInstance.blend.one_minus_src_color = GL_ONE_MINUS_SRC_COLOR;
+
+--! Blend constant Destination Color.
+--! @relates RenderInstance.blend
+RenderInstance.blend.dst_color = GL_DST_COLOR;
+
+--! Blend constant One Minus Destination Color.
+--! @relates RenderInstance.blend
+RenderInstance.blend.one_minus_dst_color = GL_ONE_MINUS_DST_COLOR;
+
+--! Blend constant Source Alpha.
+--! @relates RenderInstance.blend
+RenderInstance.blend.src_alpha = GL_SRC_ALPHA;
+
+--! Blend constant One Minus Source Alpha.
+--! @relates RenderInstance.blend
+RenderInstance.blend.one_minus_src_alpha = GL_ONE_MINUS_SRC_ALPHA;
+
+--! Blend constant Destination Color.
+--! @relates RenderInstance.blend
+RenderInstance.blend.dst_alpha = GL_DST_ALPHA;
+
+--! Blend constant One Minus Destination Alpha.
+--! @relates RenderInstance.blend
+RenderInstance.blend.one_minus_dst_alpha = GL_ONE_MINUS_DST_ALPHA;
+
 --! Create a new RenderInstance object.
 --!
 --! @return The new RenderInstance object.
@@ -58,7 +124,6 @@ end
 --! @memberof RenderInstance
 function RenderInstance:setdrawtype(draw_type)
 end
-
 
 --! Set the blend parameters for a RenderInstance.
 --!
