@@ -49,6 +49,8 @@ typedef struct {
  * @param max_particles   Maximum number of particles in this system.
  *
  * @return KL_SUCCESS if successful.
+ *
+ * @relates kl_particle_system_t
  */
 extern KL_API int kl_particle_system_alloc(kl_particle_system_t* system, uint32_t max_particles);
 
@@ -56,6 +58,8 @@ extern KL_API int kl_particle_system_alloc(kl_particle_system_t* system, uint32_
  * Free a particle system.
  *
  * @param system    Particle system to free.
+ *
+ * @relates kl_particle_system_t
  */
 extern KL_API void kl_particle_system_free(kl_particle_system_t* system);
 

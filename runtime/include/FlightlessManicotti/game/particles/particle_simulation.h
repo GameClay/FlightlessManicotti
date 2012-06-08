@@ -40,6 +40,8 @@ typedef struct {
  * @param simulation    Location to store allocated particle simulation.
  *
  * @return KL_SUCCESS if successful.
+ *
+ * @relates kl_particle_simulation_t
  */
 extern KL_API int kl_particle_simulation_alloc(kl_particle_simulation_t* simulation);
 
@@ -47,6 +49,8 @@ extern KL_API int kl_particle_simulation_alloc(kl_particle_simulation_t* simulat
  * Free a particle simulation.
  *
  * @param simulation    Particle simulation to free.
+ *
+ * @relates kl_particle_simulation_t
  */
 extern KL_API void kl_particle_simulation_free(kl_particle_simulation_t* simulation);
 
@@ -55,6 +59,8 @@ extern KL_API void kl_particle_simulation_free(kl_particle_simulation_t* simulat
  *
  * @param simulation    Particle simulation.
  * @param system        Particle system to assign.
+ *
+ * @relates kl_particle_simulation_t
  */
 extern KL_API void kl_particle_simulation_set_system(kl_particle_simulation_t simulation,
    kl_particle_system_t system);

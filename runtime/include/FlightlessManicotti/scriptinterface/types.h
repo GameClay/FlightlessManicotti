@@ -25,6 +25,7 @@ extern "C" {
 
 #include <stdint.h>
 
+/** @cond */
 typedef struct {
    size_t len;
    float* array;
@@ -38,6 +39,7 @@ typedef struct {
 typedef struct lua_vectorf {
    float* vec;
 } lua_vectorf;
+/** @endcond */
 
 #ifdef __cplusplus
 } /* extern "C" */

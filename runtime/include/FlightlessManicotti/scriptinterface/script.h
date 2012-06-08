@@ -71,16 +71,15 @@ typedef struct _kl_script_context* kl_script_context_t;
  *
  * @return KL_SUCCESS if initialization was successful.
  *         KL_ERROR if initialization failed.
+ *
+ * @relates kl_script_context_t
  */
 extern KL_API int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_queue_max);
 
 /**
- * Immediately evaluate a script event.
- */
-extern KL_API int kl_script_evaluate();
-
-/**
  * Run a script file
+ *
+ * @relates kl_script_context_t
  */
 extern KL_API int kl_script_run(kl_script_context_t context, const char* file_name, int argc, const char** argv);
 
@@ -91,6 +90,8 @@ extern KL_API int kl_script_run(kl_script_context_t context, const char* file_na
  * join on the associated thread, and then destroy the context.
  *
  * @param context   This script-context will be deallocated.
+ *
+ * @relates kl_script_context_t
  */
 extern KL_API void kl_script_destroy(kl_script_context_t* context);
 
@@ -101,6 +102,8 @@ extern KL_API void kl_script_destroy(kl_script_context_t* context);
  *
  * @return KL_TRUE if the script-context is threaded.
  *         KL_FALSE if the script-context is not threaded.
+ *
+ * @relates kl_script_context_t
  */
 extern KL_API KL_BOOL kl_script_is_threaded(kl_script_context_t context);
 
@@ -112,6 +115,8 @@ extern KL_API KL_BOOL kl_script_is_threaded(kl_script_context_t context);
  *
  * @return KL_SUCCESS if successful.
  *         KL_ERROR if unsuccessful.
+ *
+ * @relates kl_script_context_t
  */
 extern KL_API int kl_script_event_enqueue(kl_script_context_t context, const kl_script_event_t* event);
 
@@ -123,6 +128,8 @@ extern KL_API int kl_script_event_enqueue(kl_script_context_t context, const kl_
  *
  * @return KL_SUCCESS if successful.
  *         KL_ERROR if unsuccessful.
+ *
+ * @relates kl_script_context_t
  */
 extern KL_API int kl_script_event_dequeue(kl_script_context_t context, kl_script_event_t* event);
 
@@ -135,6 +142,8 @@ extern KL_API int kl_script_event_dequeue(kl_script_context_t context, kl_script
  *
  * @return KL_SUCCESS if the frame processed successfully.
  *         KL_ERROR if errors occured during frame processing.
+ *
+ * @relates kl_script_context_t
  */
 extern KL_API int kl_script_event_pump(kl_script_context_t context);
 
@@ -152,6 +161,8 @@ extern KL_API int kl_script_event_pump(kl_script_context_t context);
  *
  * @return KL_SUCCESS if successful.
  *         KL_ERROR if unsuccessful.
+ *
+ * @relates kl_script_context_t
  */
 extern KL_API int kl_script_event_endframe(kl_script_context_t context, kl_script_event_fence_t* fence);
 
