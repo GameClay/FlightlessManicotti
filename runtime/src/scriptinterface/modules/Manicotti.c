@@ -72,7 +72,7 @@ static int Manicotti_noise(lua_State* L)
    }
    else
    {
-      luaL_argcheck(L, 0, 1, "expected number(s), table, vector2d or vector3d");
+      luaL_argcheck(L, 0, 1, "expected 1-4 number(s), table, vector2d or vector3d");
    }
 
    return 1;
