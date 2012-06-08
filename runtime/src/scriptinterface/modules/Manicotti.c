@@ -21,11 +21,15 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #include <FlightlessManicotti/math/noise.h>
+#include <FlightlessManicotti/render/render_list.h>
 
 extern const char* VECTOR2D_LUA_LIB;
 extern const char* VECTOR3D_LUA_LIB;
+extern const char* RENDER_LIST_LUA_LIB;
 
-static int manicotti_noise(lua_State* L)
+extern kl_render_context_t g_script_render_context;
+
+static int Manicotti_noise(lua_State* L)
 {
    if(lua_isnumber(L, 1))
    {
@@ -74,8 +78,16 @@ static int manicotti_noise(lua_State* L)
    return 1;
 }
 
+static int Manicotti_setrenderlist(lua_State* L)
+{
+   kl_render_list_t* list = (kl_render_list_t*)luaL_checkudata(L, 1, RENDER_LIST_LUA_LIB);
+   kl_render_assign_list(g_script_render_context, list);
+   return 0;
+}
+
 static const struct luaL_reg manicotti_module [] = {
-    {"noise", manicotti_noise},
+    {"noise", Manicotti_noise},
+    {"setrenderlist", Manicotti_setrenderlist},
     {NULL, NULL}
 };
 

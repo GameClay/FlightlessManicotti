@@ -42,8 +42,6 @@ static int RenderList_new(lua_State* L)
 
    kl_render_list_init(list, list_sz);
 
-   kl_render_assign_list(g_script_render_context, list);
-
    luaL_getmetatable(L, RENDER_LIST_LUA_LIB);
    lua_setmetatable(L, -2);
 
@@ -84,13 +82,12 @@ static const struct luaL_reg RenderList_class_methods [] = {
    {NULL, NULL}
 };
 
-/* Render instance */
-
 static int RenderInstance_new(lua_State* L)
 {
    kl_render_instance_t* inst = (kl_render_instance_t*)lua_newuserdata(L, sizeof(kl_render_instance_t));
 
    inst->list_index = UINT32_MAX;
+   inst->list = NULL;
    inst->material = NULL;
    inst->mesh = NULL;
    inst->draw_type = GL_TRIANGLES;
@@ -111,6 +108,11 @@ static int RenderInstance_new(lua_State* L)
 static int RenderInstance_gc(lua_State* L)
 {
    kl_render_instance_t* inst = (kl_render_instance_t*)lua_touserdata(L, 1);
+
+   if(inst->list != NULL)
+   {
+      kl_render_list_remove_instance(inst->list, inst);
+   }
 
    if(inst->material != NULL)
    {

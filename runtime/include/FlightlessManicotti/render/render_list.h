@@ -29,29 +29,31 @@ extern "C" {
 #include <FlightlessManicotti/render/mesh/mesh.h>
 #include <FlightlessManicotti/render/shader/effect_manager.h>
 
-KL_ALIGNED_STRUCT_PRE(16) {
-   kl_matrix_t object_to_world;
-   kl_mesh_t* mesh;
-
-   kl_effect_t material; /* TODO: Proper material */
-   uint32_t blend_src;
-   uint32_t blend_dest;
-
-   kl_shader_constant_t** consts;
-   size_t num_consts;
-
-   uint32_t list_index;
-   uint32_t draw_type;
-
-   void* render_target;
-   KL_BOOL clear_before_draw;
-} KL_ALIGNED_STRUCT_POST(kl_render_instance_t, 16);
-
 typedef struct {
    kl_idx_allocator_t idx_alloc;
    kl_render_instance_t** list;
    uint32_t max_idx;
 } kl_render_list_t;
+
+KL_ALIGNED_STRUCT_PRE(16) {
+   kl_matrix_t object_to_world;     /**< Object-to-world transform */
+   kl_mesh_t* mesh;                 /**< Mesh assigned to this render list */
+   uint32_t draw_type;              /**< Primitive draw type to use for drawing the associated Mesh. */
+
+   /* TODO: Proper material */
+   kl_effect_t material;            /**< Material to use to draw the associated Mesh. */
+   uint32_t blend_src;              /**< Source blend to use. */
+   uint32_t blend_dest;             /**< Destination blend to use. */
+
+   kl_shader_constant_t** consts;   /**< Shader constants to bind to the associated Material. */
+   size_t num_consts;               /**< Number of constants in the consts array. */
+
+   void* render_target;             /**< RenderTarget to which this instance should be drawn, or NULL for the backbuffer */
+   KL_BOOL clear_before_draw;       /**< If set to KL_TRUE, the associated RenderTarget will be cleared before this instance is drawn. */
+
+   kl_render_list_t* list;          /**< The RenderList this instance is associated with. */
+   uint32_t list_index;             /**< The index of this instance in the associated RenderList. */
+} KL_ALIGNED_STRUCT_POST(kl_render_instance_t, 16);
 
 /**
  * Initialize a render list.
@@ -59,6 +61,7 @@ typedef struct {
  * @param list Location to store render list.
  *
  * @return KL_SUCCESS or appropriate error code.
+ * @relates kl_render_list_t
  */
 extern KL_API int kl_render_list_init(kl_render_list_t* list, uint32_t list_sz);
 
@@ -66,6 +69,7 @@ extern KL_API int kl_render_list_init(kl_render_list_t* list, uint32_t list_sz);
  * De-initialize a render list.
  *
  * @param list Render list to de-initialize.
+ * @relates kl_render_list_t
  */
 extern KL_API void kl_render_list_deinit(kl_render_list_t* list);
 
@@ -76,6 +80,7 @@ extern KL_API void kl_render_list_deinit(kl_render_list_t* list);
  * @param inst Render instance to insert.
  *
  * @return A reserved render instance.
+ * @relates kl_render_list_t
  */
 extern KL_API void kl_render_list_insert_instance(kl_render_list_t* list, kl_render_instance_t* inst);
 
@@ -84,6 +89,7 @@ extern KL_API void kl_render_list_insert_instance(kl_render_list_t* list, kl_ren
  *
  * @param list Render list from which to remove an instance.
  * @param inst Render instance to remove.
+ * @relates kl_render_list_t
  */
 extern KL_API void kl_render_list_remove_instance(kl_render_list_t* list, kl_render_instance_t* inst);
 
