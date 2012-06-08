@@ -1,0 +1,19 @@
+# SCons build files
+.sconsign.dblite
+build/
+
+# Visual Studio specific files
+*.pdb
+*.suo
+*.ncb
+
+# MacOS Files
+.DS_Store
+
+*.tmp
+Cocoa/
+FlightlessManicotti.sublime-project
+FlightlessManicotti.sublime-workspace
+doc/latex/
+script/
+site_scons/
