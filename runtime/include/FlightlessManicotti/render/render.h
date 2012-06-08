@@ -70,7 +70,7 @@ extern KL_API void kl_render_frame(kl_render_context_t context, float display_wi
 /**
  * Assign a render list to a render context.
  *
- * @param context Rendering context to destroy.
+ * @param context Rendering context to assign a renderlist to.
  * @param list    Render list to assign to context.
  */
 extern KL_API void kl_render_assign_list(kl_render_context_t context, void* list);
