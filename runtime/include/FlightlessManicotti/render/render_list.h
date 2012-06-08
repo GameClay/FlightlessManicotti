@@ -29,11 +29,10 @@ extern "C" {
 #include <FlightlessManicotti/render/mesh/mesh.h>
 #include <FlightlessManicotti/render/shader/effect_manager.h>
 
-typedef struct {
-   kl_idx_allocator_t idx_alloc;
-   kl_render_instance_t** list;
-   uint32_t max_idx;
-} kl_render_list_t;
+#ifndef _KL_RENDER_LIST_PTR_T_
+#define _KL_RENDER_LIST_PTR_T_
+typedef struct _kl_render_list* kl_render_list_ptr_t;
+#endif
 
 KL_ALIGNED_STRUCT_PRE(16) {
    kl_matrix_t object_to_world;     /**< Object-to-world transform */
@@ -51,9 +50,15 @@ KL_ALIGNED_STRUCT_PRE(16) {
    void* render_target;             /**< RenderTarget to which this instance should be drawn, or NULL for the backbuffer */
    KL_BOOL clear_before_draw;       /**< If set to KL_TRUE, the associated RenderTarget will be cleared before this instance is drawn. */
 
-   kl_render_list_t* list;          /**< The RenderList this instance is associated with. */
+   kl_render_list_ptr_t list;       /**< The RenderList this instance is associated with. */
    uint32_t list_index;             /**< The index of this instance in the associated RenderList. */
 } KL_ALIGNED_STRUCT_POST(kl_render_instance_t, 16);
+
+typedef struct _kl_render_list {
+   kl_idx_allocator_t idx_alloc;
+   kl_render_instance_t** list;
+   uint32_t max_idx;
+} kl_render_list_t;
 
 /**
  * Initialize a render list.

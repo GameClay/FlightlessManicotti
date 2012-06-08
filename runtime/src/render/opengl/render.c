@@ -101,9 +101,9 @@ void kl_render_reshape(kl_render_context_t context, float display_width, float d
    CGLUnlockContext(context->drawableCGLContext);
 }
 
-void kl_render_assign_list(kl_render_context_t context, void* list)
+void kl_render_assign_list(kl_render_context_t context, kl_render_list_ptr_t list)
 {
-   context->render_list = (kl_render_list_t*)list;
+   context->render_list = list;
 }
 
 void kl_render_frame(kl_render_context_t context, float display_width, float display_height)

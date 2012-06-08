@@ -36,6 +36,11 @@ KL_ALIGNED_STRUCT_PRE(16) {
    kl_matrix_t object_to_screen;
 } KL_ALIGNED_STRUCT_POST(kl_transform_state_t, 16);
 
+#ifndef _KL_RENDER_LIST_PTR_T_
+#define _KL_RENDER_LIST_PTR_T_
+typedef struct _kl_render_list* kl_render_list_ptr_t;
+#endif
+
 /**
  * Initialize rendering subsystem.
  *
@@ -83,7 +88,7 @@ extern KL_API void kl_render_frame(kl_render_context_t context, float display_wi
  *
  * @relates kl_render_context_t
  */
-extern KL_API void kl_render_assign_list(kl_render_context_t context, void* list);
+extern KL_API void kl_render_assign_list(kl_render_context_t context, kl_render_list_ptr_t list);
 
 #ifdef __cplusplus
 }
