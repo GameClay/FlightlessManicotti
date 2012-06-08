@@ -26,8 +26,6 @@ extern "C" {
 #include <FlightlessManicotti/math/math.h>
 #include <FlightlessManicotti/math/vector.h>
 
-/* TODO: Row vs Column major functions? Or just assume SSE3+ at this point. */
-
 /* Row Major
  * x0 x1 x2 x3
  * y0 y1 y2 y3
@@ -45,6 +43,8 @@ KL_ALIGNED_STRUCT_PRE(16) {
  * @param a Matrix A.
  * @param b Matrix B.
  * @param c Output matrix.
+ *
+ * @relates kl_matrix_t
  */
 extern kl_math_abc_restrict_fn kl_matrix_mul_matrix;
 
@@ -54,6 +54,8 @@ extern kl_math_abc_restrict_fn kl_matrix_mul_matrix;
  * @param a Matrix.
  * @param b Vector.
  * @param c Output vector.
+ *
+ * @relates kl_matrix_t
  */
 extern kl_math_abc_restrict_fn kl_matrix_mul_vector;
 
@@ -64,6 +66,8 @@ extern kl_math_abc_restrict_fn kl_matrix_mul_vector;
  * @param b Vector array.
  * @param c Output vector array.
  * @param n Number of vector elements in b and c.
+ *
+ * @relates kl_matrix_t
  */
 extern kl_math_abcn_restrict_fn kl_matrix_mul_vector_batch;
 
@@ -75,6 +79,8 @@ extern kl_math_abcn_restrict_fn kl_matrix_mul_vector_batch;
  * @param right   Right.
  * @param near    Near.
  * @param far     Far.
+ *
+ * @relates kl_matrix_t
  */
 extern KL_API void kl_matrix_perspective(float* m, float left, float right, float bottom, float top, float near, float far);
 
@@ -86,11 +92,15 @@ extern KL_API void kl_matrix_perspective(float* m, float left, float right, floa
  * @param right   Right.
  * @param near    Near.
  * @param far     Far.
+ *
+ * @relates kl_matrix_t
  */
 extern KL_API void kl_matrix_ortho(float* m, float left, float right, float bottom, float top, float near, float far);
 
 /**
  * Initialize a matrix to the identity matrix.
+ *
+ * @relates kl_matrix_t
  */
 extern KL_API void kl_matrix_identity(float* m);
 
@@ -101,6 +111,8 @@ extern KL_API void kl_matrix_identity(float* m);
  * @param x       X scale.
  * @param y       Y scale.
  * @param z       Z scale.
+ *
+ * @relates kl_matrix_t
  */
 extern KL_API void kl_matrix_scale(float* m, float x, float y, float z);
 

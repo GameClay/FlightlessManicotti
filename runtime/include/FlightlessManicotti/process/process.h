@@ -48,12 +48,43 @@ typedef void (*kl_process_advance_time_ptr)(float dt, void* context);
  * @param num_processes  Maximum number of processes for the allocated manager.
  *
  * @return KL_SUCCESS if successful.
+ *
+ * @relates kl_process_manager_t
  */
 extern KL_API int kl_alloc_process_manager(kl_process_manager_t* mgr, uint32_t num_processes);
+
+/**
+ * Free a process manager.
+ *
+ * @param mgr Process manager to free.
+ *
+ * @relates kl_process_manager_t
+ */
 extern KL_API void kl_free_process_manager(kl_process_manager_t* mgr);
 
+/**
+ * Reserve a process id, and insert advance-time, and process-tick functions.
+ *
+ * @param mgr              Process manager from which an id should be reserved.
+ * @param tick_fn          Function pointer for advance-time calls, or NULL.
+ * @param advance_time_fn  Function pointer for advance-time calls, or NULL.
+ * @param context          Context which will be passed to tick_fn and advance_time_fn.
+ *
+ * @return The process id which has been reserved.
+ *
+ * @relates kl_process_manager_t
+ */
 extern KL_API uint32_t kl_reserve_process_id(kl_process_manager_t mgr,
    kl_process_tick_ptr tick_fn, kl_process_advance_time_ptr advance_time_fn, void* context);
+
+/**
+ * Release a process id.
+ *
+ * @param mgr  Process manager from which the id was allocated.
+ * @param id   Process id to release.
+ *
+ * @relates kl_process_manager_t
+ */
 extern KL_API void kl_release_process_id(kl_process_manager_t mgr, uint32_t id);
 
 /**
@@ -67,6 +98,8 @@ extern KL_API void kl_release_process_id(kl_process_manager_t mgr, uint32_t id);
  * @param mgr    The process manager to tick.
  *
  * @return KL_SUCCESS if successful.
+ *
+ * @relates kl_process_manager_t
  */
 extern KL_API int kl_tick_process_list(const kl_process_manager_t mgr);
 
@@ -81,6 +114,8 @@ extern KL_API int kl_tick_process_list(const kl_process_manager_t mgr);
  *               kl_advance_process_list was called on this manager.
  *
  * @return KL_SUCCESS if successful.
+ *
+ * @relates kl_process_manager_t
  */
 extern KL_API int kl_advance_process_list(const kl_process_manager_t mgr, float dt);
 

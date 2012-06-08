@@ -29,18 +29,22 @@ extern "C" {
 
 typedef struct _kl_mesh_internal* kl_mesh_internal_t;
 
+/**
+ * Defines a Mesh render object.
+ */
 typedef struct {
-   kl_mesh_internal_t internal;
+   kl_mesh_internal_t internal;  /**< Internal mesh structure, API specific. */
 
-   float* vertex;
-   float* normal;
-   float* tex0;
-   uint32_t* col0;
-   size_t num_verts;
+   float* vertex;                /**< Pointer to vertex data. Length: 3 * num_verts. */
+   float* normal;                /**< Pointer to normal data. Length: 3 * num_verts. */
+   float* tex0;                  /**< Pointer to texture coordinate data. Length: 2 * num_verts. */
+   uint32_t* col0;               /**< Pointer to color data. Length: num_verts. */
+   size_t num_verts;             /**< Number of vertices. */
 
-   uint16_t* index;
-   float* face_normal;
-   size_t num_indices;
+   uint16_t* index;              /**< Pointer to index data. Length: num_indices. */
+   size_t num_indices;           /**< Number of indices. */
+
+   float* face_normal;           /**< Pointer to computed face-normals. Length: num_indices. */
 } kl_mesh_t;
 
 typedef enum {
@@ -64,6 +68,8 @@ typedef enum {
  * @param mesh    Mesh to initialize.
  *
  * @return KL_SUCCESS if successful.
+ *
+ * @relates kl_mesh_t
  */
 extern KL_API int kl_mesh_init(kl_mesh_t* mesh);
 
@@ -75,6 +81,8 @@ extern KL_API int kl_mesh_init(kl_mesh_t* mesh);
  * structure.
  *
  * @param mesh    Mesh to deinitialize.
+ *
+ * @relates kl_mesh_t
  */
 extern KL_API void kl_mesh_deinit(kl_mesh_t* mesh);
 
@@ -87,6 +95,8 @@ extern KL_API void kl_mesh_deinit(kl_mesh_t* mesh);
  * @param mesh          Mesh to populate with internal data.
  * @param update_mask   Mask specifying which mesh elements to buffer. @see kl_mesh_element_mask
  * @param dynamic_mask  Mask specifying which mesh elements are dynamic. @see kl_mesh_element_mask
+ *
+ * @relates kl_mesh_t
  */
 extern KL_API void kl_mesh_buffer_data(kl_mesh_t* mesh, uint32_t update_mask, uint32_t dynamic_mask);
 
@@ -96,6 +106,8 @@ extern KL_API void kl_mesh_buffer_data(kl_mesh_t* mesh, uint32_t update_mask, ui
  * Pass NULL to unbind meshes.
  *
  * @param mesh    Mesh to prepare for drawing, or NULL.
+ *
+ * @relates kl_mesh_t
  */
 extern KL_API void kl_mesh_bind(const kl_mesh_t* mesh);
 
@@ -106,6 +118,8 @@ extern KL_API void kl_mesh_bind(const kl_mesh_t* mesh);
  * @param mesh_name  Name of the mesh to load.
  *
  * @return KL_SUCCESS if successful.
+ *
+ * @relates kl_mesh_t
  */
 extern KL_API int kl_mesh_load_ctm(kl_mesh_t* mesh, const char* mesh_name);
 
@@ -115,6 +129,8 @@ extern KL_API int kl_mesh_load_ctm(kl_mesh_t* mesh, const char* mesh_name);
  * @param mesh       Mesh on which to recompute normals.
  * @param start_idx  Starting index for recomputation.
  * @param num_tris   Number of triangles starting at start_idx to recompute normals for, or 0 for all.
+ *
+ * @relates kl_mesh_t
  */
 extern KL_API void kl_mesh_recompute_normals(kl_mesh_t* mesh, uint16_t start_idx, uint16_t num_tris);
 

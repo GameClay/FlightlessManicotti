@@ -43,6 +43,8 @@ KL_ALIGNED_STRUCT_PRE(16) {
  * @param handle  Platform-specific render context handle.
  *
  * @return KL_SUCCESS or appropriate error code.
+ *
+ * @relates kl_render_context_t
  */
 extern KL_API int kl_init_rendering(kl_render_context_t* context, void* handle);
 
@@ -50,11 +52,15 @@ extern KL_API int kl_init_rendering(kl_render_context_t* context, void* handle);
  * Destroy the rendering subsystem.
  *
  * @param context Rendering context to destroy.
+ *
+ * @relates kl_render_context_t
  */
 extern KL_API void kl_destroy_rendering(kl_render_context_t* context);
 
 /**
  * Update the size of the render context.
+ *
+ * @relates kl_render_context_t
  */
 extern KL_API void kl_render_reshape(kl_render_context_t context, float display_width, float display_height);
 
@@ -64,6 +70,8 @@ extern KL_API void kl_render_reshape(kl_render_context_t context, float display_
  * @param context          Render context on which to draw the frame.
  * @param display_width    Width of the frame to render.
  * @param display_height   Height of the frame to render.
+ *
+ * @relates kl_render_context_t
  */
 extern KL_API void kl_render_frame(kl_render_context_t context, float display_width, float display_height);
 
@@ -72,6 +80,8 @@ extern KL_API void kl_render_frame(kl_render_context_t context, float display_wi
  *
  * @param context Rendering context to assign a renderlist to.
  * @param list    Render list to assign to context.
+ *
+ * @relates kl_render_context_t
  */
 extern KL_API void kl_render_assign_list(kl_render_context_t context, void* list);
 

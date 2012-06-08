@@ -61,6 +61,7 @@ KL_ALIGNED_STRUCT_PRE(16) {
  * @param list Location to store render list.
  *
  * @return KL_SUCCESS or appropriate error code.
+ *
  * @relates kl_render_list_t
  */
 extern KL_API int kl_render_list_init(kl_render_list_t* list, uint32_t list_sz);
@@ -69,6 +70,7 @@ extern KL_API int kl_render_list_init(kl_render_list_t* list, uint32_t list_sz);
  * De-initialize a render list.
  *
  * @param list Render list to de-initialize.
+ *
  * @relates kl_render_list_t
  */
 extern KL_API void kl_render_list_deinit(kl_render_list_t* list);
@@ -80,6 +82,7 @@ extern KL_API void kl_render_list_deinit(kl_render_list_t* list);
  * @param inst Render instance to insert.
  *
  * @return A reserved render instance.
+ *
  * @relates kl_render_list_t
  */
 extern KL_API void kl_render_list_insert_instance(kl_render_list_t* list, kl_render_instance_t* inst);
@@ -89,6 +92,7 @@ extern KL_API void kl_render_list_insert_instance(kl_render_list_t* list, kl_ren
  *
  * @param list Render list from which to remove an instance.
  * @param inst Render instance to remove.
+ *
  * @relates kl_render_list_t
  */
 extern KL_API void kl_render_list_remove_instance(kl_render_list_t* list, kl_render_instance_t* inst);

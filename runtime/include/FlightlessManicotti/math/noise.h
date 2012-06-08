@@ -30,7 +30,6 @@ extern KL_API float kl_simplex_noise_2d(float x, float y);
 extern KL_API float kl_simplex_noise_3d(float x, float y, float z);
 extern KL_API float kl_simplex_noise_4d(float x, float y, float z, float w);
 
-
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
