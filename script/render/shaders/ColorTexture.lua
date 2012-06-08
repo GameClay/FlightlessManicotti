@@ -7,14 +7,14 @@ DeclareShader('Vertex.GL3', [[
    out vec2 tex_coord0;
    out vec4 color0;
 
-   uniform float hax_color;
+   uniform vec4 color;
    uniform mat4 object_to_screen;
 
    void main()
    {
       gl_Position = object_to_screen * vec4(InPosition, 1.0);
       tex_coord0 = InTex0.xy;
-      color0 = vec4(hax_color, hax_color, hax_color, 1.0);
+      color0 = color;
    }
 ]])
 

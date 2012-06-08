@@ -31,122 +31,35 @@ function consoleinput(_, inputstring)
    print(loadstring(inputstring)())
 end
 
-function dragoncurve(iterations)
-   local lsys = Lsystem:new()
-   lsys:setstart({"F", "X"})
-   lsys:addrule("X", {"X", "+", "Y", "F"})
-   lsys:addrule("Y", {"F", "X", "-", "Y"})
-   local lsys_state = lsys:getstate(iterations)
-
-   local lsys_verts = {}
-   local cx = -0.5
-   local cy = -0.25
-   local ctheta = 1.57079633
-   local fwd = 0.035
-   local dtheta = 1.57079633
-
-   table.insert(lsys_verts, cx)
-   table.insert(lsys_verts, cy)
-
-   for i = 1, #lsys_state do
-      if lsys_state[i] == "F" then
-         cx = cx + fwd * math.cos(ctheta)
-         cy = cy + fwd * math.sin(ctheta)
-
-         table.insert(lsys_verts, cx)
-         table.insert(lsys_verts, cy)
-      elseif lsys_state[i] == "+" then
-         ctheta = ctheta - dtheta
-      elseif lsys_state[i] == "-" then
-         ctheta = ctheta + dtheta
-      end
-   end
-
-   return lsys_verts
-end
-
-function sierpinski(iterations)
-   local lsys = Lsystem:new()
-   lsys:setstart({"A"})
-   lsys:addrule("A", {"B", "-", "A", "-", "B"})
-   lsys:addrule("B", {"A", "+", "B", "+", "A"})
-   local lsys_state = lsys:getstate(iterations)
-
-   local lsys_verts = {}
-   local cx = -0.95
-   local cy = -0.95
-   local ctheta = 0
-   local fwd = 0.0018
-   local dtheta = 1.04719755
-
-   table.insert(lsys_verts, cx)
-   table.insert(lsys_verts, cy)
-
-   for i = 1, #lsys_state do
-      if lsys_state[i] == "A" or lsys_state[i] == "B" then
-         cx = cx + fwd * math.cos(ctheta)
-         cy = cy + fwd * math.sin(ctheta)
-
-         table.insert(lsys_verts, cx)
-         table.insert(lsys_verts, cy)
-      elseif lsys_state[i] == "+" then
-         ctheta = ctheta + dtheta
-      elseif lsys_state[i] == "-" then
-         ctheta = ctheta - dtheta
-      end
-   end
-
-   return lsys_verts
-end
-
-function surface(slices, stacks, fn)
-   local verts = {}
-   for i = 0, slices do
-      local theta = i * math.pi / slices
-      for j = 0, (stacks - 1) do
-         local phi = j * 2 * math.pi / stacks
-         local vert = fn(theta, phi)
-         table.insert(verts, vert)
-      end
-   end
-
-   local faces = {}
-   local v = 0
-   for i = 0, (slices - 1) do
-      for j = 0, (stacks - 1) do
-         local n = (j + 1) % stacks
-
-         local a = v + n
-         local b = v + j
-         local c = v + j + stacks
-         local d = v + n + stacks
-
-         table.insert(faces, {a, b, c})
-         table.insert(faces, {a, c, d})
-      end
-      v = v + stacks
-   end
-
-   local mesh = Mesh.new()
-   mesh:setpositions(verts)
-   mesh:setfaces(faces)
-   mesh:computenormals()
-   mesh:update(Mesh.element.vertex + Mesh.element.normal + Mesh.element.index, Mesh.element.none)
-   return mesh
-end
-
-function sphere(u, v)
-   local x =  math.sin(u) * math.cos(v)
-   local y =  math.cos(u)
-   local z = -math.sin(u) * math.sin(v)
-   return {x, y, z}
-end
-
 function testrenderinit()
    print("RenderInit called!")
 
-   -- Moar test
-   local testmesh = surface(15, 15, sphere)
+   -- Create a render list with 32 entries
+   script_render_list = RenderList.new(32)
+
+   -- Full screen quad
+   local verts = {{-1.0, -1.0, 0.0}, {-1.0, 1.01, 0.0}, {1.0, -1.0, 0.0}, {1.0, 1.0, 0.0}}
+   local idxs = {0, 1, 2, 1, 3, 2}
+   local texcoords = {{0, 0}, {0, 1}, {1, 0}, {1, 1}}
+   fs_quad_mesh = Mesh.new()
+   fs_quad_mesh:setpositions(verts)
+   fs_quad_mesh:settexcoords(texcoords)
+   fs_quad_mesh:setindices(idxs)
+   fs_quad_mesh:update(Mesh.element.vertex + Mesh.element.index + Mesh.element.tex0, Mesh.element.none)
+
+   -- Texture from file
+   uv_template_texture = Texture.new[[uvtemplate001-lg.jpg]]
+
+   -- Render instance for textured quad
+   fs_quad_inst = RenderInstance.new()
+   fs_quad_inst:setmesh(fs_quad_mesh)
+   fs_quad_inst:setmaterial("ColorTexture")
+   fs_quad_inst:setdrawtype(RenderInstance.drawtype.triangles)
+   fs_quad_inst:setshaderconstants({
+      tex0 = uv_template_texture,
+      color = {{1, 1, 1, 1}}
+   })
+   script_render_list:insert(fs_quad_inst)
 
    --[[local testmesh = Mesh.new()
    testmesh:loadctm("./bunny.ctm")

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		43221BEC15190075000BC238 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43221BEB15190075000BC238 /* CoreVideo.framework */; };
+		43258A55158287B60000C420 /* uvtemplate001-lg.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 43258A54158287B60000C420 /* uvtemplate001-lg.jpg */; };
 		434EB0761513DB27005112AE /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 434EB0751513DB27005112AE /* Cocoa.framework */; };
 		434EB0801513DB27005112AE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 434EB07E1513DB27005112AE /* InfoPlist.strings */; };
 		434EB0821513DB27005112AE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 434EB0811513DB27005112AE /* main.m */; };
@@ -30,6 +31,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
+				43258A55158287B60000C420 /* uvtemplate001-lg.jpg in CopyFiles */,
 				43974271152A5B5D007244C1 /* bunny.ctm in CopyFiles */,
 				4397426F15278DB4007244C1 /* libFlightlessManicotti.dylib in CopyFiles */,
 				434EB0AF15140B11005112AE /* script in CopyFiles */,
@@ -41,6 +43,7 @@
 
 /* Begin PBXFileReference section */
 		43221BEB15190075000BC238 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		43258A54158287B60000C420 /* uvtemplate001-lg.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "uvtemplate001-lg.jpg"; sourceTree = "<group>"; };
 		434EB0711513DB27005112AE /* FlightlessManicotti.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlightlessManicotti.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		434EB0751513DB27005112AE /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		434EB0781513DB27005112AE /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -60,7 +63,6 @@
 		434EB0A11513F81D005112AE /* libFlightlessManicotti.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libFlightlessManicotti.dylib; path = "../../build/darwin/x86-64/debug/dist/lib/libFlightlessManicotti.dylib"; sourceTree = "<group>"; };
 		434EB0A615140A32005112AE /* main.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = main.lua; path = ../main.lua; sourceTree = "<group>"; };
 		434EB0AE15140B11005112AE /* script */ = {isa = PBXFileReference; lastKnownFileType = folder; name = script; path = ../../script; sourceTree = "<group>"; };
-		4397426C15251AE9007244C1 /* libFlightlessManicotti.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libFlightlessManicotti.dylib; path = "../../build/darwin/x86-64/release/obj/runtime/libFlightlessManicotti.dylib"; sourceTree = "<group>"; };
 		4397426E15278DB4007244C1 /* libFlightlessManicotti.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libFlightlessManicotti.dylib; path = "../../build/darwin/x86-64/debug/dist/lib/libFlightlessManicotti.dylib"; sourceTree = "<group>"; };
 		43974270152A5B5D007244C1 /* bunny.ctm */ = {isa = PBXFileReference; lastKnownFileType = file; path = bunny.ctm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -83,9 +85,9 @@
 		434EB0661513DB27005112AE = {
 			isa = PBXGroup;
 			children = (
+				43258A54158287B60000C420 /* uvtemplate001-lg.jpg */,
 				43974270152A5B5D007244C1 /* bunny.ctm */,
 				4397426E15278DB4007244C1 /* libFlightlessManicotti.dylib */,
-				4397426C15251AE9007244C1 /* libFlightlessManicotti.dylib */,
 				434EB0AE15140B11005112AE /* script */,
 				434EB0A11513F81D005112AE /* libFlightlessManicotti.dylib */,
 				434EB07B1513DB27005112AE /* FlightlessManicotti */,

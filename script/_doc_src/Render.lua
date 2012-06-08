@@ -37,16 +37,16 @@ assert(false, "This file is used to generate documentation only, and should not 
 --! A Mesh object is required for the runtime to draw a  RenderInstance. A Mesh
 --! can be created manually, or by loading an <A HREF="http://openctm.sourceforge.net/">OpenCTM</A> mesh.
 --!
---! Example of manually creating a full-screen textured quad Mesh, from Zorya.
+--! Example of manually creating a full-screen textured quad Mesh.
 --! @code{.lua}
---! verts = {{-1.0, -1.0, 0.0}, {-1.0, 1.01, 0.0}, {1.0, -1.0, 0.0}, {1.0, 1.0, 0.0}}
---! idxs = {0, 1, 2, 1, 3, 2}
---! texcoords = {{0, 0}, {0, 1}, {1, 0}, {1, 1}}
---! cqt.mesh.fs_quad = Mesh.new()
---! cqt.mesh.fs_quad:setpositions(verts)
---! cqt.mesh.fs_quad:settexcoords(texcoords)
---! cqt.mesh.fs_quad:setindices(idxs)
---! cqt.mesh.fs_quad:update(Mesh.element.vertex + Mesh.element.index + Mesh.element.tex0, Mesh.element.none)
+--! local verts = {{-1.0, -1.0, 0.0}, {-1.0, 1.01, 0.0}, {1.0, -1.0, 0.0}, {1.0, 1.0, 0.0}}
+--! local idxs = {0, 1, 2, 1, 3, 2}
+--! local texcoords = {{0, 0}, {0, 1}, {1, 0}, {1, 1}}
+--! fs_quad_mesh = Mesh.new()
+--! fs_quad_mesh:setpositions(verts)
+--! fs_quad_mesh:settexcoords(texcoords)
+--! fs_quad_mesh:setindices(idxs)
+--! fs_quad_mesh:update(Mesh.element.vertex + Mesh.element.index + Mesh.element.tex0, Mesh.element.none)
 --! @endcode
 --!
 --! @section script_render_textures Textures
@@ -57,9 +57,9 @@ assert(false, "This file is used to generate documentation only, and should not 
 --! Data-sources can be registered with the rendering subsystem of the runtime using the
 --! kl_effect_manager_register_data_source function.
 --!
---! Example of creating a Texture by loading a file, from Zorya.
+--! Example of creating a Texture by loading a file.
 --! @code{.lua}
---! cqt.texture.nebula = Texture.new("heic0515a.jpg")
+--! uv_template_texture = Texture.new[[uvtemplate001-lg.jpg]]
 --! @endcode
 --!
 --! Example of creating a Texture by binding a data-source, from Zorya.
@@ -69,20 +69,6 @@ assert(false, "This file is used to generate documentation only, and should not 
 --!
 --! @note Currently data-source textures are hard-coded to be 1d textures. This will be
 --!       changed to respect the proper dimensions of the data-source.
---!
---! @section script_render_targets Render Targets
---! Render targets can be specified for each RenderInstance. By default, a RenderInstance
---! has its target assigned to 'nil', or the backbuffer. A new RenderInstance can be
---! created and assigned.
---!
---! @note Currently a RenderTarget is created with an attached 24-bit depth buffer and
---!       an 8-bit stencil buffer. The color format is 32-bit RGBA. At some point this
---!       will be configurable on creation/update.
---!
---! Example of creating a set of feedback buffers using RenderTarget, from Zorya.
---! @code{.lua}
---! cqt.targets.feedback = {RenderTarget.new(512, 512), RenderTarget.new(512, 512)}
---! @endcode
 --!
 --! @section script_render_materials Materials
 --! Materials are defined in Lua using the DeclareShader function inside a file named
@@ -100,39 +86,39 @@ assert(false, "This file is used to generate documentation only, and should not 
 --! @note Due to the fact that all Lua numbers in LuaJIT are doubles, there is currently no support
 --!       for integer constant assignment. All numerical constants are treated as floating point types.
 --!
---! Example of an array of vec3 shader constants, from Zorya.
+--! Example of assigning a texture, and vec4 shader constant.
 --! @code{.lua}
---! cqt.colortable = {
---!    {1.0, 0.0, 0.0},  -- C
---!    {1.0, 0.5, 0.0},  -- C#/Db
---!    {1.0, 1.0, 0.0},  -- D
---!    {0.5, 1.0, 0.0},  -- D#/Eb
---!    {0.0, 1.0, 0.0},  -- E
---!    {0.0, 1.0, 0.5},  -- F
---!    {0.0, 1.0, 1.0},  -- F#/Gb
---!    {0.0, 0.5, 1.0},  -- G
---!    {0.0, 0.0, 1.0},  -- G#/Ab
---!    {0.5, 0.0, 1.0},  -- A
---!    {1.0, 0.0, 1.0},  -- A#/Bb
---!    {1.0, 0.0, 0.5}   -- B
---! }
+--! fs_quad_inst:setshaderconstants({
+--!    tex0 = uv_template_texture,
+--!    color = {{1, 1, 1, 1}}
+--! })
 --! @endcode
 --!
 --! @section script_render_instances Render Instances
---! Example of creating a RenderInstance to draw a full-screen textured quad, from Zorya.
+--! Example of creating a RenderInstance to draw a full-screen textured quad.
 --! @code{.lua}
---! cqt.renderinst.nebula = RenderInstance.new()
---! cqt.renderinst.nebula:setmesh(cqt.mesh.fs_quad)
---! cqt.renderinst.nebula:setmaterial("CQTColorTexture")
---! cqt.renderinst.nebula:setdrawtype(RenderInstance.drawtype.triangles)
---! cqt.renderinst.nebula:setshaderconstants({
---!    tex0 = cqt.texture.nebula,
---!    hax_color = 0.15,
---!    cqtTexture = cqt.texture.spectrum,
---!    binsPerOctave = cqt.bins_per_octave,
---!    numOctaves = cqt.num_octaves
+--! fs_quad_inst = RenderInstance.new()
+--! fs_quad_inst:setmesh(fs_quad_mesh)
+--! fs_quad_inst:setmaterial("ColorTexture")
+--! fs_quad_inst:setdrawtype(RenderInstance.drawtype.triangles)
+--! fs_quad_inst:setshaderconstants({
+--!    tex0 = uv_template_texture,
+--!    color = {{1, 1, 1, 1}}
 --! })
---! cqt.renderinst.nebula:setblend(RenderInstance.blend.one, RenderInstance.blend.one)
+--! @endcode
+--!
+--! @section script_render_targets Render Targets
+--! Render targets can be specified for each RenderInstance. By default, a RenderInstance
+--! has its target assigned to 'nil', or the backbuffer. A new RenderInstance can be
+--! created and assigned.
+--!
+--! @note Currently a RenderTarget is created with an attached 24-bit depth buffer and
+--!       an 8-bit stencil buffer. The color format is 32-bit RGBA. At some point this
+--!       will be configurable on creation/update.
+--!
+--! Example of creating a set of feedback buffers using RenderTarget, from Zorya.
+--! @code{.lua}
+--! cqt.targets.feedback = {RenderTarget.new(512, 512), RenderTarget.new(512, 512)}
 --! @endcode
 --!
 --! @ingroup script
