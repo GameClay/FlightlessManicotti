@@ -25,6 +25,11 @@ extern "C" {
 
 #include <FlightlessManicotti/fm.h>
 
+#define KL_LOG_LEVEL_DEBUG 0
+#define KL_LOG_LEVEL_INFO  1
+#define KL_LOG_LEVEL_WARN  2
+#define KL_LOG_LEVEL_ERR   3
+
 /**
  * Console log callback function pointer.
  */

@@ -23,19 +23,14 @@
 
 #include "sanskrit/include/sanskrit/sklog.h"
 
-#define KL_LOG_DEBUG 0
-#define KL_LOG_INFO  1
-#define KL_LOG_WARN  2
-#define KL_LOG_ERR   3
-
 static void _kl_default_log_callback(void* context, const char* line, int log_level)
 {
    switch(log_level)
    {
-      case KL_LOG_DEBUG: skdebug(line); break;
-      case KL_LOG_INFO:  skinfo(line); break;
-      case KL_LOG_WARN:  skwarn(line); break;
-      case KL_LOG_ERR:   skerr(line); break;
+      case KL_LOG_LEVEL_DEBUG: skdebug(line); break;
+      case KL_LOG_LEVEL_INFO:  skinfo(line); break;
+      case KL_LOG_LEVEL_WARN:  skwarn(line); break;
+      case KL_LOG_LEVEL_ERR:   skerr(line); break;
    }
 }
 
@@ -77,22 +72,22 @@ if(format != NULL) { \
 
 void kl_log_info(const char* format, ...)
 {
-   _KL_LOG_IMPL(KL_LOG_INFO);
+   _KL_LOG_IMPL(KL_LOG_LEVEL_INFO);
 }
 
 void kl_log_debug(const char* format, ...)
 {
-   _KL_LOG_IMPL(KL_LOG_DEBUG);
+   _KL_LOG_IMPL(KL_LOG_LEVEL_DEBUG);
 }
 
 void kl_log_warn(const char* format, ...)
 {
-   _KL_LOG_IMPL(KL_LOG_WARN);
+   _KL_LOG_IMPL(KL_LOG_LEVEL_WARN);
 }
 
 void kl_log_err(const char* format, ...)
 {
-   _KL_LOG_IMPL(KL_LOG_ERR);
+   _KL_LOG_IMPL(KL_LOG_LEVEL_ERR);
 }
 
 #undef _KL_LOG_IMPL
