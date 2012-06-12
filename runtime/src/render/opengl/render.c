@@ -21,7 +21,6 @@
 #include <FlightlessManicotti/scriptinterface/scriptevents.h>
 #include <FlightlessManicotti/render/mesh/mesh.h>
 #include "scriptinterface/scriptinterface.h"
-#include <sanskrit/sklog.h>
 #include <FreeImage.h>
 
 kl_render_context_t g_script_render_context = NULL;

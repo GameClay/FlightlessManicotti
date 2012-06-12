@@ -21,7 +21,6 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #include <FlightlessManicotti/render/render_list.h>
-#include <sanskrit/sklog.h>
 #include "render/opengl/gl_render.h"
 
 extern kl_render_context_t g_script_render_context;
@@ -209,7 +208,7 @@ void RenderInstance_shaderconsthelper(lua_State* L, kl_shader_constant_t* consta
                      {
                         if(csize != 1)
                         {
-                           skerr("All elements of a shader constant table assignment must be the same size.");
+                           kl_log_err("All elements of a shader constant table assignment must be the same size.");
                         }
                      }
                      break;
@@ -222,7 +221,7 @@ void RenderInstance_shaderconsthelper(lua_State* L, kl_shader_constant_t* consta
                      {
                         if(csize != lua_objlen(L, -1))
                         {
-                           skerr("All elements of a shader constant table assignment must be the same size.");
+                           kl_log_err("All elements of a shader constant table assignment must be the same size.");
                         }
                      }
                      break;

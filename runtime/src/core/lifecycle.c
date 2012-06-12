@@ -18,7 +18,6 @@
 #include <FlightlessManicotti/fm.h>
 #include <FlightlessManicotti/scriptinterface/script.h>
 #include <FlightlessManicotti/process/process.h>
-#include <sanskrit/sklog.h>
 
 typedef struct
 {
@@ -36,6 +35,10 @@ extern kl_process_manager_t g_process_manager;
 /* kl_init_mainloop from process/mainloop.c */
 extern int kl_init_mainloop(const char* main_script, KL_BOOL wait_on_fences, int argc, const char* argv[]);
 
+/* Internal log init/deinit functions */
+extern void _kl_log_init();
+extern void _kl_log_deinit();
+
 /* script.events.Init */
 kl_script_event_t g_event_Init;
 
@@ -47,7 +50,7 @@ int kl_initialize(KL_BOOL use_threads, KL_BOOL wait_on_fence, const char* main_s
    int ret = KL_ERROR;
 
    /* Init logging */
-   sklog_init();
+   _kl_log_init();
 
    KL_ASSERT(!g_runtime_state.initialized, "Runtime already initialized.");
    KL_ASSERT(g_script_context == NULL, "KL_DEFAULT_SCRIPT_CONTEXT already initialized.");
@@ -101,5 +104,5 @@ void kl_destroy()
    g_script_context = NULL;
 
    /* Destroy logging */
-   sklog_destroy();
+   _kl_log_deinit();
 }

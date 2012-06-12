@@ -35,7 +35,7 @@ excluded_files = []
 lib_files = [f for f in lib_files if f not in excluded_files]
 
 # Set path
-runtime_env.Append(CPPPATH = ['src', 'include', 'src/sanskrit/include'])
+runtime_env.Append(CPPPATH = ['src', 'include'])
 
 # Determine additional compiler flags
 runtime_env.Append(CCFLAGS = ['-Wstrict-aliasing', '-Wall', '-Werror', '-fstrict-aliasing'])

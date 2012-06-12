@@ -101,6 +101,7 @@ extern "C" {
 /* TODO: Include all the things? */
 #include <FlightlessManicotti/core/memory.h>
 #include <FlightlessManicotti/core/error_codes.h>
+#include <FlightlessManicotti/core/log.h>
 
 /**
  * Initialize the runtime.

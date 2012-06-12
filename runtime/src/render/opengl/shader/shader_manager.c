@@ -18,7 +18,6 @@
 
 #include <FlightlessManicotti/render/shader/shader_manager.h>
 #include <FlightlessManicotti/core/hash.h>
-#include <sanskrit/sklog.h>
 #include "render/script/getshader.h"
 #include <stdio.h>
 #include <string.h>
@@ -75,7 +74,7 @@ int _get_shader(kl_render_context_t render_ctx, const char* effect_key,
       }
       else
       {
-         skerr("Shader key collision, unhandled.");
+         kl_log_err("Shader key collision, unhandled.");
       }
    }
    else
@@ -99,7 +98,7 @@ int _get_shader(kl_render_context_t render_ctx, const char* effect_key,
             vertexInfoLog = kl_heap_alloc(maxLength);
 
             glGetShaderInfoLog(gl_shader, maxLength, &maxLength, vertexInfoLog);
-            skerr(vertexInfoLog);
+            kl_log_err(vertexInfoLog);
             kl_heap_free(vertexInfoLog);
 
             glDeleteShader(gl_shader);

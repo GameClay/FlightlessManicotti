@@ -18,7 +18,6 @@
 
 #include <FlightlessManicotti/math/matrix.h>
 #include <FlightlessManicotti/core/timer.h>
-#include <sanskrit/sklog.h>
 #include <pmmintrin.h>
 
 const kl_matrix_t KL_MATRIX_IDENTITY = {{
@@ -286,7 +285,7 @@ void kl_matrix_scale(float* m, float x, float y, float z)
 
 void kl_matrix_dump(float* m)
 {
-   sklog("%4.2f %4.2f %4.2f %4.2f\n%4.2f %4.2f %4.2f %4.2f\n%4.2f %4.2f %4.2f %4.2f\n%4.2f %4.2f %4.2f %4.2f\n",
+   kl_log_debug("%4.2f %4.2f %4.2f %4.2f\n%4.2f %4.2f %4.2f %4.2f\n%4.2f %4.2f %4.2f %4.2f\n%4.2f %4.2f %4.2f %4.2f\n",
       m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8], m[9], m[10], m[11], m[12], m[13], m[14], m[15]);
 }
 
@@ -349,7 +348,7 @@ void kl_matrix_math_self_test()
    c_batch_xfm_ms = kl_matrix_mul_vector_batch_c_timing(NUM_TEST_RUNS);
 #endif
 
-   sklog("Matrix self tests passed. (%d iterations)\n" \
+   kl_log_debug("Matrix self tests passed. (%d iterations)\n" \
       "\tMatrix * Matrix: SSE %fms, C %fms\n" \
       "\tMatrix * Vector: SSE %fms, C %fms" \
       "\tMatrix * Vector Batch: SSE %fms, C %fms",

@@ -18,7 +18,6 @@
 
 #include <FlightlessManicotti/math/vector.h>
 #include <FlightlessManicotti/core/timer.h>
-#include <sanskrit/sklog.h>
 #include <pmmintrin.h>
 
 #if 3 <= __SSE__ || defined(__SSE3__)
@@ -107,7 +106,7 @@ void kl_vector_math_self_test()
    kl_absolute_time_to_ns(&delta_time, &time_ns);
    c_dot_ms = (float)time_ns * 1e-6;
 
-   sklog("Vector self tests passed.\n\tDot product %d iterations: SSE %fms, C %fms",
+   kl_log_debug("Vector self tests passed.\n\tDot product %d iterations: SSE %fms, C %fms",
       NUM_TEST_RUNS, sse_dot_ms, c_dot_ms);
 }
 

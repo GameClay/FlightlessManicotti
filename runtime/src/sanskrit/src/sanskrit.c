@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-#include <sanskrit/sklog.h>
+#include "../include/sanskrit/sklog.h"
 
 #if defined(SKLOG_ASL)
 aslclient _sklog_asl_client = NULL;

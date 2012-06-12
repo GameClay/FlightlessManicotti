@@ -22,7 +22,7 @@
 #include "render/opengl/gl_render.h"
 
 #include <FlightlessManicotti/render/shader/shader_manager.h>
-#include <sanskrit/sklog.h>
+#include <stdio.h>
 
 struct _kl_particle_render_geom_shdr {
    GLuint vertX_buffer[2];

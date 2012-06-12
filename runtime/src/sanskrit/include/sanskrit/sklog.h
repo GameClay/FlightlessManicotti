@@ -24,7 +24,7 @@
 #elif defined(SKLOG_SYSLOG)
 #  include <syslog.h>
 #elif defined(SKLOG_ANDROID)
-#  include <android/log.h> 
+#  include <android/log.h>
 #endif
 
 #include <stdarg.h>

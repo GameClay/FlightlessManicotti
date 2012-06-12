@@ -20,7 +20,6 @@
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
-#include <sanskrit/sklog.h>
 #include <FlightlessManicotti/render/render.h>
 #include "render/opengl/gl_render.h"
 
@@ -66,7 +65,7 @@ static int RenderTarget_new(lua_State* L)
          glBindFramebuffer(GL_FRAMEBUFFER, 0);
          glBindTexture(GL_TEXTURE_2D, 0);
          CGLUnlockContext(g_script_render_context->drawableCGLContext);
-         skerr("Script render target creation failed.");
+         kl_log_err("Script render target creation failed.");
          lua_pop(L, 1);
          lua_pushnil(L);
          return 1;
@@ -130,7 +129,7 @@ static int RenderTarget_update(lua_State* L)
          glBindFramebuffer(GL_FRAMEBUFFER, 0);
          glBindTexture(GL_TEXTURE_2D, 0);
          CGLUnlockContext(g_script_render_context->drawableCGLContext);
-         skerr("Script render target update failed.");
+         kl_log_err("Script render target update failed.");
          return 0;
       }
 

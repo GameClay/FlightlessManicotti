@@ -18,7 +18,6 @@
 
 #include <FlightlessManicotti/render/shader/effect_manager.h>
 #include <FlightlessManicotti/core/hash.h>
-#include <sanskrit/sklog.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -90,7 +89,7 @@ int kl_effect_manager_get_effect(kl_render_context_t render_ctx, const char* eff
       }
       else
       {
-         skerr("Effect key collision, unhandled.");
+         kl_log_err("Effect key collision, unhandled.");
       }
    }
    else
@@ -164,7 +163,7 @@ int kl_effect_manager_get_effect(kl_render_context_t render_ctx, const char* eff
                linkInfoLog = kl_heap_alloc(maxLength);
 
                glGetProgramInfoLog(program, maxLength, &maxLength, linkInfoLog);
-               skerr(linkInfoLog);
+               kl_log_err(linkInfoLog);
                kl_heap_free(linkInfoLog);
 
                glDetachShader(program, vert_shader->shader);

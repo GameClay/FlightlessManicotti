@@ -20,7 +20,6 @@
 #include <lualib.h>
 #include "scriptinterface.h"
 #include <FlightlessManicotti/core/simd.h>
-#include <sanskrit/sklog.h>
 #include <string.h>
 #include "swig_autogen.h"
 
@@ -48,6 +47,13 @@ kl_script_event_t g_event_EOF;
 
 /* script.events.ConsoleInput */
 kl_script_event_t g_event_ConsoleInput;
+
+int _kl_lua_print(lua_State* L)
+{
+   const char* str = lua_tostring(L, 1);
+   kl_log_debug(str);
+   return 0;
+}
 
 int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_queue_max)
 {
@@ -110,6 +116,9 @@ int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_
 
    LOAD_SWIG_LIBS(sctx->lua_state);
 
+   lua_pushcfunction(sctx->lua_state, _kl_lua_print);
+   lua_setglobal(sctx->lua_state, "print");
+
    /* Assign a global for the script context assigned to this lua state */
    lua_pushlightuserdata(sctx->lua_state, sctx);
    lua_setglobal(sctx->lua_state, "SCTX");
@@ -124,7 +133,7 @@ void _on_lua_err(lua_State* state)
    size_t str_sz;
    int top_idx = lua_gettop(state);
    const char* syntax_err = lua_tolstring(state, top_idx, &str_sz);
-   skerr("%s\n", syntax_err);
+   kl_log_err(syntax_err);
    lua_pop(state, 1);
 }
 
@@ -146,7 +155,7 @@ void _kl_script_run_internal(void* arg)
 
       default:
       {
-         skerr("Unknown error loading file '%s'", sctx->file_name);
+         kl_log_err("Unknown error loading file '%s'", sctx->file_name);
       }
    }
 
@@ -190,7 +199,7 @@ void _kl_script_run_internal(void* arg)
 
          default:
          {
-            skerr("Unknown error calling main function.");
+            kl_log_err("Unknown error calling main function.");
             break;
          }
       }
@@ -227,7 +236,7 @@ int kl_script_run(kl_script_context_t context, const char* file_name, int argc, 
       /* Possible errors */
       case LUA_ERRFILE:
       {
-         skerr("File '%s' not found.\n", file_name);
+         kl_log_err("File '%s' not found.\n", file_name);
          return KL_ERROR;
       }
       case LUA_ERRSYNTAX:
@@ -237,7 +246,7 @@ int kl_script_run(kl_script_context_t context, const char* file_name, int argc, 
       }
       case LUA_ERRMEM: 
       {
-         skerr("lua ran out of memory opening file %s.\n", file_name);
+         kl_log_err("lua ran out of memory opening file %s.\n", file_name);
          return KL_ERROR;
       }
       default:
@@ -379,7 +388,7 @@ int kl_script_event_pump(kl_script_context_t context)
 
          default:
          {
-            skerr("Unknown error invoking kl_script_event_pump().\n");
+            kl_log_err("Unknown error invoking kl_script_event_pump().\n");
             break;
          }
       }

@@ -21,7 +21,6 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #include <FreeImage.h>
-#include <sanskrit/sklog.h>
 #include <FlightlessManicotti/render/render.h>
 #include "render/opengl/gl_render.h"
 
