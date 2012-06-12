@@ -49,8 +49,8 @@ int kl_init_rendering(kl_render_context_t* context, void* handle)
       CGLSetCurrentContext(ctx->drawableCGLContext);
       CGLLockContext(ctx->drawableCGLContext);
 
-      kl_shader_manager_create(&ctx->shader_mgr, 256, ctx);
-      kl_effect_manager_create(&ctx->effect_mgr, 64, ctx);
+      kl_shader_manager_create(&ctx->shader_mgr, 4096, ctx);
+      kl_effect_manager_create(&ctx->effect_mgr, 1024, ctx);
 
       /* Null out render list */
       ctx->render_list = NULL;
