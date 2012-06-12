@@ -42,7 +42,8 @@ vars.Add(EnumVariable('MSVC_VERSION', 'MSVC compiler version - Windows', '9.0', 
 # Standard variant directories
 build_dir = 'build/${OS}/${CPU}/${VARIANT}'
 vars.AddVariables(('OBJDIR', '', build_dir + '/obj'),
-                  ('DISTDIR', '', '#' + build_dir + '/dist'))
+                  ('DISTDIR', '', '#' + build_dir + '/dist'),
+                  ('BUILDDIR', '', build_dir))
 
 env = Environment(variables = vars)
 path = env['ENV']['PATH']
