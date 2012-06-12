@@ -33,7 +33,7 @@ extern "C" {
 #define KL_2PI_F 6.28318531f
 #define KL_EPSILON_F 0.00001f
 
-#define KL_UINT16_MAX_F 32767.0f
+#define KL_INT16_MAX_F 32767.0f
 
 #define kl_fsel(a, x, y) (a >= 0.0f ? x : y)
 #define kl_sin sinf
