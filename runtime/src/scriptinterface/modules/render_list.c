@@ -570,6 +570,8 @@ int luaopen_render_list(lua_State* L)
    lua_setfield(L, -2, "lines");
    lua_pushnumber(L, GL_LINE_STRIP);
    lua_setfield(L, -2, "line_strip");
+   lua_pushnumber(L, GL_LINE_LOOP);
+   lua_setfield(L, -2, "line_loop");
 
    lua_setfield(L, -2, "drawtype");
 
