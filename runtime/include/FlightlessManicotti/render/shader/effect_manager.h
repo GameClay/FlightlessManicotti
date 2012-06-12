@@ -39,7 +39,7 @@ typedef struct {
 
    kl_effect_manager_data_source_fn data_source[KL_EFFECT_MANAGER_MAX_DATA_SOURCES];
    const void* data_source_context[KL_EFFECT_MANAGER_MAX_DATA_SOURCES];
-} _kl_effect_manager, *kl_effect_manager_t;
+} *kl_effect_manager_t, _kl_effect_manager;
 
 extern KL_API int kl_effect_manager_create(kl_effect_manager_t* manager, uint32_t num_effects,
    kl_render_context_t render_ctx);

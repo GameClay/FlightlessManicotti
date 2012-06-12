@@ -27,7 +27,7 @@ extern "C" {
 
 typedef struct {
    float value; /**< [0..1] indicating value of parameter. */
-} _kl_parameter, *kl_parameter_t;
+} *kl_parameter_t, _kl_parameter;
 
 #ifdef __cplusplus
 } /* extern "C" */

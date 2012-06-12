@@ -32,7 +32,7 @@ typedef struct {
    struct _kl_shader** shader;
    uint32_t num_shaders;
    kl_render_context_t render_ctx;
-} _kl_shader_manager, *kl_shader_manager_t;
+} *kl_shader_manager_t, _kl_shader_manager;
 
 int kl_shader_manager_create(kl_shader_manager_t* manager, uint32_t num_shaders, kl_render_context_t render_ctx);
 
