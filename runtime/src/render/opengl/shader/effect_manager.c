@@ -251,6 +251,12 @@ void kl_effect_manager_bind_effect(kl_effect_t effect, const kl_transform_state_
                break;
             }
 
+            case KL_SHADER_CONSTANT_TYPE_FN:
+            {
+               constant[i]->constant.as_fn(NULL /* hax */, loc, constant[i]);
+               break;
+            }
+
             case KL_SHADER_CONSTANT_TYPE_FLOAT:
             {
                switch(constant[i]->constant_sz)

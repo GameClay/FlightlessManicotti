@@ -28,8 +28,6 @@ extern "C" {
 
 typedef struct _kl_effect* kl_effect_t;
 
-
-typedef int32_t (*kl_effect_manager_data_source_fn)(const void* context);
 #define KL_EFFECT_MANAGER_MAX_DATA_SOURCES 512
 
 typedef struct {

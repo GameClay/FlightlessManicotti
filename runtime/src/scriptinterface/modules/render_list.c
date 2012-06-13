@@ -31,6 +31,7 @@ const char* RENDER_INSTANCE_LUA_LIB = "RenderInstance";
 extern const char* MESH_LUA_LIB;
 extern const char* RENDER_TARGET_LUA_LIB;
 extern const char* TEXTURE_LUA_LIB;
+extern const char* SHADER_CONSTANT_ASSIGNER_LUA_LIB;
 
 static int RenderList_new(lua_State* L)
 {
@@ -299,6 +300,7 @@ void RenderInstance_shaderconsthelper(lua_State* L, kl_shader_constant_t* consta
                constant->constant_num = 1;
                constant->constant_type = KL_SHADER_CONSTANT_TYPE_TEX;
                constant->constant.as_tex = target->texture;
+               break;
             }
 
             /* Check to see if it's a texture */
@@ -332,19 +334,30 @@ void RenderInstance_shaderconsthelper(lua_State* L, kl_shader_constant_t* consta
                   constant->constant_type = KL_SHADER_CONSTANT_TYPE_TEX;
                   constant->constant.as_tex = tex->texture;
                }
+               break;
+            }
 
+            /* Check to see if it's an assigner function */
+            lua_getmetatable(L, l_index);
+            luaL_getmetatable(L, SHADER_CONSTANT_ASSIGNER_LUA_LIB);
+            is_eq = lua_equal(L, -1, -2);
+            lua_pop(L, 2);
+            if(is_eq)
+            {
+               kl_shader_constant_assigner_t* assigner = (kl_shader_constant_assigner_t*)lua_touserdata(L, l_index);
+
+               constant->dealloc_constant = 0;
+               constant->constant_sz = 1;
+               constant->constant_num = 1;
+               constant->constant_type = KL_SHADER_CONSTANT_TYPE_FN;
+               constant->constant.as_fn = assigner->assigner;
+               break;
             }
             break;
          }
 
          /* TODO 
          case LUA_TFUNCTION:
-         {
-            break;
-         } */
-
-         /* TODO
-         case LUA_TLIGHTUSERDATA:
          {
             break;
          } */
