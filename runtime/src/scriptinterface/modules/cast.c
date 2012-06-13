@@ -21,17 +21,18 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #include <FlightlessManicotti/fm.h>
+#include <stdint.h>
 
 typedef union {
-   lua_Integer l_int;
-   lua_Number l_num;
+   uint32_t as_uint32;
+   float as_float;
 } castf;
 
 static int kl_cast_int_to_number(lua_State* L)
 {
    castf thingy;
-   thingy.l_int = lua_tointeger(L, 1);
-   lua_pushnumber(L, thingy.l_num);
+   thingy.as_uint32 = lua_tointeger(L, 1);
+   lua_pushnumber(L, thingy.as_float);
    return 1;
 }
 
