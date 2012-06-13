@@ -16,11 +16,6 @@ function DeclareShader(shaderKey, shaderSource)
       _G[technique] = {}
    end
 
-   -- Make sure this shader hasn't already been declared.
-   if _G[technique][shaderKey] then
-      error("Shader '" .. shaderKey .. "' has been declared twice.")
-   end
-
    -- Check if an API version is in the shader key and prepend #version.
    local pos = 0
    repeat
