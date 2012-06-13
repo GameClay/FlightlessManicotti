@@ -21,11 +21,12 @@
 #include <FlightlessManicotti/process/process.h>
 #include <FlightlessManicotti/core/timer.h>
 
-kl_script_event_fence_t* scriptfence = NULL;
+kl_script_event_fence_t* g_mainloop_scriptfence = NULL;
 KL_BOOL pump_script;
-kl_absolute_time_t last_frame_time = 0;
-kl_absolute_time_t last_tick_time = 0;
-kl_absolute_time_t tick_frequency;
+kl_absolute_time_t g_mainloop_last_frame_time = 0;
+kl_absolute_time_t g_mainloop_last_tick_time = 0;
+kl_absolute_time_t g_mainloop_elapsed_time = 0;
+kl_absolute_time_t g_mainloop_tick_frequency;
 
 int kl_init_mainloop(const char* main_script, KL_BOOL wait_on_fences, int argc, const char* argv[])
 {
@@ -39,8 +40,8 @@ int kl_init_mainloop(const char* main_script, KL_BOOL wait_on_fences, int argc, 
    /* Assign script fence if requested */
    if(wait_on_fences == KL_TRUE)
    {
-      scriptfence = kl_heap_alloc(sizeof(kl_script_event_fence_t));
-      kl_zero_mem(scriptfence, sizeof(kl_script_event_fence_t));
+      g_mainloop_scriptfence = kl_heap_alloc(sizeof(kl_script_event_fence_t));
+      kl_zero_mem(g_mainloop_scriptfence, sizeof(kl_script_event_fence_t));
    }
 
    /* Determine if we need to pump the script processor, or if it is asynchronous */
@@ -54,7 +55,7 @@ int kl_init_mainloop(const char* main_script, KL_BOOL wait_on_fences, int argc, 
    }
 
    /* Prime the script-event queue. */
-   kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT, scriptfence);
+   kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT, g_mainloop_scriptfence);
    if(pump_script && (kl_script_event_pump(KL_DEFAULT_SCRIPT_CONTEXT) != KL_SUCCESS))
    {
       ret = KL_ERROR;
@@ -63,7 +64,7 @@ int kl_init_mainloop(const char* main_script, KL_BOOL wait_on_fences, int argc, 
    kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT, NULL);
 
    /* Compute tick frequency in absolute-time */
-   kl_ns_to_absolute_time(&tick_frequency_ns, &tick_frequency);
+   kl_ns_to_absolute_time(&tick_frequency_ns, &g_mainloop_tick_frequency);
    
    return ret;
 }
@@ -78,10 +79,10 @@ int kl_mainloop_iteration()
    float dt;
 
    /* Initialize last frame time to now */
-   if(last_frame_time == 0)
+   if(g_mainloop_last_frame_time == 0)
    {
-      kl_high_resolution_timer_query(&last_frame_time);
-      last_tick_time = last_frame_time;
+      kl_high_resolution_timer_query(&g_mainloop_last_frame_time);
+      g_mainloop_last_tick_time = g_mainloop_last_frame_time;
    }
 
    /*
@@ -90,7 +91,7 @@ int kl_mainloop_iteration()
 
    /* Get a delta time since last frame */
    kl_high_resolution_timer_query(&frame_timestamp);
-   delta_time = frame_timestamp - last_frame_time;
+   delta_time = frame_timestamp - g_mainloop_last_frame_time;
 
    kl_absolute_time_to_ns(&delta_time, &delta_ns);
    dt = (float)delta_ns * 1e-6; /* Convert to ms */
@@ -111,10 +112,10 @@ int kl_mainloop_iteration()
       if(kl_script_event_pump(KL_DEFAULT_SCRIPT_CONTEXT) != KL_SUCCESS)
          return KL_ERROR;
    }
-   else if(scriptfence != NULL)
+   else if(g_mainloop_scriptfence != NULL)
    {
       /* Wait on fence from previous frame */
-      while(kl_script_event_fence_wait(scriptfence) == KL_RETRY)
+      while(kl_script_event_fence_wait(g_mainloop_scriptfence) == KL_RETRY)
          ;
    }
 
@@ -122,14 +123,14 @@ int kl_mainloop_iteration()
     * Update simulation frame
     */
 
-   while(last_tick_time + tick_frequency < frame_timestamp)
+   while(g_mainloop_last_tick_time + g_mainloop_tick_frequency < frame_timestamp)
    {
       /* Tell default process manager to tick */
       kl_tick_process_list(KL_DEFAULT_PROCESS_MANAGER);
 
       /* Send script tick event */
       kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &g_tick_script_event);
-      last_tick_time += tick_frequency;
+      g_mainloop_last_tick_time += g_mainloop_tick_frequency;
    }
 
    /* Tell default process manager to advance-time */
@@ -142,19 +143,22 @@ int kl_mainloop_iteration()
    /*
     * End script event frame
     */
-   kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT, scriptfence);
+   kl_script_event_endframe(KL_DEFAULT_SCRIPT_CONTEXT, g_mainloop_scriptfence);
 
    /*
     * Runtime frame is complete
     */
 
    /* Record end time of this frame */
-   kl_high_resolution_timer_query(&last_frame_time);
+   kl_high_resolution_timer_query(&g_mainloop_last_frame_time);
 
    /* Get how long it took this frame to execute */
-   delta_time = last_frame_time - frame_timestamp;
+   delta_time = g_mainloop_last_frame_time - frame_timestamp;
    kl_absolute_time_to_ns(&delta_time, &delta_ns);
    dt = (float)delta_ns * 1e-6;
+
+   /* Increment elapsed time */
+   g_mainloop_elapsed_time += delta_time;
 
    return ret;
 }
