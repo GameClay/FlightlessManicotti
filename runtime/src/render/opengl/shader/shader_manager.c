@@ -59,7 +59,7 @@ int _get_shader(kl_render_context_t render_ctx, const char* effect_key,
    kl_shader_t* shader, GLenum shader_type)
 {
    int ret = KL_ERROR;
-   uint32_t hash = kl_hash(effect_key, strlen(effect_key), 0);
+   uint32_t hash = kl_hash(effect_key, strlen(effect_key), shader_type);
    kl_shader_manager_t mgr = render_ctx->shader_mgr;
 
    /* Check to see if the shader already exists */
@@ -110,6 +110,7 @@ int _get_shader(kl_render_context_t render_ctx, const char* effect_key,
             shdr = kl_heap_alloc(sizeof(struct _kl_shader));
             shdr->shader = gl_shader;
             shdr->ref_count = 1;
+            shdr->hash_initial = shader_type;
             strncpy(shdr->effect_key, effect_key, KL_SHADER_EFFECT_KEY_SZ);
             mgr->shader[hash % mgr->num_shaders] = shdr;
 
@@ -148,7 +149,7 @@ void kl_shader_manager_destroy_shader(kl_render_context_t render_ctx, kl_shader_
       shdr->ref_count--;
       if(shdr->ref_count == 0)
       {
-         uint32_t hash = kl_hash(shdr->effect_key, strlen(shdr->effect_key), 0);
+         uint32_t hash = kl_hash(shdr->effect_key, strlen(shdr->effect_key), shdr->hash_initial);
          render_ctx->shader_mgr->shader[hash % render_ctx->shader_mgr->num_shaders] = NULL;
          glDeleteShader(shdr->shader);
          kl_heap_free(shdr);

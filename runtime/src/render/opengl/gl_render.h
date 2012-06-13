@@ -60,6 +60,7 @@ struct _kl_shader {
    GLuint shader;
    uint16_t ref_count;
    char effect_key[KL_SHADER_EFFECT_KEY_SZ];
+   uint32_t hash_initial;
 };
 
 struct _kl_effect {
