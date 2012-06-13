@@ -24,4 +24,4 @@ ShaderConstantAssigner = {float = {}}
 
 --! Elapsed time in milliseconds.
 --! @memberof ShaderConstantAssigner
-ShaderConstantAssigner.float.elapsed_time_ms = 0
+ShaderConstantAssigner.float.elapsed_time_ms = "ShaderConstantAssigner.float.elapsed_time_ms"
