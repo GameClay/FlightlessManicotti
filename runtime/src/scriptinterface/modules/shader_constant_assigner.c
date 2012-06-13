@@ -27,32 +27,46 @@ const char* SHADER_CONSTANT_ASSIGNER_LUA_LIB = "ShaderConstantAssigner";
 
 #include <FlightlessManicotti/core/timer.h>
 extern kl_absolute_time_t g_mainloop_elapsed_time;
-static void _elapsed_time_ms_assigner(const void* context, int32_t location, kl_shader_constant_ptr constant)
+void _elapsed_time_ms_assigner(const void* context, int32_t location, kl_shader_constant_ptr constant)
 {
    uint64_t elapsed_time_ns;
    kl_absolute_time_to_ns(&g_mainloop_elapsed_time, &elapsed_time_ns);
    glUniform1f(location, (float)elapsed_time_ns * 1e-6);
 }
 
+static const struct luaL_reg ShaderConstantAssigner_instance_methods [] = {
+   {NULL, NULL}
+};
+
+static const struct luaL_reg ShaderConstantAssigner_class_methods [] = {
+   {NULL, NULL}
+};
+
 int luaopen_shader_constant_assigner(lua_State* L)
 {
    kl_shader_constant_assigner_t* assigner = NULL;
 
-   /* Shader Constant Assigner Function */
    luaL_newmetatable(L, SHADER_CONSTANT_ASSIGNER_LUA_LIB);
+   luaL_register(L, 0, ShaderConstantAssigner_instance_methods);
+   lua_pushvalue(L, -1);
+
+   luaL_register(L, SHADER_CONSTANT_ASSIGNER_LUA_LIB,
+      ShaderConstantAssigner_class_methods);
 
    /* Single float assigners */
    lua_newtable(L);
 
    /* Elapsed Time in milliseconds */
    assigner = (kl_shader_constant_assigner_t*)lua_newuserdata(L, sizeof(kl_shader_constant_assigner_t));
+   luaL_getmetatable(L, SHADER_CONSTANT_ASSIGNER_LUA_LIB);
+   lua_setmetatable(L, -2);
+
    assigner->context = NULL;
    assigner->assigner = _elapsed_time_ms_assigner;
+
    lua_setfield(L, -2, "elapsed_time_ms");
 
    lua_setfield(L, -2, "float");
-
-   lua_pop(L, 1);
 
    return 1;
 }

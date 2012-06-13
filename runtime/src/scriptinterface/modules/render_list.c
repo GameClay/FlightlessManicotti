@@ -356,12 +356,6 @@ void RenderInstance_shaderconsthelper(lua_State* L, kl_shader_constant_t* consta
             break;
          }
 
-         /* TODO 
-         case LUA_TFUNCTION:
-         {
-            break;
-         } */
-
          default:
          {
             break;
