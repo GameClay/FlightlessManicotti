@@ -185,6 +185,127 @@ int kl_effect_manager_get_effect(kl_render_context_t render_ctx, const char* eff
    return ret;
 }
 
+static int _do_constant_assign(kl_effect_t effect, const kl_shader_constant_t* constant, GLint loc, int num_tex)
+{
+   int ret = 0;
+
+   switch(constant->constant_type)
+   {
+      case KL_SHADER_CONSTANT_TYPE_MATRIX:
+      {
+         glUniformMatrix4fv(loc, constant->constant_num,
+            GL_FALSE, constant->constant.as_float_ptr);
+         break;
+      }
+
+      case KL_SHADER_CONSTANT_TYPE_TEX:
+      {
+         GLint tex_type;
+         glUniform1i(loc, num_tex);
+         glActiveTexture(GL_TEXTURE0 + num_tex);
+         switch(constant->constant_sz)
+         {
+            case 1: tex_type = GL_TEXTURE_1D; break;
+            case 2: tex_type = GL_TEXTURE_2D; break;
+            case 3: tex_type = GL_TEXTURE_3D; break;
+            case 4: tex_type = GL_TEXTURE_CUBE_MAP; break;
+         }
+         glBindTexture(GL_TEXTURE_2D, constant->constant.as_tex);
+         ret += 1;
+         break;
+      }
+
+      case KL_SHADER_CONSTANT_TYPE_DATA:
+      {
+         glUniform1i(loc, num_tex);
+         glActiveTexture(GL_TEXTURE0 + num_tex);
+
+         if(effect->mgr->data_source[constant->constant.as_tex] != NULL)
+         {
+            GLint texid = effect->mgr->data_source[constant->constant.as_tex](
+               effect->mgr->data_source_context[constant->constant.as_tex]);
+
+            /* HAX! Hard coding 1D texture */
+            glBindTexture(GL_TEXTURE_1D, texid);
+         }
+         ret += 1;
+         break;
+      }
+
+      case KL_SHADER_CONSTANT_TYPE_FLOAT:
+      {
+         switch(constant->constant_sz)
+         {
+            case 1:
+            {
+               glUniform1fv(loc, constant->constant_num,
+                  constant->constant.as_float_ptr);
+               break;
+            }
+
+            case 2:
+            {
+               glUniform2fv(loc, constant->constant_num,
+                  constant->constant.as_float_ptr);
+               break;
+            }
+
+            case 3:
+            {
+               glUniform3fv(loc, constant->constant_num,
+                  constant->constant.as_float_ptr);
+               break;
+            }
+
+            case 4:
+            {
+               glUniform4fv(loc, constant->constant_num,
+                  constant->constant.as_float_ptr);
+               break;
+            }
+         }
+         break;
+      }
+
+      case KL_SHADER_CONSTANT_TYPE_INT:
+      {
+         switch(constant->constant_sz)
+         {
+            case 1:
+            {
+               glUniform1iv(loc, constant->constant_num,
+                  constant->constant.as_int_ptr);
+               break;
+            }
+
+            case 2:
+            {
+               glUniform2iv(loc, constant->constant_num,
+                  constant->constant.as_int_ptr);
+               break;
+            }
+
+            case 3:
+            {
+               glUniform3iv(loc, constant->constant_num,
+                  constant->constant.as_int_ptr);
+               break;
+            }
+
+            case 4:
+            {
+               glUniform4iv(loc, constant->constant_num,
+                  constant->constant.as_int_ptr);
+               break;
+            }
+         }
+         break;
+      }
+   }
+
+   return ret;
+}
+
 void kl_effect_manager_bind_effect(kl_effect_t effect, const kl_transform_state_t* xfm_state,
    const kl_shader_constant_t** constant, size_t num_constants)
 {
@@ -205,128 +326,18 @@ void kl_effect_manager_bind_effect(kl_effect_t effect, const kl_transform_state_
       /* Assign other constants */
       for(i = 0; i < num_constants; i++)
       {
-         loc = glGetUniformLocation(effect->program, constant[i]->name);
+         const kl_shader_constant_t* cur_constant = constant[i];
+         kl_shader_constant_t temp_constant = {{0}, 0};
+
+         loc = glGetUniformLocation(effect->program, cur_constant->name);
          if(loc < 0) continue;
 
-         switch(constant[i]->constant_type)
+         if(cur_constant->constant_type == KL_SHADER_CONSTANT_TYPE_FN)
          {
-            case KL_SHADER_CONSTANT_TYPE_MATRIX:
-            {
-               glUniformMatrix4fv(loc, constant[i]->constant_num,
-                  GL_FALSE, constant[i]->constant.as_float_ptr);
-               break;
-            }
-
-            case KL_SHADER_CONSTANT_TYPE_TEX:
-            {
-               GLint tex_type;
-               glUniform1i(loc, num_tex);
-               glActiveTexture(GL_TEXTURE0 + num_tex);
-               switch(constant[i]->constant_sz)
-               {
-                  case 1: tex_type = GL_TEXTURE_1D; break;
-                  case 2: tex_type = GL_TEXTURE_2D; break;
-                  case 3: tex_type = GL_TEXTURE_3D; break;
-                  case 4: tex_type = GL_TEXTURE_CUBE_MAP; break;
-               }
-               glBindTexture(GL_TEXTURE_2D, constant[i]->constant.as_tex);
-               num_tex++;
-               break;
-            }
-
-            case KL_SHADER_CONSTANT_TYPE_DATA:
-            {
-               glUniform1i(loc, num_tex);
-               glActiveTexture(GL_TEXTURE0 + num_tex);
-
-               if(effect->mgr->data_source[constant[i]->constant.as_tex] != NULL)
-               {
-                  GLint texid = effect->mgr->data_source[constant[i]->constant.as_tex](
-                     effect->mgr->data_source_context[constant[i]->constant.as_tex]);
-
-                  /* HAX! Hard coding 1D texture */
-                  glBindTexture(GL_TEXTURE_1D, texid);
-               }
-               num_tex++;
-               break;
-            }
-
-            case KL_SHADER_CONSTANT_TYPE_FN:
-            {
-               constant[i]->constant.as_fn(NULL /* hax */, loc, constant[i]);
-               break;
-            }
-
-            case KL_SHADER_CONSTANT_TYPE_FLOAT:
-            {
-               switch(constant[i]->constant_sz)
-               {
-                  case 1:
-                  {
-                     glUniform1fv(loc, constant[i]->constant_num,
-                        constant[i]->constant.as_float_ptr);
-                     break;
-                  }
-
-                  case 2:
-                  {
-                     glUniform2fv(loc, constant[i]->constant_num,
-                        constant[i]->constant.as_float_ptr);
-                     break;
-                  }
-
-                  case 3:
-                  {
-                     glUniform3fv(loc, constant[i]->constant_num,
-                        constant[i]->constant.as_float_ptr);
-                     break;
-                  }
-
-                  case 4:
-                  {
-                     glUniform4fv(loc, constant[i]->constant_num,
-                        constant[i]->constant.as_float_ptr);
-                     break;
-                  }
-               }
-               break;
-            }
-
-            case KL_SHADER_CONSTANT_TYPE_INT:
-            {
-               switch(constant[i]->constant_sz)
-               {
-                  case 1:
-                  {
-                     glUniform1iv(loc, constant[i]->constant_num,
-                        constant[i]->constant.as_int_ptr);
-                     break;
-                  }
-
-                  case 2:
-                  {
-                     glUniform2iv(loc, constant[i]->constant_num,
-                        constant[i]->constant.as_int_ptr);
-                     break;
-                  }
-
-                  case 3:
-                  {
-                     glUniform3iv(loc, constant[i]->constant_num,
-                        constant[i]->constant.as_int_ptr);
-                     break;
-                  }
-
-                  case 4:
-                  {
-                     glUniform4iv(loc, constant[i]->constant_num,
-                        constant[i]->constant.as_int_ptr);
-                     break;
-                  }
-               }
-               break;
-            }
+            cur_constant->constant.as_fn(NULL /* hax */, &temp_constant);
+            cur_constant = &temp_constant;
          }
+         num_tex += _do_constant_assign(effect, cur_constant, loc, num_tex);
       }
    }
    else

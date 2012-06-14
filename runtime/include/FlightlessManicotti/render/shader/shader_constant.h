@@ -33,11 +33,10 @@ extern "C" {
 #define KL_SHADER_CONSTANT_TYPE_DATA   5
 #define KL_SHADER_CONSTANT_TYPE_FN     6
 
-typedef const struct _kl_shader_constant_t* kl_shader_constant_ptr;
+typedef struct _kl_shader_constant_t* kl_shader_constant_ptr;
 
 typedef int32_t (*kl_effect_manager_data_source_fn)(const void* context);
-typedef void (*kl_effect_manager_constant_assigner_fn)(const void* context, int32_t location,
-   kl_shader_constant_ptr constant);
+typedef void (*kl_effect_manager_constant_assigner_fn)(const void* context, kl_shader_constant_ptr constant);
 
 typedef struct _kl_shader_constant_t {
    union {

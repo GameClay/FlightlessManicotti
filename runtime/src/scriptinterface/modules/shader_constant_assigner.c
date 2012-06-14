@@ -21,17 +21,23 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #include <FlightlessManicotti/render/shader/shader_constant.h>
-#include "render/opengl/gl_render.h"
 
 const char* SHADER_CONSTANT_ASSIGNER_LUA_LIB = "ShaderConstantAssigner";
 
 #include <FlightlessManicotti/core/timer.h>
 extern kl_absolute_time_t g_mainloop_elapsed_time;
-void _elapsed_time_ms_assigner(const void* context, int32_t location, kl_shader_constant_ptr constant)
+void _elapsed_time_ms_assigner(const void* context, kl_shader_constant_ptr constant)
 {
+   static float tempf;
    uint64_t elapsed_time_ns;
    kl_absolute_time_to_ns(&g_mainloop_elapsed_time, &elapsed_time_ns);
-   glUniform1f(location, (float)elapsed_time_ns * 1e-6);
+   tempf = (float)elapsed_time_ns * 1e-6;
+
+   constant->constant.as_float_ptr = &tempf;
+   constant->constant_sz = 1;
+   constant->constant_num = 1;
+   constant->constant_type = KL_SHADER_CONSTANT_TYPE_FLOAT;
+   constant->dealloc_constant = 0;
 }
 
 static const struct luaL_reg ShaderConstantAssigner_instance_methods [] = {
