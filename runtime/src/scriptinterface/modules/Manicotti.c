@@ -80,8 +80,26 @@ static int Manicotti_noise(lua_State* L)
 
 static int Manicotti_setrenderlist(lua_State* L)
 {
-   kl_render_list_t* list = (kl_render_list_t*)luaL_checkudata(L, 1, RENDER_LIST_LUA_LIB);
-   kl_render_assign_list(g_script_render_context, list);
+   kl_render_list_t* list = NULL;
+   int list_idx = 0;
+
+   if(!lua_isnoneornil(L, 1))
+   {
+      list = (kl_render_list_t*)luaL_checkudata(L, 1, RENDER_LIST_LUA_LIB);
+   }
+
+   if(!lua_isnoneornil(L, 2))
+   {
+      luaL_argcheck(L, lua_isnumber(L, 2), 2, "expected nil, or render list index to assign");
+      list_idx = lua_tointeger(L, 2);
+   }
+
+   if(kl_render_assign_list(g_script_render_context, list, list_idx) != KL_TRUE)
+   {
+      lua_pushstring(L, "render list index out of range");
+      lua_error(L);
+   }
+
    return 0;
 }
 

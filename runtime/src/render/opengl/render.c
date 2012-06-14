@@ -36,6 +36,7 @@ int kl_init_rendering(kl_render_context_t* context, void* handle)
 
    if(context != NULL)
    {
+      int i;
       kl_render_context_t ctx = kl_heap_alloc(sizeof(struct _kl_render_context));
 
       CGLPixelFormatObj pixelFormat = NULL;
@@ -53,7 +54,11 @@ int kl_init_rendering(kl_render_context_t* context, void* handle)
       kl_effect_manager_create(&ctx->effect_mgr, 1024, ctx);
 
       /* Null out render list */
-      ctx->render_list = NULL;
+      for(i = 0; i < KL_RENDER_CTX_NUM_RENDER_LISTS; i++)
+      {
+         ctx->render_list[i] = NULL;
+      }
+
 
       /* Set default script render context. */
       g_script_render_context = ctx;
@@ -100,13 +105,20 @@ void kl_render_reshape(kl_render_context_t context, float display_width, float d
    CGLUnlockContext(context->drawableCGLContext);
 }
 
-void kl_render_assign_list(kl_render_context_t context, kl_render_list_ptr_t list)
+KL_BOOL kl_render_assign_list(kl_render_context_t context, kl_render_list_ptr_t list, int list_idx)
 {
-   context->render_list = list;
+   KL_BOOL ret = KL_FALSE;
+   if(list_idx < KL_RENDER_CTX_NUM_RENDER_LISTS)
+   {
+      ret = KL_TRUE;
+      context->render_list[list_idx] = list;
+   }
+   return ret;
 }
 
 void kl_render_frame(kl_render_context_t context, float display_width, float display_height)
 {
+   int l_idx;
    kl_transform_state_t hax_xfm_state;
    kl_matrix_identity(hax_xfm_state.world_to_camera.m);
 
@@ -114,9 +126,6 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
    CGLLockContext(context->drawableCGLContext);
 
    glViewport(0, 0, display_width, display_height);
-
-   glClearColor(0, 0, 0, 0);
-   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
    kl_matrix_ortho(hax_xfm_state.camera_to_screen.m, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 50.0f);
 
@@ -131,58 +140,103 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
       hax_xfm_state.world_to_screen.m,
       hax_xfm_state.object_to_screen.m);
 
-   /* Draw render list */
+   /* Clear backbuffer */
+   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   glViewport(0, 0, display_width, display_height);
+   glClearColor(0, 0, 0, 0);
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+   /* Draw render lists */
    glEnable(GL_BLEND);
-   if(context->render_list != NULL && context->render_list->list != NULL)
+
+   for(l_idx = 0; l_idx < KL_RENDER_CTX_NUM_RENDER_LISTS; l_idx++)
    {
-      uint32_t max_idx = context->render_list->max_idx;
-      int i;
-      for(i = 0; i <= max_idx; i++)
+      kl_render_list_t* render_list = context->render_list[l_idx];
+
+      if(render_list != NULL && render_list->list != NULL)
       {
-         const kl_render_instance_t* inst = context->render_list->list[i];
-         if(inst != NULL && inst->mesh != NULL)
+         uint32_t max_idx = render_list->max_idx;
+         int i;
+
+         /* Set default target and clear */
+         if(render_list->default_target != NULL)
          {
-            /* Compute matrix */
-            kl_matrix_mul_matrix(
-               inst->object_to_world.m,
-               hax_xfm_state.world_to_screen.m,
-               hax_xfm_state.object_to_screen.m);
+            struct _kl_offscreen_target* target = render_list->default_target;
+            glBindFramebuffer(GL_FRAMEBUFFER, target->framebuffer);
+            glViewport(0, 0, target->width, target->height);
 
-            /* Set up blend */
-            glBlendFunc(inst->blend_src, inst->blend_dest);
+            glClearColor(0, 0, 0, 0);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+         }
 
-            /* Set up target */
-            if(inst->render_target != NULL)
+         /* Draw list */
+         for(i = 0; i <= max_idx; i++)
+         {
+            const kl_render_instance_t* inst = render_list->list[i];
+            if(inst != NULL && inst->mesh != NULL)
             {
-               struct _kl_offscreen_target* target = inst->render_target;
-               glBindFramebuffer(GL_FRAMEBUFFER, target->framebuffer);
-               glViewport(0, 0, target->width, target->height);
-            }
+               /* Compute matrix */
+               kl_matrix_mul_matrix(
+                  inst->object_to_world.m,
+                  hax_xfm_state.world_to_screen.m,
+                  hax_xfm_state.object_to_screen.m);
 
-            /* Clear if requested */
-            if(inst->clear_before_draw)
-            {
-               glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-               glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            }
+               /* Set up blend */
+               glBlendFunc(inst->blend_src, inst->blend_dest);
 
-            /* Bind mesh and shaders */
-            kl_effect_manager_bind_effect(inst->material, &hax_xfm_state,
-               (const kl_shader_constant_t**)inst->consts, inst->num_consts);
-            kl_mesh_bind(inst->mesh);
+               /* Set up target */
+               if(inst->render_target != NULL)
+               {
+                  struct _kl_offscreen_target* target = inst->render_target;
+                  glBindFramebuffer(GL_FRAMEBUFFER, target->framebuffer);
+                  glViewport(0, 0, target->width, target->height);
+               }
+               else if(render_list->default_target != NULL)
+               {
+                  struct _kl_offscreen_target* target = render_list->default_target;
+                  glBindFramebuffer(GL_FRAMEBUFFER, target->framebuffer);
+                  glViewport(0, 0, target->width, target->height);
+               }
+               else
+               {
+                  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                  glViewport(0, 0, display_width, display_height);
+               }
 
-            /* Draw */
-            glDrawElements(inst->draw_type, inst->mesh->num_indices, GL_UNSIGNED_SHORT, NULL);
+               /* Clear if requested */
+               if(inst->clear_before_draw)
+               {
+                  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+                  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+               }
 
-            /* Unbind shaders and mesh */
-            kl_mesh_bind(NULL);
-            kl_effect_manager_bind_effect(NULL, NULL, NULL, 0);
+               /* Bind mesh and shaders */
+               kl_effect_manager_bind_effect(inst->material, &hax_xfm_state,
+                  (const kl_shader_constant_t**)inst->consts, inst->num_consts);
+               kl_mesh_bind(inst->mesh);
 
-            /* Tear down target */
-            if(inst->render_target != NULL)
-            {
-               glBindFramebuffer(GL_FRAMEBUFFER, 0);
-               glViewport(0, 0, display_width, display_height);
+               /* Draw */
+               glDrawElements(inst->draw_type, inst->mesh->num_indices, GL_UNSIGNED_SHORT, NULL);
+
+               /* Unbind shaders and mesh */
+               kl_mesh_bind(NULL);
+               kl_effect_manager_bind_effect(NULL, NULL, NULL, 0);
+
+               /* Tear down target */
+               if(inst->render_target != NULL)
+               {
+                  if(render_list->default_target != NULL)
+                  {
+                     struct _kl_offscreen_target* target = render_list->default_target;
+                     glBindFramebuffer(GL_FRAMEBUFFER, target->framebuffer);
+                     glViewport(0, 0, target->width, target->height);
+                  }
+                  else
+                  {
+                     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                     glViewport(0, 0, display_width, display_height);
+                  }
+               }
             }
          }
       }

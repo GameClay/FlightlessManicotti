@@ -83,12 +83,16 @@ extern KL_API void kl_render_frame(kl_render_context_t context, float display_wi
 /**
  * Assign a render list to a render context.
  *
- * @param context Rendering context to assign a renderlist to.
- * @param list    Render list to assign to context.
+ * @param context   Rendering context to assign a renderlist to.
+ * @param list      Render list to assign to context.
+ * @param list_idx  Index of render list to assign.
+ *
+ * @return KL_TRUE if assignment was successful, KL_FALSE if the index was out of range.
  *
  * @relates kl_render_context_t
  */
-extern KL_API void kl_render_assign_list(kl_render_context_t context, kl_render_list_ptr_t list);
+extern KL_API KL_BOOL kl_render_assign_list(kl_render_context_t context, kl_render_list_ptr_t list,
+   int list_idx);
 
 #ifdef __cplusplus
 }

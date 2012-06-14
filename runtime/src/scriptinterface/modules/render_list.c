@@ -76,9 +76,23 @@ static int RenderList_removeinst(lua_State* L)
    return 0;
 }
 
+static int RenderList_setdefaulttarget(lua_State* L)
+{
+   kl_render_list_t* list = (kl_render_list_t*)lua_touserdata(L, 1);
+   struct _kl_offscreen_target* target = NULL;
+
+   if(!lua_isnoneornil(L, 2))
+   {
+      target = (struct _kl_offscreen_target*)luaL_checkudata(L, 2, RENDER_TARGET_LUA_LIB);
+   }
+   list->default_target = target;
+   return 0;
+}
+
 static const struct luaL_reg RenderList_instance_methods [] = {
    {"insert", RenderList_insertinst},
    {"remove", RenderList_removeinst},
+   {"setdefaulttarget", RenderList_setdefaulttarget},
    {NULL, NULL}
 };
 
