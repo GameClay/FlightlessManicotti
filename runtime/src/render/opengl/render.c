@@ -143,11 +143,10 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
          if(inst != NULL && inst->mesh != NULL)
          {
             /* Compute matrix */
-            /*
             kl_matrix_mul_matrix(
                inst->object_to_world.m,
-               hax_render_state.world_to_screen.m,
-               hax_render_state.object_to_screen.m);*/
+               hax_xfm_state.world_to_screen.m,
+               hax_xfm_state.object_to_screen.m);
 
             /* Set up blend */
             glBlendFunc(inst->blend_src, inst->blend_dest);

@@ -33,6 +33,11 @@ extern const char* RENDER_TARGET_LUA_LIB;
 extern const char* TEXTURE_LUA_LIB;
 extern const char* SHADER_CONSTANT_ASSIGNER_LUA_LIB;
 
+/* With no alignment on lua_newuserdata, need to have a holder */
+typedef struct lua_render_instance {
+   kl_render_instance_t* inst;
+} lua_render_instance;
+
 static int RenderList_new(lua_State* L)
 {
    uint32_t list_sz = lua_tointeger(L, 1);
@@ -58,16 +63,16 @@ static int RenderList_gc(lua_State* L)
 static int RenderList_insertinst(lua_State* L)
 {
    kl_render_list_t* list = (kl_render_list_t*)lua_touserdata(L, 1);
-   kl_render_instance_t* inst = (kl_render_instance_t*)luaL_checkudata(L, 2, RENDER_INSTANCE_LUA_LIB);
-   kl_render_list_insert_instance(list, inst);
+   lua_render_instance* inst = (lua_render_instance*)luaL_checkudata(L, 2, RENDER_INSTANCE_LUA_LIB);
+   kl_render_list_insert_instance(list, inst->inst);
    return 0;
 }
 
 static int RenderList_removeinst(lua_State* L)
 {
    kl_render_list_t* list = (kl_render_list_t*)lua_touserdata(L, 1);
-   kl_render_instance_t* inst = (kl_render_instance_t*)luaL_checkudata(L, 2, RENDER_INSTANCE_LUA_LIB);
-   kl_render_list_remove_instance(list, inst);
+   lua_render_instance* inst = (lua_render_instance*)luaL_checkudata(L, 2, RENDER_INSTANCE_LUA_LIB);
+   kl_render_list_remove_instance(list, inst->inst);
    return 0;
 }
 
@@ -84,8 +89,10 @@ static const struct luaL_reg RenderList_class_methods [] = {
 
 static int RenderInstance_new(lua_State* L)
 {
-   kl_render_instance_t* inst = (kl_render_instance_t*)lua_newuserdata(L, sizeof(kl_render_instance_t));
+   lua_render_instance* inst_hldr = (lua_render_instance*)lua_newuserdata(L, sizeof(lua_render_instance));
 
+   kl_render_instance_t* inst = kl_heap_alloc(sizeof(kl_render_instance_t));
+   inst_hldr->inst = inst;
    inst->list_index = UINT32_MAX;
    inst->list = NULL;
    inst->material = NULL;
@@ -107,7 +114,8 @@ static int RenderInstance_new(lua_State* L)
 
 static int RenderInstance_gc(lua_State* L)
 {
-   kl_render_instance_t* inst = (kl_render_instance_t*)lua_touserdata(L, 1);
+   lua_render_instance* inst_hdlr = (lua_render_instance*)lua_touserdata(L, 1);
+   kl_render_instance_t* inst = inst_hdlr->inst;
 
    if(inst->list != NULL)
    {
@@ -133,31 +141,33 @@ static int RenderInstance_gc(lua_State* L)
       kl_heap_free(inst->consts);
    }
 
+   kl_heap_free(inst);
+
    return 0;
 }
 
 static int RenderInstance_setmesh(lua_State* L)
 {
-   kl_render_instance_t* inst = (kl_render_instance_t*)lua_touserdata(L, 1);
+   lua_render_instance* inst = (lua_render_instance*)lua_touserdata(L, 1);
    kl_mesh_t* mesh = (kl_mesh_t*)luaL_checkudata(L, 2, MESH_LUA_LIB);
-   inst->mesh = mesh;
+   inst->inst->mesh = mesh;
    return 0;
 }
 
 static int RenderInstance_setmaterial(lua_State* L)
 {
-   kl_render_instance_t* inst = (kl_render_instance_t*)lua_touserdata(L, 1);
+   lua_render_instance* inst = (lua_render_instance*)lua_touserdata(L, 1);
    const char* effect_key;
 
    luaL_argcheck(L, lua_isstring(L, 2), 2, "expected material identifier");
    effect_key = lua_tostring(L, 2);
 
-   if(inst->material != NULL)
+   if(inst->inst->material != NULL)
    {
-      kl_effect_manager_destroy_effect(g_script_render_context, &inst->material);
+      kl_effect_manager_destroy_effect(g_script_render_context, &inst->inst->material);
    }
 
-   kl_effect_manager_get_effect(g_script_render_context, effect_key, "GL3", &inst->material);
+   kl_effect_manager_get_effect(g_script_render_context, effect_key, "GL3", &inst->inst->material);
 
    return 0;
 }
@@ -371,7 +381,8 @@ void RenderInstance_shaderconsthelper(lua_State* L, kl_shader_constant_t* consta
 
 static int RenderInstance_setshaderconstants(lua_State* L)
 {
-   kl_render_instance_t* inst = (kl_render_instance_t*)lua_touserdata(L, 1);
+   lua_render_instance* inst_hdlr = (lua_render_instance*)lua_touserdata(L, 1);
+   kl_render_instance_t* inst = inst_hdlr->inst;
    int i, num_consts, old_num_consts;
    kl_shader_constant_t** consts;
    kl_shader_constant_t** old_consts;
@@ -444,7 +455,8 @@ static int RenderInstance_setshaderconstants(lua_State* L)
 static int RenderInstance_updateshaderconstants(lua_State* L)
 {
    int i;
-   kl_render_instance_t* inst = (kl_render_instance_t*)lua_touserdata(L, 1);
+   lua_render_instance* inst_hdlr = (lua_render_instance*)lua_touserdata(L, 1);
+   kl_render_instance_t* inst = inst_hdlr->inst;
    luaL_argcheck(L, lua_istable(L, 2), 2, "expected table of shader constants");
 
    lua_pushnil(L);
@@ -481,14 +493,16 @@ static int RenderInstance_updateshaderconstants(lua_State* L)
 
 static int RenderInstance_settransform(lua_State* L)
 {
-   kl_render_instance_t* inst = (kl_render_instance_t*)lua_touserdata(L, 1);
+   lua_render_instance* inst_hdlr = (lua_render_instance*)lua_touserdata(L, 1);
+   kl_render_instance_t* inst = inst_hdlr->inst;
    kl_matrix_identity(inst->object_to_world.m); /* Hax */
    return 0;
 }
 
 static int RenderInstance_setrendertarget(lua_State* L)
 {
-   kl_render_instance_t* inst = (kl_render_instance_t*)lua_touserdata(L, 1);
+   lua_render_instance* inst_hdlr = (lua_render_instance*)lua_touserdata(L, 1);
+   kl_render_instance_t* inst = inst_hdlr->inst;
    struct _kl_offscreen_target* target = NULL;
 
    if(!lua_isnoneornil(L, 2))
@@ -502,7 +516,8 @@ static int RenderInstance_setrendertarget(lua_State* L)
 
 static int RenderInstance_setdrawtype(lua_State* L)
 {
-   kl_render_instance_t* inst = (kl_render_instance_t*)lua_touserdata(L, 1);
+   lua_render_instance* inst_hdlr = (lua_render_instance*)lua_touserdata(L, 1);
+   kl_render_instance_t* inst = inst_hdlr->inst;
    luaL_argcheck(L, lua_isnumber(L, 2), 2, "expected draw type");
    inst->draw_type = lua_tointeger(L, 2);
    return 0;
@@ -510,7 +525,8 @@ static int RenderInstance_setdrawtype(lua_State* L)
 
 static int RenderInstance_setblend(lua_State* L)
 {
-   kl_render_instance_t* inst = (kl_render_instance_t*)lua_touserdata(L, 1);
+   lua_render_instance* inst_hdlr = (lua_render_instance*)lua_touserdata(L, 1);
+   kl_render_instance_t* inst = inst_hdlr->inst;
    luaL_argcheck(L, lua_isnumber(L, 2), 2, "expected blend type");
    luaL_argcheck(L, lua_isnumber(L, 3), 3, "expected blend type");
    inst->blend_src = lua_tointeger(L, 2);
@@ -520,7 +536,8 @@ static int RenderInstance_setblend(lua_State* L)
 
 static int RenderInstance_setclearbeforedraw(lua_State* L)
 {
-   kl_render_instance_t* inst = (kl_render_instance_t*)lua_touserdata(L, 1);
+   lua_render_instance* inst_hdlr = (lua_render_instance*)lua_touserdata(L, 1);
+   kl_render_instance_t* inst = inst_hdlr->inst;
    luaL_argcheck(L, lua_isboolean(L, 2), 2, "expected boolean");
    inst->clear_before_draw = lua_toboolean(L, 2);
    return 0;
