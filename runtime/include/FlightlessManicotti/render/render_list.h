@@ -34,13 +34,18 @@ extern "C" {
 typedef struct _kl_render_list* kl_render_list_ptr_t;
 #endif
 
+#ifndef _KL_EFFECT_PTR_T_
+#define _KL_EFFECT_PTR_T_
+typedef struct _kl_effect* kl_effect_ptr_t;
+#endif
+
 KL_ALIGNED_STRUCT_PRE(16) {
    kl_matrix_t object_to_world;     /**< Object-to-world transform */
    kl_mesh_t* mesh;                 /**< Mesh assigned to this render list */
    uint32_t draw_type;              /**< Primitive draw type to use for drawing the associated Mesh. */
 
    /* TODO: Proper material */
-   void* effect;                    /**< Effect to use to draw the associated Mesh. */
+   kl_effect_ptr_t effect;          /**< Effect to use to draw the associated Mesh. */
    uint32_t blend_src;              /**< Source blend to use. */
    uint32_t blend_dest;             /**< Destination blend to use. */
 

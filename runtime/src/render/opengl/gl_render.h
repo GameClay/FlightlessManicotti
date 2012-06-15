@@ -55,12 +55,12 @@ struct _kl_render_context
    float display_width, display_height;
 };
 
-struct _kl_shader_new {
+struct _kl_shader {
    GLuint shader;
    GLenum shader_type;
 };
 
-struct _kl_effect_new {
+struct _kl_effect {
    GLuint program;
 };
 

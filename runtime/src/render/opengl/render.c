@@ -140,9 +140,6 @@ KL_BOOL kl_render_assign_list(kl_render_context_t context, kl_render_list_ptr_t 
    return ret;
 }
 
-extern void kl_effect_manager_bind_new_effect(kl_effect_manager_t mgr, struct _kl_effect_new* effect,
-   const kl_transform_state_t* xfm_state, const kl_shader_constant_t** constant, size_t num_constants);
-
 void kl_render_frame(kl_render_context_t context, float display_width, float display_height)
 {
    int l_idx;
@@ -240,7 +237,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
                /* Bind mesh and shaders */
                if(inst->effect)
                {
-                  kl_effect_manager_bind_new_effect(context->effect_mgr, inst->effect, &hax_xfm_state,
+                  kl_effect_manager_bind_effect(context->effect_mgr, inst->effect, &hax_xfm_state,
                      (const kl_shader_constant_t**)inst->consts, inst->num_consts);
                }
 

@@ -185,7 +185,7 @@ static int _do_constant_assign(kl_effect_manager_t mgr, const kl_shader_constant
    return ret;
 }
 
-void kl_effect_manager_bind_new_effect(kl_effect_manager_t mgr, struct _kl_effect_new* effect,
+void kl_effect_manager_bind_effect(kl_effect_manager_t mgr, kl_effect_ptr_t effect,
    const kl_transform_state_t* xfm_state, const kl_shader_constant_t** constant, size_t num_constants)
 {
    if(effect != NULL)

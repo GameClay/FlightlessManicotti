@@ -167,7 +167,7 @@ static int RenderInstance_setmesh(lua_State* L)
 static int RenderInstance_seteffect(lua_State* L)
 {
    lua_render_instance* inst = (lua_render_instance*)lua_touserdata(L, 1);
-   struct _kl_effect_new* effect = (struct _kl_effect_new*)luaL_checkudata(L, 2, SHADER_PROGRAM_LUA_LIB);
+   struct _kl_effect* effect = (struct _kl_effect*)luaL_checkudata(L, 2, SHADER_PROGRAM_LUA_LIB);
 
    inst->inst->effect = effect;
 

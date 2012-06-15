@@ -71,7 +71,7 @@ static int shader_compile(const char* shader_src, GLenum shader_type, GLuint* ou
 
 static int Shader_allocate(lua_State* L)
 {
-   struct _kl_shader_new* shader = NULL;
+   struct _kl_shader* shader = NULL;
    GLuint gl_shader;
    GLenum shader_type;
    const char* shader_src = NULL;
@@ -84,7 +84,7 @@ static int Shader_allocate(lua_State* L)
 
    if(shader_compile(shader_src, shader_type, &gl_shader) == KL_SUCCESS)
    {
-      shader = (struct _kl_shader_new*)lua_newuserdata(L, sizeof(struct _kl_shader_new));
+      shader = (struct _kl_shader*)lua_newuserdata(L, sizeof(struct _kl_shader));
       shader->shader = gl_shader;
       shader->shader_type = shader_type;
       luaL_getmetatable(L, SHADER_LUA_LIB);
@@ -101,7 +101,7 @@ static int Shader_allocate(lua_State* L)
 
 static int Shader_gc(lua_State* L)
 {
-   struct _kl_shader_new* shader = (struct _kl_shader_new*)lua_touserdata(L, 1);
+   struct _kl_shader* shader = (struct _kl_shader*)lua_touserdata(L, 1);
 
    CGLSetCurrentContext(g_script_render_context->resourceCGLContext);
    CGLLockContext(g_script_render_context->resourceCGLContext);
@@ -115,7 +115,7 @@ static int Shader_gc(lua_State* L)
 
 static int Shader_update(lua_State* L)
 {
-   struct _kl_shader_new* shader = (struct _kl_shader_new*)lua_touserdata(L, 1);
+   struct _kl_shader* shader = (struct _kl_shader*)lua_touserdata(L, 1);
    const char* shader_src = NULL;
    GLuint gl_shader;
 
@@ -150,7 +150,7 @@ static const struct luaL_reg Shader_class_methods [] = {
 };
 
 /* ShaderProgram */
-static int program_link(struct _kl_shader_new** shaders, int num_shaders, GLuint* out_program)
+static int program_link(struct _kl_shader** shaders, int num_shaders, GLuint* out_program)
 {
    int ret = KL_ERROR;
    int i;
@@ -204,11 +204,11 @@ static int program_link(struct _kl_shader_new** shaders, int num_shaders, GLuint
 
 static int ShaderProgram_allocate(lua_State* L)
 {
-   struct _kl_effect_new* effect = NULL;
+   struct _kl_effect* effect = NULL;
    GLuint gl_program;
 
    /* Hacky */
-   struct _kl_shader_new* shaders[3] = {NULL, NULL, NULL};
+   struct _kl_shader* shaders[3] = {NULL, NULL, NULL};
    int num_shaders = 3;
 
    /* TODO: Arg type checking */
@@ -218,7 +218,7 @@ static int ShaderProgram_allocate(lua_State* L)
 
    if(program_link(shaders, num_shaders, &gl_program) == KL_SUCCESS)
    {
-      effect = (struct _kl_effect_new*)lua_newuserdata(L, sizeof(struct _kl_effect_new));
+      effect = (struct _kl_effect*)lua_newuserdata(L, sizeof(struct _kl_effect));
       effect->program = gl_program;
       luaL_getmetatable(L, SHADER_PROGRAM_LUA_LIB);
       lua_setmetatable(L, -2);
@@ -234,11 +234,11 @@ static int ShaderProgram_allocate(lua_State* L)
 
 static int ShaderProgram_update(lua_State* L)
 {
-   struct _kl_effect_new* effect = (struct _kl_effect_new*)lua_touserdata(L, 1);
+   struct _kl_effect* effect = (struct _kl_effect*)lua_touserdata(L, 1);
    GLuint gl_program;
 
    /* Hacky */
-   struct _kl_shader_new* shaders[3] = {NULL, NULL, NULL};
+   struct _kl_shader* shaders[3] = {NULL, NULL, NULL};
    int num_shaders = 3;
 
    /* TODO: Arg type checking */
@@ -263,7 +263,7 @@ static int ShaderProgram_update(lua_State* L)
 
 static int ShaderProgram_gc(lua_State* L)
 {
-   struct _kl_effect_new* effect = (struct _kl_effect_new*)lua_touserdata(L, 1);
+   struct _kl_effect* effect = (struct _kl_effect*)lua_touserdata(L, 1);
 
    CGLSetCurrentContext(g_script_render_context->resourceCGLContext);
    CGLLockContext(g_script_render_context->resourceCGLContext);
