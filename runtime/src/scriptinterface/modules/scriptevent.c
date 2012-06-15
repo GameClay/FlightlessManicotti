@@ -32,40 +32,43 @@ static int kl_script_event_dequeue_wrap(lua_State* L)
    if(kl_script_event_dequeue(sctx, &event) == KL_SUCCESS)
    {
       uint32_t context_type = kl_get_script_event_context_type(event.event.id);
+      int ret = 3;
       lua_pushinteger(L, event.event.id);
 
-      switch(context_type)
+      if(context_type == KL_SCRIPT_CONTEXT_TYPE_ASSIGNER)
       {
-         case 0:
-         {
-            lua_pushlightuserdata(L, event.event.context.as_ptr);
-            break;
-         }
-
-         case LUA_TNUMBER:
-         {
-            lua_pushnumber(L, *((lua_Number*)event.event.context.as_ptr));
-            kl_heap_free(event.event.context.as_ptr);
-            break;
-         }
-
-         case LUA_TSTRING:
-         {
-            lua_pushstring(L, event.event.context.as_ptr);
-            kl_heap_free(event.event.context.as_ptr);
-            break;
-         }
-
-         case KL_SCRIPT_CONTEXT_TYPE_ASSIGNER:
-         {
-            kl_script_event_context_assigner_fn assigner =
-               kl_get_script_event_context_assigner(event.event.id);
-            assigner(L, &event);
-            break;
-         }
+         kl_script_event_context_assigner_fn assigner =
+            kl_get_script_event_context_assigner(event.event.id);
+         ret = assigner(L, &event) + 1;
       }
-      lua_pushinteger(L, event.event.arg.as_uint32);
-      return 3;
+      else
+      {
+         switch(context_type)
+         {
+            case 0:
+            {
+               lua_pushlightuserdata(L, event.event.context.as_ptr);
+               break;
+            }
+
+            case LUA_TNUMBER:
+            {
+               lua_pushnumber(L, *((lua_Number*)event.event.context.as_ptr));
+               kl_heap_free(event.event.context.as_ptr);
+               break;
+            }
+
+            case LUA_TSTRING:
+            {
+               lua_pushstring(L, event.event.context.as_ptr);
+               kl_heap_free(event.event.context.as_ptr);
+               break;
+            }
+
+         }
+         lua_pushinteger(L, event.event.arg.as_uint32);
+      }
+      return ret;
    }
    
    lua_pushnil(L);

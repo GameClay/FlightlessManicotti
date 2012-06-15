@@ -54,7 +54,7 @@ typedef union
 
 #define KL_SCRIPT_CONTEXT_TYPE_ASSIGNER (UINT32_MAX)
 
-typedef void (*kl_script_event_context_assigner_fn)(void* L, kl_script_event_t* event);
+typedef int (*kl_script_event_context_assigner_fn)(void* L, kl_script_event_t* event);
 
 extern KL_API uint32_t kl_register_script_event(const char* name);
 
