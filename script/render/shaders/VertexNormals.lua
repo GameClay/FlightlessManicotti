@@ -1,6 +1,6 @@
-require 'render.ShaderFactory'
+require 'render.ShaderManager'
 
-DeclareShader('Vertex.GL3', [[
+ShaderManager.declareshader('Vertex.GL3', [[
    in vec3 InPosition;
    in vec3 InNormal;
    in vec4 InColor;
@@ -20,7 +20,7 @@ DeclareShader('Vertex.GL3', [[
    }
 ]])
 
-DeclareShader('Geometry.GL3', [[
+ShaderManager.declareshader('Geometry.GL3', [[
    layout(points) in;
    layout(line_strip, max_vertices = 2) out;
 
@@ -45,7 +45,7 @@ DeclareShader('Geometry.GL3', [[
    }
 ]])
 
-DeclareShader('Fragment.GL3', [[
+ShaderManager.declareshader('Fragment.GL3', [[
    in vec4 frag_color0;
    out vec4 fragout0;
 

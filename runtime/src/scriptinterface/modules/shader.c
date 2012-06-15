@@ -86,6 +86,7 @@ static int Shader_allocate(lua_State* L)
    {
       shader = (struct _kl_shader_new*)lua_newuserdata(L, sizeof(struct _kl_shader_new));
       shader->shader = gl_shader;
+      shader->shader_type = shader_type;
       luaL_getmetatable(L, SHADER_LUA_LIB);
       lua_setmetatable(L, -2);
    }
@@ -120,10 +121,13 @@ static int Shader_update(lua_State* L)
 
    luaL_argcheck(L, lua_isstring(L, 2), 2, "expected shader source");
 
+   shader_src = lua_tostring(L, 2);
+
    if(shader_compile(shader_src, shader->shader_type, &gl_shader) == KL_SUCCESS)
    {
-      glDeleteShader(shader->shader);
+      GLuint old_shader = shader->shader;
       shader->shader = gl_shader;
+      glDeleteShader(old_shader);
 
       lua_pushboolean(L, 1);
    }
@@ -228,6 +232,35 @@ static int ShaderProgram_allocate(lua_State* L)
    return 1;
 }
 
+static int ShaderProgram_update(lua_State* L)
+{
+   struct _kl_effect_new* effect = (struct _kl_effect_new*)lua_touserdata(L, 1);
+   GLuint gl_program;
+
+   /* Hacky */
+   struct _kl_shader_new* shaders[3] = {NULL, NULL, NULL};
+   int num_shaders = 3;
+
+   /* TODO: Arg type checking */
+   shaders[0] = lua_touserdata(L, 2);
+   shaders[1] = lua_touserdata(L, 3);
+   shaders[2] = lua_touserdata(L, 4);
+
+   if(program_link(shaders, num_shaders, &gl_program) == KL_SUCCESS)
+   {
+      GLuint old_program = effect->program;
+      effect->program = gl_program;
+      glDeleteProgram(old_program);
+   }
+   else
+   {
+      lua_pushstring(L, "error linking shader program");
+      lua_error(L);
+   }
+
+   return 1;
+}
+
 static int ShaderProgram_gc(lua_State* L)
 {
    struct _kl_effect_new* effect = (struct _kl_effect_new*)lua_touserdata(L, 1);
@@ -243,7 +276,7 @@ static int ShaderProgram_gc(lua_State* L)
 }
 
 static const struct luaL_reg ShaderProgram_instance_methods [] = {
-   /*{"update", ShaderProgram_update},*/
+   {"update", ShaderProgram_update},
    {NULL, NULL}
 };
 

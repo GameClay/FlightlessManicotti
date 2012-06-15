@@ -1,6 +1,6 @@
-require 'render.ShaderFactory'
+require 'render.ShaderManager'
 
-DeclareShader('Vertex.GL2', [[
+ShaderManager.declareshader('Vertex.GL2', [[
    attribute float in_X;
    attribute float in_Y;
    attribute float in_Z;
@@ -15,7 +15,7 @@ DeclareShader('Vertex.GL2', [[
    }
 ]])
 
-DeclareShader('Geometry.GL2', [[
+ShaderManager.declareshader('Geometry.GL2', [[
    #extension GL_EXT_geometry_shader4 : enable
 
    varying in vec4 size[1]; // In = points so size = 1
@@ -49,7 +49,7 @@ DeclareShader('Geometry.GL2', [[
    }
 ]])
 
-DeclareShader('Fragment.GL2', [[
+ShaderManager.declareshader('Fragment.GL2', [[
    void main()
    {
       gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
