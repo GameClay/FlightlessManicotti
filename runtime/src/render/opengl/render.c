@@ -144,6 +144,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
 {
    int l_idx;
    kl_transform_state_t hax_xfm_state;
+   float aspect_ratio = display_width / display_height;
    kl_matrix_identity(hax_xfm_state.world_to_camera.m);
 
    CGLSetCurrentContext(context->drawableCGLContext);
@@ -151,7 +152,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
 
    glViewport(0, 0, display_width, display_height);
 
-   kl_matrix_ortho(hax_xfm_state.camera_to_screen.m, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 50.0f);
+   kl_matrix_ortho(hax_xfm_state.camera_to_screen.m, -aspect_ratio, aspect_ratio, -1.0f, 1.0f, -1.0f, 50.0f);
 
    /* Camera * Projection */
    kl_matrix_mul_matrix(
