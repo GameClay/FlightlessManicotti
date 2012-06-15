@@ -73,7 +73,7 @@ int kl_init_rendering(kl_render_context_t* context, void* handle)
       CGLSetCurrentContext(ctx->drawableCGLContext);
       CGLLockContext(ctx->drawableCGLContext);
 
-      kl_effect_manager_create(&ctx->effect_mgr, 1024, ctx);
+      kl_effect_manager_create(&ctx->effect_mgr);
 
       /* Null out render list */
       for(i = 0; i < KL_RENDER_CTX_NUM_RENDER_LISTS; i++)

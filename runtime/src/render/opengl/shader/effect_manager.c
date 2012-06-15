@@ -23,7 +23,7 @@
 
 #include "render/opengl/gl_render.h"
 
-int kl_effect_manager_create(kl_effect_manager_t* manager, uint32_t num_effects, kl_render_context_t render_ctx)
+int kl_effect_manager_create(kl_effect_manager_t* manager)
 {
    int ret = KL_ERROR;
 
@@ -32,11 +32,6 @@ int kl_effect_manager_create(kl_effect_manager_t* manager, uint32_t num_effects,
       kl_effect_manager_t mgr = kl_heap_alloc(sizeof(_kl_effect_manager));
       if(mgr != NULL)
       {
-         mgr->effect = kl_heap_alloc(sizeof(struct _kl_effect*) * num_effects);
-         kl_zero_mem(mgr->effect, sizeof(struct _kl_effect*) * num_effects);
-         mgr->num_effects = num_effects;
-         mgr->render_ctx = render_ctx;
-
          kl_zero_mem(mgr->data_source, sizeof(mgr->data_source));
          kl_zero_mem(mgr->data_source_context, sizeof(mgr->data_source_context));
 
@@ -53,7 +48,6 @@ void kl_effect_manager_destroy(kl_effect_manager_t* manager)
    if(manager != NULL)
    {
       kl_effect_manager_t mgr = *manager;
-      kl_heap_free(mgr->effect);
       kl_heap_free(mgr);
    }
 }

@@ -26,21 +26,14 @@ extern "C" {
 #include <FlightlessManicotti/render/render.h>
 #include <FlightlessManicotti/render/shader/shader_constant.h>
 
-typedef struct _kl_effect* kl_effect_t;
-
 #define KL_EFFECT_MANAGER_MAX_DATA_SOURCES 512
 
 typedef struct {
-   struct _kl_effect** effect;
-   uint32_t num_effects;
-   kl_render_context_t render_ctx;
-
    kl_effect_manager_data_source_fn data_source[KL_EFFECT_MANAGER_MAX_DATA_SOURCES];
    const void* data_source_context[KL_EFFECT_MANAGER_MAX_DATA_SOURCES];
 } *kl_effect_manager_t, _kl_effect_manager;
 
-extern KL_API int kl_effect_manager_create(kl_effect_manager_t* manager, uint32_t num_effects,
-   kl_render_context_t render_ctx);
+extern KL_API int kl_effect_manager_create(kl_effect_manager_t* manager);
 
 extern KL_API void kl_effect_manager_destroy(kl_effect_manager_t* manager);
 
