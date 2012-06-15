@@ -54,6 +54,7 @@ struct _kl_render_context
 
    kl_shader_manager_t shader_mgr;
    kl_effect_manager_t effect_mgr;
+   float display_width, display_height;
 };
 
 #define KL_SHADER_EFFECT_KEY_SZ 256

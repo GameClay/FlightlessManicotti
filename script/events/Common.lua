@@ -66,11 +66,21 @@ Events.init = Events.register(SCTX, "Init")
 --! @memberof Events
 Events.destroy = Events.register(SCTX, "Destroy")
 
---! Init event.
+--! Render init event.
 --!
 --! This event occurs once, when the rendering sub-system is ready.
 --!
---! The renderer being initialized is passed as an argument to this
---! event handler.
+--! The renderer being initialized is passed as a lightuserdata argument
+--! to this event handler.
 --! @memberof Events
 Events.renderinit = Events.register(SCTX, "RenderInit")
+
+--! Render resize event.
+--!
+--! This event occurs when the render context has been resized.
+--!
+--! The renderer being resized is passed as lightuserdata argument
+--! to this event handler as well as a table containing {width, height}
+--! of the render context.
+--! @memberof Events
+Events.renderresize = Events.register(SCTX, "RenderResize")

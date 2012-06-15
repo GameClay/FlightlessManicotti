@@ -28,6 +28,29 @@ kl_render_context_t g_script_render_context = NULL;
 /* script.events.RenderInit */
 kl_script_event_t g_event_RenderInit;
 
+/* script.events.RenderResize */
+kl_script_event_t g_event_RenderResize;
+
+int lua_render_resize_assigner(void* lstate, kl_script_event_t* event)
+{
+   lua_State* L = lstate;
+   kl_render_context_t ctx = (kl_render_context_t)event->event.context.as_ptr;
+
+   lua_newtable(L);
+
+   lua_pushnumber(L, 1);
+   lua_pushnumber(L , ctx->display_width);
+   lua_rawset(L, -3);
+
+   lua_pushnumber(L, 2);
+   lua_pushnumber(L , ctx->display_height);
+   lua_rawset(L, -3);
+
+   lua_pushlightuserdata(L, ctx);
+
+   return 2;
+}
+
 int kl_init_rendering(kl_render_context_t* context, void* handle)
 {
    int ret = KL_ERROR;
@@ -59,6 +82,12 @@ int kl_init_rendering(kl_render_context_t* context, void* handle)
          ctx->render_list[i] = NULL;
       }
 
+      /* Set up render-resize event */
+      g_event_RenderResize.event.id = kl_register_script_event("RenderResize");
+      g_event_RenderResize.event.context.as_ptr = ctx;
+      g_event_RenderResize.event.arg.as_uint32 = 0;
+      kl_register_script_event_context_type(g_event_RenderResize.event.id,
+         KL_SCRIPT_CONTEXT_TYPE_ASSIGNER, lua_render_resize_assigner);
 
       /* Set default script render context. */
       g_script_render_context = ctx;
@@ -97,12 +126,9 @@ void kl_destroy_rendering(kl_render_context_t* context)
 
 void kl_render_reshape(kl_render_context_t context, float display_width, float display_height)
 {
-   CGLSetCurrentContext(context->drawableCGLContext);
-   CGLLockContext(context->drawableCGLContext);
-
-   /* Send script event */
-
-   CGLUnlockContext(context->drawableCGLContext);
+   context->display_width = display_width;
+   context->display_height = display_height;
+   kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &g_event_RenderResize);
 }
 
 KL_BOOL kl_render_assign_list(kl_render_context_t context, kl_render_list_ptr_t list, int list_idx)
