@@ -185,7 +185,7 @@ int kl_effect_manager_get_effect(kl_render_context_t render_ctx, const char* eff
    return ret;
 }
 
-static int _do_constant_assign(kl_effect_t effect, const kl_shader_constant_t* constant, GLint loc, int num_tex)
+static int _do_constant_assign(kl_effect_manager_t mgr, const kl_shader_constant_t* constant, GLint loc, int num_tex)
 {
    int ret = 0;
 
@@ -220,10 +220,10 @@ static int _do_constant_assign(kl_effect_t effect, const kl_shader_constant_t* c
          glUniform1i(loc, num_tex);
          glActiveTexture(GL_TEXTURE0 + num_tex);
 
-         if(effect->mgr->data_source[constant->constant.as_tex] != NULL)
+         if(mgr->data_source[constant->constant.as_tex] != NULL)
          {
-            GLint texid = effect->mgr->data_source[constant->constant.as_tex](
-               effect->mgr->data_source_context[constant->constant.as_tex]);
+            GLint texid = mgr->data_source[constant->constant.as_tex](
+               mgr->data_source_context[constant->constant.as_tex]);
 
             /* HAX! Hard coding 1D texture */
             glBindTexture(GL_TEXTURE_1D, texid);
@@ -314,6 +314,8 @@ void kl_effect_manager_bind_effect(kl_effect_t effect, const kl_transform_state_
       int i;
       int num_tex = 0;
       GLint loc;
+      kl_effect_manager_t mgr = effect->mgr;
+
       glUseProgram(effect->program);
 
       /* Assign matrices */
@@ -337,7 +339,48 @@ void kl_effect_manager_bind_effect(kl_effect_t effect, const kl_transform_state_
             cur_constant->constant.as_fn(NULL /* hax */, &temp_constant);
             cur_constant = &temp_constant;
          }
-         num_tex += _do_constant_assign(effect, cur_constant, loc, num_tex);
+         num_tex += _do_constant_assign(mgr, cur_constant, loc, num_tex);
+      }
+   }
+   else
+   {
+      glUseProgram(0);
+   }
+}
+
+void kl_effect_manager_bind_new_effect(kl_effect_manager_t mgr, struct _kl_effect_new* effect,
+   const kl_transform_state_t* xfm_state, const kl_shader_constant_t** constant, size_t num_constants)
+{
+   if(effect != NULL)
+   {
+      int i;
+      int num_tex = 0;
+      GLint loc;
+
+      glUseProgram(effect->program);
+
+      /* Assign matrices */
+      loc = glGetUniformLocation(effect->program, "object_to_screen");
+      if(loc != -1)
+      {
+         glUniformMatrix4fv(loc, 1, GL_FALSE, xfm_state->object_to_screen.m);
+      }
+
+      /* Assign other constants */
+      for(i = 0; i < num_constants; i++)
+      {
+         const kl_shader_constant_t* cur_constant = constant[i];
+         kl_shader_constant_t temp_constant = {{0}, 0};
+
+         loc = glGetUniformLocation(effect->program, cur_constant->name);
+         if(loc < 0) continue;
+
+         if(cur_constant->constant_type == KL_SHADER_CONSTANT_TYPE_FN)
+         {
+            cur_constant->constant.as_fn(NULL /* hax */, &temp_constant);
+            cur_constant = &temp_constant;
+         }
+         num_tex += _do_constant_assign(mgr, cur_constant, loc, num_tex);
       }
    }
    else
