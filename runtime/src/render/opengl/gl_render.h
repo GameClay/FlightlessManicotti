@@ -79,4 +79,15 @@ struct _kl_effect {
    kl_effect_manager_t mgr;
 };
 
+/* New shader stuff */
+
+struct _kl_shader_new {
+   GLuint shader;
+   GLenum shader_type;
+};
+
+struct _kl_effect_new {
+   GLuint program;
+};
+
 #endif
