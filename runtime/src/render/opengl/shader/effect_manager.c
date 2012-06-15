@@ -70,121 +70,6 @@ void kl_effect_manager_register_data_source(kl_render_context_t render_ctx, uint
    }
 }
 
-int kl_effect_manager_get_effect(kl_render_context_t render_ctx, const char* effect_key,
-   const char* gl_version_string, kl_effect_t* effect)
-{
-   int ret = KL_ERROR;
-   uint32_t hash = kl_hash(effect_key, strlen(effect_key), 0);
-   kl_effect_manager_t mgr = render_ctx->effect_mgr;
-
-   /* Check to see if the effect already exists */
-   if(mgr->effect[hash % mgr->num_effects] != NULL)
-   {
-      kl_effect_t eff = mgr->effect[hash % mgr->num_effects];
-      if(strcmp(eff->effect_key, effect_key) == 0)
-      {
-         *effect = eff;
-         eff->ref_count++;
-         ret = KL_SUCCESS;
-      }
-      else
-      {
-         kl_log_err("Effect key collision, unhandled.");
-      }
-   }
-   else
-   {
-      char effect_key_buffer[512];
-      kl_shader_t vert_shader, geom_shader, pix_shader;
-      GLuint program;
-      float glLanguageVersion;
-      GLuint version;
-
-      CGLSetCurrentContext(render_ctx->resourceCGLContext);
-      CGLLockContext(render_ctx->resourceCGLContext);
-
-      sscanf((char *)glGetString(GL_SHADING_LANGUAGE_VERSION), "%f", &glLanguageVersion);
-      version = 100 * glLanguageVersion;
-      KL_UNUSED(version);
-
-      sprintf(effect_key_buffer, "%s.Vertex.%s", effect_key, gl_version_string);
-      if(kl_shader_manager_get_vertex_shader(render_ctx, effect_key_buffer, &vert_shader) == KL_SUCCESS)
-      {
-         sprintf(effect_key_buffer, "%s.Fragment.%s", effect_key, gl_version_string);
-         if(kl_shader_manager_get_pixel_shader(render_ctx, effect_key_buffer, &pix_shader) == KL_SUCCESS)
-         {
-            GLint link_success;
-            KL_BOOL has_geom = KL_FALSE;
-            program = glCreateProgram();
-
-            glAttachShader(program, vert_shader->shader);
-            glAttachShader(program, pix_shader->shader);
-
-            sprintf(effect_key_buffer, "%s.Geometry.%s", effect_key, gl_version_string);
-            if(kl_shader_manager_get_geometry_shader(render_ctx, effect_key_buffer, &geom_shader) == KL_SUCCESS)
-            {
-               glAttachShader(program, geom_shader->shader);
-
-               has_geom = KL_TRUE;
-            }
-
-            /* Bind mesh attribute locations */
-            glBindAttribLocation(program, KL_MESH_POSITION_IDX, "InPosition");
-            glBindAttribLocation(program, KL_MESH_NORMAL_IDX, "InNormal");
-            glBindAttribLocation(program, KL_MESH_TEX0_IDX, "InTex0");
-            glBindAttribLocation(program, KL_MESH_COLOR_IDX, "InColor");
-
-            glLinkProgram(program);
-
-            /* Check link status */
-            glGetProgramiv(program, GL_LINK_STATUS, &link_success);
-            if(link_success == GL_TRUE)
-            {
-               kl_effect_t eff = kl_heap_alloc(sizeof(struct _kl_effect));
-
-               eff->program = program;
-               eff->pixel = pix_shader;
-               eff->geometry = (has_geom == KL_TRUE ? geom_shader : NULL);
-               eff->vertex = vert_shader;
-               eff->ref_count = 1;
-               eff->mgr = mgr;
-               strncpy(eff->effect_key, effect_key, KL_SHADER_EFFECT_KEY_SZ);
-               mgr->effect[hash % mgr->num_effects] = eff;
-
-               *effect = eff;
-               ret = KL_SUCCESS;
-            }
-            else
-            {
-               char* linkInfoLog;
-               int maxLength;
-
-               glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
-               linkInfoLog = kl_heap_alloc(maxLength);
-
-               glGetProgramInfoLog(program, maxLength, &maxLength, linkInfoLog);
-               kl_log_err(linkInfoLog);
-               kl_heap_free(linkInfoLog);
-
-               glDetachShader(program, vert_shader->shader);
-               glDetachShader(program, pix_shader->shader);
-               kl_shader_manager_destroy_shader(render_ctx, &pix_shader);
-               kl_shader_manager_destroy_shader(render_ctx, &vert_shader);
-               glDeleteProgram(program);
-            }
-         }
-         else
-         {
-            kl_shader_manager_destroy_shader(render_ctx, &vert_shader);
-         }
-      }
-
-      CGLUnlockContext(render_ctx->resourceCGLContext);
-   }
-
-   return ret;
-}
-
 static int _do_constant_assign(kl_effect_manager_t mgr, const kl_shader_constant_t* constant, GLint loc, int num_tex)
 {
    int ret = 0;
@@ -306,48 +191,6 @@ static int _do_constant_assign(kl_effect_manager_t mgr, const kl_shader_constant
    return ret;
 }
 
-void kl_effect_manager_bind_effect(kl_effect_t effect, const kl_transform_state_t* xfm_state,
-   const kl_shader_constant_t** constant, size_t num_constants)
-{
-   if(effect != NULL)
-   {
-      int i;
-      int num_tex = 0;
-      GLint loc;
-      kl_effect_manager_t mgr = effect->mgr;
-
-      glUseProgram(effect->program);
-
-      /* Assign matrices */
-      loc = glGetUniformLocation(effect->program, "object_to_screen");
-      if(loc != -1)
-      {
-         glUniformMatrix4fv(loc, 1, GL_FALSE, xfm_state->object_to_screen.m);
-      }
-
-      /* Assign other constants */
-      for(i = 0; i < num_constants; i++)
-      {
-         const kl_shader_constant_t* cur_constant = constant[i];
-         kl_shader_constant_t temp_constant = {{0}, 0};
-
-         loc = glGetUniformLocation(effect->program, cur_constant->name);
-         if(loc < 0) continue;
-
-         if(cur_constant->constant_type == KL_SHADER_CONSTANT_TYPE_FN)
-         {
-            cur_constant->constant.as_fn(NULL /* hax */, &temp_constant);
-            cur_constant = &temp_constant;
-         }
-         num_tex += _do_constant_assign(mgr, cur_constant, loc, num_tex);
-      }
-   }
-   else
-   {
-      glUseProgram(0);
-   }
-}
-
 void kl_effect_manager_bind_new_effect(kl_effect_manager_t mgr, struct _kl_effect_new* effect,
    const kl_transform_state_t* xfm_state, const kl_shader_constant_t** constant, size_t num_constants)
 {
@@ -386,20 +229,5 @@ void kl_effect_manager_bind_new_effect(kl_effect_manager_t mgr, struct _kl_effec
    else
    {
       glUseProgram(0);
-   }
-}
-
-void kl_effect_manager_destroy_effect(kl_render_context_t render_ctx, kl_effect_t* effect)
-{
-   if(effect != NULL && *effect != NULL)
-   {
-      kl_effect_t eff = *effect;
-      eff->ref_count--;
-      if(eff->ref_count == 0)
-      {
-         uint32_t hash = kl_hash(eff->effect_key, strlen(eff->effect_key), 0);
-         render_ctx->effect_mgr->effect[hash % render_ctx->effect_mgr->num_effects] = NULL;
-         kl_heap_free(eff);
-      }
    }
 }

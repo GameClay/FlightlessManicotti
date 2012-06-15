@@ -41,8 +41,6 @@ KL_ALIGNED_STRUCT_PRE(16) {
 
    /* TODO: Proper material */
    void* effect;                    /**< Effect to use to draw the associated Mesh. */
-
-   kl_effect_t material;            /**< Material to use to draw the associated Mesh. */
    uint32_t blend_src;              /**< Source blend to use. */
    uint32_t blend_dest;             /**< Destination blend to use. */
 

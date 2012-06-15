@@ -23,7 +23,7 @@
 extern "C" {
 #endif
 
-#include <FlightlessManicotti/render/shader/shader_manager.h>
+#include <FlightlessManicotti/render/render.h>
 #include <FlightlessManicotti/render/shader/shader_constant.h>
 
 typedef struct _kl_effect* kl_effect_t;
@@ -46,14 +46,6 @@ extern KL_API void kl_effect_manager_destroy(kl_effect_manager_t* manager);
 
 extern KL_API void kl_effect_manager_register_data_source(kl_render_context_t render_ctx, uint32_t source_id,
    kl_effect_manager_data_source_fn source_fn, const void* context);
-
-extern KL_API int kl_effect_manager_get_effect(kl_render_context_t render_ctx, const char* effect_key,
-   const char* gl_version_string, kl_effect_t* effect);
-
-extern KL_API void kl_effect_manager_bind_effect(kl_effect_t effect, const kl_transform_state_t* xfm_state,
-   const kl_shader_constant_t** constants, size_t num_constants);
-
-extern KL_API void kl_effect_manager_destroy_effect(kl_render_context_t render_ctx, kl_effect_t* effect);
 
 #ifdef __cplusplus
 }

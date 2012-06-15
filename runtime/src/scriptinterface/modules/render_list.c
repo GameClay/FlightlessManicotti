@@ -110,7 +110,7 @@ static int RenderInstance_new(lua_State* L)
    inst_hldr->inst = inst;
    inst->list_index = UINT32_MAX;
    inst->list = NULL;
-   inst->material = NULL; inst->effect = NULL; /* HAX */
+   inst->effect = NULL;
    inst->mesh = NULL;
    inst->draw_type = GL_TRIANGLES;
    inst->blend_src = GL_ONE;
@@ -137,11 +137,6 @@ static int RenderInstance_gc(lua_State* L)
       kl_render_list_remove_instance(inst->list, inst);
    }
 
-   if(inst->material != NULL)
-   {
-      kl_effect_manager_destroy_effect(g_script_render_context, &inst->material);
-   }
-
    if(inst->consts != NULL)
    {
       int i;
@@ -166,24 +161,6 @@ static int RenderInstance_setmesh(lua_State* L)
    lua_render_instance* inst = (lua_render_instance*)lua_touserdata(L, 1);
    kl_mesh_t* mesh = (kl_mesh_t*)luaL_checkudata(L, 2, MESH_LUA_LIB);
    inst->inst->mesh = mesh;
-   return 0;
-}
-
-static int RenderInstance_setmaterial(lua_State* L)
-{
-   lua_render_instance* inst = (lua_render_instance*)lua_touserdata(L, 1);
-   const char* effect_key;
-
-   luaL_argcheck(L, lua_isstring(L, 2), 2, "expected material identifier");
-   effect_key = lua_tostring(L, 2);
-
-   if(inst->inst->material != NULL)
-   {
-      kl_effect_manager_destroy_effect(g_script_render_context, &inst->inst->material);
-   }
-
-   kl_effect_manager_get_effect(g_script_render_context, effect_key, "GL3", &inst->inst->material);
-
    return 0;
 }
 
@@ -570,8 +547,7 @@ static int RenderInstance_setclearbeforedraw(lua_State* L)
 
 static const struct luaL_reg RenderInstance_instance_methods [] = {
    {"setmesh", RenderInstance_setmesh},
-   {"setmaterial", RenderInstance_setmaterial},
-   {"seteffect", RenderInstance_seteffect}, /* HAX */
+   {"seteffect", RenderInstance_seteffect},
    {"settransform", RenderInstance_settransform},
    {"setdrawtype", RenderInstance_setdrawtype},
    {"setblend", RenderInstance_setblend},
