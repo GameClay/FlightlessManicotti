@@ -22,7 +22,6 @@
 #include <OpenGL/OpenGL.h> /* Mac */
 #include <OpenGL/gl3.h>
 
-#include <FlightlessManicotti/render/shader/shader_manager.h>
 #include <FlightlessManicotti/render/shader/effect_manager.h>
 #include <FlightlessManicotti/render/render_list.h>
 
@@ -52,31 +51,17 @@ struct _kl_render_context
 
    kl_render_list_t* render_list[KL_RENDER_CTX_NUM_RENDER_LISTS];
 
-   kl_shader_manager_t shader_mgr;
    kl_effect_manager_t effect_mgr;
    float display_width, display_height;
 };
 
-#define KL_SHADER_EFFECT_KEY_SZ 256
-
 struct _kl_shader {
    GLuint shader;
-   uint16_t ref_count;
-   char effect_key[KL_SHADER_EFFECT_KEY_SZ];
-   uint32_t hash_initial;
+   GLenum shader_type;
 };
 
 struct _kl_effect {
    GLuint program;
-
-   kl_shader_t pixel;
-   kl_shader_t geometry;
-   kl_shader_t vertex;
-
-   uint16_t ref_count;
-   char effect_key[KL_SHADER_EFFECT_KEY_SZ];
-
-   kl_effect_manager_t mgr;
 };
 
 #endif

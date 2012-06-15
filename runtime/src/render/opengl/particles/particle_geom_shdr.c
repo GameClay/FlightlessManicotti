@@ -21,9 +21,8 @@
 #include <FlightlessManicotti/process/process.h>
 #include "render/opengl/gl_render.h"
 
-#include <FlightlessManicotti/render/shader/shader_manager.h>
 #include <stdio.h>
-
+#if 0
 struct _kl_particle_render_geom_shdr {
    GLuint vertX_buffer[2];
    GLuint vertY_buffer[2];
@@ -288,3 +287,4 @@ void kl_particle_render_geom_shdr_draw(kl_particle_render_geom_shdr_t renderer)
 
    renderer->last_used_idx = buffer_idx;
 }
+#endif

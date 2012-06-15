@@ -73,8 +73,7 @@ int kl_init_rendering(kl_render_context_t* context, void* handle)
       CGLSetCurrentContext(ctx->drawableCGLContext);
       CGLLockContext(ctx->drawableCGLContext);
 
-      kl_shader_manager_create(&ctx->shader_mgr, 4096, ctx);
-      kl_effect_manager_create(&ctx->effect_mgr, 1024, ctx);
+      kl_effect_manager_create(&ctx->effect_mgr);
 
       /* Null out render list */
       for(i = 0; i < KL_RENDER_CTX_NUM_RENDER_LISTS; i++)
@@ -114,7 +113,6 @@ void kl_destroy_rendering(kl_render_context_t* context)
       kl_render_context_t ctx = *context;
 
       kl_effect_manager_destroy(&ctx->effect_mgr);
-      kl_shader_manager_destroy(&ctx->shader_mgr);
 
       CGLReleaseContext(ctx->resourceCGLContext);
       CGLReleaseContext(ctx->drawableCGLContext);
@@ -237,16 +235,16 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
                }
 
                /* Bind mesh and shaders */
-               kl_effect_manager_bind_effect(inst->material, &hax_xfm_state,
-                  (const kl_shader_constant_t**)inst->consts, inst->num_consts);
+               if(inst->effect)
+               {
+                  kl_effect_manager_bind_effect(context->effect_mgr, inst->effect, &hax_xfm_state,
+                     (const kl_shader_constant_t**)inst->consts, inst->num_consts);
+               }
+
                kl_mesh_bind(inst->mesh);
 
                /* Draw */
                glDrawElements(inst->draw_type, inst->mesh->num_indices, GL_UNSIGNED_SHORT, NULL);
-
-               /* Unbind shaders and mesh */
-               kl_mesh_bind(NULL);
-               kl_effect_manager_bind_effect(NULL, NULL, NULL, 0);
 
                /* Tear down target */
                if(inst->render_target != NULL)
