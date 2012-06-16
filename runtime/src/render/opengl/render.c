@@ -188,6 +188,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
          {
             struct _kl_offscreen_target* target = render_list->default_target;
             glBindFramebuffer(GL_FRAMEBUFFER, target->framebuffer);
+            glDrawBuffer(GL_COLOR_ATTACHMENT0);
             glViewport(0, 0, target->width, target->height);
 
             glClearColor(0, 0, 0, 0);
@@ -215,12 +216,14 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
                   struct _kl_offscreen_target* target = inst->render_target;
                   glBindFramebuffer(GL_FRAMEBUFFER, target->framebuffer);
                   glViewport(0, 0, target->width, target->height);
+                  glDrawBuffers(inst->num_draw_buffers, inst->draw_buffers);
                }
                else if(render_list->default_target != NULL)
                {
                   struct _kl_offscreen_target* target = render_list->default_target;
                   glBindFramebuffer(GL_FRAMEBUFFER, target->framebuffer);
                   glViewport(0, 0, target->width, target->height);
+                  glDrawBuffer(GL_COLOR_ATTACHMENT0);
                }
                else
                {
@@ -254,6 +257,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
                   {
                      struct _kl_offscreen_target* target = render_list->default_target;
                      glBindFramebuffer(GL_FRAMEBUFFER, target->framebuffer);
+                     glDrawBuffer(GL_COLOR_ATTACHMENT0);
                      glViewport(0, 0, target->width, target->height);
                   }
                   else

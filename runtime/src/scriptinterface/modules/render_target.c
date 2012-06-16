@@ -26,6 +26,7 @@
 extern kl_render_context_t g_script_render_context;
 
 const char* RENDER_TARGET_LUA_LIB = "RenderTarget";
+extern const char* TEXTURE_LUA_LIB;
 
 static int RenderTarget_new(lua_State* L)
 {
@@ -37,46 +38,23 @@ static int RenderTarget_new(lua_State* L)
    target = (struct _kl_offscreen_target*)lua_newuserdata(L, sizeof(struct _kl_offscreen_target));
    target->width = lua_tointeger(L, 1);
    target->height = lua_tointeger(L, 2);
+   kl_zero_mem(target->texture, sizeof(target->texture));
 
    CGLSetCurrentContext(g_script_render_context->drawableCGLContext);
    CGLLockContext(g_script_render_context->drawableCGLContext);
    {
       glGenFramebuffers(1, &target->framebuffer);
-      glGenTextures(1, &target->texture);
+
       glGenRenderbuffers(1, &target->depthstencil);
 
       glBindFramebuffer(GL_FRAMEBUFFER, target->framebuffer);
-
-      glBindTexture(GL_TEXTURE_2D, target->texture);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, target->width, target->height,
-                   0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                             GL_TEXTURE_2D, target->texture, 0);
 
       glBindRenderbuffer(GL_RENDERBUFFER, target->depthstencil);
       glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, target->width, target->height);
       glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER,
                                 target->depthstencil);
 
-      if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-      {
-         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-         glBindTexture(GL_TEXTURE_2D, 0);
-         CGLUnlockContext(g_script_render_context->drawableCGLContext);
-         kl_log_err("Script render target creation failed.");
-         lua_pop(L, 1);
-         lua_pushnil(L);
-         return 1;
-      }
-
-      /* Clear framebuffer */
-      glClearColor(0, 0, 0, 0);
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
-      glBindTexture(GL_TEXTURE_2D, 0);
    }
    CGLUnlockContext(g_script_render_context->drawableCGLContext);
 
@@ -95,11 +73,13 @@ static int RenderTarget_gc(lua_State* L)
    {
       glDeleteFramebuffers(1, &target->framebuffer);
       glDeleteRenderbuffers(1, &target->depthstencil);
-      glDeleteTextures(1, &target->texture);
    }
    CGLUnlockContext(g_script_render_context->drawableCGLContext);
    return 0;
 }
+
+extern GLenum tex_format_to_base_format(GLint tex_format);
+extern GLenum tex_format_to_type(GLint tex_format);
 
 static int RenderTarget_update(lua_State* L)
 {
@@ -115,21 +95,68 @@ static int RenderTarget_update(lua_State* L)
    CGLSetCurrentContext(g_script_render_context->drawableCGLContext);
    CGLLockContext(g_script_render_context->drawableCGLContext);
    {
+      int i;
       glBindFramebuffer(GL_FRAMEBUFFER, target->framebuffer);
-
-      glBindTexture(GL_TEXTURE_2D, target->texture);
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, target->width, target->height,
-                   0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
       glBindRenderbuffer(GL_RENDERBUFFER, target->depthstencil);
       glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, target->width, target->height);
 
-      if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+      for(i = 0; i < KL_OFFSCREEN_TARGET_MAX_TEX; i++)
       {
-         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+         struct _kl_texture* texture = target->texture[i];
+         if(texture != NULL)
+         {
+            texture->width = target->width;
+            texture->height = target->height;
+            glBindTexture(GL_TEXTURE_2D, texture->texture);
+            glTexImage2D(GL_TEXTURE_2D, 0, texture->tex_format, texture->width, texture->height,
+                         0, tex_format_to_base_format(texture->tex_format),
+                         tex_format_to_type(texture->tex_format), NULL);
+         }
+      }
+      glBindTexture(GL_TEXTURE_2D, 0);
+
+      /* Clear framebuffer */
+      glClearColor(0, 0, 0, 0);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   }
+   CGLUnlockContext(g_script_render_context->drawableCGLContext);
+
+   return 0;
+}
+
+static int RenderTarget_bindtexture(lua_State* L)
+{
+   struct _kl_offscreen_target* target = (struct _kl_offscreen_target*)lua_touserdata(L, 1);
+   struct _kl_texture* texture = (struct _kl_texture*)luaL_checkudata(L, 2, TEXTURE_LUA_LIB);
+   int attachment_idx = 0;
+
+   if(!lua_isnoneornil(L, 3))
+   {
+      attachment_idx = lua_tointeger(L, 3);
+      attachment_idx = (attachment_idx < KL_OFFSCREEN_TARGET_MAX_TEX ? attachment_idx : 0);
+   }
+
+   CGLSetCurrentContext(g_script_render_context->drawableCGLContext);
+   CGLLockContext(g_script_render_context->drawableCGLContext);
+   {
+      GLenum status;
+      target->texture[attachment_idx] = texture;
+      glBindFramebuffer(GL_FRAMEBUFFER, target->framebuffer);
+
+      glBindTexture(GL_TEXTURE_2D, texture->texture);
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachment_idx,
+                             GL_TEXTURE_2D, texture->texture, 0);
+
+      status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+      if(status != GL_FRAMEBUFFER_COMPLETE)
+      {
          glBindTexture(GL_TEXTURE_2D, 0);
+         glBindFramebuffer(GL_FRAMEBUFFER, 0);
          CGLUnlockContext(g_script_render_context->drawableCGLContext);
-         kl_log_err("Script render target update failed.");
+         kl_log_err("Script render target bind texture failed.");
          return 0;
       }
 
@@ -147,6 +174,8 @@ static int RenderTarget_update(lua_State* L)
 
 static int RenderTarget_clear(lua_State* L)
 {
+   struct _kl_offscreen_target* target = (struct _kl_offscreen_target*)lua_touserdata(L, 1);
+
    CGLSetCurrentContext(g_script_render_context->drawableCGLContext);
    CGLLockContext(g_script_render_context->drawableCGLContext);
    glBindFramebuffer(GL_FRAMEBUFFER, target->framebuffer);
@@ -158,6 +187,7 @@ static int RenderTarget_clear(lua_State* L)
 }
 
 static const struct luaL_reg RenderTarget_instance_methods [] = {
+   {"bindtexture", RenderTarget_bindtexture},
    {"update", RenderTarget_update},
    {"clear", RenderTarget_clear},
    {NULL, NULL}

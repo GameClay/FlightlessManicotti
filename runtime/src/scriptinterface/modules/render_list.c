@@ -119,6 +119,8 @@ static int RenderInstance_new(lua_State* L)
    inst->consts = NULL;
    inst->num_consts = 0;
    inst->render_target = NULL;
+   inst->draw_buffers[0] = GL_COLOR_ATTACHMENT0;
+   inst->num_draw_buffers = 1;
    inst->clear_before_draw = 0;
 
    luaL_getmetatable(L, RENDER_INSTANCE_LUA_LIB);
@@ -311,7 +313,7 @@ void RenderInstance_shaderconsthelper(lua_State* L, kl_shader_constant_t* consta
                constant->constant_sz = 2; /* 2D texture */
                constant->constant_num = 1;
                constant->constant_type = KL_SHADER_CONSTANT_TYPE_TEX;
-               constant->constant.as_tex = target->texture;
+               constant->constant.as_tex = target->texture[0]->texture; /* HAX */
                break;
             }
 
@@ -334,7 +336,7 @@ void RenderInstance_shaderconsthelper(lua_State* L, kl_shader_constant_t* consta
                }
                else
                {
-               switch(tex->tex_type)
+               switch(tex->tex_depth)
                {
                   case GL_TEXTURE_2D:
                   {
@@ -545,6 +547,25 @@ static int RenderInstance_setclearbeforedraw(lua_State* L)
    return 0;
 }
 
+static int RenderInstance_setdrawbuffers(lua_State* L)
+{
+   lua_render_instance* inst_hdlr = (lua_render_instance*)lua_touserdata(L, 1);
+   kl_render_instance_t* inst = inst_hdlr->inst;
+   luaL_argcheck(L, lua_istable(L, 2), 2, "expected table of draw buffer constants");
+
+   inst->num_draw_buffers = 0;
+   lua_pushnil(L);
+   while(lua_next(L, 2))
+   {
+      inst->draw_buffers[inst->num_draw_buffers] = lua_tointeger(L, -1);
+      inst->num_draw_buffers++;
+      lua_pop(L, 1);
+   }
+   lua_pop(L, 1);
+
+   return 0;
+}
+
 static const struct luaL_reg RenderInstance_instance_methods [] = {
    {"setmesh", RenderInstance_setmesh},
    {"seteffect", RenderInstance_seteffect},
@@ -554,6 +575,7 @@ static const struct luaL_reg RenderInstance_instance_methods [] = {
    {"setshaderconstants", RenderInstance_setshaderconstants},
    {"updateshaderconstants", RenderInstance_updateshaderconstants},
    {"setrendertarget", RenderInstance_setrendertarget},
+   {"setdrawbuffers", RenderInstance_setdrawbuffers},
    {"setclearbeforedraw", RenderInstance_setclearbeforedraw},
    {NULL, NULL}
 };
@@ -626,6 +648,20 @@ int luaopen_render_list(lua_State* L)
    lua_setfield(L, -2, "one_minus_dst_alpha");
 
    lua_setfield(L, -2, "blend");
+
+   /* Buffer attachments */
+   lua_newtable(L);
+
+   lua_pushnumber(L, GL_COLOR_ATTACHMENT0);
+   lua_setfield(L, -2, "color0");
+   lua_pushnumber(L, GL_COLOR_ATTACHMENT1);
+   lua_setfield(L, -2, "color1");
+   lua_pushnumber(L, GL_COLOR_ATTACHMENT2);
+   lua_setfield(L, -2, "color2");
+   lua_pushnumber(L, GL_COLOR_ATTACHMENT3);
+   lua_setfield(L, -2, "color3");
+
+   lua_setfield(L, -2, "attachment");
 
    return 1;
 }

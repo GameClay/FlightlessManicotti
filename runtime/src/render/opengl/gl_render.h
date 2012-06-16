@@ -25,16 +25,27 @@
 #include <FlightlessManicotti/render/shader/effect_manager.h>
 #include <FlightlessManicotti/render/render_list.h>
 
-struct _kl_offscreen_target {
-   GLuint framebuffer, texture, depthstencil;
-   GLuint width, height;
-};
+#define KL_TEXTURE_TYPE_DATA 1
+#define KL_TEXTURE_TYPE_IMAGE 2
+#define KL_TEXTURE_TYPE_BUFFER 3
 
 struct _kl_texture {
    GLuint texture;
-   GLenum tex_type;
+   GLenum tex_depth;
+   GLint tex_format;
 
-   uint32_t data_texture;
+   uint16_t data_texture;
+   uint16_t tex_type;
+   uint16_t width, height;
+};
+
+#define KL_OFFSCREEN_TARGET_MAX_TEX 4
+
+struct _kl_offscreen_target {
+   GLuint framebuffer, depthstencil;
+   GLuint width, height;
+
+   struct _kl_texture* texture[KL_OFFSCREEN_TARGET_MAX_TEX];
 };
 
 #define KL_MESH_POSITION_IDX 0
