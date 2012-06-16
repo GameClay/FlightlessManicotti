@@ -145,8 +145,21 @@ static int RenderTarget_update(lua_State* L)
    return 0;
 }
 
+static int RenderTarget_clear(lua_State* L)
+{
+   CGLSetCurrentContext(g_script_render_context->drawableCGLContext);
+   CGLLockContext(g_script_render_context->drawableCGLContext);
+   glBindFramebuffer(GL_FRAMEBUFFER, target->framebuffer);
+   glClearColor(0, 0, 0, 0);
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   CGLUnlockContext(g_script_render_context->drawableCGLContext);
+   return 0;
+}
+
 static const struct luaL_reg RenderTarget_instance_methods [] = {
    {"update", RenderTarget_update},
+   {"clear", RenderTarget_clear},
    {NULL, NULL}
 };
 
