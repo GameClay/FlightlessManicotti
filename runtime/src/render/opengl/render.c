@@ -167,6 +167,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
 
    /* Clear backbuffer */
    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   glDrawBuffer(GL_COLOR_ATTACHMENT0);
    glViewport(0, 0, display_width, display_height);
    glClearColor(0, 0, 0, 0);
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -228,6 +229,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
                else
                {
                   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                  glDrawBuffer(GL_COLOR_ATTACHMENT0);
                   glViewport(0, 0, display_width, display_height);
                }
 
@@ -263,6 +265,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
                   else
                   {
                      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                     glDrawBuffer(GL_COLOR_ATTACHMENT0);
                      glViewport(0, 0, display_width, display_height);
                   }
                }

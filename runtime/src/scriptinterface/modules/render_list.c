@@ -649,19 +649,5 @@ int luaopen_render_list(lua_State* L)
 
    lua_setfield(L, -2, "blend");
 
-   /* Buffer attachments */
-   lua_newtable(L);
-
-   lua_pushnumber(L, GL_COLOR_ATTACHMENT0);
-   lua_setfield(L, -2, "color0");
-   lua_pushnumber(L, GL_COLOR_ATTACHMENT1);
-   lua_setfield(L, -2, "color1");
-   lua_pushnumber(L, GL_COLOR_ATTACHMENT2);
-   lua_setfield(L, -2, "color2");
-   lua_pushnumber(L, GL_COLOR_ATTACHMENT3);
-   lua_setfield(L, -2, "color3");
-
-   lua_setfield(L, -2, "attachment");
-
    return 1;
 }

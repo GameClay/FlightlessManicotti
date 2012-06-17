@@ -53,7 +53,7 @@ KL_ALIGNED_STRUCT_PRE(16) {
    size_t num_consts;               /**< Number of constants in the consts array. */
 
    void* render_target;             /**< RenderTarget to which this instance should be drawn, or NULL for the backbuffer */
-   uint32_t draw_buffers[4];        /**< Draw buffers. */
+   uint32_t draw_buffers[15];       /**< Draw buffers. */
    uint32_t num_draw_buffers;       /**< Number of draw buffers. */
    KL_BOOL clear_before_draw;       /**< If set to KL_TRUE, the associated RenderTarget will be cleared before this instance is drawn. */
 

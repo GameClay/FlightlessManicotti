@@ -209,5 +209,21 @@ int luaopen_render_target(lua_State* L)
 
    luaL_register(L, RENDER_TARGET_LUA_LIB, RenderTarget_class_methods);
 
+   /* Buffer attachments */
+   lua_newtable(L);
+
+   lua_pushnumber(L, GL_COLOR_ATTACHMENT0);
+   lua_setfield(L, -2, "color0");
+   lua_pushnumber(L, GL_COLOR_ATTACHMENT1);
+   lua_setfield(L, -2, "color1");
+   lua_pushnumber(L, GL_COLOR_ATTACHMENT2);
+   lua_setfield(L, -2, "color2");
+   lua_pushnumber(L, GL_COLOR_ATTACHMENT3);
+   lua_setfield(L, -2, "color3");
+   lua_pushnumber(L, GL_DEPTH_ATTACHMENT);
+   lua_setfield(L, -2, "depth");
+
+   lua_setfield(L, -2, "attachment");
+
    return 1;
 }
