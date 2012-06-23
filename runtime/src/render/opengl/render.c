@@ -181,7 +181,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
 
       if(render_list != NULL && render_list->list != NULL)
       {
-         uint32_t max_idx = render_list->max_idx;
+         int32_t max_idx = render_list->max_idx;
          int i;
 
          /* Set default target and clear */

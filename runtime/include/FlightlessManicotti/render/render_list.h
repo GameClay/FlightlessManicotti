@@ -64,7 +64,7 @@ KL_ALIGNED_STRUCT_PRE(16) {
 typedef struct _kl_render_list {
    kl_idx_allocator_t idx_alloc;
    kl_render_instance_t** list;
-   uint32_t max_idx;
+   int32_t max_idx;
    void* default_target;
 } kl_render_list_t;
 

@@ -25,7 +25,7 @@ int kl_render_list_init(kl_render_list_t* list, uint32_t list_sz)
    if(list != NULL)
    {
       ret = kl_alloc_idx_allocator(&list->idx_alloc, list_sz);
-      list->max_idx = 0;
+      list->max_idx = -1;
       list->default_target = NULL;
       list->list = kl_heap_alloc(sizeof(kl_render_instance_t*) * list_sz);
       kl_zero_mem(list->list, sizeof(kl_render_instance_t*) * list_sz);
@@ -42,7 +42,7 @@ void kl_render_list_deinit(kl_render_list_t* list)
       list->list = NULL;
       kl_free_idx_allocator(&list->idx_alloc);
       list->idx_alloc = NULL;
-      list->max_idx = 0;
+      list->max_idx = -1;
    }
 }
 
