@@ -275,8 +275,6 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
    }
    glDisable(GL_BLEND);
 
-   glFinish();
-
    CGLFlushDrawable(context->drawableCGLContext);
    CGLUnlockContext(context->drawableCGLContext);
 }
