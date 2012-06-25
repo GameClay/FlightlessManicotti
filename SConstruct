@@ -83,7 +83,7 @@ else:
    if env['VARIANT'] == 'release':
       env.Append(CPPFLAGS=['-Os'])
    else:
-      env.Append(CPPFLAGS=['-O0','-ggdb'])
+      env.Append(CPPFLAGS=['-O0','-g'])
 
 ## Build the libraries the runtime depends on
 dependencies = [
