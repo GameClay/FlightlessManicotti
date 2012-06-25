@@ -89,7 +89,7 @@ static int _do_constant_assign(kl_effect_manager_t mgr, const kl_shader_constant
             case 3: tex_type = GL_TEXTURE_3D; break;
             case 4: tex_type = GL_TEXTURE_CUBE_MAP; break;
          }
-         glBindTexture(GL_TEXTURE_2D, constant->constant.as_tex);
+         glBindTexture(tex_type, constant->constant.as_tex);
          ret += 1;
          break;
       }
