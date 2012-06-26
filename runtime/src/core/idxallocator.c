@@ -24,13 +24,13 @@ struct _kl_idx_allocator
 {
    uint32_t free_tail_idx;
    uint32_t free_list_sz;
-   uint32_t* free_list;
+   uint32_t free_list[1];
 };
 
 int kl_alloc_idx_allocator(kl_idx_allocator_t* idx_allocator, uint32_t num_indices)
 {
    int ret = KL_ERROR;
-   const uint32_t alloc_sz = sizeof(struct _kl_idx_allocator) + sizeof(uint32_t) * num_indices;
+   const uint32_t alloc_sz = sizeof(struct _kl_idx_allocator) + sizeof(uint32_t) * (num_indices - 1);
    struct _kl_idx_allocator* idxalloc = NULL;
    int i;
    
@@ -42,14 +42,13 @@ int kl_alloc_idx_allocator(kl_idx_allocator_t* idx_allocator, uint32_t num_indic
    {
       idxalloc->free_list_sz = num_indices;
       idxalloc->free_tail_idx = num_indices;
-      idxalloc->free_list = (uint32_t*)(((char*)idxalloc) + sizeof(struct _kl_idx_allocator));
-      
+
       /* Prep free-list */
       for(i = 0; i < num_indices; i++)
       {
          idxalloc->free_list[i] = num_indices - i - 1; /* Reverse order */
       }
-      
+
       *idx_allocator = idxalloc;
       ret = KL_SUCCESS;
    }
