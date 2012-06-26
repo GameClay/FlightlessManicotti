@@ -138,4 +138,7 @@ else:
 Export('env')
 env.SConscript('conf/${OS_CONF}/${CPU}/SConscript')
 
+# Preserve color terminal output
+env['ENV']['TERM'] = os.environ['TERM']
+
 Return('env')
