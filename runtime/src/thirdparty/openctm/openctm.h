@@ -719,4 +719,4 @@ CTMEXPORT void CTMCALL ctmSaveCustom(CTMcontext aContext, CTMwritefn aWriteFn,
   #include "openctmpp.h"
 #endif
 
-#endif // __OPENCTM_H_
+#endif /* __OPENCTM_H_ */

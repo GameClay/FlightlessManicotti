@@ -25,3 +25,9 @@ ccld = ['-mmacosx-version-min=10.7']
 env.Append(CXXFLAGS=ccld)
 env.Append(CFLAGS=ccld)
 env.Append(LINKFLAGS=ccld)
+
+# Use CLANG
+env['AR'] = 'ar'
+env['CC'] = 'clang'
+env['CXX'] = 'clang++'
+env['LINK'] = 'clang'
