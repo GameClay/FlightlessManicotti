@@ -106,19 +106,19 @@ static int vector3d_newindex(lua_State* L)
          case 'x':
          {
             luaL_argcheck(L, lua_isnumber(L, 3), 3, "expected number");
-            xyz[0] = lua_tonumber(L, 3);
+            xyz[0] = (float)lua_tonumber(L, 3);
             return 0;
          }
          case 'y':
          {
             luaL_argcheck(L, lua_isnumber(L, 3), 3, "expected number");
-            xyz[1] = lua_tonumber(L, 3);
+            xyz[1] = (float)lua_tonumber(L, 3);
             return 0;
          }
          case 'z':
          {
             luaL_argcheck(L, lua_isnumber(L, 3), 3, "expected number");
-            xyz[2] = lua_tonumber(L, 3);
+            xyz[2] = (float)lua_tonumber(L, 3);
             return 0;
          }
       }

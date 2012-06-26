@@ -41,7 +41,7 @@ typedef struct lua_render_instance {
 
 static int RenderList_new(lua_State* L)
 {
-   uint32_t list_sz = lua_tointeger(L, 1);
+   uint32_t list_sz = (uint32_t)lua_tointeger(L, 1);
    kl_render_list_t* list = (kl_render_list_t*)lua_newuserdata(L, sizeof(kl_render_list_t));
 
    list_sz = (list_sz > 0 ? list_sz : 32);
@@ -201,7 +201,7 @@ void RenderInstance_shaderconsthelper(lua_State* L, kl_shader_constant_t* consta
             constant->constant_sz = 1;
             constant->constant_num = 1;
             constant->constant_type = KL_SHADER_CONSTANT_TYPE_FLOAT;
-            *constant->constant.as_float_ptr = lua_tonumber(L, l_index);
+            *constant->constant.as_float_ptr = (float)lua_tonumber(L, l_index);
             break;
          }
 
@@ -231,10 +231,10 @@ void RenderInstance_shaderconsthelper(lua_State* L, kl_shader_constant_t* consta
 
                   case LUA_TTABLE:
                   {
-                     if(csize == 0) csize = lua_objlen(L, -1);
+                     if(csize == 0) csize = (int)lua_objlen(L, -1);
                      else
                      {
-                        if(csize != lua_objlen(L, -1))
+                        if(csize != (int)lua_objlen(L, -1))
                         {
                            kl_log_err("All elements of a shader constant table assignment must be the same size.");
                         }
@@ -259,8 +259,8 @@ void RenderInstance_shaderconsthelper(lua_State* L, kl_shader_constant_t* consta
                constant->constant.as_float_ptr = kl_heap_alloc(tsize * csize * sizeof(float));
             }
 
-            constant->constant_num = tsize;
-            constant->constant_sz = csize;
+            constant->constant_num = (uint16_t)tsize;
+            constant->constant_sz = (uint16_t)csize;
             constant->dealloc_constant = 1;
             constant->constant_type = KL_SHADER_CONSTANT_TYPE_FLOAT;
 
@@ -274,7 +274,7 @@ void RenderInstance_shaderconsthelper(lua_State* L, kl_shader_constant_t* consta
                   {
                      case LUA_TNUMBER:
                      {
-                        *cur_f = lua_tonumber(L, -1);
+                        *cur_f = (float)lua_tonumber(L, -1);
                         cur_f++;
                         break;
                      }
@@ -284,7 +284,7 @@ void RenderInstance_shaderconsthelper(lua_State* L, kl_shader_constant_t* consta
                         lua_pushnil(L);
                         while(lua_next(L, -2))
                         {
-                           *cur_f = lua_tonumber(L, -1);
+                           *cur_f = (float)lua_tonumber(L, -1);
                            cur_f++;
                            lua_pop(L, 1);
                         }
@@ -387,7 +387,8 @@ static int RenderInstance_setshaderconstants(lua_State* L)
 {
    lua_render_instance* inst_hdlr = (lua_render_instance*)lua_touserdata(L, 1);
    kl_render_instance_t* inst = inst_hdlr->inst;
-   int i, num_consts, old_num_consts;
+   int i;
+   size_t num_consts, old_num_consts;
    kl_shader_constant_t** consts;
    kl_shader_constant_t** old_consts;
    luaL_argcheck(L, lua_istable(L, 2), 2, "expected table of shader constants");
@@ -523,7 +524,7 @@ static int RenderInstance_setdrawtype(lua_State* L)
    lua_render_instance* inst_hdlr = (lua_render_instance*)lua_touserdata(L, 1);
    kl_render_instance_t* inst = inst_hdlr->inst;
    luaL_argcheck(L, lua_isnumber(L, 2), 2, "expected draw type");
-   inst->draw_type = lua_tointeger(L, 2);
+   inst->draw_type = (uint32_t)lua_tointeger(L, 2);
    return 0;
 }
 
@@ -533,8 +534,8 @@ static int RenderInstance_setblend(lua_State* L)
    kl_render_instance_t* inst = inst_hdlr->inst;
    luaL_argcheck(L, lua_isnumber(L, 2), 2, "expected blend type");
    luaL_argcheck(L, lua_isnumber(L, 3), 3, "expected blend type");
-   inst->blend_src = lua_tointeger(L, 2);
-   inst->blend_dest = lua_tointeger(L, 3);
+   inst->blend_src = (uint32_t)lua_tointeger(L, 2);
+   inst->blend_dest = (uint32_t)lua_tointeger(L, 3);
    return 0;
 }
 
@@ -557,7 +558,7 @@ static int RenderInstance_setdrawbuffers(lua_State* L)
    lua_pushnil(L);
    while(lua_next(L, 2))
    {
-      inst->draw_buffers[inst->num_draw_buffers] = lua_tointeger(L, -1);
+      inst->draw_buffers[inst->num_draw_buffers] = (uint32_t)lua_tointeger(L, -1);
       inst->num_draw_buffers++;
       lua_pop(L, 1);
    }

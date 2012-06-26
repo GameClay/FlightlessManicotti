@@ -95,7 +95,7 @@ void kl_vector_math_self_test()
    kl_high_resolution_timer_query(&end_time);
    delta_time = end_time - start_time;
    kl_absolute_time_to_ns(&delta_time, &time_ns);
-   sse_dot_ms = (float)time_ns * 1e-6;
+   sse_dot_ms = (float)time_ns * 1e-6f;
 #endif
 
    kl_high_resolution_timer_query(&start_time);
@@ -104,7 +104,7 @@ void kl_vector_math_self_test()
    kl_high_resolution_timer_query(&end_time);
    delta_time = end_time - start_time;
    kl_absolute_time_to_ns(&delta_time, &time_ns);
-   c_dot_ms = (float)time_ns * 1e-6;
+   c_dot_ms = (float)time_ns * 1e-6f;
 
    kl_log_debug("Vector self tests passed.\n\tDot product %d iterations: SSE %fms, C %fms",
       NUM_TEST_RUNS, sse_dot_ms, c_dot_ms);

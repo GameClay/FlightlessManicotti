@@ -52,6 +52,8 @@ typedef void (*kl_math_abc_restrict_fn)(const float* KL_RESTRICT a, const float*
 typedef void (*kl_math_abcn_restrict_fn)(const float* KL_RESTRICT a, const float* KL_RESTRICT b, float* KL_RESTRICT c, uint32_t n);
 typedef float (*kl_math_f_ab_restrict_fn)(const float* KL_RESTRICT a, const float* KL_RESTRICT b);
 
+extern KL_API float kl_nextpow2(float x);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

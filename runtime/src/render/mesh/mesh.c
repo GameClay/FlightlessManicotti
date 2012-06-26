@@ -65,7 +65,7 @@ int kl_mesh_load_ctm(kl_mesh_t* mesh, const char* mesh_name)
          mesh->index = kl_heap_alloc(mesh->num_indices * sizeof(uint16_t));
          for(i = 0; i < mesh->num_indices; i++)
          {
-            mesh->index[i] = indices[i];
+            mesh->index[i] = (uint16_t)indices[i];
          }
          buffer_mask |= kl_mesh_element_index;
       }
@@ -90,7 +90,7 @@ void kl_mesh_recompute_normals(kl_mesh_t* mesh, uint16_t start_idx, uint16_t num
 
       if(num_tris == 0)
       {
-         num_tris = mesh->num_indices / 3;
+         num_tris = (uint16_t)(mesh->num_indices / 3);
       }
 
       /* First pass, compute face normals */
@@ -118,7 +118,7 @@ void kl_mesh_recompute_normals(kl_mesh_t* mesh, uint16_t start_idx, uint16_t num
          vt2.v[3] = 0.0f;
 
          kl_vector_cross(vt1.v, vt2.v, vr.v);
-         len = sqrt(vr.v[0] * vr.v[0] + vr.v[1] * vr.v[1] + vr.v[2] * vr.v[2]);
+         len = sqrtf(vr.v[0] * vr.v[0] + vr.v[1] * vr.v[1] + vr.v[2] * vr.v[2]);
          face_normal[0] = vr.v[0] / len;
          face_normal[1] = vr.v[1] / len;
          face_normal[2] = vr.v[2] / len;
@@ -134,7 +134,7 @@ void kl_mesh_recompute_normals(kl_mesh_t* mesh, uint16_t start_idx, uint16_t num
       for(i = 0; i < num_tris; i++)
       {
          const uint16_t* index = &mesh->index[start_idx + i * 3];
-         const uint16_t face = (start_idx / 3) + i;
+         const uint16_t face = (uint16_t)((start_idx / 3) + i);
 
          kl_rarray_append(&vert_face_assoc[index[0]], &face);
          kl_rarray_append(&vert_face_assoc[index[1]], &face);
@@ -143,7 +143,7 @@ void kl_mesh_recompute_normals(kl_mesh_t* mesh, uint16_t start_idx, uint16_t num
 
       for(i = 0; i < num_tris; i++)
       {
-         uint16_t idx = start_idx + i * 3;
+         uint16_t idx = (uint16_t)(start_idx + i * 3);
 
          for(k = 0; k < 3; k++)
          {

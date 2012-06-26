@@ -79,8 +79,8 @@ static int Mesh_update(lua_State* L)
 
    if(mesh != NULL)
    {
-      uint32_t update_mask = lua_tonumber(L, 2);
-      uint32_t dynamic_mask = lua_tonumber(L, 3);
+      uint32_t update_mask = (uint32_t)lua_tointeger(L, 2);
+      uint32_t dynamic_mask = (uint32_t)lua_tointeger(L, 3);
 
       CGLSetCurrentContext(g_script_render_context->resourceCGLContext);
       CGLLockContext(g_script_render_context->resourceCGLContext);
@@ -256,7 +256,7 @@ static int Mesh_setindices(lua_State* L)
       lua_pushnil(L);
       while(lua_next(L, 2))
       {
-         *cur_idx = lua_tonumber(L, -1);
+         *cur_idx = (uint16_t)lua_tointeger(L, -1);
          lua_pop(L, 1);
          cur_idx++;
       }

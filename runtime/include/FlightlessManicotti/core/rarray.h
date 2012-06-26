@@ -28,16 +28,16 @@ extern "C" {
 
 typedef struct {
    void* elements;
-   size_t num_elements;
+   uint32_t num_elements;
    size_t element_sz;
    uint32_t max_idx;
 } kl_rarray_t;
 
-extern KL_API int kl_rarray_init(kl_rarray_t* array, size_t element_sz, size_t num_elements);
+extern KL_API int kl_rarray_init(kl_rarray_t* array, size_t element_sz, uint32_t num_elements);
 
 extern KL_API void kl_rarray_destroy(kl_rarray_t* array);
 
-extern KL_API void kl_rarray_resize(kl_rarray_t* array, size_t num_elements);
+extern KL_API void kl_rarray_resize(kl_rarray_t* array, uint32_t num_elements);
 
 extern KL_API void kl_rarray_append(kl_rarray_t* array, const void* element);
 

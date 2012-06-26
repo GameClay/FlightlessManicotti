@@ -38,7 +38,8 @@ lib_files = [f for f in lib_files if f not in excluded_files]
 runtime_env.Append(CPPPATH = ['src', 'include'])
 
 # Determine additional compiler flags
-runtime_env.Append(CCFLAGS = ['-Wstrict-aliasing', '-Wall', '-Werror', '-fstrict-aliasing'])
+runtime_env.Append(CCFLAGS = ['-Wstrict-aliasing', '-Wall', '-Wconversion',
+                              '-Wno-sign-conversion', '-Werror', '-fstrict-aliasing'])
 runtime_env.Append(CPPDEFINES = ['KL_BUILD_LIBRARY'])
 
 if not (env['OS'] == 'ios' or env['OS'] == 'android'):

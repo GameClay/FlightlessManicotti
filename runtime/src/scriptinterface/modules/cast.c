@@ -31,7 +31,7 @@ typedef union {
 static int kl_cast_int_to_number(lua_State* L)
 {
    castf thingy;
-   thingy.as_uint32 = lua_tointeger(L, 1);
+   thingy.as_uint32 = (uint32_t)lua_tointeger(L, 1);
    lua_pushnumber(L, thingy.as_float);
    return 1;
 }

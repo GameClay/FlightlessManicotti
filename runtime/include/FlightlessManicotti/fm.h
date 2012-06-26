@@ -26,7 +26,7 @@ extern "C" {
 /*
  * Do dllimport/dllexport if needed
  */
-#if _MSC_VER
+#if defined(_MSC_VER)
 #  ifdef KL_BUILD_LIBRARY
 #     define KL_API __declspec(dllexport)
 #  else
@@ -44,9 +44,9 @@ extern "C" {
 /*
  * Define KL_RESTRICT
  */
-#if __STDC_VERSION__ >= 199901L
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
 #  define KL_RESTRICT restrict
-#elif _MSC_VER
+#elif defined(_MSC_VER)
 #  define KL_RESTRICT __restrict
 #elif __GNUC__
 #  define KL_RESTRICT __restrict__

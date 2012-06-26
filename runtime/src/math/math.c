@@ -20,5 +20,5 @@
 
 float kl_nextpow2(float x)
 {
-   return ceil(log(x) / log(2.0f));
+   return ceilf(logf(x) / logf(2.0f));
 }

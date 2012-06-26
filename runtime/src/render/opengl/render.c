@@ -150,7 +150,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
    CGLSetCurrentContext(context->drawableCGLContext);
    CGLLockContext(context->drawableCGLContext);
 
-   glViewport(0, 0, display_width, display_height);
+   glViewport(0, 0, (GLsizei)display_width, (GLsizei)display_height);
 
    kl_matrix_ortho(hax_xfm_state.camera_to_screen.m, -aspect_ratio, aspect_ratio, -1.0f, 1.0f, -1.0f, 50.0f);
 
@@ -168,7 +168,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
    /* Clear backbuffer */
    glBindFramebuffer(GL_FRAMEBUFFER, 0);
    glDrawBuffer(GL_COLOR_ATTACHMENT0);
-   glViewport(0, 0, display_width, display_height);
+   glViewport(0, 0, (GLsizei)display_width, (GLsizei)display_height);
    glClearColor(0, 0, 0, 0);
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -230,7 +230,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
                {
                   glBindFramebuffer(GL_FRAMEBUFFER, 0);
                   glDrawBuffer(GL_COLOR_ATTACHMENT0);
-                  glViewport(0, 0, display_width, display_height);
+                  glViewport(0, 0, (GLsizei)display_width, (GLsizei)display_height);
                }
 
                /* Clear if requested */
@@ -250,7 +250,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
                kl_mesh_bind(inst->mesh);
 
                /* Draw */
-               glDrawElements(inst->draw_type, inst->mesh->num_indices, GL_UNSIGNED_SHORT, NULL);
+               glDrawElements(inst->draw_type, (GLsizei)inst->mesh->num_indices, GL_UNSIGNED_SHORT, NULL);
 
                /* Tear down target */
                if(inst->render_target != NULL)
@@ -266,7 +266,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
                   {
                      glBindFramebuffer(GL_FRAMEBUFFER, 0);
                      glDrawBuffer(GL_COLOR_ATTACHMENT0);
-                     glViewport(0, 0, display_width, display_height);
+                     glViewport(0, 0, (GLsizei)display_width, (GLsizei)display_height);
                   }
                }
             }

@@ -39,23 +39,26 @@ static int Manicotti_noise(lua_State* L)
          {
             if(lua_isnumber(L, 4))
             {
-               lua_pushnumber(L, kl_simplex_noise_4d(lua_tonumber(L, 1), lua_tonumber(L, 2),
-                  lua_tonumber(L, 3), lua_tonumber(L, 4)));
+               lua_pushnumber(L, kl_simplex_noise_4d(
+                  (float)lua_tonumber(L, 1), (float)lua_tonumber(L, 2),
+                  (float)lua_tonumber(L, 3), (float)lua_tonumber(L, 4)));
             }
             else
             {
-               lua_pushnumber(L, kl_simplex_noise_3d(lua_tonumber(L, 1), lua_tonumber(L, 2),
-                  lua_tonumber(L, 3)));
+               lua_pushnumber(L, kl_simplex_noise_3d(
+                  (float)lua_tonumber(L, 1), (float)lua_tonumber(L, 2),
+                  (float)lua_tonumber(L, 3)));
             }
          }
          else
          {
-            lua_pushnumber(L, kl_simplex_noise_2d(lua_tonumber(L, 1), lua_tonumber(L, 2)));
+            lua_pushnumber(L, kl_simplex_noise_2d((float)lua_tonumber(L, 1),
+               (float)lua_tonumber(L, 2)));
          }
       }
       else
       {
-         lua_pushnumber(L, kl_simplex_noise_1d(lua_tonumber(L, 1)));
+         lua_pushnumber(L, kl_simplex_noise_1d((float)lua_tonumber(L, 1)));
       }
    }
    else if(lua_istable(L, 1))
@@ -91,7 +94,7 @@ static int Manicotti_setrenderlist(lua_State* L)
    if(!lua_isnoneornil(L, 2))
    {
       luaL_argcheck(L, lua_isnumber(L, 2), 2, "expected nil, or render list index to assign");
-      list_idx = lua_tointeger(L, 2);
+      list_idx = (int)lua_tointeger(L, 2);
    }
 
    if(kl_render_assign_list(g_script_render_context, list, list_idx) != KL_TRUE)

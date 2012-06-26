@@ -92,7 +92,7 @@ static int Texture_new(lua_State* L)
    FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
    FIBITMAP *dib = NULL;
    uint8_t* bits = NULL;
-   uint32_t width, height;
+   uint16_t width, height;
    const char* filename;
    GLenum internalFormat, srcFormat;
 
@@ -109,17 +109,17 @@ static int Texture_new(lua_State* L)
       /* Populate texture info */
       lua_pushstring(L, "width");
       lua_gettable(L, 1);
-      texture->width = lua_tointeger(L, -1);
+      texture->width = (uint16_t)lua_tointeger(L, -1);
       lua_pop(L, 1);
 
       lua_pushstring(L, "height");
       lua_gettable(L, 1);
-      texture->height = lua_tointeger(L, -1);
+      texture->height = (uint16_t)lua_tointeger(L, -1);
       lua_pop(L, 1);
 
       lua_pushstring(L, "format");
       lua_gettable(L, 1);
-      texture->tex_format = lua_tointeger(L, -1);
+      texture->tex_format = (GLint)lua_tointeger(L, -1);
       lua_pop(L, 1);
 
       glGenTextures(1, &texture->texture);
@@ -137,7 +137,7 @@ static int Texture_new(lua_State* L)
    {
       texture = (struct _kl_texture*)lua_newuserdata(L, sizeof(struct _kl_texture));
 
-      texture->data_texture = lua_tointeger(L, 1);
+      texture->data_texture = (uint16_t)lua_tointeger(L, 1);
       texture->tex_depth = 0;
       texture->texture = 0;
       texture->width = 0;
@@ -176,8 +176,8 @@ static int Texture_new(lua_State* L)
 
    /* Get data */
    bits = FreeImage_GetBits(dib);
-   width = FreeImage_GetWidth(dib);
-   height = FreeImage_GetHeight(dib);
+   width = (uint16_t)FreeImage_GetWidth(dib);
+   height = (uint16_t)FreeImage_GetHeight(dib);
 
    /* Sanity check data */
    if((bits == 0) || (width == 0) || (height == 0))

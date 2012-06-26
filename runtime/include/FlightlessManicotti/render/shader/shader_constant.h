@@ -50,7 +50,7 @@ typedef struct _kl_shader_constant_t {
    uint16_t constant_num;
    uint16_t constant_type;
    uint16_t dealloc_constant;
-   char name[1];
+   char name[8];
 } kl_shader_constant_t;
 
 typedef struct kl_shader_constant_assigner_t {

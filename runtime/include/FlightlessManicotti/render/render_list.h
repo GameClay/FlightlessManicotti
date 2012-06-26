@@ -42,7 +42,6 @@ typedef struct _kl_effect* kl_effect_ptr_t;
 KL_ALIGNED_STRUCT_PRE(16) {
    kl_matrix_t object_to_world;     /**< Object-to-world transform */
    kl_mesh_t* mesh;                 /**< Mesh assigned to this render list */
-   uint32_t draw_type;              /**< Primitive draw type to use for drawing the associated Mesh. */
 
    /* TODO: Proper material */
    kl_effect_ptr_t effect;          /**< Effect to use to draw the associated Mesh. */
@@ -55,17 +54,22 @@ KL_ALIGNED_STRUCT_PRE(16) {
    void* render_target;             /**< RenderTarget to which this instance should be drawn, or NULL for the backbuffer */
    uint32_t draw_buffers[15];       /**< Draw buffers. */
    uint32_t num_draw_buffers;       /**< Number of draw buffers. */
-   KL_BOOL clear_before_draw;       /**< If set to KL_TRUE, the associated RenderTarget will be cleared before this instance is drawn. */
 
    kl_render_list_ptr_t list;       /**< The RenderList this instance is associated with. */
    uint32_t list_index;             /**< The index of this instance in the associated RenderList. */
+
+   uint32_t draw_type;              /**< Primitive draw type to use for drawing the associated Mesh. */
+   KL_BOOL clear_before_draw;       /**< If set to KL_TRUE, the associated RenderTarget will be cleared before this instance is drawn. */
+
+   uint8_t _padding[12];
 } KL_ALIGNED_STRUCT_POST(kl_render_instance_t, 16);
 
 typedef struct _kl_render_list {
    kl_idx_allocator_t idx_alloc;
    kl_render_instance_t** list;
-   int32_t max_idx;
    void* default_target;
+   int32_t max_idx;
+   int32_t _padding;
 } kl_render_list_t;
 
 /**

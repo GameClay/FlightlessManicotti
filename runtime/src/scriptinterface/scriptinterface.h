@@ -32,10 +32,10 @@ struct _kl_script_context
    KL_BOOL keep_running;
    amp_thread_t thread;
 
-   int argc;
    const char** argv;
    const char* file_name;
 
+   int argc;
    int event_handler_ref;
 };
 

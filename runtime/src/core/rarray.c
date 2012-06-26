@@ -19,7 +19,7 @@
 #include <FlightlessManicotti/core/rarray.h>
 #include <string.h>
 
-int kl_rarray_init(kl_rarray_t* array, size_t element_sz, size_t num_elements)
+int kl_rarray_init(kl_rarray_t* array, size_t element_sz, uint32_t num_elements)
 {
    int ret = KL_ERROR;
 
@@ -50,7 +50,7 @@ void kl_rarray_destroy(kl_rarray_t* array)
    }
 }
 
-void kl_rarray_resize(kl_rarray_t* array, size_t num_elements)
+void kl_rarray_resize(kl_rarray_t* array, uint32_t num_elements)
 {
    if(array != NULL)
    {

@@ -31,7 +31,7 @@ void _elapsed_time_ms_assigner(const void* context, kl_shader_constant_ptr const
    static float tempf;
    uint64_t elapsed_time_ns;
    kl_absolute_time_to_ns(&g_mainloop_elapsed_time, &elapsed_time_ns);
-   tempf = (float)elapsed_time_ns * 1e-6;
+   tempf = (float)elapsed_time_ns * 1e-6f;
 
    constant->constant.as_float_ptr = &tempf;
    constant->constant_sz = 1;

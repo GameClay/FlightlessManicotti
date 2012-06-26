@@ -96,7 +96,7 @@ void kl_particle_render_quads_assign_system(kl_particle_render_quads_t renderer,
       if(system != NULL)
       {
          /* Create static index buffer */
-         uint32_t i;
+         GLushort i;
          size_t idx_sz = sizeof(GLushort) * system->max_particles * 6;
          GLushort* indices = kl_heap_alloc(idx_sz);
 

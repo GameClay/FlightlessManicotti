@@ -57,7 +57,7 @@ int _kl_lua_print(lua_State* L)
    return 0;
 }
 
-int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_queue_max)
+int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, uint32_t event_queue_max)
 {
    struct _kl_script_context* sctx = NULL;
 

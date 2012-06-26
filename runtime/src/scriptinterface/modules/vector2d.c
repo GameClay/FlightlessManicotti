@@ -94,13 +94,13 @@ static int vector2d_newindex(lua_State* L)
          case 'x':
          {
             luaL_argcheck(L, lua_isnumber(L, 3), 3, "expected number");
-            xy[0] = lua_tonumber(L, 3);
+            xy[0] = (float)lua_tonumber(L, 3);
             return 0;
          }
          case 'y':
          {
             luaL_argcheck(L, lua_isnumber(L, 3), 3, "expected number");
-            xy[1] = lua_tonumber(L, 3);
+            xy[1] = (float)lua_tonumber(L, 3);
             return 0;
          }
       }

@@ -83,7 +83,7 @@ static int float_array_newindex(lua_State* L)
       if(idx <= array->len)
       {
          luaL_argcheck(L, lua_isnumber(L, 3), 3, "expected number");
-         array->array[idx - 1] = lua_tonumber(L, 3);
+         array->array[idx - 1] = (float)lua_tonumber(L, 3);
          return 0;
       }
       else

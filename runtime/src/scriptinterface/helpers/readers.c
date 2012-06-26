@@ -37,8 +37,8 @@ void lua_readvector2d(lua_State* L, int param_idx, float* out_xy)
       lua_gettable(L, param_idx - 2);
       luaL_argcheck(L, lua_isnumber(L, top + 1) && lua_isnumber(L, top + 2), 
          param_idx - 2, "expected numerical array");
-      out_xy[0] = lua_tonumber(L, top + 1);
-      out_xy[1] = lua_tonumber(L, top + 2);
+      out_xy[0] = (float)lua_tonumber(L, top + 1);
+      out_xy[1] = (float)lua_tonumber(L, top + 2);
       lua_pop(L, 2);
    }
    else if(lua_isuserdata(L, 3))
@@ -68,9 +68,9 @@ void lua_readvector3d(lua_State* L, int param_idx, float* out_xyz)
       lua_gettable(L, param_idx - 3);
       luaL_argcheck(L, lua_isnumber(L, top + 1) && lua_isnumber(L, top + 2) && lua_isnumber(L, top + 3),
          param_idx - 3, "expected numerical array");
-      out_xyz[0] = lua_tonumber(L, top + 1);
-      out_xyz[1] = lua_tonumber(L, top + 2);
-      out_xyz[2] = lua_tonumber(L, top + 3);
+      out_xyz[0] = (float)lua_tonumber(L, top + 1);
+      out_xyz[1] = (float)lua_tonumber(L, top + 2);
+      out_xyz[2] = (float)lua_tonumber(L, top + 3);
       lua_pop(L, 3);
    }
    else if(lua_isuserdata(L, 3))
@@ -101,9 +101,9 @@ void lua_readtriangleface(lua_State* L, int param_idx, uint16_t* out_abc)
       lua_gettable(L, param_idx - 3);
       luaL_argcheck(L, lua_isnumber(L, top + 1) && lua_isnumber(L, top + 2) && lua_isnumber(L, top + 3),
          param_idx - 3, "expected numerical array");
-      out_abc[0] = lua_tonumber(L, top + 1);
-      out_abc[1] = lua_tonumber(L, top + 2);
-      out_abc[2] = lua_tonumber(L, top + 3);
+      out_abc[0] = (uint16_t)lua_tointeger(L, top + 1);
+      out_abc[1] = (uint16_t)lua_tointeger(L, top + 2);
+      out_abc[2] = (uint16_t)lua_tointeger(L, top + 3);
       lua_pop(L, 3);
    }
    else

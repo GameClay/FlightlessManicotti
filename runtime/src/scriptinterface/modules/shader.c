@@ -80,7 +80,7 @@ static int Shader_allocate(lua_State* L)
    luaL_argcheck(L, lua_isnumber(L, 2), 2, "expected shader type");
 
    shader_src = lua_tostring(L, 1);
-   shader_type = lua_tointeger(L, 2);
+   shader_type = (GLenum)lua_tointeger(L, 2);
 
    if(shader_compile(shader_src, shader_type, &gl_shader) == KL_SUCCESS)
    {
