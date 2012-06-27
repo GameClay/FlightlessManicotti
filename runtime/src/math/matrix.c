@@ -297,7 +297,7 @@ extern float kl_matrix_mul_vector_batch_sse3_timing(uint32_t num);
 extern float kl_matrix_mul_vector_batch_c_timing(uint32_t num);
 
 #define NUM_TEST_RUNS 50000
-void kl_matrix_math_self_test()
+void kl_matrix_math_self_test(void)
 {
    int i;
    float c_mul_ms, sse_mul_ms, c_xfm_ms, sse_xfm_ms, c_batch_xfm_ms, sse_batch_xfm_ms;

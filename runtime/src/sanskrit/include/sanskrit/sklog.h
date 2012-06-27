@@ -94,12 +94,12 @@ extern "C" {
  *
  * @return 0 if successful, 1 otherwise.
  */
-extern int sklog_init();
+extern int sklog_init(void);
 
 /**
  * Destroy Sanskrit.
  */
-extern void sklog_destroy();
+extern void sklog_destroy(void);
 
 /**
  * Core logging function.

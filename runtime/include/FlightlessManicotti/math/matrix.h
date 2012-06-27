@@ -128,7 +128,7 @@ extern KL_API void kl_matrix_dump(float* m);
  *
  * Asserts if a failure occurs.
  */
-extern KL_API void kl_matrix_math_self_test();
+extern KL_API void kl_matrix_math_self_test(void);
 
 /**
  * Constant identity matrix.
