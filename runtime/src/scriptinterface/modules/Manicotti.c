@@ -23,6 +23,8 @@
 #include <FlightlessManicotti/math/noise.h>
 #include <FlightlessManicotti/render/render_list.h>
 
+int luaopen_manicotti(lua_State* L);
+
 extern const char* VECTOR2D_LUA_LIB;
 extern const char* VECTOR3D_LUA_LIB;
 extern const char* RENDER_LIST_LUA_LIB;

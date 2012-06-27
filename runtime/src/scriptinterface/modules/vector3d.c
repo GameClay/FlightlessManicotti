@@ -26,6 +26,8 @@
 
 #define VECTOR3D_INSTANCE_TABLE "vector3d_instance_method_table"
 const char* VECTOR3D_LUA_LIB = "vector3d";
+int push_lua_vector3(lua_State* L, float* a);
+int luaopen_vector3d(lua_State* L);
 
 int push_lua_vector3(lua_State* L, float* a)
 {

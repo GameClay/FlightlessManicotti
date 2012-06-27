@@ -27,6 +27,7 @@ extern kl_render_context_t g_script_render_context;
 
 const char* RENDER_LIST_LUA_LIB = "RenderList";
 const char* RENDER_INSTANCE_LUA_LIB = "RenderInstance";
+int luaopen_render_list(lua_State* L);
 
 extern const char* MESH_LUA_LIB;
 extern const char* RENDER_TARGET_LUA_LIB;
@@ -141,7 +142,7 @@ static int RenderInstance_gc(lua_State* L)
 
    if(inst->consts != NULL)
    {
-      int i;
+      uint32_t i;
       for(i = 0; i < inst->num_consts; i++)
       {
          if(inst->consts[i]->dealloc_constant)
@@ -176,7 +177,7 @@ static int RenderInstance_seteffect(lua_State* L)
    return 0;
 }
 
-void RenderInstance_shaderconsthelper(lua_State* L, kl_shader_constant_t* constant)
+static void RenderInstance_shaderconsthelper(lua_State* L, kl_shader_constant_t* constant)
 {
    if(constant != NULL)
    {
@@ -387,8 +388,7 @@ static int RenderInstance_setshaderconstants(lua_State* L)
 {
    lua_render_instance* inst_hdlr = (lua_render_instance*)lua_touserdata(L, 1);
    kl_render_instance_t* inst = inst_hdlr->inst;
-   int i;
-   size_t num_consts, old_num_consts;
+   size_t i, num_consts, old_num_consts;
    kl_shader_constant_t** consts;
    kl_shader_constant_t** old_consts;
    luaL_argcheck(L, lua_istable(L, 2), 2, "expected table of shader constants");
@@ -418,13 +418,15 @@ static int RenderInstance_setshaderconstants(lua_State* L)
          consts[i] = kl_heap_alloc(sizeof(kl_shader_constant_t) + name_len);
          kl_zero_mem(consts[i], sizeof(kl_shader_constant_t) + name_len);
          strcpy(consts[i]->name, name);
+         consts[i]->constant_idx = -1;
 
          RenderInstance_shaderconsthelper(L, consts[i]);
       }
       else
       {
          consts[i] = kl_heap_alloc(sizeof(kl_shader_constant_t));
-         kl_zero_mem(inst->consts[i], sizeof(kl_shader_constant_t));
+         kl_zero_mem(consts[i], sizeof(kl_shader_constant_t));
+         consts[i]->constant_idx = -1;
       }
 
       lua_pop(L, 1);
@@ -459,7 +461,7 @@ static int RenderInstance_setshaderconstants(lua_State* L)
 
 static int RenderInstance_updateshaderconstants(lua_State* L)
 {
-   int i;
+   size_t i;
    lua_render_instance* inst_hdlr = (lua_render_instance*)lua_touserdata(L, 1);
    kl_render_instance_t* inst = inst_hdlr->inst;
    luaL_argcheck(L, lua_istable(L, 2), 2, "expected table of shader constants");

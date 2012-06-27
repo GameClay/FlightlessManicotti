@@ -26,6 +26,8 @@
 #include "scriptinterface/helpers/readers.h"
 
 const char* MESH_LUA_LIB = "Mesh";
+int luaopen_mesh(lua_State* L);
+
 extern int push_lua_float_array(lua_State* L, float* a, size_t sz);
 extern int push_lua_uint16_array(lua_State* L, uint16_t* a, size_t sz);
 extern int push_lua_vector3_array(lua_State* L, float* a, size_t sz);

@@ -31,7 +31,7 @@ kl_script_event_t g_event_RenderInit;
 /* script.events.RenderResize */
 kl_script_event_t g_event_RenderResize;
 
-int lua_render_resize_assigner(void* lstate, kl_script_event_t* event)
+static int lua_render_resize_assigner(void* lstate, kl_script_event_t* event)
 {
    lua_State* L = lstate;
    kl_render_context_t ctx = (kl_render_context_t)event->event.context.as_ptr;
@@ -244,7 +244,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
                if(inst->effect)
                {
                   kl_effect_manager_bind_effect(context->effect_mgr, inst->effect, &hax_xfm_state,
-                     (const kl_shader_constant_t**)inst->consts, inst->num_consts);
+                     inst->consts, inst->num_consts);
                }
 
                kl_mesh_bind(inst->mesh);

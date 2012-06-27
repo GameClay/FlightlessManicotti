@@ -54,6 +54,8 @@ extern KL_API void kl_particle_render_quads_free(kl_particle_render_quads_t* ren
 extern KL_API void kl_particle_render_quads_assign_system(kl_particle_render_quads_t renderer,
    kl_particle_system_t system);
 
+extern KL_API void kl_particle_render_quads_draw(kl_particle_render_quads_t renderer);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

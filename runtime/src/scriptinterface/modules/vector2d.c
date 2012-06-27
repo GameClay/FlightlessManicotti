@@ -26,6 +26,8 @@
 
 #define VECTOR2D_INSTANCE_TABLE "vector2d_instance_method_table"
 const char* VECTOR2D_LUA_LIB = "vector2d";
+int push_lua_vector2(lua_State* L, float* a);
+int luaopen_vector2d(lua_State* L);
 
 int push_lua_vector2(lua_State* L, float* a)
 {

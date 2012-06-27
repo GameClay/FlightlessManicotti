@@ -18,19 +18,13 @@
 
 #include <FlightlessManicotti/math/matrix.h>
 #include <FlightlessManicotti/core/timer.h>
-
-extern void kl_matrix_mul_matrix_sse(const float* KL_RESTRICT a, const float* KL_RESTRICT b, float* KL_RESTRICT c);
-extern void kl_matrix_mul_matrix_c(const float* KL_RESTRICT a, const float* KL_RESTRICT b, float* KL_RESTRICT mresult);
-extern void kl_matrix_mul_vector_sse3(const float* KL_RESTRICT a, const float* KL_RESTRICT vec, float* KL_RESTRICT o);
-extern void kl_matrix_mul_vector_c(const float* KL_RESTRICT m, const float* KL_RESTRICT p, float* KL_RESTRICT presult);
-extern void kl_matrix_mul_vector_batch_sse3(const float* KL_RESTRICT a, const float* KL_RESTRICT vec, float* KL_RESTRICT o, uint32_t n);
-extern void kl_matrix_mul_vector_batch_c(const float* KL_RESTRICT m, const float* KL_RESTRICT vec, float* KL_RESTRICT o, uint32_t n);
+#include "math/matrix_internal.h"
 
 float kl_matrix_mul_matrix_sse_timing(uint32_t num)
 {
    kl_absolute_time_t start_time, end_time, delta_time;
    uint64_t time_ns;
-   int i, j;
+   uint32_t i, j;
 
    kl_matrix_t* a = kl_heap_alloc(sizeof(kl_matrix_t) * num);
    kl_matrix_t* b = kl_heap_alloc(sizeof(kl_matrix_t) * num);
@@ -58,7 +52,7 @@ float kl_matrix_mul_matrix_c_timing(uint32_t num)
 {
    kl_absolute_time_t start_time, end_time, delta_time;
    uint64_t time_ns;
-   int i, j;
+   uint32_t i, j;
 
    kl_matrix_t* a = kl_heap_alloc(sizeof(kl_matrix_t) * num);
    kl_matrix_t* b = kl_heap_alloc(sizeof(kl_matrix_t) * num);
@@ -87,7 +81,7 @@ float kl_matrix_mul_vector_sse3_timing(uint32_t num)
 {
    kl_absolute_time_t start_time, end_time, delta_time;
    uint64_t time_ns;
-   int i, j;
+   uint32_t i, j;
 
    kl_matrix_t* a = kl_heap_alloc(sizeof(kl_matrix_t) * num);
    kl_vector4_t* b = kl_heap_alloc(sizeof(kl_vector4_t) * num);
@@ -117,7 +111,7 @@ float kl_matrix_mul_vector_c_timing(uint32_t num)
 {
    kl_absolute_time_t start_time, end_time, delta_time;
    uint64_t time_ns;
-   int i, j;
+   uint32_t i, j;
 
    kl_matrix_t* a = kl_heap_alloc(sizeof(kl_matrix_t) * num);
    kl_vector4_t* b = kl_heap_alloc(sizeof(kl_vector4_t) * num);
@@ -147,7 +141,7 @@ float kl_matrix_mul_vector_batch_sse3_timing(uint32_t num)
 {
    kl_absolute_time_t start_time, end_time, delta_time;
    uint64_t time_ns;
-   int i, j;
+   uint32_t i, j;
 
    kl_matrix_t a;
    kl_vector4_t* b = kl_heap_alloc(sizeof(kl_vector4_t) * num);
@@ -175,7 +169,7 @@ float kl_matrix_mul_vector_batch_c_timing(uint32_t num)
 {
    kl_absolute_time_t start_time, end_time, delta_time;
    uint64_t time_ns;
-   int i, j;
+   uint32_t i, j;
 
    kl_matrix_t a;
    kl_vector4_t* b = kl_heap_alloc(sizeof(kl_vector4_t) * num);

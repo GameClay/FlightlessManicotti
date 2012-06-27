@@ -126,7 +126,7 @@ int kl_tick_process_list(const kl_process_manager_t mgr)
 {
    kl_process_tick_ptr* tick_fn;
    void** context;
-   int i;
+   uint32_t i;
    kl_process_manager_t pom = (mgr == KL_DEFAULT_PROCESS_MANAGER ? g_process_manager : mgr);
    KL_ASSERT(pom != NULL, "NULL process manager.");
 
@@ -145,7 +145,7 @@ int kl_advance_process_list(const kl_process_manager_t mgr, float dt)
 {
    kl_process_advance_time_ptr* advance_time_fn;
    void** context;
-   int i;
+   uint32_t i;
    kl_process_manager_t pom = (mgr == KL_DEFAULT_PROCESS_MANAGER ? g_process_manager : mgr);
 
    KL_ASSERT(pom != NULL, "NULL process manager.");

@@ -19,6 +19,7 @@
 #include <FlightlessManicotti/math/matrix.h>
 #include <FlightlessManicotti/core/timer.h>
 #include <pmmintrin.h>
+#include "math/matrix_internal.h"
 
 const kl_matrix_t KL_MATRIX_IDENTITY = {{
    1.0f, 0.0f, 0.0f, 0.0f,

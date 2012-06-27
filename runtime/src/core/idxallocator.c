@@ -32,7 +32,7 @@ int kl_alloc_idx_allocator(kl_idx_allocator_t* idx_allocator, uint32_t num_indic
    int ret = KL_ERROR;
    const uint32_t alloc_sz = sizeof(struct _kl_idx_allocator) + sizeof(uint32_t) * (num_indices - 1);
    struct _kl_idx_allocator* idxalloc = NULL;
-   int i;
+   uint32_t i;
    
    KL_ASSERT(idx_allocator != NULL, "NULL index-allocator pointer");
    
@@ -88,7 +88,7 @@ void kl_idx_allocator_release(kl_idx_allocator_t idx_allocator, uint32_t idx)
    
 #ifdef KL_ENABLE_ASSERTS
    {
-      int i;
+      uint32_t i;
       for(i = 0; i < idxalloc->free_tail_idx; i++)
          KL_ASSERT(idxalloc->free_list[i] != idx, "Index was freed twice.");
    }

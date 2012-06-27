@@ -19,6 +19,9 @@
 #include <FlightlessManicotti/math/vector.h>
 #include <FlightlessManicotti/core/timer.h>
 #include <pmmintrin.h>
+#include "math/vector_internal.h"
+
+void kl_vector_math_self_test(void);
 
 #if 3 <= __SSE__ || defined(__SSE3__)
 float kl_vector_dot_sse3(const float* KL_RESTRICT a, const float* KL_RESTRICT b)
@@ -69,7 +72,7 @@ void kl_vector_cross_c(const float* KL_RESTRICT a, const float* KL_RESTRICT b, f
 }
 
 #define NUM_TEST_RUNS 50000
-void kl_vector_math_self_test()
+void kl_vector_math_self_test(void)
 {
    int i, j;
    kl_absolute_time_t start_time, end_time, delta_time;

@@ -26,6 +26,8 @@
 
 #define UINT16_ARRAY_INSTANCE_TABLE "uint16_array_instance_method_table"
 const char* UINT16_ARRAY_LUA_LIB = "uint16_array";
+int push_lua_uint16_array(lua_State* L, uint16_t* a, size_t sz);
+int luaopen_uint16_array(lua_State* L);
 
 int push_lua_uint16_array(lua_State* L, uint16_t* a, size_t sz)
 {
@@ -41,9 +43,8 @@ int push_lua_uint16_array(lua_State* L, uint16_t* a, size_t sz)
 
 static int uint16_array_index(lua_State* L)
 {
-   size_t len;
+   size_t len, idx;
    const char* key;
-   int idx;
    kl_lua_uint16_array_t* array = (kl_lua_uint16_array_t*)lua_touserdata(L, 1);
 
    key = lua_tolstring(L, 2, &len);
@@ -70,8 +71,7 @@ static int uint16_array_index(lua_State* L)
 
 static int uint16_array_newindex(lua_State* L)
 {
-   size_t len;
-   int idx;
+   size_t len, idx;
    const char* key;
    kl_lua_uint16_array_t* array = (kl_lua_uint16_array_t*)lua_touserdata(L, 1);
 

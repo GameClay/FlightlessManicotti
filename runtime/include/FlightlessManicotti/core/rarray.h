@@ -28,8 +28,8 @@ extern "C" {
 
 typedef struct {
    void* elements;
-   uint32_t num_elements;
    size_t element_sz;
+   uint32_t num_elements;
    uint32_t max_idx;
 } kl_rarray_t;
 

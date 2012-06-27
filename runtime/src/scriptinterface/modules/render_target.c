@@ -26,6 +26,8 @@
 extern kl_render_context_t g_script_render_context;
 
 const char* RENDER_TARGET_LUA_LIB = "RenderTarget";
+int luaopen_render_target(lua_State* L);
+
 extern const char* TEXTURE_LUA_LIB;
 
 static int RenderTarget_new(lua_State* L)

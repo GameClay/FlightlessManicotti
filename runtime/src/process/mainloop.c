@@ -28,6 +28,8 @@ kl_absolute_time_t g_mainloop_last_tick_time = 0;
 kl_absolute_time_t g_mainloop_elapsed_time = 0;
 kl_absolute_time_t g_mainloop_tick_frequency;
 
+int kl_init_mainloop(const char* main_script, KL_BOOL wait_on_fences, int argc, const char* argv[]);
+
 int kl_init_mainloop(const char* main_script, KL_BOOL wait_on_fences, int argc, const char* argv[])
 {
    int ret = KL_SUCCESS;

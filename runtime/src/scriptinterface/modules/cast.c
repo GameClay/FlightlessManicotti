@@ -23,6 +23,8 @@
 #include <FlightlessManicotti/fm.h>
 #include <stdint.h>
 
+int luaopen_cast(lua_State* L);
+
 typedef union {
    uint32_t as_uint32;
    float as_float;

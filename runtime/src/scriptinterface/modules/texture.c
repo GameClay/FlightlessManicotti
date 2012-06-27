@@ -27,6 +27,9 @@
 extern kl_render_context_t g_script_render_context;
 
 const char* TEXTURE_LUA_LIB = "Texture";
+GLenum tex_format_to_base_format(GLint tex_format);
+GLenum tex_format_to_type(GLint tex_format);
+int luaopen_texture(lua_State* L);
 
 GLenum tex_format_to_base_format(GLint tex_format)
 {

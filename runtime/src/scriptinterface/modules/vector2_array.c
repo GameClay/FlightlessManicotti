@@ -27,6 +27,8 @@
 
 #define VECTOR2_ARRAY_INSTANCE_TABLE "vector2_array_instance_method_table"
 const char* VECTOR2_ARRAY_LUA_LIB = "vector2_array";
+int push_lua_vector2_array(lua_State* L, float* a, size_t sz);
+int luaopen_vector2_array(lua_State* L);
 
 extern int push_lua_vector2(lua_State* L, float* a);
 
@@ -44,9 +46,8 @@ int push_lua_vector2_array(lua_State* L, float* a, size_t sz)
 
 static int vector2_array_index(lua_State* L)
 {
-   size_t len;
+   size_t len, idx;
    const char* key;
-   int idx;
    kl_lua_float_array_t* array = (kl_lua_float_array_t*)lua_touserdata(L, 1);
 
    key = lua_tolstring(L, 2, &len);
@@ -72,8 +73,7 @@ static int vector2_array_index(lua_State* L)
 
 static int vector2_array_newindex(lua_State* L)
 {
-   size_t len;
-   int idx;
+   size_t len, idx;
    const char* key;
    kl_lua_float_array_t* array = (kl_lua_float_array_t*)lua_touserdata(L, 1);
 

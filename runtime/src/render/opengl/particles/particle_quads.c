@@ -28,16 +28,16 @@ typedef struct {
 } particle_vertex;
 
 struct _kl_particle_render_quads {
-   GLuint vert_buffer[2];
-   GLuint vert_buffer_elements[2];
-   GLuint idx_buffer;
-   int buffer_idx;
-   int last_used_idx;
    kl_particle_system_t system;
    particle_vertex* verts;
    size_t verts_sz;
-   uint32_t pid;
    kl_render_context_t context;
+   GLuint vert_buffer[2];
+   GLuint vert_buffer_elements[2];
+   GLuint idx_buffer;
+   uint32_t pid;
+   int buffer_idx;
+   int last_used_idx;
 };
 
 void _kl_particle_render_quads_advance_time(float dt, void* context);
@@ -185,6 +185,8 @@ void _kl_particle_render_quads_advance_time(float dt, void* context)
    int last_used_idx = renderer->last_used_idx;
    kl_particle_system_t system = renderer->system;
 
+   KL_UNUSED(dt);
+
    if(system != NULL && last_used_idx != next_buffer_idx)
    {
       uint32_t i = 0;
@@ -256,6 +258,7 @@ void _kl_particle_render_quads_advance_time(float dt, void* context)
 
 void kl_particle_render_quads_draw(kl_particle_render_quads_t renderer)
 {
+   KL_UNUSED(renderer);
    /*
    GLuint buffer_idx = renderer->buffer_idx;
 

@@ -25,6 +25,7 @@
 
 const char* SHADER_LUA_LIB = "Shader";
 const char* SHADER_PROGRAM_LUA_LIB = "ShaderProgram";
+int luaopen_shader(lua_State* L);
 
 extern kl_render_context_t g_script_render_context;
 

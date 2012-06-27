@@ -23,6 +23,7 @@
 #include <FlightlessManicotti/game/parameters/parameter.h>
 
 #define PARAMETERVALUE_LIB "ParameterValue"
+int luaopen_parameter(lua_State* L);
 
 static int ParameterValue_new(lua_State* L)
 {

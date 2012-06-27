@@ -31,7 +31,7 @@ int kl_mesh_load_ctm(kl_mesh_t* mesh, const char* mesh_name)
 
    if(ctmGetError(context) == CTM_NONE)
    {
-      int i;
+      size_t i;
       const CTMuint* indices;
       const CTMfloat* verts;
       const CTMfloat* normals;
@@ -84,7 +84,7 @@ void kl_mesh_recompute_normals(kl_mesh_t* mesh, uint16_t start_idx, uint16_t num
    if(mesh != NULL && mesh->index != NULL && mesh->vertex != NULL && mesh->normal != NULL &&
       mesh->face_normal != NULL && mesh->num_indices >= num_tris * 3 + start_idx)
    {
-      int i, j, k;
+      size_t i, j, k;
       kl_rarray_t* vert_face_assoc;
       kl_vector4_t tmpnrm;
 
@@ -96,7 +96,7 @@ void kl_mesh_recompute_normals(kl_mesh_t* mesh, uint16_t start_idx, uint16_t num
       /* First pass, compute face normals */
       for(i = 0; i < num_tris; i++)
       {
-         int face = start_idx / 3 + i;
+         uint32_t face = (uint32_t)(start_idx / 3 + i);
          float* face_normal = &mesh->face_normal[face * 3];
          const uint16_t* index = &mesh->index[start_idx + i * 3];
          const float* v0 = &mesh->vertex[index[0] * 3];
