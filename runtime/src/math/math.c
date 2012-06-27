@@ -17,3 +17,8 @@
  */
 
 #include <FlightlessManicotti/math/math.h>
+
+float kl_nextpow2(float x)
+{
+   return ceil(log(x) / log(2.0f));
+}

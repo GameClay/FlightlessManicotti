@@ -46,6 +46,8 @@ extern "C" {
 
 #define kl_is_zero(f) kl_fsel(fabs(f) - KL_EPSILON_F, 1, 0)
 
+extern KL_API float kl_nextpow2(float x);
+
 typedef void (*kl_math_abc_restrict_fn)(const float* KL_RESTRICT a, const float* KL_RESTRICT b, float* KL_RESTRICT c);
 typedef void (*kl_math_abcn_restrict_fn)(const float* KL_RESTRICT a, const float* KL_RESTRICT b, float* KL_RESTRICT c, uint32_t n);
 typedef float (*kl_math_f_ab_restrict_fn)(const float* KL_RESTRICT a, const float* KL_RESTRICT b);
