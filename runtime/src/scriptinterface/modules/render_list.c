@@ -410,13 +410,12 @@ static int RenderInstance_setshaderconstants(lua_State* L)
    {
       if(lua_isstring(L, -2))
       {
-         size_t name_len;
          const char* name;
          lua_pushvalue(L, -2);
-         name = lua_tolstring(L, -1, &name_len);
+         name = lua_tostring(L, -1);
          lua_pop(L, 1);
-         consts[i] = kl_heap_alloc(sizeof(kl_shader_constant_t) + name_len);
-         kl_zero_mem(consts[i], sizeof(kl_shader_constant_t) + name_len);
+         consts[i] = kl_heap_alloc(sizeof(kl_shader_constant_t));
+         kl_zero_mem(consts[i], sizeof(kl_shader_constant_t));
          strcpy(consts[i]->name, name);
          consts[i]->constant_idx = -1;
 
