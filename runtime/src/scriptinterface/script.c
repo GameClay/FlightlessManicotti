@@ -40,6 +40,7 @@ extern int luaopen_parameter(lua_State* L);
 extern int luaopen_manicotti(lua_State* L);
 extern int luaopen_shader_constant_assigner(lua_State* L);
 extern int luaopen_shader(lua_State* L);
+extern int luaopen_shader_constant(lua_State* L);
 
 /* KL_DEFAULT_SCRIPT_CONTEXT */
 kl_script_context_t g_script_context = NULL;
@@ -117,6 +118,7 @@ int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, uint32_t even
    luaopen_manicotti(sctx->lua_state);
    luaopen_shader_constant_assigner(sctx->lua_state);
    luaopen_shader(sctx->lua_state);
+   luaopen_shader_constant(sctx->lua_state);
 
    LOAD_SWIG_LIBS(sctx->lua_state);
 
