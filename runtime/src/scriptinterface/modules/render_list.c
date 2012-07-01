@@ -34,6 +34,7 @@ extern const char* RENDER_TARGET_LUA_LIB;
 extern const char* TEXTURE_LUA_LIB;
 extern const char* SHADER_CONSTANT_ASSIGNER_LUA_LIB;
 extern const char* SHADER_PROGRAM_LUA_LIB;
+extern const char* CONSTANT_BUFFER_LUA_LIB;
 
 /* With no alignment on lua_newuserdata, need to have a holder */
 typedef struct lua_render_instance {
@@ -120,6 +121,7 @@ static int RenderInstance_new(lua_State* L)
    inst->consts = NULL;
    inst->num_consts = 0;
    inst->render_target = NULL;
+   inst->constant_buffer = NULL;
    inst->draw_buffers[0] = GL_COLOR_ATTACHMENT0;
    inst->num_draw_buffers = 1;
    inst->clear_before_draw = 0;
@@ -497,6 +499,27 @@ static int RenderInstance_updateshaderconstants(lua_State* L)
    return 0;
 }
 
+static int RenderInstance_setconstantbuffer(lua_State* L)
+{
+   lua_render_instance* inst_hdlr = (lua_render_instance*)lua_touserdata(L, 1);
+   kl_render_instance_t* inst = inst_hdlr->inst;
+
+   luaL_argcheck(L, lua_istable(L, 2), 2, "expected table created by ConstantBuffer.new");
+   lua_getfield(L, 2, "_constantbuffer");
+   if(lua_isnoneornil(L, -1) || !lua_isuserdata(L, -1))
+   {
+      lua_pop(L, 1);
+      luaL_argcheck(L, 0, 2, "expected table created by ConstantBuffer.new");
+   }
+   else
+   {
+      inst->constant_buffer = luaL_checkudata(L, -1, CONSTANT_BUFFER_LUA_LIB);
+      lua_pop(L, 1);
+   }
+
+   return 0;
+}
+
 static int RenderInstance_settransform(lua_State* L)
 {
    lua_render_instance* inst_hdlr = (lua_render_instance*)lua_touserdata(L, 1);
@@ -574,6 +597,7 @@ static const struct luaL_reg RenderInstance_instance_methods [] = {
    {"settransform", RenderInstance_settransform},
    {"setdrawtype", RenderInstance_setdrawtype},
    {"setblend", RenderInstance_setblend},
+   {"setconstantbuffer", RenderInstance_setconstantbuffer},
    {"setshaderconstants", RenderInstance_setshaderconstants},
    {"updateshaderconstants", RenderInstance_updateshaderconstants},
    {"setrendertarget", RenderInstance_setrendertarget},

@@ -48,6 +48,8 @@ KL_ALIGNED_STRUCT_PRE(16) {
    uint32_t blend_src;              /**< Source blend to use. */
    uint32_t blend_dest;             /**< Destination blend to use. */
 
+   kl_shader_constant_buffer_t* constant_buffer;
+
    kl_shader_constant_t** consts;   /**< Shader constants to bind to the associated Material. */
    size_t num_consts;               /**< Number of constants in the consts array. */
 
@@ -61,7 +63,7 @@ KL_ALIGNED_STRUCT_PRE(16) {
    uint32_t draw_type;              /**< Primitive draw type to use for drawing the associated Mesh. */
    KL_BOOL clear_before_draw;       /**< If set to KL_TRUE, the associated RenderTarget will be cleared before this instance is drawn. */
 
-   uint8_t _padding[12];
+   uint8_t _padding[4];
 } KL_ALIGNED_STRUCT_POST(kl_render_instance_t, 16);
 
 typedef struct _kl_render_list {

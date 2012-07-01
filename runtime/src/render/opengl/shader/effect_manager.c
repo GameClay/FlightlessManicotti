@@ -64,6 +64,120 @@ void kl_effect_manager_register_data_source(kl_render_context_t render_ctx, uint
    }
 }
 
+static int _do_new_constant_assign(const kl_new_shader_constant_t* constant,
+   const kl_transform_state_t* xfm_state, int num_tex)
+{
+   int ret = 0;
+   GLint loc = constant->constant_idx;
+
+   switch(constant->constant_type)
+   {
+      case KL_SHADER_CONSTANT_TYPE_MATRIX:
+      {
+         const float* m = constant->constant.as_float_ptr;
+         switch(constant->data_constant)
+         {
+            case kl_matrix_data_world_to_camera: m = xfm_state->world_to_camera.m; break;
+            case kl_matrix_data_camera_to_screen: m = xfm_state->camera_to_screen.m; break;
+            case kl_matrix_data_world_to_screen: m = xfm_state->world_to_screen.m; break;
+            case kl_matrix_data_object_to_screen: m = xfm_state->object_to_screen.m; break;
+         }
+         glUniformMatrix4fv(loc, constant->constant_num,
+            GL_FALSE, m);
+         break;
+      }
+
+      case KL_SHADER_CONSTANT_TYPE_TEX:
+      {
+         GLint tex_type = GL_TEXTURE_2D;
+         glUniform1i(loc, num_tex);
+         glActiveTexture(GL_TEXTURE0 + num_tex);
+         switch(constant->constant_sz)
+         {
+            case 1: tex_type = GL_TEXTURE_1D; break;
+            case 2: tex_type = GL_TEXTURE_2D; break;
+            case 3: tex_type = GL_TEXTURE_3D; break;
+            case 4: tex_type = GL_TEXTURE_CUBE_MAP; break;
+         }
+         glBindTexture(tex_type, constant->constant.as_tex);
+         ret += 1;
+         break;
+      }
+
+      case KL_SHADER_CONSTANT_TYPE_FLOAT:
+      {
+         switch(constant->constant_sz)
+         {
+            case 1:
+            {
+               glUniform1fv(loc, constant->constant_num,
+                  constant->constant.as_float_ptr);
+               break;
+            }
+
+            case 2:
+            {
+               glUniform2fv(loc, constant->constant_num,
+                  constant->constant.as_float_ptr);
+               break;
+            }
+
+            case 3:
+            {
+               glUniform3fv(loc, constant->constant_num,
+                  constant->constant.as_float_ptr);
+               break;
+            }
+
+            case 4:
+            {
+               glUniform4fv(loc, constant->constant_num,
+                  constant->constant.as_float_ptr);
+               break;
+            }
+         }
+         break;
+      }
+
+      case KL_SHADER_CONSTANT_TYPE_INT:
+      {
+         switch(constant->constant_sz)
+         {
+            case 1:
+            {
+               glUniform1iv(loc, constant->constant_num,
+                  constant->constant.as_int_ptr);
+               break;
+            }
+
+            case 2:
+            {
+               glUniform2iv(loc, constant->constant_num,
+                  constant->constant.as_int_ptr);
+               break;
+            }
+
+            case 3:
+            {
+               glUniform3iv(loc, constant->constant_num,
+                  constant->constant.as_int_ptr);
+               break;
+            }
+
+            case 4:
+            {
+               glUniform4iv(loc, constant->constant_num,
+                  constant->constant.as_int_ptr);
+               break;
+            }
+         }
+         break;
+      }
+   }
+
+   return ret;
+}
+
 static int _do_constant_assign(kl_effect_manager_t mgr, const kl_shader_constant_t* constant, GLint loc, int num_tex)
 {
    int ret = 0;
@@ -72,6 +186,7 @@ static int _do_constant_assign(kl_effect_manager_t mgr, const kl_shader_constant
    {
       case KL_SHADER_CONSTANT_TYPE_MATRIX:
       {
+         /* TODO: Matrix types */
          glUniformMatrix4fv(loc, constant->constant_num,
             GL_FALSE, constant->constant.as_float_ptr);
          break;
@@ -183,6 +298,32 @@ static int _do_constant_assign(kl_effect_manager_t mgr, const kl_shader_constant
    }
 
    return ret;
+}
+
+
+void kl_effect_manager_new_bind_effect(kl_effect_manager_t mgr, kl_effect_ptr_t effect,
+   const kl_transform_state_t* xfm_state, const kl_shader_constant_buffer_t* constant_buffer)
+{
+   KL_UNUSED(mgr);
+
+   if(effect != NULL)
+   {
+      size_t i;
+      int num_tex = 0;
+
+      glUseProgram(effect->program);
+
+      /* Assign other constants */
+      for(i = 0; i < constant_buffer->num_constants; i++)
+      {
+         num_tex += _do_new_constant_assign(&constant_buffer->constant[i],
+            xfm_state, num_tex);
+      }
+   }
+   else
+   {
+      glUseProgram(0);
+   }
 }
 
 void kl_effect_manager_bind_effect(kl_effect_manager_t mgr, kl_effect_ptr_t effect,
