@@ -339,14 +339,14 @@ static void RenderInstance_shaderconsthelper(lua_State* L, kl_shader_constant_t*
                }
                else
                {
-               switch(tex->tex_depth)
-               {
-                  case GL_TEXTURE_2D:
+                  switch(tex->tex_depth)
                   {
-                     constant->constant_sz = 2; /* 2D texture */
-                     break;
+                     case GL_TEXTURE_2D:
+                     {
+                        constant->constant_sz = 2; /* 2D texture */
+                        break;
+                     }
                   }
-               }
 
                   constant->constant_type = KL_SHADER_CONSTANT_TYPE_TEX;
                   constant->constant.as_tex = tex->texture;
