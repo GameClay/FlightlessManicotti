@@ -48,10 +48,7 @@ KL_ALIGNED_STRUCT_PRE(16) {
    uint32_t blend_src;              /**< Source blend to use. */
    uint32_t blend_dest;             /**< Destination blend to use. */
 
-   kl_shader_constant_buffer_t* constant_buffer;
-
-   kl_shader_constant_t** consts;   /**< Shader constants to bind to the associated Material. */
-   size_t num_consts;               /**< Number of constants in the consts array. */
+   kl_shader_constant_buffer_t* constant_buffer; /**< Shader ConstantBuffer */
 
    void* render_target;             /**< RenderTarget to which this instance should be drawn, or NULL for the backbuffer */
    uint32_t draw_buffers[15];       /**< Draw buffers. */

@@ -244,13 +244,8 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
                   /* Hax */
                   if(inst->constant_buffer)
                   {
-                     kl_effect_manager_new_bind_effect(context->effect_mgr, inst->effect, &hax_xfm_state,
-                        inst->constant_buffer);
-                  }
-                  else
-                  {
                      kl_effect_manager_bind_effect(context->effect_mgr, inst->effect, &hax_xfm_state,
-                        inst->consts, inst->num_consts);
+                        inst->constant_buffer);
                   }
                }
 

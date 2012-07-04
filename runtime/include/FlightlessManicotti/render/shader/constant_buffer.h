@@ -30,6 +30,8 @@ extern "C" {
 #define KL_SHADER_CONSTANT_TYPE_FLOAT  2
 #define KL_SHADER_CONSTANT_TYPE_INT    3
 #define KL_SHADER_CONSTANT_TYPE_TEX    4
+#define KL_SHADER_CONSTANT_TYPE_DATA   5
+/*#define KL_SHADER_CONSTANT_TYPE_FN     6*/
 
 enum kl_matrix_data_constant {
    kl_matrix_data_world_to_camera = 1,
@@ -38,14 +40,18 @@ enum kl_matrix_data_constant {
    kl_matrix_data_object_to_screen
 };
 
-typedef struct _kl_new_shader_constant_t* kl_new_shader_constant_ptr;
+typedef struct _kl_shader_constant_t* kl_shader_constant_ptr;
 
-typedef struct _kl_new_shader_constant_t {
+typedef int32_t (*kl_effect_manager_data_source_fn)(const void* context);
+typedef void (*kl_effect_manager_constant_assigner_fn)(const void* context, kl_shader_constant_ptr constant);
+
+typedef struct _kl_shader_constant_t {
    union {
       void* as_ptr;
       float* as_float_ptr;
       int* as_int_ptr;
       int as_tex;
+      kl_effect_manager_data_source_fn as_data_src;
    } constant;
    uint16_t constant_sz;
    uint16_t constant_type;
@@ -53,12 +59,17 @@ typedef struct _kl_new_shader_constant_t {
    uint16_t dealloc_constant;
    uint32_t constant_num;
    int32_t constant_loc;
-} kl_new_shader_constant_t;
+} kl_shader_constant_t;
 
 typedef struct kl_shader_constant_buffer_t {
    size_t num_constants;
-   kl_new_shader_constant_t constant[];
+   kl_shader_constant_t constant[];
 } kl_shader_constant_buffer_t;
+
+typedef struct kl_shader_constant_assigner_t {
+   kl_effect_manager_constant_assigner_fn assigner;
+   const void* context;
+} kl_shader_constant_assigner_t;
 
 #ifdef __cplusplus
 }

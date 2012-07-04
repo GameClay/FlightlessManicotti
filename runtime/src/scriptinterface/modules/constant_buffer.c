@@ -26,14 +26,14 @@
 const char* SHADER_CONSTANT_LUA_LIB = "ShaderConstant";
 const char* CONSTANT_BUFFER_LUA_LIB = "ConstantBuffer";
 int luaopen_shader_constant(lua_State* L);
-void GLenumToKLShaderConstant(GLenum type, kl_new_shader_constant_t* constant);
+void GLenumToKLShaderConstant(GLenum type, kl_shader_constant_t* constant);
 
 extern kl_render_context_t g_script_render_context;
 extern const char* SHADER_PROGRAM_LUA_LIB;
 extern const char* TEXTURE_LUA_LIB;
 extern const char* RENDER_TARGET_LUA_LIB;
 
-void GLenumToKLShaderConstant(GLenum type, kl_new_shader_constant_t* constant)
+void GLenumToKLShaderConstant(GLenum type, kl_shader_constant_t* constant)
 {
    switch(type)
    {
@@ -120,9 +120,9 @@ static int ConstantBuffer_new(lua_State* L)
 
    lua_newtable(L);
    constant_buffer = lua_newuserdata(L, sizeof(kl_shader_constant_buffer_t) +
-      count * sizeof(kl_new_shader_constant_t));
+      count * sizeof(kl_shader_constant_t));
    kl_zero_mem(constant_buffer, sizeof(kl_shader_constant_buffer_t) +
-      count * sizeof(kl_new_shader_constant_t));
+      count * sizeof(kl_shader_constant_t));
    constant_buffer->num_constants = count;
    luaL_getmetatable(L, CONSTANT_BUFFER_LUA_LIB);
    lua_setmetatable(L, -2);
@@ -130,7 +130,7 @@ static int ConstantBuffer_new(lua_State* L)
 
    for(i = 0; i < count; i++)
    {
-      kl_new_shader_constant_t** constant;
+      kl_shader_constant_t** constant;
       char* arrayLoc = NULL;
 
       glGetActiveUniform(effect->program, i, name_sz, NULL, &uniform_num,
@@ -150,7 +150,7 @@ static int ConstantBuffer_new(lua_State* L)
          constant_buffer->constant[i].data_constant = kl_matrix_data_object_to_screen;
       }
 
-      constant = lua_newuserdata(L, sizeof(kl_new_shader_constant_t*));
+      constant = lua_newuserdata(L, sizeof(kl_shader_constant_t*));
       *constant = &constant_buffer->constant[i];
       luaL_getmetatable(L, SHADER_CONSTANT_LUA_LIB);
       lua_setmetatable(L, -2);
@@ -164,8 +164,16 @@ static int ConstantBuffer_new(lua_State* L)
 
 static int ConstantBuffer_gc(lua_State* L)
 {
-   KL_UNUSED(L);
-   kl_log("ConstantBuffer - GC called!");
+   kl_shader_constant_buffer_t* constant_buffer = (kl_shader_constant_buffer_t*)lua_touserdata(L, 1);
+   size_t i;
+   for(i = 0; i < constant_buffer->num_constants; i++)
+   {
+      if(constant_buffer->constant[i].dealloc_constant)
+      {
+         kl_heap_free(constant_buffer->constant[i].constant.as_ptr);
+      }
+   }
+
    return 0;
 }
 
@@ -188,7 +196,7 @@ static int ShaderConstant_gc(lua_State* L)
 
 static int ShaderConstant_tostring(lua_State* L)
 {
-   kl_new_shader_constant_t* constant = *((kl_new_shader_constant_t**)lua_touserdata(L, 1));
+   kl_shader_constant_t* constant = *((kl_shader_constant_t**)lua_touserdata(L, 1));
    const char* typename = "";
    switch(constant->constant_type)
    {
@@ -206,7 +214,7 @@ static int ShaderConstant_tostring(lua_State* L)
 
 static int ShaderConstant_set(lua_State* L)
 {
-   kl_new_shader_constant_t* constant = *((kl_new_shader_constant_t**)lua_touserdata(L, 1));
+   kl_shader_constant_t* constant = *((kl_shader_constant_t**)lua_touserdata(L, 1));
    void* old_ptr = NULL;
    int l_index = 2;
 

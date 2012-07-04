@@ -20,7 +20,7 @@
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
-#include <FlightlessManicotti/render/shader/shader_constant.h>
+#include <FlightlessManicotti/render/shader/constant_buffer.h>
 
 const char* SHADER_CONSTANT_ASSIGNER_LUA_LIB = "ShaderConstantAssigner";
 int luaopen_shader_constant_assigner(lua_State* L);
