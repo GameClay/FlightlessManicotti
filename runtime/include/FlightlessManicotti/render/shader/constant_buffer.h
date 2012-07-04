@@ -52,7 +52,7 @@ typedef struct _kl_new_shader_constant_t {
    uint16_t data_constant;
    uint16_t dealloc_constant;
    uint32_t constant_num;
-   int32_t constant_idx;
+   int32_t constant_loc;
 } kl_new_shader_constant_t;
 
 typedef struct kl_shader_constant_buffer_t {

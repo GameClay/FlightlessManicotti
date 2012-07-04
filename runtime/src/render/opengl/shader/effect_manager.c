@@ -68,7 +68,7 @@ static int _do_new_constant_assign(const kl_new_shader_constant_t* constant,
    const kl_transform_state_t* xfm_state, int num_tex)
 {
    int ret = 0;
-   GLint loc = constant->constant_idx;
+   GLint loc = constant->constant_loc;
 
    switch(constant->constant_type)
    {

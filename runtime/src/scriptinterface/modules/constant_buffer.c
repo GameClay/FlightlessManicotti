@@ -136,7 +136,8 @@ static int ConstantBuffer_new(lua_State* L)
          &uniform_type, name);
       GLenumToKLShaderConstant(uniform_type, &constant_buffer->constant[i]);
       constant_buffer->constant[i].constant_num = uniform_num;
-      constant_buffer->constant[i].constant_idx = i;
+      constant_buffer->constant[i].constant_loc =
+         glGetUniformLocation(effect->program, name);
 
       /* Look for matrices */
       if(strcmp(name, "object_to_screen") == 0)
@@ -192,7 +193,7 @@ static int ShaderConstant_tostring(lua_State* L)
       case KL_SHADER_CONSTANT_TYPE_TEX: typename = "sampler"; break;
    }
 
-   lua_pushfstring(L, "{index: %d, type: %s%d[%d]}", constant->constant_idx, typename,
+   lua_pushfstring(L, "{location: %d, type: %s%d[%d]}", constant->constant_loc, typename,
       constant->constant_sz, constant->constant_num);
    return 1;
 }
