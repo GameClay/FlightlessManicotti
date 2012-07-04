@@ -28,10 +28,11 @@ extern "C" {
 #include <FlightlessManicotti/process/process.h>
 
 typedef struct {
-   uint32_t pid;
    kl_particle_system_t system;
    kl_process_advance_time_ptr advance_fn;
    kl_process_manager_t process_mgr;
+   uint32_t pid;
+   uint32_t _padding;
 } *kl_particle_simulation_t, _kl_particle_simulation;
 
 /**
@@ -64,6 +65,10 @@ extern KL_API void kl_particle_simulation_free(kl_particle_simulation_t* simulat
  */
 extern KL_API void kl_particle_simulation_set_system(kl_particle_simulation_t simulation,
    kl_particle_system_t system);
+
+/* Simulation process functions */
+extern KL_API void kl_particle_simulation_constant(float dt, void* context);
+extern KL_API void kl_particle_simulation_vector_field(float dt, void* context);
 
 #ifdef __cplusplus
 } /* extern "C" */

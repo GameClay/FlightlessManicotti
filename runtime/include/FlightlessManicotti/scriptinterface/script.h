@@ -74,7 +74,7 @@ typedef struct _kl_script_context* kl_script_context_t;
  *
  * @relates kl_script_context_t
  */
-extern KL_API int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_queue_max);
+extern KL_API int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, uint32_t event_queue_max);
 
 /**
  * Run a script file

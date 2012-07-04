@@ -79,7 +79,7 @@ static int _do_constant_assign(kl_effect_manager_t mgr, const kl_shader_constant
 
       case KL_SHADER_CONSTANT_TYPE_TEX:
       {
-         GLint tex_type;
+         GLint tex_type = GL_TEXTURE_2D;
          glUniform1i(loc, num_tex);
          glActiveTexture(GL_TEXTURE0 + num_tex);
          switch(constant->constant_sz)
@@ -186,13 +186,14 @@ static int _do_constant_assign(kl_effect_manager_t mgr, const kl_shader_constant
 }
 
 void kl_effect_manager_bind_effect(kl_effect_manager_t mgr, kl_effect_ptr_t effect,
-   const kl_transform_state_t* xfm_state, const kl_shader_constant_t** constant, size_t num_constants)
+   const kl_transform_state_t* xfm_state, kl_shader_constant_t** constant, size_t num_constants)
 {
    if(effect != NULL)
    {
-      int i;
+      size_t i;
       int num_tex = 0;
       GLint loc;
+      kl_shader_constant_t temp_constant;
 
       glUseProgram(effect->program);
 
@@ -206,14 +207,18 @@ void kl_effect_manager_bind_effect(kl_effect_manager_t mgr, kl_effect_ptr_t effe
       /* Assign other constants */
       for(i = 0; i < num_constants; i++)
       {
-         const kl_shader_constant_t* cur_constant = constant[i];
-         kl_shader_constant_t temp_constant = {{0}, 0};
+         kl_shader_constant_t* cur_constant = constant[i];
 
-         loc = glGetUniformLocation(effect->program, cur_constant->name);
-         if(loc < 0) continue;
+         if(cur_constant->constant_idx < 0)
+         {
+            cur_constant->constant_idx = glGetUniformLocation(effect->program, cur_constant->name);
+         }
+         if(cur_constant->constant_idx < 0) continue;
 
          if(cur_constant->constant_type == KL_SHADER_CONSTANT_TYPE_FN)
          {
+            kl_zero_mem(&temp_constant, sizeof(temp_constant));
+            temp_constant.constant_idx = cur_constant->constant_idx;
             cur_constant->constant.as_fn(NULL /* hax */, &temp_constant);
             cur_constant = &temp_constant;
          }

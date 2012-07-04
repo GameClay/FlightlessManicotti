@@ -23,6 +23,8 @@
 #include <FlightlessManicotti/fm.h>
 #include <stdint.h>
 
+int luaopen_cast(lua_State* L);
+
 typedef union {
    uint32_t as_uint32;
    float as_float;
@@ -31,7 +33,7 @@ typedef union {
 static int kl_cast_int_to_number(lua_State* L)
 {
    castf thingy;
-   thingy.as_uint32 = lua_tointeger(L, 1);
+   thingy.as_uint32 = (uint32_t)lua_tointeger(L, 1);
    lua_pushnumber(L, thingy.as_float);
    return 1;
 }

@@ -28,10 +28,12 @@ kl_absolute_time_t g_mainloop_last_tick_time = 0;
 kl_absolute_time_t g_mainloop_elapsed_time = 0;
 kl_absolute_time_t g_mainloop_tick_frequency;
 
+int kl_init_mainloop(const char* main_script, KL_BOOL wait_on_fences, int argc, const char* argv[]);
+
 int kl_init_mainloop(const char* main_script, KL_BOOL wait_on_fences, int argc, const char* argv[])
 {
    int ret = KL_SUCCESS;
-   uint64_t tick_frequency_ns = 32 * 1e6;
+   uint64_t tick_frequency_ns = 32 * (uint64_t)1e6;
 
    /*
     * Get the script processing ready
@@ -94,7 +96,7 @@ int kl_mainloop_iteration()
    delta_time = frame_timestamp - g_mainloop_last_frame_time;
 
    kl_absolute_time_to_ns(&delta_time, &delta_ns);
-   dt = (float)delta_ns * 1e-6; /* Convert to ms */
+   dt = (float)delta_ns * 1e-6f; /* Convert to ms */
 
    /*
     * Update packet frame
@@ -155,7 +157,7 @@ int kl_mainloop_iteration()
    /* Get how long it took this frame to execute */
    delta_time = g_mainloop_last_frame_time - frame_timestamp;
    kl_absolute_time_to_ns(&delta_time, &delta_ns);
-   dt = (float)delta_ns * 1e-6;
+   dt = (float)delta_ns * 1e-6f;
 
    /* Increment elapsed time */
    g_mainloop_elapsed_time += delta_time;

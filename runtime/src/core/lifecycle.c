@@ -90,13 +90,13 @@ int kl_initialize(KL_BOOL use_threads, KL_BOOL wait_on_fence, const char* main_s
    return ret;
 }
 
-void kl_predestroy()
+void kl_predestroy(void)
 {
    KL_ASSERT(g_runtime_state.initialized, "Runtime not initialized.");
    kl_script_event_enqueue(KL_DEFAULT_SCRIPT_CONTEXT, &g_event_Destroy);
 }
 
-void kl_destroy()
+void kl_destroy(void)
 {
    KL_ASSERT(g_runtime_state.initialized, "Runtime not initialized.");
    kl_script_destroy(&g_script_context);

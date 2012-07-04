@@ -23,6 +23,7 @@
 #include <FlightlessManicotti/game/parameters/parameter.h>
 
 #define PARAMETERVALUE_LIB "ParameterValue"
+int luaopen_parameter(lua_State* L);
 
 static int ParameterValue_new(lua_State* L)
 {
@@ -62,7 +63,7 @@ static int ParameterValue_setvalue(lua_State* L)
 {
    kl_parameter_t param = (kl_parameter_t)lua_touserdata(L, 1);
    luaL_argcheck(L, lua_isnumber(L, 2), 2, "expected number");
-   param->value = lua_tonumber(L, 2);
+   param->value = (float)lua_tonumber(L, 2);
    return 0;
 }
 

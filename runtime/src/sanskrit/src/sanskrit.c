@@ -23,7 +23,7 @@ aslclient _sklog_asl_client = NULL;
 #endif
 int _sklog_enabled = 0;
 
-int sklog_init()
+int sklog_init(void)
 {
 #if defined(SKLOG_ASL)
    if(_sklog_asl_client != NULL)
@@ -44,7 +44,7 @@ int sklog_init()
    return (_sklog_enabled == 1 ? 0 : -1);
 }
 
-void sklog_destroy()
+void sklog_destroy(void)
 {
    _sklog_enabled = 0;
 #if defined(SKLOG_ASL)

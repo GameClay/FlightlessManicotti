@@ -63,9 +63,17 @@ on 1 byte), but shoehorning those bytes into integers efficiently is messy.
 # define HASH_BIG_ENDIAN 0
 #endif
 
-#define hashsize(n) ((uint32_t)1<<(n))
-#define hashmask(n) (hashsize(n)-1)
+/* Unused */
+/*#define hashsize(n) ((uint32_t)1<<(n))*/
+/*#define hashmask(n) (hashsize(n)-1)*/
+
 #define rot(x,k) (((x)<<(k)) | ((x)>>(32-(k))))
+
+uint32_t hashword(const uint32_t *k, size_t length, uint32_t initval);
+void hashword2(const uint32_t *k, size_t length, uint32_t *pc, uint32_t *pb);
+void hashlittle2(const void *key, size_t length, uint32_t *pc, uint32_t *pb);
+uint32_t kl_hash(const void *key, size_t length, uint32_t initval);
+uint32_t hashbig( const void *key, size_t length, uint32_t initval);
 
 /*
 -------------------------------------------------------------------------------
@@ -288,7 +296,8 @@ uint32_t kl_hash(const void *key, size_t length, uint32_t initval)
   a = b = c = 0xdeadbeef + ((uint32_t)length) + initval;
 
   u.ptr = key;
-  if (HASH_LITTLE_ENDIAN && ((u.i & 0x3) == 0)) {
+#if HASH_LITTLE_ENDIAN
+  if ((u.i & 0x3) == 0) {
     const uint32_t *k = (const uint32_t *)key;         /* read 32-bit chunks */
 #ifdef VALGRIND
     const uint8_t  *k8;
@@ -356,7 +365,7 @@ uint32_t kl_hash(const void *key, size_t length, uint32_t initval)
 
 #endif /* !valgrind */
 
-  } else if (HASH_LITTLE_ENDIAN && ((u.i & 0x1) == 0)) {
+  } else if ((u.i & 0x1) == 0) {
     const uint16_t *k = (const uint16_t *)key;         /* read 16-bit chunks */
     const uint8_t  *k8;
 
@@ -404,6 +413,9 @@ uint32_t kl_hash(const void *key, size_t length, uint32_t initval)
     }
 
   } else {                        /* need to read the key one byte at a time */
+#else
+  {
+#endif
     const uint8_t *k = (const uint8_t *)key;
 
     /*--------------- all but the last block: affect some 32 bits of (a,b,c) */
@@ -475,7 +487,8 @@ void hashlittle2(
   c += *pb;
 
   u.ptr = key;
-  if (HASH_LITTLE_ENDIAN && ((u.i & 0x3) == 0)) {
+#if HASH_LITTLE_ENDIAN
+  if ((u.i & 0x3) == 0) {
     const uint32_t *k = (const uint32_t *)key;         /* read 32-bit chunks */
 #ifdef VALGRIND
     const uint8_t  *k8;
@@ -543,7 +556,7 @@ void hashlittle2(
 
 #endif /* !valgrind */
 
-  } else if (HASH_LITTLE_ENDIAN && ((u.i & 0x1) == 0)) {
+  } else if ((u.i & 0x1) == 0) {
     const uint16_t *k = (const uint16_t *)key;         /* read 16-bit chunks */
     const uint8_t  *k8;
 
@@ -591,6 +604,9 @@ void hashlittle2(
     }
 
   } else {                        /* need to read the key one byte at a time */
+#else
+  {
+#endif
     const uint8_t *k = (const uint8_t *)key;
 
     /*--------------- all but the last block: affect some 32 bits of (a,b,c) */
@@ -654,7 +670,8 @@ uint32_t hashbig( const void *key, size_t length, uint32_t initval)
   a = b = c = 0xdeadbeef + ((uint32_t)length) + initval;
 
   u.ptr = key;
-  if (HASH_BIG_ENDIAN && ((u.i & 0x3) == 0)) {
+#if HASH_BIG_ENDIAN
+  if ((u.i & 0x3) == 0) {
     const uint32_t *k = (const uint32_t *)key;         /* read 32-bit chunks */
 #ifdef VALGRIND
     const uint8_t  *k8;
@@ -723,6 +740,9 @@ uint32_t hashbig( const void *key, size_t length, uint32_t initval)
 #endif /* !VALGRIND */
 
   } else {                        /* need to read the key one byte at a time */
+#else
+  {
+#endif
     const uint8_t *k = (const uint8_t *)key;
 
     /*--------------- all but the last block: affect some 32 bits of (a,b,c) */

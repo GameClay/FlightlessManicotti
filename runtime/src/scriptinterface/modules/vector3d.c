@@ -26,6 +26,8 @@
 
 #define VECTOR3D_INSTANCE_TABLE "vector3d_instance_method_table"
 const char* VECTOR3D_LUA_LIB = "vector3d";
+int push_lua_vector3(lua_State* L, float* a);
+int luaopen_vector3d(lua_State* L);
 
 int push_lua_vector3(lua_State* L, float* a)
 {
@@ -106,19 +108,19 @@ static int vector3d_newindex(lua_State* L)
          case 'x':
          {
             luaL_argcheck(L, lua_isnumber(L, 3), 3, "expected number");
-            xyz[0] = lua_tonumber(L, 3);
+            xyz[0] = (float)lua_tonumber(L, 3);
             return 0;
          }
          case 'y':
          {
             luaL_argcheck(L, lua_isnumber(L, 3), 3, "expected number");
-            xyz[1] = lua_tonumber(L, 3);
+            xyz[1] = (float)lua_tonumber(L, 3);
             return 0;
          }
          case 'z':
          {
             luaL_argcheck(L, lua_isnumber(L, 3), 3, "expected number");
-            xyz[2] = lua_tonumber(L, 3);
+            xyz[2] = (float)lua_tonumber(L, 3);
             return 0;
          }
       }

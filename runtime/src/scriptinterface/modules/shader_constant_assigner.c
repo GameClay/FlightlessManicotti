@@ -23,15 +23,19 @@
 #include <FlightlessManicotti/render/shader/shader_constant.h>
 
 const char* SHADER_CONSTANT_ASSIGNER_LUA_LIB = "ShaderConstantAssigner";
+int luaopen_shader_constant_assigner(lua_State* L);
 
 #include <FlightlessManicotti/core/timer.h>
 extern kl_absolute_time_t g_mainloop_elapsed_time;
-void _elapsed_time_ms_assigner(const void* context, kl_shader_constant_ptr constant)
+static void _elapsed_time_ms_assigner(const void* context, kl_shader_constant_ptr constant)
 {
    static float tempf;
    uint64_t elapsed_time_ns;
+
+   KL_UNUSED(context);
+
    kl_absolute_time_to_ns(&g_mainloop_elapsed_time, &elapsed_time_ns);
-   tempf = (float)elapsed_time_ns * 1e-6;
+   tempf = (float)elapsed_time_ns * 1e-6f;
 
    constant->constant.as_float_ptr = &tempf;
    constant->constant_sz = 1;

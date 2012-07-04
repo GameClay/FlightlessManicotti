@@ -23,8 +23,12 @@
 
 #include "sanskrit/include/sanskrit/sklog.h"
 
+void _kl_log_init(void);
+void _kl_log_deinit(void);
+
 static void _kl_default_log_callback(void* context, const char* line, int log_level)
 {
+   KL_UNUSED(context);
    switch(log_level)
    {
       case KL_LOG_LEVEL_DEBUG: skdebug(line); break;
@@ -45,12 +49,12 @@ void kl_console_line_callback_assign(kl_console_line_callback_fn callback_fn, vo
    g_console_line_callback_ctx = context;
 }
 
-void _kl_log_init()
+void _kl_log_init(void)
 {
    if(g_console_line_callback == _kl_default_log_callback) sklog_init();
 }
 
-void _kl_log_deinit()
+void _kl_log_deinit(void)
 {
    if(g_console_line_callback == _kl_default_log_callback) sklog_destroy();
 }

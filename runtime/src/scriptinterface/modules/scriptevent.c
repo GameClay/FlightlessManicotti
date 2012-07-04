@@ -24,6 +24,8 @@
 #include <FlightlessManicotti/scriptinterface/scriptevents.h>
 #include <FlightlessManicotti/scriptinterface/types.h>
 
+int luaopen_scriptevents(lua_State* L);
+
 static int kl_script_event_dequeue_wrap(lua_State* L)
 {
    kl_script_context_t sctx = (kl_script_context_t)lua_topointer(L, 1);

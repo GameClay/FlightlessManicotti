@@ -26,6 +26,8 @@
 extern kl_render_context_t g_script_render_context;
 
 const char* RENDER_TARGET_LUA_LIB = "RenderTarget";
+int luaopen_render_target(lua_State* L);
+
 extern const char* TEXTURE_LUA_LIB;
 
 static int RenderTarget_new(lua_State* L)
@@ -36,8 +38,8 @@ static int RenderTarget_new(lua_State* L)
    luaL_argcheck(L, lua_isnumber(L, 2), 2, "expected target height");
 
    target = (struct _kl_offscreen_target*)lua_newuserdata(L, sizeof(struct _kl_offscreen_target));
-   target->width = lua_tointeger(L, 1);
-   target->height = lua_tointeger(L, 2);
+   target->width = (GLuint)lua_tointeger(L, 1);
+   target->height = (GLuint)lua_tointeger(L, 2);
    kl_zero_mem(target->texture, sizeof(target->texture));
 
    CGLSetCurrentContext(g_script_render_context->drawableCGLContext);
@@ -89,8 +91,8 @@ static int RenderTarget_update(lua_State* L)
    luaL_argcheck(L, lua_isnumber(L, 3), 3, "expected target height");
 
    target = (struct _kl_offscreen_target*)lua_touserdata(L, 1);
-   target->width = lua_tointeger(L, 2);
-   target->height = lua_tointeger(L, 3);
+   target->width = (GLuint)lua_tointeger(L, 2);
+   target->height = (GLuint)lua_tointeger(L, 3);
 
    CGLSetCurrentContext(g_script_render_context->drawableCGLContext);
    CGLLockContext(g_script_render_context->drawableCGLContext);
@@ -106,8 +108,8 @@ static int RenderTarget_update(lua_State* L)
          struct _kl_texture* texture = target->texture[i];
          if(texture != NULL)
          {
-            texture->width = target->width;
-            texture->height = target->height;
+            texture->width = (uint16_t)target->width;
+            texture->height = (uint16_t)target->height;
             glBindTexture(GL_TEXTURE_2D, texture->texture);
             glTexImage2D(GL_TEXTURE_2D, 0, texture->tex_format, texture->width, texture->height,
                          0, tex_format_to_base_format(texture->tex_format),
@@ -135,7 +137,7 @@ static int RenderTarget_bindtexture(lua_State* L)
 
    if(!lua_isnoneornil(L, 3))
    {
-      attachment_idx = lua_tointeger(L, 3);
+      attachment_idx = (int)lua_tointeger(L, 3);
       attachment_idx = (attachment_idx < KL_OFFSCREEN_TARGET_MAX_TEX ? attachment_idx : 0);
    }
 

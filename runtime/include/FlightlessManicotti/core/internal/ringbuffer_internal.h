@@ -33,12 +33,13 @@ extern "C" {
       uint32_t start;                     \
       uint32_t end;                       \
       uint32_t size;                      \
+      uint32_t _padding;                  \
       t* buffer;                          \
       amp_mutex_t mutex;                  \
    } kl_ringbuffer_##t##_t
 
 
-#define _KL_INIT_RINGBUFFER_FN_(t) void kl_init_ringbuffer_##t(kl_ringbuffer_##t##_t* ringbuffer, size_t size, t* buffer, amp_mutex_t mtx)
+#define _KL_INIT_RINGBUFFER_FN_(t) void kl_init_ringbuffer_##t(kl_ringbuffer_##t##_t* ringbuffer, uint32_t size, t* buffer, amp_mutex_t mtx)
 #define _KL_ALLOC_RINGBUFFER_FN_(t) int kl_alloc_ringbuffer_##t(kl_ringbuffer_##t##_t* ringbuffer, uint32_t size)
 #define _KL_FREE_RINGBUFFER_FN_(t) void kl_free_ringbuffer_##t(kl_ringbuffer_##t##_t* ringbuffer)
 #define _KL_RESERVE_RINGBUFFER_FN_(t) int kl_reserve_ringbuffer_##t(kl_ringbuffer_##t##_t* ringbuffer, const t* item)

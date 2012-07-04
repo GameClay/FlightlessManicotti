@@ -27,6 +27,9 @@
 #define FLOAT_ARRAY_INSTANCE_TABLE "float_array_instance_method_table"
 const char* FLOAT_ARRAY_LUA_LIB = "float_array";
 
+int push_lua_float_array(lua_State* L, float* a, size_t sz);
+int luaopen_float_array(lua_State* L);
+
 int push_lua_float_array(lua_State* L, float* a, size_t sz)
 {
    kl_lua_float_array_t* array = (kl_lua_float_array_t*)lua_newuserdata(L, sizeof(kl_lua_float_array_t));
@@ -43,7 +46,7 @@ static int float_array_index(lua_State* L)
 {
    size_t len;
    const char* key;
-   int idx;
+   size_t idx;
    kl_lua_float_array_t* array = (kl_lua_float_array_t*)lua_touserdata(L, 1);
 
    key = lua_tolstring(L, 2, &len);
@@ -71,7 +74,7 @@ static int float_array_index(lua_State* L)
 static int float_array_newindex(lua_State* L)
 {
    size_t len;
-   int idx;
+   size_t idx;
    const char* key;
    kl_lua_float_array_t* array = (kl_lua_float_array_t*)lua_touserdata(L, 1);
 
@@ -83,7 +86,7 @@ static int float_array_newindex(lua_State* L)
       if(idx <= array->len)
       {
          luaL_argcheck(L, lua_isnumber(L, 3), 3, "expected number");
-         array->array[idx - 1] = lua_tonumber(L, 3);
+         array->array[idx - 1] = (float)lua_tonumber(L, 3);
          return 0;
       }
       else

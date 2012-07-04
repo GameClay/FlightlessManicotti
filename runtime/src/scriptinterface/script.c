@@ -50,14 +50,14 @@ kl_script_event_t g_event_EOF;
 /* script.events.ConsoleInput */
 kl_script_event_t g_event_ConsoleInput;
 
-int _kl_lua_print(lua_State* L)
+static int _kl_lua_print(lua_State* L)
 {
    const char* str = lua_tostring(L, 1);
    kl_log_debug(str);
    return 0;
 }
 
-int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_queue_max)
+int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, uint32_t event_queue_max)
 {
    struct _kl_script_context* sctx = NULL;
 
@@ -133,7 +133,7 @@ int kl_script_init(kl_script_context_t* context, KL_BOOL threaded, size_t event_
    return KL_SUCCESS;
 }
 
-void _on_lua_err(lua_State* state)
+static void _on_lua_err(lua_State* state)
 {
    size_t str_sz;
    int top_idx = lua_gettop(state);
@@ -142,7 +142,7 @@ void _on_lua_err(lua_State* state)
    lua_pop(state, 1);
 }
 
-void _kl_script_run_internal(void* arg)
+static void _kl_script_run_internal(void* arg)
 {
    kl_script_context_t sctx = (kl_script_context_t)arg;
 

@@ -171,8 +171,8 @@ float SimplexNoise1234::noise(float x) {
 // 2D simplex noise
 float SimplexNoise1234::noise(float x, float y) {
 
-#define F2 0.366025403 // F2 = 0.5*(sqrt(3.0)-1.0)
-#define G2 0.211324865 // G2 = (3.0-Math.sqrt(3.0))/6.0
+#define F2 0.366025403f // F2 = 0.5*(sqrt(3.0)-1.0)
+#define G2 0.211324865f // G2 = (3.0-Math.sqrt(3.0))/6.0
 
     float n0, n1, n2; // Noise contributions from the three corners
 
@@ -239,8 +239,8 @@ float SimplexNoise1234::noise(float x, float y) {
 float SimplexNoise1234::noise(float x, float y, float z) {
 
 // Simple skewing factors for the 3D case
-#define F3 0.333333333
-#define G3 0.166666667
+#define F3 0.333333333f
+#define G3 0.166666667f
 
     float n0, n1, n2, n3; // Noise contributions from the four corners
 
@@ -338,8 +338,8 @@ float SimplexNoise1234::noise(float x, float y, float z) {
 float SimplexNoise1234::noise(float x, float y, float z, float w) {
   
   // The skewing and unskewing factors are hairy again for the 4D case
-#define F4 0.309016994 // F4 = (Math.sqrt(5.0)-1.0)/4.0
-#define G4 0.138196601 // G4 = (5.0-Math.sqrt(5.0))/20.0
+#define F4 0.309016994f // F4 = (Math.sqrt(5.0)-1.0)/4.0
+#define G4 0.138196601f // G4 = (5.0-Math.sqrt(5.0))/20.0
 
     float n0, n1, n2, n3, n4; // Noise contributions from the five corners
 

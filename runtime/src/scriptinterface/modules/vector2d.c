@@ -26,6 +26,8 @@
 
 #define VECTOR2D_INSTANCE_TABLE "vector2d_instance_method_table"
 const char* VECTOR2D_LUA_LIB = "vector2d";
+int push_lua_vector2(lua_State* L, float* a);
+int luaopen_vector2d(lua_State* L);
 
 int push_lua_vector2(lua_State* L, float* a)
 {
@@ -94,13 +96,13 @@ static int vector2d_newindex(lua_State* L)
          case 'x':
          {
             luaL_argcheck(L, lua_isnumber(L, 3), 3, "expected number");
-            xy[0] = lua_tonumber(L, 3);
+            xy[0] = (float)lua_tonumber(L, 3);
             return 0;
          }
          case 'y':
          {
             luaL_argcheck(L, lua_isnumber(L, 3), 3, "expected number");
-            xy[1] = lua_tonumber(L, 3);
+            xy[1] = (float)lua_tonumber(L, 3);
             return 0;
          }
       }

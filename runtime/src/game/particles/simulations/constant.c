@@ -26,7 +26,7 @@ void kl_particle_simulation_constant(float dt, void* context)
 
    if(system != NULL)
    {
-      int i = 0;
+      uint32_t i = 0;
       float* time_stream = system->time_stream;
       const float* KL_RESTRICT lifespan_stream = system->lifespan_stream;
 
@@ -35,7 +35,7 @@ void kl_particle_simulation_constant(float dt, void* context)
          float new_time = time_stream[i] + dt;
          if(time_stream[i] > lifespan_stream[i])
          {
-            int last_idx = system->num_particles - 1;
+            uint32_t last_idx = system->num_particles - 1;
             if(i < last_idx)
             {
                system->px_stream[i] = system->px_stream[last_idx];

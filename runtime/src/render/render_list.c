@@ -48,7 +48,7 @@ void kl_render_list_deinit(kl_render_list_t* list)
 
 void kl_render_list_insert_instance(kl_render_list_t* list, kl_render_instance_t* inst)
 {
-   uint32_t idx = kl_idx_allocator_reserve(list->idx_alloc);
+   int32_t idx = kl_idx_allocator_reserve(list->idx_alloc);
    list->list[idx] = inst;
    inst->list_index = idx;
    inst->list = list;
@@ -59,7 +59,7 @@ void kl_render_list_remove_instance(kl_render_list_t* list, kl_render_instance_t
 {
    if(inst->list_index != UINT32_MAX)
    {
-      uint32_t idx = inst->list_index;
+      int32_t idx = inst->list_index;
       list->list[idx] = NULL;
       list->max_idx = (list->max_idx == idx ? idx - 1 : list->max_idx);
       kl_idx_allocator_release(list->idx_alloc, idx);
