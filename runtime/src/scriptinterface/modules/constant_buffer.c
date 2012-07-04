@@ -131,9 +131,14 @@ static int ConstantBuffer_new(lua_State* L)
    for(i = 0; i < count; i++)
    {
       kl_new_shader_constant_t** constant;
+      char* arrayLoc = NULL;
 
       glGetActiveUniform(effect->program, i, name_sz, NULL, &uniform_num,
          &uniform_type, name);
+
+      arrayLoc = strstr(name, "[0]");
+      if(arrayLoc != NULL) *arrayLoc = '\0';
+
       GLenumToKLShaderConstant(uniform_type, &constant_buffer->constant[i]);
       constant_buffer->constant[i].constant_num = uniform_num;
       constant_buffer->constant[i].constant_loc =
