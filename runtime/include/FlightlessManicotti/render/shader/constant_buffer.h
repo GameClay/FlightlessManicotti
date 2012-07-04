@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-#ifndef _KL_SHADER_CONSTANT_H_
-#define _KL_SHADER_CONSTANT_H_
+#ifndef _KL_CONSTANT_BUFFER_H_
+#define _KL_CONSTANT_BUFFER_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,7 +31,14 @@ extern "C" {
 #define KL_SHADER_CONSTANT_TYPE_INT    3
 #define KL_SHADER_CONSTANT_TYPE_TEX    4
 #define KL_SHADER_CONSTANT_TYPE_DATA   5
-#define KL_SHADER_CONSTANT_TYPE_FN     6
+/*#define KL_SHADER_CONSTANT_TYPE_FN     6*/
+
+enum kl_matrix_data_constant {
+   kl_matrix_data_world_to_camera = 1,
+   kl_matrix_data_camera_to_screen,
+   kl_matrix_data_world_to_screen,
+   kl_matrix_data_object_to_screen
+};
 
 typedef struct _kl_shader_constant_t* kl_shader_constant_ptr;
 
@@ -44,15 +51,20 @@ typedef struct _kl_shader_constant_t {
       float* as_float_ptr;
       int* as_int_ptr;
       int as_tex;
-      kl_effect_manager_constant_assigner_fn as_fn;
+      kl_effect_manager_data_source_fn as_data_src;
    } constant;
    uint16_t constant_sz;
-   uint16_t constant_num;
    uint16_t constant_type;
+   uint16_t data_constant;
    uint16_t dealloc_constant;
-   int32_t constant_idx;
-   char name[4];
+   uint32_t constant_num;
+   int32_t constant_loc;
 } kl_shader_constant_t;
+
+typedef struct kl_shader_constant_buffer_t {
+   size_t num_constants;
+   kl_shader_constant_t constant[];
+} kl_shader_constant_buffer_t;
 
 typedef struct kl_shader_constant_assigner_t {
    kl_effect_manager_constant_assigner_fn assigner;

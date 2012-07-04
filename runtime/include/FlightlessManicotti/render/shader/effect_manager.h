@@ -24,7 +24,7 @@ extern "C" {
 #endif
 
 #include <FlightlessManicotti/render/render.h>
-#include <FlightlessManicotti/render/shader/shader_constant.h>
+#include <FlightlessManicotti/render/shader/constant_buffer.h>
 
 #ifndef _KL_EFFECT_PTR_T_
 #define _KL_EFFECT_PTR_T_
@@ -46,7 +46,7 @@ extern KL_API void kl_effect_manager_register_data_source(kl_render_context_t re
    kl_effect_manager_data_source_fn source_fn, const void* context);
 
 extern KL_API void kl_effect_manager_bind_effect(kl_effect_manager_t mgr, kl_effect_ptr_t effect,
-   const kl_transform_state_t* xfm_state, kl_shader_constant_t** constant, size_t num_constants);
+   const kl_transform_state_t* xfm_state, const kl_shader_constant_buffer_t* constant_buffer);
 
 #ifdef __cplusplus
 }

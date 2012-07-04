@@ -64,16 +64,26 @@ void kl_effect_manager_register_data_source(kl_render_context_t render_ctx, uint
    }
 }
 
-static int _do_constant_assign(kl_effect_manager_t mgr, const kl_shader_constant_t* constant, GLint loc, int num_tex)
+static int _do_constant_assign(kl_effect_manager_t mgr, const kl_shader_constant_t* constant,
+   const kl_transform_state_t* xfm_state, int num_tex)
 {
    int ret = 0;
+   GLint loc = constant->constant_loc;
 
    switch(constant->constant_type)
    {
       case KL_SHADER_CONSTANT_TYPE_MATRIX:
       {
+         const float* m = constant->constant.as_float_ptr;
+         switch(constant->data_constant)
+         {
+            case kl_matrix_data_world_to_camera: m = xfm_state->world_to_camera.m; break;
+            case kl_matrix_data_camera_to_screen: m = xfm_state->camera_to_screen.m; break;
+            case kl_matrix_data_world_to_screen: m = xfm_state->world_to_screen.m; break;
+            case kl_matrix_data_object_to_screen: m = xfm_state->object_to_screen.m; break;
+         }
          glUniformMatrix4fv(loc, constant->constant_num,
-            GL_FALSE, constant->constant.as_float_ptr);
+            GL_FALSE, m);
          break;
       }
 
@@ -186,35 +196,20 @@ static int _do_constant_assign(kl_effect_manager_t mgr, const kl_shader_constant
 }
 
 void kl_effect_manager_bind_effect(kl_effect_manager_t mgr, kl_effect_ptr_t effect,
-   const kl_transform_state_t* xfm_state, kl_shader_constant_t** constant, size_t num_constants)
+   const kl_transform_state_t* xfm_state, const kl_shader_constant_buffer_t* constant_buffer)
 {
    if(effect != NULL)
    {
       size_t i;
       int num_tex = 0;
-      GLint loc;
-      kl_shader_constant_t temp_constant;
 
       glUseProgram(effect->program);
 
-      /* Assign matrices */
-      loc = glGetUniformLocation(effect->program, "object_to_screen");
-      if(loc != -1)
-      {
-         glUniformMatrix4fv(loc, 1, GL_FALSE, xfm_state->object_to_screen.m);
-      }
-
       /* Assign other constants */
-      for(i = 0; i < num_constants; i++)
+      for(i = 0; i < constant_buffer->num_constants; i++)
       {
-         kl_shader_constant_t* cur_constant = constant[i];
-
-         if(cur_constant->constant_idx < 0)
-         {
-            cur_constant->constant_idx = glGetUniformLocation(effect->program, cur_constant->name);
-         }
-         if(cur_constant->constant_idx < 0) continue;
-
+#if 0
+         kl_shader_constant_t temp_constant;
          if(cur_constant->constant_type == KL_SHADER_CONSTANT_TYPE_FN)
          {
             kl_zero_mem(&temp_constant, sizeof(temp_constant));
@@ -222,7 +217,10 @@ void kl_effect_manager_bind_effect(kl_effect_manager_t mgr, kl_effect_ptr_t effe
             cur_constant->constant.as_fn(NULL /* hax */, &temp_constant);
             cur_constant = &temp_constant;
          }
-         num_tex += _do_constant_assign(mgr, cur_constant, loc, num_tex);
+#endif
+
+         num_tex += _do_constant_assign(mgr, &constant_buffer->constant[i],
+            xfm_state, num_tex);
       }
    }
    else
