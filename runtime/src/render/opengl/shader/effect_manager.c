@@ -64,7 +64,7 @@ void kl_effect_manager_register_data_source(kl_render_context_t render_ctx, uint
    }
 }
 
-static int _do_new_constant_assign(const kl_new_shader_constant_t* constant,
+static int _do_new_constant_assign(kl_effect_manager_t mgr, const kl_new_shader_constant_t* constant,
    const kl_transform_state_t* xfm_state, int num_tex)
 {
    int ret = 0;
@@ -100,6 +100,23 @@ static int _do_new_constant_assign(const kl_new_shader_constant_t* constant,
             case 4: tex_type = GL_TEXTURE_CUBE_MAP; break;
          }
          glBindTexture(tex_type, constant->constant.as_tex);
+         ret += 1;
+         break;
+      }
+
+      case KL_SHADER_CONSTANT_TYPE_DATA:
+      {
+         glUniform1i(loc, num_tex);
+         glActiveTexture(GL_TEXTURE0 + num_tex);
+
+         if(mgr->data_source[constant->constant.as_tex] != NULL)
+         {
+            GLint texid = mgr->data_source[constant->constant.as_tex](
+               mgr->data_source_context[constant->constant.as_tex]);
+
+            /* HAX! Hard coding 1D texture */
+            glBindTexture(GL_TEXTURE_1D, texid);
+         }
          ret += 1;
          break;
       }
@@ -304,8 +321,6 @@ static int _do_constant_assign(kl_effect_manager_t mgr, const kl_shader_constant
 void kl_effect_manager_new_bind_effect(kl_effect_manager_t mgr, kl_effect_ptr_t effect,
    const kl_transform_state_t* xfm_state, const kl_shader_constant_buffer_t* constant_buffer)
 {
-   KL_UNUSED(mgr);
-
    if(effect != NULL)
    {
       size_t i;
@@ -316,7 +331,7 @@ void kl_effect_manager_new_bind_effect(kl_effect_manager_t mgr, kl_effect_ptr_t 
       /* Assign other constants */
       for(i = 0; i < constant_buffer->num_constants; i++)
       {
-         num_tex += _do_new_constant_assign(&constant_buffer->constant[i],
+         num_tex += _do_new_constant_assign(mgr, &constant_buffer->constant[i],
             xfm_state, num_tex);
       }
    }

@@ -357,17 +357,26 @@ static int ShaderConstant_set(lua_State* L)
             constant->dealloc_constant = 0;
             constant->constant_num = 1;
 
-            switch(tex->tex_depth)
+            if(tex->data_texture)
             {
-               case GL_TEXTURE_2D:
-               {
-                  constant->constant_sz = 2; /* 2D texture */
-                  break;
-               }
+               constant->constant_type = KL_SHADER_CONSTANT_TYPE_DATA;
+               constant->constant.as_tex = tex->data_texture;
+               constant->constant_sz = 0;
             }
+            else
+            {
+               switch(tex->tex_depth)
+               {
+                  case GL_TEXTURE_2D:
+                  {
+                     constant->constant_sz = 2; /* 2D texture */
+                     break;
+                  }
+               }
 
-            constant->constant_type = KL_SHADER_CONSTANT_TYPE_TEX;
-            constant->constant.as_tex = tex->texture;
+               constant->constant_type = KL_SHADER_CONSTANT_TYPE_TEX;
+               constant->constant.as_tex = tex->texture;
+            }
             break;
          }
          break;
