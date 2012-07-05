@@ -53,7 +53,7 @@ struct _kl_offscreen_target {
 #define KL_MESH_TEX0_IDX     2
 #define KL_MESH_COLOR_IDX    3
 
-#define KL_RENDER_CTX_NUM_RENDER_LISTS 3
+#define KL_RENDER_CTX_NUM_RENDER_LISTS 10
 
 struct _kl_render_context
 {
