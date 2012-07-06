@@ -94,6 +94,22 @@ extern KL_API void kl_render_frame(kl_render_context_t context, float display_wi
 extern KL_API KL_BOOL kl_render_assign_list(kl_render_context_t context, kl_render_list_ptr_t list,
    int list_idx);
 
+/**
+ * Locks a render context, preventing it from drawing until unlocked.
+ *
+ * @param context   Rendering context to lock.
+ * @relates kl_render_context_t
+ */
+extern KL_API void kl_render_lock(kl_render_context_t context);
+
+/**
+ * Unlocks a render context, allowing it to draw again.
+ *
+ * @param context   Rendering context to unlock.
+ * @relates kl_render_context_t
+ */
+extern KL_API void kl_render_unlock(kl_render_context_t context);
+
 #ifdef __cplusplus
 }
 #endif

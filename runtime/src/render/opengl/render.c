@@ -140,6 +140,16 @@ KL_BOOL kl_render_assign_list(kl_render_context_t context, kl_render_list_ptr_t 
    return ret;
 }
 
+void kl_render_lock(kl_render_context_t context)
+{
+   CGLLockContext(context->drawableCGLContext);
+}
+
+void kl_render_unlock(kl_render_context_t context)
+{
+   CGLUnlockContext(context->drawableCGLContext);
+}
+
 void kl_render_frame(kl_render_context_t context, float display_width, float display_height)
 {
    int l_idx;
