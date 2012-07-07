@@ -140,6 +140,7 @@ static int ConstantBuffer_new(lua_State* L)
       if(arrayLoc != NULL) *arrayLoc = '\0';
 
       GLenumToKLShaderConstant(uniform_type, &constant_buffer->constant[i]);
+      constant_buffer->constant[i].dealloc_constant = 0;
       constant_buffer->constant[i].constant_num = uniform_num;
       constant_buffer->constant[i].constant_loc =
          glGetUniformLocation(effect->program, name);
@@ -211,7 +212,6 @@ static int ShaderConstant_tostring(lua_State* L)
    return 1;
 }
 
-
 static int ShaderConstant_set(lua_State* L)
 {
    kl_shader_constant_t* constant = *((kl_shader_constant_t**)lua_touserdata(L, 1));
@@ -222,86 +222,25 @@ static int ShaderConstant_set(lua_State* L)
    {
       case LUA_TNUMBER:
       {
-         if(constant->constant_type != KL_SHADER_CONSTANT_TYPE_FLOAT ||
-            constant->constant.as_float_ptr == NULL)
+         if(constant->constant.as_float_ptr == NULL)
          {
-            if(constant->dealloc_constant)
-            {
-               old_ptr = constant->constant.as_ptr;
-            }
-
+            constant->dealloc_constant = 1;
             constant->constant.as_float_ptr = kl_heap_alloc(sizeof(float));
          }
 
-         constant->dealloc_constant = 1;
-         constant->constant_sz = 1;
-         constant->constant_num = 1;
-         constant->constant_type = KL_SHADER_CONSTANT_TYPE_FLOAT;
          *constant->constant.as_float_ptr = (float)lua_tonumber(L, l_index);
          break;
       }
 
       case LUA_TTABLE:
       {
-         size_t tsize = 0;
-         int csize = 0;
-
-         /* Get size of each element */
-         lua_pushnil(L);
-         while(lua_next(L, l_index))
+         if(constant->constant.as_float_ptr == NULL)
          {
-            switch(lua_type(L, -1))
-            {
-               case LUA_TNUMBER:
-               {
-                  if(csize == 0) csize = 1;
-                  else
-                  {
-                     if(csize != 1)
-                     {
-                        kl_log_err("All elements of a shader constant table assignment must be the same size.");
-                     }
-                  }
-                  break;
-               }
-
-               case LUA_TTABLE:
-               {
-                  if(csize == 0) csize = (int)lua_objlen(L, -1);
-                  else
-                  {
-                     if(csize != (int)lua_objlen(L, -1))
-                     {
-                        kl_log_err("All elements of a shader constant table assignment must be the same size.");
-                     }
-                  }
-                  break;
-               }
-            }
-            tsize++;
-            lua_pop(L, 1);
-         }
-         if(tsize == 0) lua_pop(L, 1);
-
-         if(constant->constant_type != KL_SHADER_CONSTANT_TYPE_FLOAT ||
-            (constant->constant_num > 0 && constant->constant_num != tsize) ||
-            (constant->constant_sz > 0 && constant->constant_sz != csize) ||
-            constant->constant.as_float_ptr == NULL)
-         {
-            if(constant->dealloc_constant)
-            {
-               old_ptr = constant->constant.as_ptr;
-            }
-
-            constant->constant.as_float_ptr = kl_heap_alloc(tsize * csize * sizeof(float));
+            constant->constant.as_float_ptr =
+               kl_heap_alloc(constant->constant_num * constant->constant_sz * sizeof(float));
+            constant->dealloc_constant = 1;
          }
 
-         constant->constant_num = (uint16_t)tsize;
-         constant->constant_sz = (uint16_t)csize;
-         constant->dealloc_constant = 1;
-         constant->constant_type = KL_SHADER_CONSTANT_TYPE_FLOAT;
-
-         if(tsize > 0)
          {
             float* cur_f = constant->constant.as_float_ptr;
             lua_pushnil(L);
@@ -346,10 +285,6 @@ static int ShaderConstant_set(lua_State* L)
          if(is_eq)
          {
             struct _kl_offscreen_target* target = (struct _kl_offscreen_target*)lua_touserdata(L, l_index);
-            constant->dealloc_constant = 0;
-            constant->constant_sz = 2; /* 2D texture */
-            constant->constant_num = 1;
-            constant->constant_type = KL_SHADER_CONSTANT_TYPE_TEX;
             constant->constant.as_tex = target->texture[0]->texture; /* HAX */
             break;
          }
@@ -362,27 +297,14 @@ static int ShaderConstant_set(lua_State* L)
          if(is_eq)
          {
             struct _kl_texture* tex = (struct _kl_texture*)lua_touserdata(L, l_index);
-            constant->dealloc_constant = 0;
-            constant->constant_num = 1;
 
             if(tex->data_texture)
             {
                constant->constant_type = KL_SHADER_CONSTANT_TYPE_DATA;
                constant->constant.as_tex = tex->data_texture;
-               constant->constant_sz = 0;
             }
             else
             {
-               switch(tex->tex_depth)
-               {
-                  case GL_TEXTURE_2D:
-                  {
-                     constant->constant_sz = 2; /* 2D texture */
-                     break;
-                  }
-               }
-
-               constant->constant_type = KL_SHADER_CONSTANT_TYPE_TEX;
                constant->constant.as_tex = tex->texture;
             }
             break;
