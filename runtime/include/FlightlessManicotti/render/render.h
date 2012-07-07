@@ -41,6 +41,8 @@ KL_ALIGNED_STRUCT_PRE(16) {
 typedef struct _kl_render_list* kl_render_list_ptr_t;
 #endif
 
+#define KL_RENDER_CTX_NUM_RENDER_LISTS 10
+
 /**
  * Initialize rendering subsystem.
  *
