@@ -262,7 +262,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
                /* Clear if requested */
                if(inst->clear_before_draw)
                {
-                  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+                  glClearColor(0, 0, 0, 0);
                   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                }
 
