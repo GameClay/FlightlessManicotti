@@ -143,6 +143,7 @@ KL_BOOL kl_render_assign_list(kl_render_context_t context, kl_render_list_ptr_t 
 void kl_render_lock(kl_render_context_t context)
 {
    CGLLockContext(context->drawableCGLContext);
+   CGLSetCurrentContext(context->drawableCGLContext);
 }
 
 void kl_render_unlock(kl_render_context_t context)
