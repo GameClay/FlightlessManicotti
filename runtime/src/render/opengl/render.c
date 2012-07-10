@@ -151,6 +151,23 @@ void kl_render_unlock(kl_render_context_t context)
    CGLUnlockContext(context->drawableCGLContext);
 }
 
+void kl_render_bind_target(kl_render_context_t context, void* thetarget)
+{
+   struct _kl_offscreen_target* target = thetarget;
+   if(target != NULL)
+   {
+      glBindFramebuffer(GL_FRAMEBUFFER, target->framebuffer);
+      glDrawBuffer(GL_COLOR_ATTACHMENT0);
+      glViewport(0, 0, target->width, target->height);
+   }
+   else
+   {
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+      glDrawBuffer(GL_BACK);
+      glViewport(0, 0, (GLsizei)context->display_width, (GLsizei)context->display_height);
+   }
+}
+
 void kl_render_frame(kl_render_context_t context, float display_width, float display_height)
 {
    int l_idx;

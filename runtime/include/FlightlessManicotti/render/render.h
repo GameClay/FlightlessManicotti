@@ -112,6 +112,13 @@ extern KL_API void kl_render_lock(kl_render_context_t context);
  */
 extern KL_API void kl_render_unlock(kl_render_context_t context);
 
+/**
+ * Binds a render target.
+ *
+ * (utility use only)
+ */
+extern KL_API void kl_render_bind_target(kl_render_context_t context, void* target);
+
 #ifdef __cplusplus
 }
 #endif
