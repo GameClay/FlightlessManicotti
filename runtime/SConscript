@@ -96,6 +96,38 @@ else:
    shared_lib = runtime_env.SharedLibrary('FlightlessManicotti', lib_files)
    return_libs += ['shared_lib']
 
+# Install headers
+runtime_env.Install('$DISTDIR/include/FlightlessManicotti',
+   env.Glob('include/FlightlessManicotti/*.h'))
+runtime_env.Install('$DISTDIR/include/FlightlessManicotti/core',
+   env.Glob('include/FlightlessManicotti/core/*.h'))
+runtime_env.Install('$DISTDIR/include/FlightlessManicotti/core/internal',
+   env.Glob('include/FlightlessManicotti/core/internal/*.h'))
+runtime_env.Install('$DISTDIR/include/FlightlessManicotti/game',
+   env.Glob('include/FlightlessManicotti/game/*.h'))
+runtime_env.Install('$DISTDIR/include/FlightlessManicotti/game/parameters',
+   env.Glob('include/FlightlessManicotti/game/parameters/*.h'))
+runtime_env.Install('$DISTDIR/include/FlightlessManicotti/game/particles',
+   env.Glob('include/FlightlessManicotti/game/particles/*.h'))
+runtime_env.Install('$DISTDIR/include/FlightlessManicotti/math',
+   env.Glob('include/FlightlessManicotti/math/*.h'))
+runtime_env.Install('$DISTDIR/include/FlightlessManicotti/process',
+   env.Glob('include/FlightlessManicotti/process/*.h'))
+runtime_env.Install('$DISTDIR/include/FlightlessManicotti/render',
+   env.Glob('include/FlightlessManicotti/render/*.h'))
+runtime_env.Install('$DISTDIR/include/FlightlessManicotti/render/mesh',
+   env.Glob('include/FlightlessManicotti/render/mesh/opengl/*.h'))
+runtime_env.Install('$DISTDIR/include/FlightlessManicotti/render/opengl',
+   env.Glob('include/FlightlessManicotti/render/opengl/*.h'))
+runtime_env.Install('$DISTDIR/include/FlightlessManicotti/render/particles',
+   env.Glob('include/FlightlessManicotti/render/particles/*.h'))
+runtime_env.Install('$DISTDIR/include/FlightlessManicotti/render/shader',
+   env.Glob('include/FlightlessManicotti/render/shader/*.h'))
+runtime_env.Install('$DISTDIR/include/FlightlessManicotti/scriptinterface',
+   env.Glob('include/FlightlessManicotti/scriptinterface/*.h'))
+runtime_env.Install('$DISTDIR/include/FlightlessManicotti/scriptinterface/internal',
+   env.Glob('include/FlightlessManicotti/scriptinterface/internal/*.h'))
+
 # Find the headers
 # sources, headers = env.FindAllSourceFiles(runtime_lib)
 

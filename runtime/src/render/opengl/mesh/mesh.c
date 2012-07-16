@@ -17,7 +17,7 @@
  */
 
 #include <FlightlessManicotti/render/mesh/mesh.h>
-#include "render/opengl/gl_render.h"
+#include <FlightlessManicotti/render/opengl/gl_render.h>
 
 struct _kl_mesh_internal {
    GLuint vert_buffer;

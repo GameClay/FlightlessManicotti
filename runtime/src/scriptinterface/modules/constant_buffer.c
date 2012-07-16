@@ -21,7 +21,7 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #include <FlightlessManicotti/render/shader/constant_buffer.h>
-#include "render/opengl/gl_render.h"
+#include <FlightlessManicotti/render/opengl/gl_render.h>
 
 const char* SHADER_CONSTANT_LUA_LIB = "ShaderConstant";
 const char* CONSTANT_BUFFER_LUA_LIB = "ConstantBuffer";

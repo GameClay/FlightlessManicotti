@@ -17,10 +17,10 @@
  */
 
 #include <FlightlessManicotti/render/render.h>
-#include "gl_render.h"
+#include <FlightlessManicotti/render/opengl/gl_render.h>
 #include <FlightlessManicotti/scriptinterface/scriptevents.h>
 #include <FlightlessManicotti/render/mesh/mesh.h>
-#include "scriptinterface/scriptinterface.h"
+#include <FlightlessManicotti/scriptinterface/internal/scriptinterface.h>
 #include <FreeImage.h>
 
 kl_render_context_t g_script_render_context = NULL;

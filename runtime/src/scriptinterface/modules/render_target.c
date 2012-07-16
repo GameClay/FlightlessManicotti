@@ -21,7 +21,7 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #include <FlightlessManicotti/render/render.h>
-#include "render/opengl/gl_render.h"
+#include <FlightlessManicotti/render/opengl/gl_render.h>
 
 extern kl_render_context_t g_script_render_context;
 

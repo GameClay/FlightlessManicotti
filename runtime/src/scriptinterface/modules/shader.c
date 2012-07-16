@@ -21,7 +21,7 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #include <FlightlessManicotti/render/render.h>
-#include "render/opengl/gl_render.h"
+#include <FlightlessManicotti/render/opengl/gl_render.h>
 
 const char* SHADER_LUA_LIB = "Shader";
 const char* SHADER_PROGRAM_LUA_LIB = "ShaderProgram";

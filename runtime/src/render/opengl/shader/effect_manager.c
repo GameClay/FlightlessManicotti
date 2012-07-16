@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "render/opengl/gl_render.h"
+#include <FlightlessManicotti/render/opengl/gl_render.h>
 
 int kl_effect_manager_create(kl_effect_manager_t* manager)
 {

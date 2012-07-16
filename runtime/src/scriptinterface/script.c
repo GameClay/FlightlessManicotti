@@ -18,7 +18,7 @@
 
 #include <lauxlib.h>
 #include <lualib.h>
-#include "scriptinterface.h"
+#include <FlightlessManicotti/scriptinterface/internal/scriptinterface.h>
 #include <FlightlessManicotti/core/simd.h>
 #include <string.h>
 #include "swig_autogen.h"

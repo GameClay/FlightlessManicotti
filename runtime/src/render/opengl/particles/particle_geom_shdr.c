@@ -19,7 +19,7 @@
 #include <FlightlessManicotti/render/particles/particle_geom_shdr.h>
 #include <FlightlessManicotti/math/math.h>
 #include <FlightlessManicotti/process/process.h>
-#include "render/opengl/gl_render.h"
+#include <FlightlessManicotti/render/opengl/gl_render.h>
 
 #include <stdio.h>
 #if 0

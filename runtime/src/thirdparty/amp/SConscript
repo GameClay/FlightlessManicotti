@@ -73,4 +73,8 @@ coreEnv.Append(CPPPATH = ['src'])
 # lib target
 amp_lib = coreEnv.StaticLibrary('amp',lib_files)
 
+# install headers
+coreEnv.Install('$DISTDIR/include/amp',
+   env.Glob('src/c/amp/*.h'))
+
 Return(['amp_lib'])

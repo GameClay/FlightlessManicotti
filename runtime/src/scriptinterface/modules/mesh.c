@@ -22,7 +22,7 @@
 #include <lualib.h>
 #include <FlightlessManicotti/render/mesh/mesh.h>
 #include <FlightlessManicotti/render/render.h>
-#include "render/opengl/gl_render.h"
+#include <FlightlessManicotti/render/opengl/gl_render.h>
 #include "scriptinterface/helpers/readers.h"
 
 const char* MESH_LUA_LIB = "Mesh";

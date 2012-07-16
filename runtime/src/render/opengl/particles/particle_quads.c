@@ -19,7 +19,7 @@
 #include <FlightlessManicotti/render/particles/particle_quads.h>
 #include <FlightlessManicotti/math/math.h>
 #include <FlightlessManicotti/process/process.h>
-#include "render/opengl/gl_render.h"
+#include <FlightlessManicotti/render/opengl/gl_render.h>
 
 typedef struct {
    GLfloat xyz[3];
