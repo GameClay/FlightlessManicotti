@@ -27,6 +27,7 @@
 
 const char* MESH_LUA_LIB = "Mesh";
 int luaopen_mesh(lua_State* L);
+int Mesh_pushexisting(lua_State* L, kl_mesh_t* mesh);
 
 extern int push_lua_float_array(lua_State* L, float* a, size_t sz);
 extern int push_lua_uint16_array(lua_State* L, uint16_t* a, size_t sz);
@@ -35,9 +36,22 @@ extern int push_lua_vector2_array(lua_State* L, float* a, size_t sz);
 
 extern kl_render_context_t g_script_render_context;
 
+int Mesh_pushexisting(lua_State* L, kl_mesh_t* mesh)
+{
+   kl_mesh_t** mesh_holder = lua_newuserdata(L, sizeof(kl_mesh_t*));
+   *mesh_holder = mesh;
+
+   luaL_getmetatable(L, MESH_LUA_LIB);
+   lua_setmetatable(L, -2);
+
+   return 1;
+}
+
 static int Mesh_new(lua_State* L)
 {
-   kl_mesh_t* mesh = (kl_mesh_t*)lua_newuserdata(L, sizeof(kl_mesh_t));
+   kl_mesh_t** mesh_holder = lua_newuserdata(L, sizeof(kl_mesh_t*));
+   kl_mesh_t* mesh = kl_heap_alloc(sizeof(kl_mesh_t));
+   *mesh_holder = mesh;
 
    memset(mesh, 0, sizeof(kl_mesh_t));
    CGLSetCurrentContext(g_script_render_context->resourceCGLContext);
@@ -53,7 +67,7 @@ static int Mesh_new(lua_State* L)
 
 static int Mesh_gc(lua_State* L)
 {
-   kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
+   kl_mesh_t* mesh = *((kl_mesh_t**)lua_touserdata(L, 1));
    if(mesh != NULL)
    {
       CGLSetCurrentContext(g_script_render_context->resourceCGLContext);
@@ -66,6 +80,7 @@ static int Mesh_gc(lua_State* L)
       kl_heap_free(mesh->tex0);
       kl_heap_free(mesh->col0);
       kl_heap_free(mesh->index);
+      kl_heap_free(mesh);
    }
    return 0;
 }
@@ -77,7 +92,7 @@ static int Mesh_update(lua_State* L)
    luaL_argcheck(L, lua_isnumber(L, 2), 2, "expected update mask");
    luaL_argcheck(L, lua_isnumber(L, 3), 3, "expected dynamic mask");
 
-   mesh = (kl_mesh_t*)lua_touserdata(L, 1);
+   mesh = *((kl_mesh_t**)lua_touserdata(L, 1));
 
    if(mesh != NULL)
    {
@@ -95,7 +110,7 @@ static int Mesh_update(lua_State* L)
 
 static int Mesh_computenormals(lua_State* L)
 {
-   kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
+   kl_mesh_t* mesh = *((kl_mesh_t**)lua_touserdata(L, 1));
 
    if(mesh != NULL && mesh->vertex != NULL)
    {
@@ -122,7 +137,7 @@ static int Mesh_loadctm(lua_State* L)
 
    luaL_argcheck(L, lua_isstring(L, 2), 2, "expected mesh name");
 
-   mesh = (kl_mesh_t*)lua_touserdata(L, 1);
+   mesh = *((kl_mesh_t**)lua_touserdata(L, 1));
 
    if(mesh != NULL)
    {
@@ -138,7 +153,7 @@ static int Mesh_loadctm(lua_State* L)
 
 static int Mesh_getpositions(lua_State* L)
 {
-   kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
+   kl_mesh_t* mesh = *((kl_mesh_t**)lua_touserdata(L, 1));
 
    if(mesh != NULL)
    {
@@ -154,7 +169,7 @@ static int Mesh_getpositions(lua_State* L)
 
 static int Mesh_setpositions(lua_State* L)
 {
-   kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
+   kl_mesh_t* mesh = *((kl_mesh_t**)lua_touserdata(L, 1));
 
    luaL_argcheck(L, lua_istable(L, 2), 2, "expected table of vertices {{x1, y1, z1}, {x2, y2, z2}, ...}");
    if(mesh != NULL)
@@ -182,7 +197,7 @@ static int Mesh_setpositions(lua_State* L)
 
 static int Mesh_gettexcoords(lua_State* L)
 {
-   kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
+   kl_mesh_t* mesh = *((kl_mesh_t**)lua_touserdata(L, 1));
 
    if(mesh != NULL)
    {
@@ -198,7 +213,7 @@ static int Mesh_gettexcoords(lua_State* L)
 
 static int Mesh_settexcoords(lua_State* L)
 {
-   kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
+   kl_mesh_t* mesh = *((kl_mesh_t**)lua_touserdata(L, 1));
 
    luaL_argcheck(L, lua_istable(L, 2), 2, "expected table of texture coords {{x1, y1}, {x2, y2}, ...}");
    if(mesh != NULL)
@@ -226,7 +241,7 @@ static int Mesh_settexcoords(lua_State* L)
 
 static int Mesh_getindices(lua_State* L)
 {
-   kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
+   kl_mesh_t* mesh = *((kl_mesh_t**)lua_touserdata(L, 1));
 
    if(mesh != NULL)
    {
@@ -242,7 +257,7 @@ static int Mesh_getindices(lua_State* L)
 
 static int Mesh_setindices(lua_State* L)
 {
-   kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
+   kl_mesh_t* mesh = *((kl_mesh_t**)lua_touserdata(L, 1));
 
    luaL_argcheck(L, lua_istable(L, 2), 2, "expected table of indices {i1, i2, i3, ...}");
    if(mesh != NULL)
@@ -270,7 +285,7 @@ static int Mesh_setindices(lua_State* L)
 
 static int Mesh_setfaces(lua_State* L)
 {
-   kl_mesh_t* mesh = (kl_mesh_t*)lua_touserdata(L, 1);
+   kl_mesh_t* mesh = *((kl_mesh_t**)lua_touserdata(L, 1));
 
    luaL_argcheck(L, lua_istable(L, 2), 2, "expected table of faces {{f11, f12, f13}, {f21, f22, f23}, ...}");
    if(mesh != NULL)

@@ -148,8 +148,8 @@ static int RenderInstance_gc(lua_State* L)
 static int RenderInstance_setmesh(lua_State* L)
 {
    lua_render_instance* inst = (lua_render_instance*)lua_touserdata(L, 1);
-   kl_mesh_t* mesh = (kl_mesh_t*)luaL_checkudata(L, 2, MESH_LUA_LIB);
-   inst->inst->mesh = mesh;
+   kl_mesh_t** mesh = (kl_mesh_t**)luaL_checkudata(L, 2, MESH_LUA_LIB);
+   inst->inst->mesh = *mesh;
    return 0;
 }
 
