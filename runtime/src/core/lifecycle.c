@@ -18,6 +18,7 @@
 #include <FlightlessManicotti/fm.h>
 #include <FlightlessManicotti/scriptinterface/script.h>
 #include <FlightlessManicotti/process/process.h>
+#include <FlightlessManicotti/render/shader/effect_manager.h>
 
 typedef struct
 {
@@ -31,6 +32,9 @@ extern kl_script_context_t g_script_context;
 
 /* KL_DEFAULT_PROCESS_MANAGER from process/process.c */
 extern kl_process_manager_t g_process_manager;
+
+/* KL_DEFAULT_EFFECT_MANAGER from render/opengl/shader/effect_manager.c */
+extern kl_effect_manager_t g_effect_manager;
 
 /* kl_init_mainloop from process/mainloop.c */
 extern int kl_init_mainloop(const char* main_script, KL_BOOL wait_on_fences, int argc, const char* argv[]);
@@ -55,9 +59,12 @@ int kl_initialize(KL_BOOL use_threads, KL_BOOL wait_on_fence, const char* main_s
    KL_ASSERT(!g_runtime_state.initialized, "Runtime already initialized.");
    KL_ASSERT(g_script_context == NULL, "KL_DEFAULT_SCRIPT_CONTEXT already initialized.");
    KL_ASSERT(g_process_manager == NULL, "KL_DEFAULT_PROCESS_MANAGER already initialized.");
+   KL_ASSERT(g_effect_manager == NULL, "KL_DEFAULT_EFFECT_MANAGER already initialized.");
+
+   ret = kl_effect_manager_create(&g_effect_manager);
 
    /* TODO: Don't hard code ring-buffer size */
-   ret = kl_script_init(&g_script_context, use_threads, 1 << 10);
+   ret |= kl_script_init(&g_script_context, use_threads, 1 << 10);
 
    /* Create Init/Destroy script events */
    if(ret == KL_SUCCESS)
@@ -101,6 +108,7 @@ void kl_destroy(void)
    KL_ASSERT(g_runtime_state.initialized, "Runtime not initialized.");
    kl_script_destroy(&g_script_context);
    kl_free_process_manager(&g_process_manager);
+   kl_effect_manager_destroy(&g_effect_manager);
    g_script_context = NULL;
 
    /* Destroy logging */

@@ -60,7 +60,6 @@ struct _kl_render_context
 
    kl_render_list_t* render_list[KL_RENDER_CTX_NUM_RENDER_LISTS];
 
-   kl_effect_manager_t effect_mgr;
    float display_width, display_height;
 };
 

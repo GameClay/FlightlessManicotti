@@ -73,8 +73,6 @@ int kl_init_rendering(kl_render_context_t* context, void* handle)
       CGLSetCurrentContext(ctx->drawableCGLContext);
       CGLLockContext(ctx->drawableCGLContext);
 
-      kl_effect_manager_create(&ctx->effect_mgr);
-
       /* Null out render list */
       for(i = 0; i < KL_RENDER_CTX_NUM_RENDER_LISTS; i++)
       {
@@ -111,8 +109,6 @@ void kl_destroy_rendering(kl_render_context_t* context)
    if(context != NULL && *context != NULL)
    {
       kl_render_context_t ctx = *context;
-
-      kl_effect_manager_destroy(&ctx->effect_mgr);
 
       CGLReleaseContext(ctx->resourceCGLContext);
       CGLReleaseContext(ctx->drawableCGLContext);
@@ -272,7 +268,7 @@ void kl_render_frame(kl_render_context_t context, float display_width, float dis
                   /* Hax */
                   if(inst->constant_buffer)
                   {
-                     kl_effect_manager_bind_effect(context->effect_mgr, inst->effect, &hax_xfm_state,
+                     kl_effect_manager_bind_effect(KL_DEFAULT_EFFECT_MANAGER, inst->effect, &hax_xfm_state,
                         inst->constant_buffer);
                   }
                }

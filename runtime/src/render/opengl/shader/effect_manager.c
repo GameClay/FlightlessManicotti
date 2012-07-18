@@ -23,6 +23,8 @@
 
 #include <FlightlessManicotti/render/opengl/gl_render.h>
 
+kl_effect_manager_t g_effect_manager = NULL;
+
 int kl_effect_manager_create(kl_effect_manager_t* manager)
 {
    int ret = KL_ERROR;
@@ -34,6 +36,7 @@ int kl_effect_manager_create(kl_effect_manager_t* manager)
       {
          kl_zero_mem(mgr->data_source, sizeof(mgr->data_source));
          kl_zero_mem(mgr->data_source_context, sizeof(mgr->data_source_context));
+         kl_alloc_idx_allocator(&mgr->id_allocator, KL_EFFECT_MANAGER_MAX_DATA_SOURCES);
 
          *manager = mgr;
          ret = KL_SUCCESS;
@@ -48,19 +51,35 @@ void kl_effect_manager_destroy(kl_effect_manager_t* manager)
    if(manager != NULL)
    {
       kl_effect_manager_t mgr = *manager;
+      kl_free_idx_allocator(&mgr->id_allocator);
       kl_heap_free(mgr);
    }
 }
 
-void kl_effect_manager_register_data_source(kl_render_context_t render_ctx, uint32_t source_id,
+uint32_t kl_effect_manager_register_data_source(kl_effect_manager_t manager,
    kl_effect_manager_data_source_fn source_fn, const void* context)
 {
-   kl_effect_manager_t mgr = render_ctx->effect_mgr;
+   kl_effect_manager_t mgr = (manager == KL_DEFAULT_EFFECT_MANAGER ? g_effect_manager : manager);
+   uint32_t source_id = kl_idx_allocator_reserve(mgr->id_allocator);
 
    if(source_id < KL_EFFECT_MANAGER_MAX_DATA_SOURCES)
    {
       mgr->data_source[source_id] = source_fn;
       mgr->data_source_context[source_id] = context;
+   }
+
+   return source_id;
+}
+
+void kl_effect_manager_unregister_data_source(kl_effect_manager_t manager, uint32_t source_id)
+{
+   kl_effect_manager_t mgr = (manager == KL_DEFAULT_EFFECT_MANAGER ? g_effect_manager : manager);
+
+   if(source_id < KL_EFFECT_MANAGER_MAX_DATA_SOURCES)
+   {
+      mgr->data_source[source_id] = NULL;
+      mgr->data_source_context[source_id] = NULL;
+      kl_idx_allocator_release(mgr->id_allocator, source_id);
    }
 }
 
@@ -195,9 +214,11 @@ static int _do_constant_assign(kl_effect_manager_t mgr, const kl_shader_constant
    return ret;
 }
 
-void kl_effect_manager_bind_effect(kl_effect_manager_t mgr, kl_effect_ptr_t effect,
+void kl_effect_manager_bind_effect(kl_effect_manager_t manager, kl_effect_ptr_t effect,
    const kl_transform_state_t* xfm_state, const kl_shader_constant_buffer_t* constant_buffer)
 {
+   kl_effect_manager_t mgr = (manager == KL_DEFAULT_EFFECT_MANAGER ? g_effect_manager : manager);
+
    if(effect != NULL)
    {
       size_t i;
