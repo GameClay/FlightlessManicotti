@@ -298,7 +298,7 @@ static int ShaderConstant_set(lua_State* L)
          {
             struct _kl_texture* tex = (struct _kl_texture*)lua_touserdata(L, l_index);
 
-            if(tex->data_texture)
+            if(tex->tex_type == KL_TEXTURE_TYPE_DATA)
             {
                constant->constant_type = KL_SHADER_CONSTANT_TYPE_DATA;
                constant->constant.as_tex = tex->data_texture;
