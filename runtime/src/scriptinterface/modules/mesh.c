@@ -38,8 +38,9 @@ extern kl_render_context_t g_script_render_context;
 
 int Mesh_pushexisting(lua_State* L, kl_mesh_t* mesh)
 {
-   kl_mesh_t** mesh_holder = lua_newuserdata(L, sizeof(kl_mesh_t*));
-   *mesh_holder = mesh;
+   kl_lua_mesh_t* mesh_holder = lua_newuserdata(L, sizeof(kl_lua_mesh_t));
+   mesh_holder->mesh = mesh;
+   mesh_holder->auto_dealloc = 0;
 
    luaL_getmetatable(L, MESH_LUA_LIB);
    lua_setmetatable(L, -2);
@@ -49,9 +50,10 @@ int Mesh_pushexisting(lua_State* L, kl_mesh_t* mesh)
 
 static int Mesh_new(lua_State* L)
 {
-   kl_mesh_t** mesh_holder = lua_newuserdata(L, sizeof(kl_mesh_t*));
+   kl_lua_mesh_t* mesh_holder = lua_newuserdata(L, sizeof(kl_lua_mesh_t));
    kl_mesh_t* mesh = kl_heap_alloc(sizeof(kl_mesh_t));
-   *mesh_holder = mesh;
+   mesh_holder->mesh = mesh;
+   mesh_holder->auto_dealloc = 1;
 
    memset(mesh, 0, sizeof(kl_mesh_t));
    CGLSetCurrentContext(g_script_render_context->resourceCGLContext);
@@ -67,8 +69,9 @@ static int Mesh_new(lua_State* L)
 
 static int Mesh_gc(lua_State* L)
 {
-   kl_mesh_t* mesh = *((kl_mesh_t**)lua_touserdata(L, 1));
-   if(mesh != NULL)
+   kl_lua_mesh_t* mesh_holder = lua_touserdata(L, 1);
+   kl_mesh_t* mesh = mesh_holder->mesh;
+   if(mesh != NULL && mesh_holder->auto_dealloc)
    {
       CGLSetCurrentContext(g_script_render_context->resourceCGLContext);
       CGLLockContext(g_script_render_context->resourceCGLContext);

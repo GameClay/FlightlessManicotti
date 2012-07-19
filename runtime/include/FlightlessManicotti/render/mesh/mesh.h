@@ -47,6 +47,14 @@ typedef struct {
    float* face_normal;           /**< Pointer to computed face-normals. Length: num_indices. */
 } kl_mesh_t;
 
+/**
+ * The Lua mesh holder object.
+ */
+typedef struct kl_lua_mesh_t {
+   kl_mesh_t* mesh;
+   uintptr_t auto_dealloc;
+} kl_lua_mesh_t;
+
 typedef enum {
    kl_mesh_element_vertex = 1,
    kl_mesh_element_normal = 2,
