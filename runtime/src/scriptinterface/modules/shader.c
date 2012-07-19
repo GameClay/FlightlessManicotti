@@ -38,8 +38,7 @@ static int shader_compile(const char* shader_src, GLenum shader_type, GLuint* ou
       int compile_success;
       GLuint gl_shader;
 
-      CGLSetCurrentContext(g_script_render_context->resourceCGLContext);
-      CGLLockContext(g_script_render_context->resourceCGLContext);
+      kl_render_resource_lock(g_script_render_context);
 
       gl_shader = glCreateShader(shader_type);
       glShaderSource(gl_shader, 1, (const GLchar**)&shader_src, 0);
@@ -64,7 +63,7 @@ static int shader_compile(const char* shader_src, GLenum shader_type, GLuint* ou
          ret = KL_SUCCESS;
       }
 
-      CGLUnlockContext(g_script_render_context->resourceCGLContext);
+      kl_render_resource_unlock(g_script_render_context);
    }
 
    return ret;
@@ -104,12 +103,9 @@ static int Shader_gc(lua_State* L)
 {
    struct _kl_shader* shader = (struct _kl_shader*)lua_touserdata(L, 1);
 
-   CGLSetCurrentContext(g_script_render_context->resourceCGLContext);
-   CGLLockContext(g_script_render_context->resourceCGLContext);
-
+   kl_render_resource_lock(g_script_render_context);
    glDeleteShader(shader->shader);
-
-   CGLUnlockContext(g_script_render_context->resourceCGLContext);
+   kl_render_resource_unlock(g_script_render_context);
 
    return 0;
 }
@@ -158,8 +154,7 @@ static int program_link(struct _kl_shader** shaders, int num_shaders, GLuint* ou
    GLint link_success;
    GLuint program;
 
-   CGLSetCurrentContext(g_script_render_context->resourceCGLContext);
-   CGLLockContext(g_script_render_context->resourceCGLContext);
+   kl_render_resource_lock(g_script_render_context);
 
    program = glCreateProgram();
 
@@ -198,7 +193,7 @@ static int program_link(struct _kl_shader** shaders, int num_shaders, GLuint* ou
       glDeleteProgram(program);
    }
 
-   CGLUnlockContext(g_script_render_context->resourceCGLContext);
+   kl_render_resource_unlock(g_script_render_context);
 
    return ret;
 }
@@ -266,12 +261,9 @@ static int ShaderProgram_gc(lua_State* L)
 {
    struct _kl_effect* effect = (struct _kl_effect*)lua_touserdata(L, 1);
 
-   CGLSetCurrentContext(g_script_render_context->resourceCGLContext);
-   CGLLockContext(g_script_render_context->resourceCGLContext);
-
+   kl_render_resource_lock(g_script_render_context);
    glDeleteProgram(effect->program);
-
-   CGLUnlockContext(g_script_render_context->resourceCGLContext);
+   kl_render_resource_unlock(g_script_render_context);
 
    return 0;
 }

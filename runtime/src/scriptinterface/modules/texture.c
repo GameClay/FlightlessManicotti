@@ -224,8 +224,7 @@ static int Texture_new(lua_State* L)
    texture->tex_format = internalFormat;
    texture->tex_type = KL_TEXTURE_TYPE_IMAGE;
 
-   CGLSetCurrentContext(g_script_render_context->drawableCGLContext);
-   CGLLockContext(g_script_render_context->drawableCGLContext);
+   kl_render_resource_lock(g_script_render_context);
    {
       glGenTextures(1, &texture->texture);
 
@@ -256,7 +255,7 @@ static int Texture_new(lua_State* L)
 
       glBindTexture(texture->tex_depth, 0);
    }
-   CGLUnlockContext(g_script_render_context->drawableCGLContext);
+   kl_render_resource_unlock(g_script_render_context);
 
    FreeImage_Unload(dib);
 
@@ -270,12 +269,11 @@ static int Texture_gc(lua_State* L)
 {
    struct _kl_texture* texture = (struct _kl_texture*)lua_touserdata(L, 1);
 
-   CGLSetCurrentContext(g_script_render_context->drawableCGLContext);
-   CGLLockContext(g_script_render_context->drawableCGLContext);
+   kl_render_resource_lock(g_script_render_context);
    {
       glDeleteTextures(1, &texture->texture);
    }
-   CGLUnlockContext(g_script_render_context->drawableCGLContext);
+   kl_render_resource_unlock(g_script_render_context);
    return 0;
 }
 
@@ -283,8 +281,7 @@ static int Texture_resize(lua_State* L)
 {
    struct _kl_texture* texture = (struct _kl_texture*)lua_touserdata(L, 1);
 
-   CGLSetCurrentContext(g_script_render_context->drawableCGLContext);
-   CGLLockContext(g_script_render_context->drawableCGLContext);
+   kl_render_resource_lock(g_script_render_context);
    {
       glBindTexture(GL_TEXTURE_2D, texture->texture);
       glTexImage2D(GL_TEXTURE_2D, 0, texture->tex_format, texture->width, texture->height,
@@ -292,7 +289,7 @@ static int Texture_resize(lua_State* L)
                    tex_format_to_type(texture->tex_format), NULL);
       glBindTexture(GL_TEXTURE_2D, 0);
    }
-   CGLUnlockContext(g_script_render_context->drawableCGLContext);
+   kl_render_resource_unlock(g_script_render_context);
    return 0;
 }
 

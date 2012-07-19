@@ -242,13 +242,12 @@ void _kl_particle_render_quads_advance_time(float dt, void* context)
 
 #undef fillVert
 
-      CGLSetCurrentContext(renderer->context->resourceCGLContext);
-      CGLLockContext(renderer->context->resourceCGLContext);
+      kl_render_resource_lock(renderer->context);
 
       glBindBuffer(GL_ARRAY_BUFFER, renderer->vert_buffer[next_buffer_idx]);
       glBufferData(GL_ARRAY_BUFFER, renderer->verts_sz, renderer->verts, GL_STREAM_DRAW);
 
-      CGLUnlockContext(renderer->context->resourceCGLContext);
+      kl_render_resource_unlock(renderer->context);
 
       renderer->vert_buffer_elements[next_buffer_idx] = num_particles * 2;
 

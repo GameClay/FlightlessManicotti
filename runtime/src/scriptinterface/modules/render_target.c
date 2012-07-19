@@ -42,8 +42,7 @@ static int RenderTarget_new(lua_State* L)
    target->height = (GLuint)lua_tointeger(L, 2);
    kl_zero_mem(target->texture, sizeof(target->texture));
 
-   CGLSetCurrentContext(g_script_render_context->drawableCGLContext);
-   CGLLockContext(g_script_render_context->drawableCGLContext);
+   kl_render_draw_lock(g_script_render_context);
    {
       glGenFramebuffers(1, &target->framebuffer);
 
@@ -58,7 +57,7 @@ static int RenderTarget_new(lua_State* L)
 
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
    }
-   CGLUnlockContext(g_script_render_context->drawableCGLContext);
+   kl_render_draw_unlock(g_script_render_context);
 
    luaL_getmetatable(L, RENDER_TARGET_LUA_LIB);
    lua_setmetatable(L, -2);
@@ -70,13 +69,12 @@ static int RenderTarget_gc(lua_State* L)
 {
    struct _kl_offscreen_target* target = (struct _kl_offscreen_target*)lua_touserdata(L, 1);
 
-   CGLSetCurrentContext(g_script_render_context->drawableCGLContext);
-   CGLLockContext(g_script_render_context->drawableCGLContext);
+   kl_render_draw_lock(g_script_render_context);
    {
       glDeleteFramebuffers(1, &target->framebuffer);
       glDeleteRenderbuffers(1, &target->depthstencil);
    }
-   CGLUnlockContext(g_script_render_context->drawableCGLContext);
+   kl_render_draw_unlock(g_script_render_context);
    return 0;
 }
 
@@ -94,8 +92,7 @@ static int RenderTarget_update(lua_State* L)
    target->width = (GLuint)lua_tointeger(L, 2);
    target->height = (GLuint)lua_tointeger(L, 3);
 
-   CGLSetCurrentContext(g_script_render_context->drawableCGLContext);
-   CGLLockContext(g_script_render_context->drawableCGLContext);
+   kl_render_draw_lock(g_script_render_context);
    {
       int i;
       glBindFramebuffer(GL_FRAMEBUFFER, target->framebuffer);
@@ -124,7 +121,7 @@ static int RenderTarget_update(lua_State* L)
 
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
    }
-   CGLUnlockContext(g_script_render_context->drawableCGLContext);
+   kl_render_draw_unlock(g_script_render_context);
 
    return 0;
 }
@@ -141,8 +138,7 @@ static int RenderTarget_bindtexture(lua_State* L)
       attachment_idx = (attachment_idx < KL_OFFSCREEN_TARGET_MAX_TEX ? attachment_idx : 0);
    }
 
-   CGLSetCurrentContext(g_script_render_context->drawableCGLContext);
-   CGLLockContext(g_script_render_context->drawableCGLContext);
+   kl_render_draw_lock(g_script_render_context);
    {
       GLenum status;
       target->texture[attachment_idx] = texture;
@@ -157,7 +153,7 @@ static int RenderTarget_bindtexture(lua_State* L)
       {
          glBindTexture(GL_TEXTURE_2D, 0);
          glBindFramebuffer(GL_FRAMEBUFFER, 0);
-         CGLUnlockContext(g_script_render_context->drawableCGLContext);
+         kl_render_draw_unlock(g_script_render_context);
          kl_log_err("Script render target bind texture failed.");
          return 0;
       }
@@ -169,7 +165,7 @@ static int RenderTarget_bindtexture(lua_State* L)
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
       glBindTexture(GL_TEXTURE_2D, 0);
    }
-   CGLUnlockContext(g_script_render_context->drawableCGLContext);
+   kl_render_draw_unlock(g_script_render_context);
 
    return 0;
 }
@@ -178,13 +174,12 @@ static int RenderTarget_clear(lua_State* L)
 {
    struct _kl_offscreen_target* target = (struct _kl_offscreen_target*)lua_touserdata(L, 1);
 
-   CGLSetCurrentContext(g_script_render_context->drawableCGLContext);
-   CGLLockContext(g_script_render_context->drawableCGLContext);
+   kl_render_draw_lock(g_script_render_context);
    glBindFramebuffer(GL_FRAMEBUFFER, target->framebuffer);
    glClearColor(0, 0, 0, 0);
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-   CGLUnlockContext(g_script_render_context->drawableCGLContext);
+   kl_render_draw_unlock(g_script_render_context);
    return 0;
 }
 

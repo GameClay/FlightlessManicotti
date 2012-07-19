@@ -56,10 +56,9 @@ static int Mesh_new(lua_State* L)
    mesh_holder->auto_dealloc = 1;
 
    memset(mesh, 0, sizeof(kl_mesh_t));
-   CGLSetCurrentContext(g_script_render_context->resourceCGLContext);
-   CGLLockContext(g_script_render_context->resourceCGLContext);
+   kl_render_resource_lock(g_script_render_context);
    kl_mesh_init(mesh);
-   CGLUnlockContext(g_script_render_context->resourceCGLContext);
+   kl_render_resource_unlock(g_script_render_context);
 
    luaL_getmetatable(L, MESH_LUA_LIB);
    lua_setmetatable(L, -2);
@@ -73,10 +72,9 @@ static int Mesh_gc(lua_State* L)
    kl_mesh_t* mesh = mesh_holder->mesh;
    if(mesh != NULL && mesh_holder->auto_dealloc)
    {
-      CGLSetCurrentContext(g_script_render_context->resourceCGLContext);
-      CGLLockContext(g_script_render_context->resourceCGLContext);
+      kl_render_resource_lock(g_script_render_context);
       kl_mesh_deinit(mesh);
-      CGLUnlockContext(g_script_render_context->resourceCGLContext);
+      kl_render_resource_unlock(g_script_render_context);
 
       kl_heap_free(mesh->vertex);
       kl_heap_free(mesh->normal);
@@ -102,10 +100,9 @@ static int Mesh_update(lua_State* L)
       uint32_t update_mask = (uint32_t)lua_tointeger(L, 2);
       uint32_t dynamic_mask = (uint32_t)lua_tointeger(L, 3);
 
-      CGLSetCurrentContext(g_script_render_context->resourceCGLContext);
-      CGLLockContext(g_script_render_context->resourceCGLContext);
+      kl_render_resource_lock(g_script_render_context);
       kl_mesh_buffer_data(mesh, update_mask, dynamic_mask);
-      CGLUnlockContext(g_script_render_context->resourceCGLContext);
+      kl_render_resource_unlock(g_script_render_context);
    }
 
    return 0;

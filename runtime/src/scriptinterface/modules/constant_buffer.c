@@ -113,8 +113,7 @@ static int ConstantBuffer_new(lua_State* L)
    GLsizei name_sz = sizeof(name);
    kl_shader_constant_buffer_t* constant_buffer;
 
-   CGLSetCurrentContext(g_script_render_context->resourceCGLContext);
-   CGLLockContext(g_script_render_context->resourceCGLContext);
+   kl_render_resource_lock(g_script_render_context);
 
    glGetProgramiv(effect->program, GL_ACTIVE_UNIFORMS, &count);
 
@@ -158,7 +157,7 @@ static int ConstantBuffer_new(lua_State* L)
       lua_setfield(L, -2, name);
    }
 
-   CGLUnlockContext(g_script_render_context->resourceCGLContext);
+   kl_render_resource_unlock(g_script_render_context);
 
    return 1;
 }

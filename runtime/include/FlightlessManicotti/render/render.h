@@ -97,20 +97,42 @@ extern KL_API KL_BOOL kl_render_assign_list(kl_render_context_t context, kl_rend
    int list_idx);
 
 /**
- * Locks a render context, preventing it from drawing until unlocked.
+ * Locks a drawable render context, and sets it as the current OpenGL context for the active thread.
+ *
+ * This prevents rendering until the kl_render_unlock is called.
  *
  * @param context   Rendering context to lock.
  * @relates kl_render_context_t
  */
-extern KL_API void kl_render_lock(kl_render_context_t context);
+extern KL_API void kl_render_draw_lock(kl_render_context_t context);
 
 /**
- * Unlocks a render context, allowing it to draw again.
+ * Unlocks a drawable render context, allowing it to draw again.
  *
  * @param context   Rendering context to unlock.
  * @relates kl_render_context_t
  */
-extern KL_API void kl_render_unlock(kl_render_context_t context);
+extern KL_API void kl_render_draw_unlock(kl_render_context_t context);
+
+/**
+ * Locks a render resource context, and sets it as the current OpenGL context for the active thread.
+ *
+ * This locks the shared OpenGL context which allows for threaded resource
+ * modifications and updates.
+ *
+ * @param context   Rendering context to lock.
+ * @relates kl_render_context_t
+ */
+extern KL_API void kl_render_resource_lock(kl_render_context_t context);
+
+/**
+ * Unlocks a render resource context.
+ *
+ * @param context   Rendering context to unlock.
+ * @relates kl_render_context_t
+ */
+extern KL_API void kl_render_resource_unlock(kl_render_context_t context);
+
 
 /**
  * Binds a render target.
